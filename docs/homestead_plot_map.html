@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Homestead Plot Map — Mountain Prairie Acres</title>
+<style>
+  :root {
+    --bg: #ffffff; --bg2: #f5f4f0; --bg3: #eae8e1;
+    --text: #2C2C2A; --text2: #5F5E5A; --text3: #888780;
+    --border: #d3d1c7; --link: #185FA5; --water: #2B8FD6; --accent: #3B6D11;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.5;
+    padding: 20px; max-width: 1500px; margin: 0 auto;
+  }
+  a { color: var(--link); }
+  h1 { font-size: 22px; font-weight: 600; }
+  h3 { font-size: 13px; font-weight: 600; margin: 12px 0 4px; color: var(--text2); }
+  aside h3:first-child { margin-top: 0; }
+  .subtitle { font-size: 13px; color: var(--text2); margin: 2px 0 12px; }
+  .source-note { font-size: 11px; color: var(--text2); }
+  .notice { background: var(--bg2); border-left: 4px solid #BA7517; border-radius: 4px; padding: 8px 12px; margin: 0 0 12px; font-size: 12px; }
+  .notice.error { border-left-color: #E24B4A; }
+
+  .sheet-body { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(300px, 1fr); gap: 16px; align-items: start; }
+  figure figcaption { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .map svg { display: block; width: 100%; height: auto; }
+  .diagram text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: #2C2C2A; }
+  .diagram .t-title { font-weight: 600; }
+  .diagram .t-note { fill: #5F5E5A; }
+  .diagram .t-planned { fill: #6A4F8A; font-weight: 600; }
+  .diagram .t-water { fill: #0B5F7C; font-weight: 600; }
+  .diagram .halo { paint-order: stroke; stroke: #fff; stroke-width: 2.6px; stroke-linejoin: round; }
+
+  .legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3px 10px; font-size: 11px; color: var(--text2); }
+  .legend .row { display: flex; align-items: center; gap: 6px; }
+  .legend svg { width: 30px; height: 14px; flex-shrink: 0; overflow: visible; }
+  table.detail { width: 100%; border-collapse: collapse; font-size: 11px; margin: 4px 0 8px; }
+  table.detail th { background: var(--bg3); text-align: left; padding: 3px 6px; font-weight: 500; border: 1px solid var(--border); }
+  table.detail td { padding: 3px 6px; border: 1px solid var(--border); vertical-align: top; }
+  table.detail td.num, table.detail th.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  table.detail td.key { text-align: center; font-weight: 600; }
+  table.detail tr.planned td { color: #4E3A68; background: #F6F2FA; }
+  ul.notes { font-size: 11.5px; padding-left: 16px; }
+  ul.notes li { margin: 3px 0; }
+  footer { margin-top: 18px; padding-top: 8px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text3); }
+
+  @media screen and (max-width: 900px) {
+    .sheet-body { grid-template-columns: 1fr; }
+  }
+  @page {
+    size: 17in 11in;
+    margin: 9mm 10mm 11mm;
+    @bottom-left { content: "Mountain Prairie Acres - Homestead plot map"; font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+  }
+  @media print {
+    body { padding: 0; margin: 0; max-width: none; font-size: 9pt; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    .print-help { display: none; }
+    h1 { font-size: 15pt; } h3 { font-size: 9.5pt; margin: 2.2mm 0 0.8mm; }
+    .subtitle { font-size: 8.5pt; margin-bottom: 1.5mm; }
+    .sheet-body { grid-template-columns: 8.95in minmax(0, 1fr); gap: 6mm; }
+    .map svg { max-height: 9.25in; width: auto; max-width: 100%; }
+    figure figcaption { font-size: 9pt; margin-bottom: 1mm; }
+    .legend { font-size: 7.5pt; gap: 0.6mm 3mm; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    table.detail { font-size: 7.6pt; margin: 1mm 0 1.5mm; } table.detail th, table.detail td { padding: 0.5mm 1.3mm; }
+    table.detail tr { break-inside: avoid; }
+    ul.notes { font-size: 7.6pt; line-height: 1.3; } ul.notes li { margin: 0.5mm 0; }
+    .source-note { font-size: 7.4pt; }
+    a { text-decoration: none; color: inherit; }
+    footer { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="notice print-help" role="note"><strong>Print setup:</strong> Tabloid / Ledger (11 × 17 in), landscape, 100% scale. Turn on background graphics and turn off the browser's headers and footers. <a href="index.html">Back to the project home page</a>.</div>
+<noscript><div class="notice error">JavaScript is required to draw the map and tables.</div></noscript>
+<div class="notice error" id="render-error" hidden></div>
+
+<section aria-labelledby="page-title">
+  <h1 id="page-title">Mountain Prairie Acres: Homestead Plot Map</h1>
+  <p class="subtitle">The homestead to scale, north up, as it stood in October 2026: buildings, containers, tank, pump house, pads, and the road-mix drives, on the 50 ft master grid. Planned buildings are dashed.</p>
+  <div class="sheet-body">
+    <figure class="map"><figcaption>Homestead, 50 ft grid cells (see the <a href="site_master_grid.html">Site Master Grid</a>)</figcaption><div id="map"></div></figure>
+    <aside>
+      <h3>Legend</h3>
+      <div class="legend" id="legend"></div>
+      <h3>Inventory (numbers match the map)</h3>
+      <table class="detail" id="inventory"></table>
+      <h3>Gaps for pipe, wire, and path runs (edge to edge)</h3>
+      <table class="detail" id="distances"></table>
+      <h3>Notes</h3>
+      <ul class="notes" id="notes"></ul>
+      <p class="source-note" id="coords-note">Coordinates are feet east of the west fence (x) and feet south of the north fence (y). Ground elevations are from USGS lidar flown before the pads were graded.</p>
+    </aside>
+  </div>
+</section>
+
+<footer>Mountain Prairie Acres · Prairie, Idaho · <a href="index.html">Project home</a> · <a href="site_master_grid.html">Site master grid</a> · <a href="site_terrain_water_map.html">Whole-site terrain and water maps</a> · <a href="https://github.com/srnichols/Mountain-Prairie-Acres">GitHub</a></footer>
+
+<script src="data/site_grid.js"></script>
+<script src="data/site_terrain.js"></script>
+<script>
+'use strict';
+const SVG_NS = 'http://www.w3.org/2000/svg', M_TO_FT = 3.28084;
+function svgNode(tag, attrs = {}, text) {
+  const node = document.createElementNS(SVG_NS, tag);
+  Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+function element(tag, text, className) {
+  const node = document.createElement(tag);
+  if (text !== undefined && text !== null) node.textContent = text;
+  if (className) node.className = className;
+  return node;
+}
+const fmt = (value, digits = 0) => Number(value).toLocaleString('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits });
+const distToPath = (x, y, pts) => pts.slice(1).reduce((best, [x2, y2], k) => {
+  const [x1, y1] = pts[k], dx = x2 - x1, dy = y2 - y1;
+  const t = Math.max(0, Math.min(1, ((x - x1) * dx + (y - y1) * dy) / (dx * dx + dy * dy || 1)));
+  return Math.min(best, Math.hypot(x - x1 - t * dx, y - y1 - t * dy));
+}, Infinity);
+
+const SG = window.SiteGrid, F = id => SG.feature(id);
+// Map window in lot feet: the content box, plus margins for the grid labels and scale bar.
+const BOX = { x0: -6, x1: 340, y0: 653, y1: 1006 }, VIEW = { west: -20, east: 354, top: 641, bottom: 1032 }, S = 2;
+const X = x => +((x - VIEW.west) * S).toFixed(2), Y = y => +((y - VIEW.top) * S).toFixed(2);
+const COLOR = {
+  ground: '#F6F3EA', road: '#DDD0B8', roadEdge: '#B6A385', pad: '#EEE4CF', padEdge: '#A8906A', contour: '#9A8670',
+  grid: 'rgba(60,60,60,0.28)', fence: '#6B5A45', ditch: '#2B8FD6', waterLine: '#1B4F9C', planned: '#7A5CA5', shed: '#A9372B', outhouse: '#2F6EB5',
+  container: '#F2F2EE', containerEdge: '#77776F', solar: '#2F4A6E', tank: '#1E1E1E', pump: '#5D6D7E', rv: '#FFFFFF'
+};
+
+// The ten numbered items from the owner's inventory, in his order, with where each number sits on the map.
+const ITEMS = [
+  { key: '1', ids: ['shed'], label: 'Red shed', at: [64, 752] },
+  { key: '2', ids: ['outhouse'], label: 'Outhouse', at: [74, 822] },
+  { key: '3', ids: ['container_solar', 'container_storage'], label: 'Two 8 × 40 containers (L)', at: [27, 960] },
+  { key: '4', ids: ['house_pad', 'house', 'garage'], label: 'House pad', at: [104, 958] },
+  { key: '5', ids: ['irrigation_tank'], label: '3,500 gal irrigation tank', at: [55, 903] },
+  { key: '6', ids: ['pump_house'], label: 'Pump house', at: [86, 897] },
+  { key: '7', ids: ['workshop_pad', 'workshop'], label: 'Workshop pad', at: [26, 838] },
+  { key: '8', ids: ['rv_pad', 'rv'], label: 'RV camper on its pad', at: [123, 885] },
+  { key: '9', ids: ['driveway', 'yard', 'loop_path', 'path_workshop', 'path_rv'], label: 'Driveway and road-mix paths', at: [313, 700] }
+];
+
+/* Contours from the lidar grid: marching squares, then chained into polylines */
+function contourLines(levelM, box) {
+  const g = window.SITE_TERRAIN.grid, segs = [], v = (i, j) => g.base + g.z[i * g.nx + j] / 100;
+  const j0 = Math.max(0, Math.floor((box.x0 - g.x0) / g.step)), j1 = Math.min(g.nx - 1, Math.ceil((box.x1 - g.x0) / g.step));
+  const i0 = Math.max(0, Math.floor((box.y0 - g.y0) / g.step)), i1 = Math.min(g.ny - 1, Math.ceil((box.y1 - g.y0) / g.step));
+  for (let i = i0; i < i1; i++) for (let j = j0; j < j1; j++) {
+    const x0 = g.x0 + j * g.step, y0 = g.y0 + i * g.step, x1 = x0 + g.step, y1 = y0 + g.step, pts = [];
+    const cross = (z1, z2, ax, ay, bx, by) => {
+      if ((z1 < levelM) !== (z2 < levelM)) { const t = (levelM - z1) / (z2 - z1); pts.push([ax + (bx - ax) * t, ay + (by - ay) * t]); }
+    };
+    const a = v(i, j), b = v(i, j + 1), c = v(i + 1, j + 1), d = v(i + 1, j);
+    cross(a, b, x0, y0, x1, y0); cross(b, c, x1, y0, x1, y1); cross(c, d, x1, y1, x0, y1); cross(d, a, x0, y1, x0, y0);
+    if (pts.length === 2) segs.push(pts);
+    else if (pts.length === 4) segs.push([pts[0], pts[1]], [pts[2], pts[3]]);
+  }
+  const key = p => `${p[0].toFixed(3)},${p[1].toFixed(3)}`, ends = new Map();
+  segs.forEach((s, k) => s.forEach(p => { const kk = key(p); if (!ends.has(kk)) ends.set(kk, []); ends.get(kk).push(k); }));
+  const used = new Array(segs.length).fill(false), lines = [];
+  for (let k = 0; k < segs.length; k++) {
+    if (used[k]) continue;
+    used[k] = true;
+    const line = [segs[k][0], segs[k][1]];
+    [true, false].forEach(forward => {
+      for (;;) {
+        const tip = forward ? line[line.length - 1] : line[0];
+        const next = (ends.get(key(tip)) || []).find(m => !used[m]);
+        if (next === undefined) break;
+        used[next] = true;
+        const [p, q] = segs[next], np = key(p) === key(tip) ? q : p;
+        if (forward) line.push(np); else line.unshift(np);
+      }
+    });
+    lines.push(line);
+  }
+  return lines;
+}
+const pathLength = pts => pts.slice(1).reduce((sum, p, i) => sum + Math.hypot(p[0] - pts[i][0], p[1] - pts[i][1]), 0);
+
+function makeMap() {
+  const W = (VIEW.east - VIEW.west) * S, H = (VIEW.bottom - VIEW.top) * S;
+  const svg = svgNode('svg', { viewBox: `0 0 ${W} ${H}`, class: 'diagram', role: 'img', 'aria-labelledby': 'map-title' });
+  svg.append(svgNode('title', { id: 'map-title' }, 'Homestead plot map, north up, on the 50 ft master grid: red shed, outhouse, two shipping containers in an L, irrigation tank and pump house, workshop pad, RV pad, house pad with the planned house and garage, and the road-mix driveway and paths.'));
+  const defs = svgNode('defs'), clip = svgNode('clipPath', { id: 'hp-clip' });
+  clip.append(svgNode('rect', { x: X(BOX.x0), y: Y(BOX.y0), width: (BOX.x1 - BOX.x0) * S, height: (BOX.y1 - BOX.y0) * S }));
+  const solar = svgNode('pattern', { id: 'hp-solar', width: 6, height: 7, patternUnits: 'userSpaceOnUse' });
+  solar.append(svgNode('rect', { width: 6, height: 7, fill: COLOR.solar }), svgNode('path', { d: 'M0,0.5H6M0.5,0V7', stroke: '#9FB4CC', 'stroke-width': 0.6 }));
+  const ribs = svgNode('pattern', { id: 'hp-ribs', width: 3, height: 3, patternUnits: 'userSpaceOnUse' });
+  ribs.append(svgNode('rect', { width: 3, height: 3, fill: COLOR.container }), svgNode('path', { d: 'M1.5,0V3', stroke: '#C9C9C2', 'stroke-width': 0.7 }));
+  defs.append(clip, solar, ribs);
+  svg.append(defs);
+  const add = (node, parent = svg) => { parent.append(node); return node; };
+  const content = add(svgNode('g', { 'clip-path': 'url(#hp-clip)' }));
+  const d = pts => pts.map(([x, y], i) => `${i ? 'L' : 'M'}${X(x)},${Y(y)}`).join('');
+  const line = (pts, attrs, parent = content) => add(svgNode('path', { d: d(pts), fill: 'none', ...attrs }), parent);
+  const poly = (pts, attrs, parent = content) => add(svgNode('path', { d: `${d(pts)}Z`, ...attrs }), parent);
+  const box = (f, attrs, parent = content) => add(svgNode('rect', { x: X(f.x0), y: Y(f.y0), width: (f.x1 - f.x0) * S, height: (f.y1 - f.y0) * S, ...attrs }), parent);
+  const text = (x, y, str, attrs = {}, parent = svg) => add(svgNode('text', { x: X(x), y: Y(y), 'font-size': 8, ...attrs }, str), parent);
+
+  add(svgNode('rect', { x: X(BOX.x0), y: Y(BOX.y0), width: (BOX.x1 - BOX.x0) * S, height: (BOX.y1 - BOX.y0) * S, fill: COLOR.ground }), content);
+
+  // 1 ft contours
+  const contourSets = [];
+  const elevations = [];
+  for (let y = BOX.y0; y <= BOX.y1; y += 5) for (let x = 0; x <= BOX.x1; x += 5) elevations.push(SG.elevationFt(x, y));
+  for (let ft = Math.ceil(Math.min(...elevations)); ft <= Math.floor(Math.max(...elevations)); ft++) {
+    const lines = contourLines(ft / M_TO_FT, BOX);
+    contourSets.push({ ft, lines });
+    lines.forEach(pts => line(pts, { stroke: COLOR.contour, 'stroke-width': ft % 5 === 0 ? 1.1 : 0.6, opacity: 0.85 }));
+  }
+
+  // 50 ft master grid
+  for (let x = 0; x <= BOX.x1; x += 50) line([[x, BOX.y0], [x, BOX.y1]], { stroke: COLOR.grid, 'stroke-width': 0.8 });
+  for (let y = Math.ceil(BOX.y0 / 50) * 50; y <= BOX.y1; y += 50) line([[BOX.x0, y], [BOX.x1, y]], { stroke: COLOR.grid, 'stroke-width': 0.8 });
+  for (let x = 0; x < 330; x += 50) for (let y = Math.floor(BOX.y0 / 50) * 50; y < BOX.y1; y += 50) {
+    const ref = SG.cellOf(x + 1, y + 1);
+    if (ref) text(x + 1.5, Math.max(y, BOX.y0) + 5.2, ref, { 'font-size': 7, style: 'fill:#9A988F' }, content);
+  }
+
+  // Road mix: outline pass, then fill pass, so overlapping drives merge cleanly
+  const roads = ['driveway', 'loop_path', 'path_workshop', 'path_rv'].map(F);
+  poly(F('yard').pts, { fill: COLOR.road, stroke: COLOR.roadEdge, 'stroke-width': 1.6, 'stroke-linejoin': 'round' });
+  roads.forEach(f => line(f.pts, { stroke: COLOR.roadEdge, 'stroke-width': (f.width + 1.6) * S, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }));
+  poly(F('yard').pts, { fill: COLOR.road, stroke: 'none' });
+  roads.forEach(f => line(f.pts, { stroke: COLOR.road, 'stroke-width': f.width * S, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }));
+
+  // Pads
+  poly(F('house_pad').pts, { fill: COLOR.pad, stroke: COLOR.padEdge, 'stroke-width': 1.2 });
+  ['workshop_pad', 'rv_pad'].forEach(id => box(F(id), { fill: COLOR.pad, stroke: COLOR.padEdge, 'stroke-width': 1.2, 'stroke-dasharray': '5 2.5' }));
+
+  // Old ditch from the lidar, and the buried water line (its covered trench shows in the drone photo)
+  line(F('old_ditch').pts, { stroke: COLOR.ditch, 'stroke-width': 2, 'stroke-dasharray': '7 4', opacity: 0.75 });
+  line(F('water_line_west').pts, { stroke: COLOR.waterLine, 'stroke-width': 1.8, 'stroke-dasharray': '10 3 2 3' });
+
+  // Planned buildings
+  ['house', 'garage', 'workshop'].forEach(id => box(F(id), { fill: 'rgba(122,92,165,0.10)', stroke: COLOR.planned, 'stroke-width': 1.6, 'stroke-dasharray': '6 3' }));
+
+  // Existing structures
+  const shed = F('shed');
+  box(shed, { fill: COLOR.shed, stroke: '#5E1D16', 'stroke-width': 1 });
+  line([[83, shed.y0], [83, shed.y1]], { stroke: '#E8C4BC', 'stroke-width': 0.8 });
+  box(F('outhouse'), { fill: COLOR.outhouse, stroke: '#173B66', 'stroke-width': 0.8 });
+  box(F('container_solar'), { fill: 'url(#hp-solar)', stroke: COLOR.containerEdge, 'stroke-width': 1 });
+  box(F('container_storage'), { fill: 'url(#hp-ribs)', stroke: COLOR.containerEdge, 'stroke-width': 1 });
+  box(F('pump_house'), { fill: COLOR.pump, stroke: '#2E3A46', 'stroke-width': 1 });
+  const tank = F('irrigation_tank');
+  add(svgNode('circle', { cx: X(tank.cx), cy: Y(tank.cy), r: tank.r * S, fill: COLOR.tank, stroke: '#555', 'stroke-width': 0.8 }), content);
+  box(F('rv'), { fill: COLOR.rv, stroke: '#5F5E5A', 'stroke-width': 1, rx: 2 });
+
+  // Fences
+  [0, SG.data.lot.fence.width].forEach(x => line([[x, BOX.y0], [x, BOX.y1]], { stroke: COLOR.fence, 'stroke-width': 2.4 }));
+
+  // Text labels on the map (kept off the crowded container cluster; numbers cover those)
+  const label = (x, y, str, cls = 't-title', extra = {}) => text(x, y, str, { class: `${cls} halo`, ...extra }, content);
+  label(103.5, 761, 'Red shed', 't-title', { 'font-size': 8.5 });
+  label(89, 815.5, 'Outhouse', 't-note', { 'font-size': 7.5 });
+  const [wx, wy] = SG.center('workshop'), [hx, hy] = SG.center('house'), [gx, gy] = SG.center('garage');
+  label(wx, wy - 4, 'Workshop (planned)', 't-planned', { 'text-anchor': 'middle', 'font-size': 8 });
+  label(wx, wy + 3.5, '32 × 46 ft', 't-planned', { 'text-anchor': 'middle', 'font-size': 7.5 });
+  label(wx, F('workshop_pad').y1 - 2.5, 'workshop pad', 't-note', { 'text-anchor': 'middle', 'font-size': 7.2 });
+  label(hx, hy - 3.5, 'House (planned)', 't-planned', { 'text-anchor': 'middle', 'font-size': 9 });
+  label(hx, hy + 4.5, 'KIT Pinehurst 2512, 40 × 66 ft', 't-planned', { 'text-anchor': 'middle', 'font-size': 7.5 });
+  label(gx, gy - 2, 'Garage', 't-planned', { 'text-anchor': 'middle', 'font-size': 8 });
+  label(gx, gy + 5, '2.5-car, planned', 't-planned', { 'text-anchor': 'middle', 'font-size': 7 });
+  const [padW, padH] = SG.size('house_pad');
+  label(168, 964, `house pad, about ${fmt(padW)} × ${fmt(padH)} ft`, 't-note', { 'text-anchor': 'middle', 'font-size': 7.4 });
+  label(117, 897, 'RV pad', 't-note', { 'font-size': 7.4 });
+  label(203, 790, 'yard (road mix)', 't-note', { 'text-anchor': 'middle', 'font-size': 7.6 });
+  label(126, 806, 'loop drive', 't-note', { 'text-anchor': 'middle', 'font-size': 7.2 });
+  label(126, 812, 'around island', 't-note', { 'text-anchor': 'middle', 'font-size': 7.2 });
+  label(304, 676, 'driveway from', 't-note', { 'text-anchor': 'end', 'font-size': 7.4 });
+  label(304, 683, 'the north road', 't-note', { 'text-anchor': 'end', 'font-size': 7.4 });
+  const wl = F('water_line_west');
+  const wtx = X(wl.pts[1][0] + 3.2), wty = Y(735);
+  add(svgNode('text', { x: wtx, y: wty, transform: `rotate(-90 ${wtx} ${wty})`, 'text-anchor': 'middle', 'font-size': 7.4, class: 'halo', style: `fill:${COLOR.waterLine};font-weight:600` }, 'buried water line (covered trench)'), content);
+  const wfx = X(-2.6), wfy = Y(990);
+  add(svgNode('text', { x: wfx, y: wfy, transform: `rotate(-90 ${wfx} ${wfy})`, 'text-anchor': 'middle', 'font-size': 7.4, class: 't-title halo' }, 'west fence'), content);
+  const efx = X(SG.data.lot.fence.width + 3.4), efy = Y(990);
+  add(svgNode('text', { x: efx, y: efy, transform: `rotate(-90 ${efx} ${efy})`, 'text-anchor': 'middle', 'font-size': 7.4, class: 't-title halo' }, 'east fence'), content);
+  label(262, 884.5, 'old ditch line (lidar, before the pads)', 't-water', { 'text-anchor': 'middle', 'font-size': 7.4 });
+
+  // Contour labels: one per contour piece, on a stretch clear of features and other labels
+  const busy = ['shed', 'outhouse', 'container_solar', 'container_storage', 'pump_house', 'irrigation_tank', 'rv_pad', 'workshop_pad', 'house_pad', 'yard']
+    .map(id => SG.bbox(id));
+  const taken = [[103.5, 758, 30], [61, 862, 35], [153, 940, 45], [262, 884, 60], [203, 790, 40], [304, 680, 30], [126, 809, 25]];
+  contourSets.forEach(({ ft, lines }) => lines.filter(pts => pathLength(pts) >= 45).forEach(pts => {
+    const free = pts.map((p, i) => [p, i]).filter(([[x, y]]) => x > BOX.x0 + 10 && x < BOX.x1 - 12 && y > BOX.y0 + 8 && y < BOX.y1 - 8
+      && busy.every(b => x < b.x0 - 6 || x > b.x1 + 6 || y < b.y0 - 5 || y > b.y1 + 5)
+      && ['driveway', 'loop_path', 'water_line_west', 'old_ditch'].every(id => distToPath(x, y, F(id).pts) > (F(id).width || 6) / 2 + 7)
+      && taken.every(([tx, ty, r]) => Math.hypot(x - tx, (y - ty) * 2) > r));
+    if (!free.length) return;
+    const mid = (pts.length - 1) / 2, [[x, y]] = free.reduce((a, b) => Math.abs(b[1] - mid) < Math.abs(a[1] - mid) ? b : a);
+    taken.push([x, y, 34]);
+    text(x, y + 2.6, fmt(ft), { 'text-anchor': 'middle', 'font-size': 7, class: 'halo', style: 'fill:#6E5A44;font-weight:600' }, content);
+  }));
+
+  // Numbered markers with leader lines to the nearest part of each item
+  ITEMS.forEach(item => {
+    const [mx, my] = item.at, b = SG.bbox(item.ids[0]);
+    const tx = Math.min(Math.max(mx, b.x0), b.x1), ty = Math.min(Math.max(my, b.y0), b.y1);
+    if (Math.hypot(tx - mx, ty - my) > 4.5) line([[mx, my], [tx, ty]], { stroke: '#2C2C2A', 'stroke-width': 0.9 });
+    add(svgNode('circle', { cx: X(mx), cy: Y(my), r: 7.2, fill: '#2C2C2A', stroke: '#fff', 'stroke-width': 1.2 }), content);
+    text(mx, my + 1.75, item.key, { 'text-anchor': 'middle', 'font-size': 9, style: 'fill:#fff;font-weight:700' }, content);
+  });
+
+  // Margins: column letters, row numbers, north arrow, scale bar
+  add(svgNode('rect', { x: X(BOX.x0), y: Y(BOX.y0), width: (BOX.x1 - BOX.x0) * S, height: (BOX.y1 - BOX.y0) * S, fill: 'none', stroke: '#8F8B80', 'stroke-width': 1 }));
+  for (let c = 0; c < SG.data.grid.columns.length; c++) {
+    const x = c * 50 + 25;
+    if (x < BOX.x1) {
+      text(x, BOX.y0 - 3.2, SG.data.grid.columns[c], { 'text-anchor': 'middle', 'font-size': 10, class: 't-title' });
+      text(x, BOX.y1 + 7.2, SG.data.grid.columns[c], { 'text-anchor': 'middle', 'font-size': 10, class: 't-title' });
+    }
+  }
+  for (let r = Math.floor(BOX.y0 / 50); r * 50 < BOX.y1; r++) {
+    const top = Math.max(r * 50, BOX.y0), span = Math.min(r * 50 + 50, BOX.y1) - top;
+    if (span < 20) continue;
+    text(BOX.x0 - 7, top + span / 2 + 2.2, String(r + 1), { 'text-anchor': 'middle', 'font-size': 10, class: 't-title' });
+    text(BOX.x1 + 7, top + span / 2 + 2.2, String(r + 1), { 'text-anchor': 'middle', 'font-size': 10, class: 't-title' });
+  }
+  for (let y = 700; y < BOX.y1; y += 50) text(BOX.x0 - 1.2, y + 1.6, `y ${y}`, { 'text-anchor': 'end', 'font-size': 6, class: 't-note' });
+  const ax = X(318), ay = Y(BOX.y1 + 16);
+  add(svgNode('path', { d: `M${ax},${ay - 12} l5,12 l-5,-3.4 l-5,3.4 z`, fill: '#2C2C2A' }));
+  add(svgNode('text', { x: ax + 9, y: ay - 1, 'font-size': 10, class: 't-title' }, 'N'));
+  const sx = 230, sy = BOX.y1 + 16;
+  [[0, 10, '#2C2C2A'], [10, 20, '#fff'], [20, 30, '#2C2C2A'], [30, 40, '#fff'], [40, 50, '#2C2C2A']]
+    .forEach(([a, b, fill]) => add(svgNode('rect', { x: X(sx + a), y: Y(sy - 1.5), width: (b - a) * S, height: 3 * S, fill, stroke: '#2C2C2A', 'stroke-width': 0.8 })));
+  [0, 10, 50].forEach(v => text(sx + v, sy - 3.5, `${v}`, { 'text-anchor': 'middle', 'font-size': 7, class: 't-note' }));
+  text(sx + 55, sy + 2.2, 'feet', { 'font-size': 8, class: 't-note' });
+  text(BOX.x0, sy + 2.2, 'Grid: 50 ft cells, column letter + row number (B19 = x 50–100, y 900–950). Contours every 1 ft (feet above sea level).', { 'font-size': 7.4, class: 't-note' });
+  return svg;
+}
+
+function renderLegend() {
+  const host = document.getElementById('legend');
+  const row = (draw, label) => {
+    const r = element('div', null, 'row'), s = svgNode('svg', { viewBox: '0 0 30 14', 'aria-hidden': 'true' });
+    draw(s); r.append(s, element('span', label)); host.append(r);
+  };
+  const rect = (attrs) => s => s.append(svgNode('rect', { x: 3, y: 2, width: 24, height: 10, ...attrs }));
+  row(rect({ fill: COLOR.shed, stroke: '#5E1D16' }), 'Red shed (with west lean-to)');
+  row(rect({ fill: COLOR.outhouse, x: 11, width: 8 }), 'Outhouse');
+  row(rect({ fill: COLOR.solar, stroke: COLOR.containerEdge }), 'Solar container');
+  row(rect({ fill: COLOR.container, stroke: COLOR.containerEdge }), 'Storage container');
+  row(s => s.append(svgNode('circle', { cx: 15, cy: 7, r: 5.5, fill: COLOR.tank })), 'Irrigation tank, 3,500 gal');
+  row(rect({ fill: COLOR.pump, x: 9, width: 12 }), 'Pump house');
+  row(rect({ fill: COLOR.rv, stroke: '#5F5E5A' }), 'RV camper');
+  row(rect({ fill: 'rgba(122,92,165,0.10)', stroke: COLOR.planned, 'stroke-width': 1.4, 'stroke-dasharray': '4 2' }), 'Planned building');
+  row(rect({ fill: COLOR.pad, stroke: COLOR.padEdge }), 'Graded pad');
+  row(rect({ fill: COLOR.road, stroke: COLOR.roadEdge }), 'Road mix: drives and paths');
+  row(s => s.append(svgNode('line', { x1: 2, y1: 7, x2: 28, y2: 7, stroke: COLOR.fence, 'stroke-width': 2.4 })), 'Fence (lot line)');
+  row(s => s.append(svgNode('line', { x1: 2, y1: 7, x2: 28, y2: 7, stroke: COLOR.ditch, 'stroke-width': 2, 'stroke-dasharray': '5 3' })), 'Old ditch line (lidar)');
+  row(s => s.append(svgNode('line', { x1: 2, y1: 7, x2: 28, y2: 7, stroke: COLOR.waterLine, 'stroke-width': 1.8, 'stroke-dasharray': '8 2 2 2' })), 'Buried water line');
+  row(s => s.append(svgNode('line', { x1: 2, y1: 7, x2: 28, y2: 7, stroke: COLOR.contour, 'stroke-width': 1 })), '1 ft contour, ground before the pads');
+  row(s => { s.append(svgNode('circle', { cx: 15, cy: 7, r: 6, fill: '#2C2C2A' })); s.append(svgNode('text', { x: 15, y: 10, 'text-anchor': 'middle', 'font-size': 8, style: 'fill:#fff;font-weight:700' }, '6')); }, 'Item number (inventory)');
+}
+
+const nearestPair = (a, b) => {
+  const pick = (a0, a1, b0, b1) => a1 < b0 ? [a1, b0] : b1 < a0 ? [a0, b1] : [(Math.max(a0, b0) + Math.min(a1, b1)) / 2, (Math.max(a0, b0) + Math.min(a1, b1)) / 2];
+  const [ax, bx] = pick(a.x0, a.x1, b.x0, b.x1), [ay, by] = pick(a.y0, a.y1, b.y0, b.y1);
+  return { ax, ay, bx, by, gap: Math.hypot(bx - ax, by - ay) };
+};
+
+function renderInventory() {
+  const table = document.getElementById('inventory'), head = element('tr');
+  [['#', 'key'], ['Item', ''], ['Size, ft', 'num'], ['Cell', ''], ['Center x, y', 'num'], ['Ground, ft', 'num']].forEach(([h, c]) => { const th = element('th', h); if (c) th.className = c; head.append(th); });
+  const thead = element('thead'); thead.append(head); table.append(thead);
+  const tbody = element('tbody');
+  const area = pts => Math.abs(pts.reduce((sum, [x, y], i) => { const [x2, y2] = pts[(i + 1) % pts.length]; return sum + x * y2 - x2 * y; }, 0)) / 2;
+  const sizeText = f => {
+    if (f.shape === 'circle') return `${fmt(2 * f.r)} across`;
+    if (f.shape === 'line') return `${fmt(f.width)} wide, ${fmt(Math.round(pathLength(f.pts) / 10) * 10)} long`;
+    if (f.shape === 'polygon' && f.group === 'access') return `${fmt(Math.round(area(f.pts) / 100) * 100)} sq ft`;
+    const [w, h] = SG.size(f); return `${fmt(w, w % 1 ? 1 : 0)} × ${fmt(h, h % 1 ? 1 : 0)}`;
+  };
+  const rows = [['1', 'shed'], ['2', 'outhouse'], ['3', 'container_solar'], ['3', 'container_storage'], ['4', 'house_pad'], ['4', 'house'], ['4', 'garage'],
+    ['5', 'irrigation_tank'], ['6', 'pump_house'], ['7', 'workshop_pad'], ['7', 'workshop'], ['8', 'rv_pad'], ['8', 'rv'], ['9', 'driveway'], ['9', 'yard'], ['9', 'loop_path'], ['', 'water_line_west']];
+  rows.forEach(([key, id]) => {
+    const f = F(id), [cx, cy] = SG.center(f), tr = element('tr');
+    if (f.status === 'planned') tr.className = 'planned';
+    const name = id === 'driveway' ? 'Driveway (north road to the pad)' : id === 'water_line_west' ? 'Buried water line (covered trench)' : f.name;
+    const along = id === 'driveway' || id === 'water_line_west';
+    const ends = f.shape === 'line' ? f.pts.filter(([x, y]) => SG.inLot(x, y)).map(([x, y]) => SG.cellOf(x, y)) : [];
+    [[key, 'key'], [name, ''], [sizeText(f), 'num'], [ends.length ? `${ends[0]} → ${ends[ends.length - 1]}` : SG.cellOf(cx, cy), ''],
+      [along ? '—' : `${fmt(cx)}, ${fmt(cy)}`, 'num'],
+      [along ? '—' : fmt(SG.elevationFt(cx, cy), 1), 'num']]
+      .forEach(([v, c]) => { const td = element('td', v); if (c) td.className = c; tr.append(td); });
+    tbody.append(tr);
+  });
+  table.append(tbody);
+}
+
+function renderDistances() {
+  const table = document.getElementById('distances'), head = element('tr');
+  [['From → to', ''], ['Gap, ft', 'num'], ['Ground at the far end', 'num']].forEach(([h, c]) => { const th = element('th', h); if (c) th.className = c; head.append(th); });
+  const thead = element('thead'); thead.append(head); table.append(thead);
+  const tbody = element('tbody');
+  [['Pump house → house (planned)', 'pump_house', 'house'], ['Pump house → garage (planned)', 'pump_house', 'garage'],
+    ['Pump house → workshop (planned)', 'pump_house', 'workshop'], ['Pump house → RV', 'pump_house', 'rv'],
+    ['Pump house → shed', 'pump_house', 'shed'], ['Tank → orchard block (R1 row)', 'irrigation_tank', 'orchard_block'],
+    ['House pad → low point (NW corner)', 'house_pad', 'low_point']].forEach(([name, a, b]) => {
+    const p = nearestPair(SG.bbox(a), SG.bbox(b)), dz = SG.elevationFt(p.bx, p.by) - SG.elevationFt(p.ax, p.ay), tr = element('tr');
+    [[name, ''], [fmt(p.gap), 'num'], [`${Math.abs(dz) < 0.05 ? 'level' : `${fmt(Math.abs(dz), 1)} ft ${dz > 0 ? 'higher' : 'lower'}`}`, 'num']]
+      .forEach(([v, c]) => { const td = element('td', v); if (c) td.className = c; tr.append(td); });
+    tbody.append(tr);
+  });
+  table.append(tbody);
+}
+
+function renderNotes() {
+  const entrance = SG.toLatLon(F('driveway_entrance').x, F('driveway_entrance').y);
+  [
+    'Placed from the owner\'s drone photos (October 2026), fitted to USGS aerial imagery and lidar: buildings, containers, tank, and pump house to about 3 ft; pad edges and paths to 5–10 ft.',
+    'Planned house (40 × 66), garage (east end, flush with the house\'s south wall, about 30 × 26 placeholder), and workshop (32 × 46, long side east–west) are drawn where the owner described them; move them in data/site_grid.js once their final spots are staked.',
+    'Old ditch: the lidar, flown before the pads were graded, shows a shallow ditch with a berm on its north side running west along the north edge of the house pad and past the containers. If any of it remains, grade so runoff passes around the house, containers, and pump house, not against them.',
+    'The covered trench about 20 ft inside the west fence is a buried water line, not a path. Keep fence posts, tree holes, and other digging off it; its ends beyond the photo are not traced yet.',
+    'The homestead sits near the top of the lot: the house pad is about 1–2 ft below the highest ground (east fence) and roughly 20 ft above the NW corner, so water lines to the orchard run downhill.'
+  ].forEach(t => document.getElementById('notes').append(element('li', t)));
+  document.getElementById('coords-note').textContent = `Coordinates are feet east of the west fence (x) and feet south of the north fence (y); the driveway entrance on the north road is at ${entrance[0].toFixed(5)}, ${entrance[1].toFixed(5)}. Ground elevations are from USGS lidar flown before the pads were graded.`;
+}
+
+try {
+  if (!window.SiteGrid || !window.SITE_TERRAIN) throw new Error('the site data files (data/site_grid.js, data/site_terrain.js) did not load');
+  document.getElementById('map').append(makeMap());
+  renderLegend(); renderInventory(); renderDistances(); renderNotes();
+} catch (error) {
+  const box = document.getElementById('render-error');
+  box.hidden = false;
+  box.textContent = `Could not build the page: ${error.message}`;
+  console.error(error);
+}
+</script>
+</body>
+</html>

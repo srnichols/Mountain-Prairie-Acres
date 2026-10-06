@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Site Master Grid — Mountain Prairie Acres</title>
+<style>
+  :root {
+    --bg: #ffffff; --bg2: #f5f4f0; --bg3: #eae8e1;
+    --text: #2C2C2A; --text2: #5F5E5A; --text3: #888780;
+    --border: #d3d1c7; --link: #185FA5; --water: #2B8FD6; --accent: #3B6D11;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.5;
+    padding: 20px; max-width: 1400px; margin: 0 auto;
+  }
+  a { color: var(--link); }
+  h1 { font-size: 22px; font-weight: 600; }
+  h3 { font-size: 13px; font-weight: 600; margin: 12px 0 4px; color: var(--text2); }
+  aside h3:first-child { margin-top: 0; }
+  p, li { font-size: 12px; }
+  .subtitle { font-size: 13px; color: var(--text2); margin: 2px 0 12px; }
+  .source-note { font-size: 11px; color: var(--text2); }
+  .notice { background: var(--bg2); border-left: 4px solid #BA7517; border-radius: 4px; padding: 8px 12px; margin: 0 0 12px; font-size: 12px; }
+  .notice.error { border-left-color: #E24B4A; }
+
+  .sheet-body { display: grid; grid-template-columns: minmax(300px, 0.8fr) minmax(0, 1.2fr); gap: 18px; align-items: start; }
+  .map svg { display: block; width: 100%; height: auto; }
+  figure figcaption { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .diagram text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: #2C2C2A; }
+  .diagram .t-title { font-weight: 600; }
+  .diagram .t-note { fill: #5F5E5A; }
+  .diagram .t-water { fill: #0B5F7C; font-weight: 600; }
+  .diagram .halo { paint-order: stroke; stroke: #fff; stroke-width: 2.4px; stroke-linejoin: round; }
+
+  .facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+  .fact { background: var(--bg2); border-radius: 6px; padding: 6px 8px; }
+  .fact .label { font-size: 9.5px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.4px; }
+  .fact .value { font-size: 13px; font-weight: 600; }
+  .fact .hint { font-size: 10px; color: var(--text2); line-height: 1.3; }
+  .howto { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: center; }
+  .howto svg { width: 150px; height: auto; }
+  table.detail { width: 100%; border-collapse: collapse; font-size: 11px; margin: 4px 0 8px; }
+  table.detail th { background: var(--bg3); text-align: left; padding: 3px 6px; font-weight: 500; border: 1px solid var(--border); }
+  table.detail td { padding: 3px 6px; border: 1px solid var(--border); vertical-align: top; }
+  table.detail td.num, table.detail th.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  table.detail tr.group td { background: var(--bg2); font-weight: 600; color: var(--text2); }
+  table.detail tr.planned td { color: #4E3A68; }
+  code, pre { font-family: Consolas, "SF Mono", Menlo, monospace; font-size: 11px; }
+  pre { background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; padding: 6px 8px; margin: 4px 0 8px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  ul.notes { font-size: 11.5px; padding-left: 16px; }
+  ul.notes li { margin: 3px 0; font-size: 11.5px; }
+  footer { margin-top: 18px; padding-top: 8px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text3); }
+
+  @media screen and (max-width: 900px) {
+    .sheet-body { grid-template-columns: 1fr; }
+  }
+  @page {
+    size: 11in 17in;
+    margin: 9mm 9mm 11mm;
+    @bottom-left { content: "Mountain Prairie Acres - Site master grid"; font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+  }
+  @media print {
+    body { padding: 0; margin: 0; max-width: none; font-size: 8.5pt; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    .print-help { display: none; }
+    h1 { font-size: 15pt; } h3 { font-size: 9.5pt; margin: 2.2mm 0 0.8mm; }
+    p, li, ul.notes li { font-size: 7.8pt; line-height: 1.32; }
+    .subtitle { font-size: 8.5pt; margin-bottom: 1.5mm; }
+    .sheet-body { grid-template-columns: 4.55in minmax(0, 1fr); gap: 6mm; }
+    .map svg { max-height: 15.25in; width: auto; max-width: 100%; }
+    figure figcaption { font-size: 9pt; margin-bottom: 1mm; }
+    .fact { padding: 1.2mm 1.8mm; } .fact .value { font-size: 9.5pt; } .fact .label { font-size: 6.5pt; } .fact .hint { font-size: 7pt; }
+    .howto svg { width: 1.25in; }
+    table.detail { font-size: 6.8pt; margin: 1mm 0 1.5mm; } table.detail th, table.detail td { padding: 0.2mm 1.1mm; line-height: 1.25; }
+    table.detail code { font-size: 6.1pt; color: #6F6D66; }
+    table.detail tr { break-inside: avoid; }
+    code, pre { font-size: 7pt; } pre { padding: 1mm 1.5mm; margin: 0.8mm 0 1.5mm; }
+    .source-note { font-size: 7.2pt; }
+    a { text-decoration: none; color: inherit; }
+    footer { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="notice print-help" role="note"><strong>Print setup:</strong> Tabloid / Ledger (11 × 17 in), portrait, 100% scale. Turn on background graphics and turn off the browser's headers and footers. <a href="index.html">Back to the project home page</a>.</div>
+<noscript><div class="notice error">JavaScript is required to draw the grid and tables.</div></noscript>
+<div class="notice error" id="render-error" hidden></div>
+
+<section aria-labelledby="page-title">
+  <h1 id="page-title">Mountain Prairie Acres: Site Master Grid</h1>
+  <p class="subtitle">One coordinate system for every project on the property: lot feet from the northwest fence corner, 50 ft cells A–G by 1–26, tied to latitude and longitude. Pages and code helpers all read the same data file.</p>
+  <div class="sheet-body">
+    <figure class="map"><figcaption>Whole lot, north up, 50 ft cells</figcaption><div id="map"></div></figure>
+    <aside>
+      <h3>Reading a grid reference</h3>
+      <div class="howto">
+        <div id="howto-diagram"></div>
+        <div>
+          <p><strong>Lot feet:</strong> <em>x</em> is feet east of the west fence, <em>y</em> is feet south of the north fence. The origin (0, 0) is the northwest fence corner, and the fences run true north–south and east–west.</p>
+          <p><strong>Cells:</strong> a column letter (A–G, west to east) plus a row number (1–26, north to south). Each cell is 50 × 50 ft, so <em>B19</em> is x 50–100, y 900–950. Write a spot as <em>B19 (x 63, y 921)</em>.</p>
+        </div>
+      </div>
+      <h3>Lot and location</h3>
+      <div class="facts" id="facts"></div>
+      <h3>Feature coordinates</h3>
+      <table class="detail" id="features"></table>
+      <h3>Using the grid in code</h3>
+      <p>Web pages load <code>data/site_grid.js</code> (grid, features, latitude/longitude tie) and <code>data/site_terrain.js</code> (lidar elevations), then call <code>SiteGrid</code>:</p>
+      <pre id="code-js"></pre>
+      <p>Scripts and the command line use <code>tools/site_grid.py</code>, which reads the same files:</p>
+      <pre id="code-py"></pre>
+      <h3>Conventions</h3>
+      <ul class="notes" id="conventions"></ul>
+    </aside>
+  </div>
+</section>
+
+<footer>Mountain Prairie Acres · Prairie, Idaho · <a href="index.html">Project home</a> · <a href="homestead_plot_map.html">Homestead plot map</a> · <a href="site_terrain_water_map.html">Whole-site terrain and water maps</a> · <a href="https://github.com/srnichols/Mountain-Prairie-Acres">GitHub</a></footer>
+
+<script src="data/site_grid.js"></script>
+<script src="data/site_terrain.js"></script>
+<script>
+'use strict';
+const SVG_NS = 'http://www.w3.org/2000/svg';
+function svgNode(tag, attrs = {}, text) {
+  const node = document.createElementNS(SVG_NS, tag);
+  Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+function element(tag, text, className) {
+  const node = document.createElement(tag);
+  if (text !== undefined && text !== null) node.textContent = text;
+  if (className) node.className = className;
+  return node;
+}
+const fmt = (value, digits = 0) => Number(value).toLocaleString('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits });
+const SG = window.SiteGrid, F = id => SG.feature(id);
+const COLOR = { road: '#DDD0B8', roadEdge: '#B6A385', pad: '#EEE4CF', padEdge: '#A8906A', fence: '#6B5A45', planned: '#7A5CA5',
+  orchard: '#B07A3E', windbreak: '#5E8F3E', ditch: '#2B8FD6', waterLine: '#1B4F9C', contour: '#B4A48F' };
+
+function makeMap() {
+  const lot = SG.data.lot.fence, cols = SG.data.grid.columns, rows = SG.data.grid.rows;
+  const V = { west: -34, east: lot.width + 40, top: -46, bottom: 1340 }, S = 0.62;
+  const X = x => +((x - V.west) * S).toFixed(2), Y = y => +((y - V.top) * S).toFixed(2);
+  const svg = svgNode('svg', { viewBox: `0 0 ${(V.east - V.west) * S} ${(V.bottom - V.top) * S}`, class: 'diagram', role: 'img', 'aria-labelledby': 'grid-title' });
+  svg.append(svgNode('title', { id: 'grid-title' }, `The whole lot, ${fmt(lot.width)} by ${fmt(lot.depth)} ft, divided into 50 ft cells A–G west to east and 1–26 north to south, with the roads, driveway, orchard block, homestead, and high and low points.`));
+  const defs = svgNode('defs'), clip = svgNode('clipPath', { id: 'mg-lot' });
+  clip.append(svgNode('rect', { x: X(0), y: Y(0), width: lot.width * S, height: lot.depth * S }));
+  defs.append(clip); svg.append(defs);
+  const add = (node, parent = svg) => { parent.append(node); return node; };
+  const d = pts => pts.map(([x, y], i) => `${i ? 'L' : 'M'}${X(x)},${Y(y)}`).join('');
+  const line = (pts, attrs, parent = svg) => add(svgNode('path', { d: d(pts), fill: 'none', ...attrs }), parent);
+  const box = (f, attrs, parent = svg) => add(svgNode('rect', { x: X(f.x0), y: Y(f.y0), width: (f.x1 - f.x0) * S, height: (f.y1 - f.y0) * S, ...attrs }), parent);
+  const text = (x, y, str, attrs = {}, parent = svg) => add(svgNode('text', { x: X(x), y: Y(y), 'font-size': 7, ...attrs }, str), parent);
+  const inLot = add(svgNode('g', { 'clip-path': 'url(#mg-lot)' }));
+
+  add(svgNode('rect', { x: X(0), y: Y(0), width: lot.width * S, height: lot.depth * S, fill: '#F7F5EE' }), inLot);
+  // Faint 1 m contours for context
+  (window.SITE_TERRAIN ? window.SITE_TERRAIN.contours : []).forEach(c => line(c.p, { stroke: COLOR.contour, 'stroke-width': 0.6 }, inLot));
+  // Roads
+  ['road_north', 'road_south'].forEach(id => line(F(id).pts, { stroke: '#D9D6CE', 'stroke-width': F(id).width * S }));
+  text(lot.width / 2, F('road_north').pts[0][1] + 2.5, 'NORTH ROAD', { 'text-anchor': 'middle', class: 't-title', 'font-size': 6.5 });
+  text(lot.width / 2, F('road_south').pts[0][1] + 4, 'SOUTH ROAD', { 'text-anchor': 'middle', class: 't-title', 'font-size': 6.5 });
+  // Orchard
+  box(F('windbreak'), { fill: COLOR.windbreak, opacity: 0.22 }, inLot);
+  box(F('orchard_area'), { fill: 'none', stroke: COLOR.fence, 'stroke-width': 0.7, 'stroke-dasharray': '4 3' }, inLot);
+  box(F('orchard_block'), { fill: 'rgba(176,122,62,0.10)', stroke: COLOR.orchard, 'stroke-width': 1.1 }, inLot);
+  // Road mix, pads, and buildings
+  const drives = ['driveway', 'loop_path', 'path_workshop', 'path_rv'].map(F);
+  add(svgNode('path', { d: `${d(F('yard').pts)}Z`, fill: COLOR.road, stroke: 'none' }), inLot);
+  drives.forEach(f => line(f.pts, { stroke: COLOR.road, 'stroke-width': f.width * S, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, inLot));
+  add(svgNode('path', { d: `${d(F('house_pad').pts)}Z`, fill: COLOR.pad, stroke: COLOR.padEdge, 'stroke-width': 0.6 }), inLot);
+  ['workshop_pad', 'rv_pad'].forEach(id => box(F(id), { fill: COLOR.pad, stroke: COLOR.padEdge, 'stroke-width': 0.6 }, inLot));
+  line(F('old_ditch').pts, { stroke: COLOR.ditch, 'stroke-width': 1, 'stroke-dasharray': '4 2.5', opacity: 0.8 }, inLot);
+  line(F('water_line_west').pts, { stroke: COLOR.waterLine, 'stroke-width': 1.1, 'stroke-dasharray': '6 2 1.5 2' }, inLot);
+  ['house', 'garage', 'workshop'].forEach(id => box(F(id), { fill: 'none', stroke: COLOR.planned, 'stroke-width': 0.8, 'stroke-dasharray': '2.5 1.5' }, inLot));
+  [['shed', '#A9372B'], ['outhouse', '#2F6EB5'], ['container_solar', '#2F4A6E'], ['container_storage', '#BDBDB5'], ['pump_house', '#5D6D7E'], ['rv', '#FFFFFF']]
+    .forEach(([id, fill]) => box(F(id), { fill, stroke: '#3D3D3A', 'stroke-width': 0.4 }, inLot));
+  const tank = F('irrigation_tank');
+  add(svgNode('circle', { cx: X(tank.cx), cy: Y(tank.cy), r: tank.r * S, fill: '#1E1E1E' }), inLot);
+
+  // The 50 ft master grid, with every cell labeled
+  for (let c = 1; c * 50 < lot.width; c++) line([[c * 50, 0], [c * 50, lot.depth]], { stroke: 'rgba(40,40,40,0.38)', 'stroke-width': 0.55 }, inLot);
+  for (let r = 1; r * 50 < lot.depth; r++) line([[0, r * 50], [lot.width, r * 50]], { stroke: 'rgba(40,40,40,0.38)', 'stroke-width': r % 2 ? 0.55 : 0.8 }, inLot);
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols.length; c++) {
+    if (c * 50 + 4 > lot.width || r * 50 + 4 > lot.depth) continue;
+    text(c * 50 + 2, r * 50 + 8.5, `${cols[c]}${r + 1}`, { 'font-size': 5.6, style: 'fill:#8B897F' }, inLot);
+  }
+  add(svgNode('rect', { x: X(0), y: Y(0), width: lot.width * S, height: lot.depth * S, fill: 'none', stroke: COLOR.fence, 'stroke-width': 1.6 }));
+
+  // Labels for the main features
+  const label = (x, y, str, cls = 't-title', size = 6.6, anchor = 'middle') => text(x, y, str, { class: `${cls} halo`, 'font-size': size, 'text-anchor': anchor }, inLot);
+  label((F('orchard_block').x0 + F('orchard_block').x1) / 2, 442, 'orchard block R1–R15', 't-title', 6.8);
+  label(17.5, 612, 'windbreak', 't-note', 5.8);
+  label(150, 596, '600 ft line', 't-note', 5.6, 'start');
+  label(72, 763, 'shed', 't-title', 6.2, 'end');
+  label(168, 980, 'house pad', 't-title', 6.2);
+  label(61, 836, 'workshop pad', 't-note', 5.6);
+  label(286, 420, 'driveway', 't-note', 6, 'end');
+  label(236, 908, 'old ditch (lidar)', 't-water', 5.6, 'start');
+  const hi = F('high_point'), lo = F('low_point');
+  add(svgNode('path', { d: `M${X(hi.x - 6)},${Y(hi.y + 5)} l${3.6},${-8} l${3.6},${8} z`, fill: '#2C2C2A' }), inLot);
+  label(hi.x - 10, hi.y + 3, `high point ${fmt(SG.elevationFt(hi.x, hi.y))} ft`, 't-title', 5.8, 'end');
+  add(svgNode('path', { d: `M${X(lo.x + 2)},${Y(lo.y - 5)} l${3.6},${8} l${3.6},${-8} z`, fill: '#2C2C2A' }), inLot);
+  label(lo.x + 10, lo.y + 3, `low point ${fmt(SG.elevationFt(lo.x, lo.y))} ft`, 't-title', 5.8, 'start');
+
+  // Margins: column letters, row numbers, foot marks, north arrow, scale bar
+  for (let c = 0; c < cols.length; c++) {
+    const x = Math.min(c * 50 + 25, (c * 50 + lot.width) / 2);
+    text(x, -27, cols[c], { 'text-anchor': 'middle', 'font-size': 8, class: 't-title' });
+    text(x, lot.depth + 26, cols[c], { 'text-anchor': 'middle', 'font-size': 8, class: 't-title' });
+  }
+  for (let r = 0; r < rows; r++) {
+    const y = Math.min(r * 50 + 25, (r * 50 + lot.depth) / 2) + 2.5;
+    text(-11, y, String(r + 1), { 'text-anchor': 'middle', 'font-size': 7.5, class: 't-title' });
+    text(lot.width + 11, y, String(r + 1), { 'text-anchor': 'middle', 'font-size': 7.5, class: 't-title' });
+  }
+  for (let x = 0; x <= 300; x += 100) text(x, -38, `x ${x}`, { 'text-anchor': 'middle', 'font-size': 5.2, class: 't-note' });
+  const ax = X(lot.width + 27), ay = Y(-26);
+  add(svgNode('path', { d: `M${ax},${ay - 9} l4,9 l-4,-2.5 l-4,2.5 z`, fill: '#2C2C2A' }));
+  text(lot.width + 27, -9, 'N', { 'text-anchor': 'middle', 'font-size': 7, class: 't-title' });
+  const sy = lot.depth + 32;
+  [[0, 50, '#2C2C2A'], [50, 100, '#fff']].forEach(([a, b, fill]) => add(svgNode('rect', { x: X(a), y: Y(sy - 2), width: (b - a) * S, height: 4 * S, fill, stroke: '#2C2C2A', 'stroke-width': 0.6 })));
+  text(108, sy + 2, '100 ft', { 'font-size': 6.4, class: 't-note' });
+  text(lot.width, sy + 2, `fence ${fmt(lot.width, 1)} × ${fmt(lot.depth, 1)} ft`, { 'font-size': 6.4, class: 't-note', 'text-anchor': 'end' });
+  return svg;
+}
+
+function renderHowTo() {
+  const svg = svgNode('svg', { viewBox: '0 0 150 112', class: 'diagram', role: 'img', 'aria-label': 'Cell B19 spans x 50 to 100 and y 900 to 950; the irrigation tank at x 63, y 921 sits in it.' });
+  const add = n => { svg.append(n); return n; };
+  add(svgNode('rect', { x: 30, y: 22, width: 100, height: 80, fill: '#F7F5EE', stroke: '#6B5A45', 'stroke-width': 1.2 }));
+  add(svgNode('text', { x: 80, y: 66, 'text-anchor': 'middle', 'font-size': 18, style: 'fill:#C9C6BC;font-weight:700' }, 'B19'));
+  const tx = 30 + (63 - 50) * 2, ty = 22 + (921 - 900) * 1.6;
+  add(svgNode('circle', { cx: tx, cy: ty, r: 3.5, fill: '#1E1E1E' }));
+  add(svgNode('text', { x: tx + 6, y: ty + 3, 'font-size': 8, class: 't-title' }, 'x 63, y 921'));
+  [['x 50', 30, 16, 'middle'], ['x 100', 130, 16, 'middle'], ['y 900', 26, 26, 'end'], ['y 950', 26, 104, 'end']]
+    .forEach(([s, x, y, a]) => add(svgNode('text', { x, y, 'text-anchor': a, 'font-size': 8, class: 't-note' }, s)));
+  add(svgNode('path', { d: 'M136,30 l4,9 l-4,-2.5 l-4,2.5 z', fill: '#2C2C2A' }));
+  add(svgNode('text', { x: 136, y: 50, 'text-anchor': 'middle', 'font-size': 8, class: 't-title' }, 'N'));
+  document.getElementById('howto-diagram').append(svg);
+}
+
+function renderFacts() {
+  const lot = SG.data.lot, g = SG.data.georef, nw = SG.toLatLon(0, 0), ent = F('driveway_entrance'), entLL = SG.toLatLon(ent.x, ent.y);
+  const facts = [
+    ['Fenced lot', `${fmt(lot.fence.width, 1)} × ${fmt(lot.fence.depth, 1)} ft`, `${fmt(lot.fence.acres, 2)} acres inside the fence`],
+    ['Likely parcel', '330 × 1,320 ft (10 ac)', 'to the road centerlines; not surveyed'],
+    ['Origin (0, 0)', `${nw[0].toFixed(5)}, ${nw[1].toFixed(5)}`, 'northwest fence corner (NAD83 / GPS)'],
+    ['Driveway entrance', `${entLL[0].toFixed(5)}, ${entLL[1].toFixed(5)}`, null],
+    ['Lot axes', `x runs ${fmt(g.x_axis_true_bearing_deg, 1)}° true`, 'within 0.2° of due east; y is due south'],
+    ['Position accuracy', `about ${g.accuracy_ft} ft`, 'USGS NAIP-based; a shed GPS pin checks within 5 ft']
+  ];
+  facts.forEach(([label, value, hint]) => {
+    const card = element('div', null, 'fact');
+    card.append(element('div', label, 'label'), element('div', value, 'value'));
+    if (hint) card.append(element('div', hint, 'hint'));
+    else {
+      const h = element('div', null, 'hint'), a = element('a', 'open in Google Maps');
+      a.href = SG.mapsLink(ent.x, ent.y); h.append(a, document.createTextNode(' (for directions)')); card.append(h);
+    }
+    document.getElementById('facts').append(card);
+  });
+}
+
+function cellRange(f) {
+  const cells = SG.cellsOf(f);
+  if (!cells.length) return 'off grid';
+  if (cells.length <= 2) return cells.join(', ');
+  if (f.shape === 'line') {
+    const ends = f.pts.filter(([x, y]) => SG.inLot(x, y)).map(([x, y]) => SG.cellOf(x, y));
+    if (ends.length) return `${ends[0]} → ${ends[ends.length - 1]}`;
+  }
+  const cs = cells.map(c => SG.data.grid.columns.indexOf(c[0])), rs = cells.map(c => +c.slice(1));
+  const cols = SG.data.grid.columns;
+  return `${cols[Math.min(...cs)]}${Math.min(...rs)}–${cols[Math.max(...cs)]}${Math.max(...rs)}`;
+}
+
+function renderFeatures() {
+  const table = document.getElementById('features'), head = element('tr');
+  [['Feature (id)', ''], ['Cells', ''], ['Center x, y', 'num'], ['Size, ft', 'num'], ['Ground, ft', 'num'], ['Lat, long', 'num']]
+    .forEach(([h, c]) => { const th = element('th', h); if (c) th.className = c; head.append(th); });
+  const thead = element('thead'); thead.append(head); table.append(thead);
+  const tbody = element('tbody');
+  const groups = [['boundary', 'Boundary and access'], ['access', null], ['homestead', 'Homestead'], ['planned', 'Planned buildings'], ['utility', 'Utilities'], ['orchard', 'Orchard'], ['terrain', 'Terrain']];
+  groups.forEach(([group, title]) => {
+    if (title) { const tr = element('tr', null, 'group'); const td = element('td', title); td.colSpan = 6; tr.append(td); tbody.append(tr); }
+    SG.features({ group }).forEach(f => {
+      const [cx, cy] = SG.center(f), tr = element('tr'), name = element('td');
+      if (f.status === 'planned') tr.className = 'planned';
+      name.append(document.createTextNode(`${f.key ? `${f.key} · ` : ''}${f.name} `), element('code', f.id));
+      const [w, h] = SG.size(f);
+      const area = pts => Math.abs(pts.reduce((sum, [x, y], i) => { const [x2, y2] = pts[(i + 1) % pts.length]; return sum + x * y2 - x2 * y; }, 0)) / 2;
+      const size = f.shape === 'point' ? '—' : f.shape === 'line' ? `${fmt(f.width)} wide` : f.shape === 'circle' ? `${fmt(w)} across`
+        : f.shape === 'polygon' && f.group === 'access' ? `${fmt(Math.round(area(f.pts) / 100) * 100)} sq ft` : `${fmt(w, w % 1 ? 1 : 0)} × ${fmt(h, h % 1 ? 1 : 0)}`;
+      const inside = SG.inLot(cx, cy) && f.id !== 'fence';
+      const ll = SG.toLatLon(cx, cy);
+      tr.append(name);
+      [[cellRange(f), ''], [`${fmt(cx)}, ${fmt(cy)}`, 'num'], [size, 'num'], [inside ? fmt(SG.elevationFt(cx, cy), 1) : '—', 'num'], [`${ll[0].toFixed(5)}, ${ll[1].toFixed(5)}`, 'num']]
+        .forEach(([v, c]) => { const td = element('td', v); if (c) td.className = c; tr.append(td); });
+      tbody.append(tr);
+    });
+  });
+  table.append(tbody);
+}
+
+function renderCode() {
+  const b = SG.cellBounds('B19'), c = SG.center('pump_house'), ll = SG.toLatLon(63, 921), pin = SG.fromLatLon(43.473383, -115.594507);
+  const js = [
+    ['SiteGrid.cellOf(63, 921)', `'${SG.cellOf(63, 921)}'`],
+    ["SiteGrid.cellBounds('B19')", `{ x0: ${b.x0}, y0: ${b.y0}, x1: ${b.x1}, y1: ${b.y1} }`],
+    ["SiteGrid.center('pump_house')", `[${c[0]}, ${c[1]}]`],
+    ["SiteGrid.cellsOf('house_pad')", `['${SG.cellsOf('house_pad').join("', '")}']`],
+    ['SiteGrid.elevationFt(63, 921)', `${SG.elevationFt(63, 921).toFixed(1)} (feet above sea level)`],
+    ['SiteGrid.toLatLon(63, 921)', `[${ll[0].toFixed(6)}, ${ll[1].toFixed(6)}]`],
+    ['SiteGrid.fromLatLon(43.473383, -115.594507)', `[${pin[0].toFixed(1)}, ${pin[1].toFixed(1)}] (a GPS pin on the shed)`],
+    ['SiteGrid.treeXY(5, 3)', `[${SG.treeXY(5, 3).join(', ')}] (orchard tree R5-C3, cell ${SG.cellOf(...SG.treeXY(5, 3))})`],
+    ['SiteGrid.mapsLink(63, 921)', 'Google Maps link to that spot']
+  ].map(([call, value]) => `${call.padEnd(45)}// ${value}`);
+  document.getElementById('code-js').textContent = ['<script src="data/site_grid.js"></' + 'script>', '<script src="data/site_terrain.js"></' + 'script>', '', ...js].join('\n');
+  document.getElementById('code-py').textContent = [
+    'python tools/site_grid.py cell 63 921             # B19',
+    'python tools/site_grid.py where B19               # cell bounds and the features in it',
+    'python tools/site_grid.py feature pump_house      # center, size, cells, ground, lat/long',
+    'python tools/site_grid.py dist pump_house house   # gap and ground change',
+    'python tools/site_grid.py tree 5 3                # orchard tree R5-C3: x, y, cell, ground',
+    'python tools/site_grid.py fromlatlon 43.473383 -115.594507',
+    'from site_grid import SiteGrid; grid = SiteGrid(); grid.cell_of(63, 921); grid.elevation_ft(63, 921)'
+  ].join('\n');
+}
+
+function renderConventions() {
+  [
+    'Feet throughout. Elevations are above sea level (NAVD88) from USGS 3DEP lidar flown before the homestead pads were graded.',
+    'Status is existing or planned; planned buildings move once their spots are staked. To add or move something, edit the JSON between the BEGIN and END markers in docs/data/site_grid.js (rect x0/y0/x1/y1, circle cx/cy/r, polygon or line pts, point x/y), then run python -m unittest discover -s tools.',
+    'Latitude and longitude come from the fitted lot frame, good to about 10 ft: fine for maps and directions, not for boundary questions. For precise layout, measure from the fences.'
+  ].forEach(t => document.getElementById('conventions').append(element('li', t)));
+}
+
+try {
+  if (!window.SiteGrid) throw new Error('data/site_grid.js did not load');
+  document.getElementById('map').append(makeMap());
+  renderHowTo(); renderFacts(); renderFeatures(); renderCode(); renderConventions();
+} catch (error) {
+  const box = document.getElementById('render-error');
+  box.hidden = false;
+  box.textContent = `Could not build the page: ${error.message}`;
+  console.error(error);
+}
+</script>
+</body>
+</html>
