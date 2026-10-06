@@ -10,7 +10,8 @@ Orchard and ranch projects for our property in Prairie, Idaho: plans, field chec
 |---|---|---|---|---|
 | Orchard planting, fall 2026 | In progress | [Pollination grid and west windbreak](https://srnichols.github.io/Mountain-Prairie-Acres/orchard_pollination_grid.html) ([PDF](docs/downloads/orchard_pollination_grid.pdf)) · [Metal-tag planting checklist](https://srnichols.github.io/Mountain-Prairie-Acres/metal_tag_planting_checklist.html) ([PDF](docs/downloads/metal_tag_planting_checklist.pdf)) | Plant R2–R12 by metal tag, south to north; hold R1 for grafted rootstock apples; plant the west windbreak, berry guilds, and elderberry hedge | 2026-10-05 |
 | Rain and snowmelt harvesting | Planned | [Water-harvesting plan](https://srnichols.github.io/Mountain-Prairie-Acres/orchard_water_harvesting_plan.html) ([PDF](docs/downloads/orchard_water_harvesting_plan.pdf)) | Perc tests in three spots before freeze-up; shape crescent basins as trees go in; set up a rain gauge; gutters, spreader, and driveway basins in 2027 | 2026-10-06 |
-| Soil and site data | Reference | [NRCS Web Soil Survey report](docs/soil/WebSoilSurvey_PrairieID.pdf) · [SSURGO metadata](docs/soil/) · USGS 1 m terrain (traced into the water plan) | Add perc-test and rain-gauge results as they come in | 2026-10-06 |
+| Whole-site terrain and water maps | Reference | [Site terrain and water maps](https://srnichols.github.io/Mountain-Prairie-Acres/site_terrain_water_map.html) ([PDF](docs/downloads/site_terrain_water_map.pdf)) | Use to site future projects (tank, pond, basins, outbuildings); check key spots with a level | 2026-10-06 |
+| Soil and site data | Reference | [NRCS Web Soil Survey report](docs/soil/WebSoilSurvey_PrairieID.pdf) · [SSURGO metadata](docs/soil/) · USGS 1 m terrain (traced into the water plan and site maps) | Add perc-test and rain-gauge results as they come in | 2026-10-06 |
 | Plant inventory and purchase records | Ongoing | [Inventory_PrairiePlants.xlsx](docs/Inventory_PrairiePlants.xlsx) · [Trees.xlsx](docs/Trees.xlsx) | Keep the inventory current as trees are planted, moved, or lost | 2026-10-04 |
 | First orchard layout | Archived | [Historical orchard overview](https://srnichols.github.io/Mountain-Prairie-Acres/orchard_planting_guide.html) | Replaced by the pollination grid; kept for history | 2026-09-26 |
 
@@ -18,6 +19,7 @@ Status key: **In progress** (work under way), **Planned** (designed, not started
 
 ## Project log
 
+- **2026-10-06**: Added whole-site terrain and water maps: elevation and contours, runoff (6.8 acres drain north, 3.3 south), slope, profiles, and a spot-elevation grid for the whole lot, for planning future projects.
 - **2026-10-06**: Created this repository and website. Added the orchard rain and snowmelt harvesting plan (USGS 1 m terrain, NRCS soil, PRISM climate) and the NRCS Web Soil Survey report for the property.
 - **2026-10-05**: Finished the pollination grid with the west windbreak, and the metal-tag planting checklist for fall planting.
 - **2026-10-04**: Updated the Prairie plant inventory.
@@ -33,6 +35,7 @@ Mountain-Prairie-Acres/
     ├── orchard_pollination_grid.html      Planting map, pollination pairings, windbreak
     ├── metal_tag_planting_checklist.html  Field sheet: metal tag to grid position
     ├── orchard_water_harvesting_plan.html Rain and snowmelt harvesting plan
+    ├── site_terrain_water_map.html        Whole-site elevation, runoff, and slope maps
     ├── orchard_planting_guide.html        First orchard layout (archived)
     ├── Inventory_PrairiePlants.xlsx       What is on the property (linked from the grid)
     ├── Trees.xlsx                         Purchase list and fruit data (linked from the grid)
@@ -51,7 +54,7 @@ Keep vendor catalogs, e-books, and text copied from nursery websites out of this
 
 ## Printing
 
-Each page has its own print setup at the top. The pollination grid prints on Tabloid (11 × 17 in) landscape; the checklist and the water-harvesting plan print on Letter portrait. Turn on background graphics and turn off the browser's headers and footers.
+Each page has its own print setup at the top. The pollination grid and the whole-site maps print on Tabloid (11 × 17 in) landscape; the checklist and the water-harvesting plan print on Letter portrait. Turn on background graphics and turn off the browser's headers and footers.
 
 ## Sources and credits
 
