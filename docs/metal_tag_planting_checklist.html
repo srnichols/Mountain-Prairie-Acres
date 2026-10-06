@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Metal Tag to Orchard Position — Planting Checklist</title>
+<style>
+  :root {
+    --text: #20251f;
+    --muted: #555d54;
+    --border: #9da59c;
+    --header: #e8eee6;
+    --row: #f7f9f6;
+    --accent: #3b6d11;
+  }
+  * { box-sizing: border-box; }
+  body {
+    max-width: 8.5in;
+    margin: 0 auto;
+    padding: 0.45in;
+    color: var(--text);
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+    line-height: 1.25;
+  }
+  h1 {
+    margin: 0 0 0.08in;
+    font-size: 18pt;
+    line-height: 1.1;
+  }
+  .subtitle {
+    margin: 0 0 0.16in;
+    color: var(--muted);
+    font-size: 9.5pt;
+  }
+  .instructions {
+    margin: 0 0 0.18in;
+    padding: 0.12in 0.15in;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    background: var(--row);
+  }
+  .instructions p { margin: 0; }
+  .instructions p + p { margin-top: 0.06in; }
+  .print-help {
+    margin: 0 0 0.18in;
+    padding: 0.1in 0.15in;
+    background: #fff3cd;
+    border: 1px solid #d6b656;
+  }
+  .status {
+    margin: 0.12in 0;
+    color: var(--muted);
+    font-style: italic;
+  }
+  .error {
+    color: #8b1e16;
+    background: #fbe9e7;
+    border: 1px solid #d78d86;
+    padding: 0.12in;
+    font-style: normal;
+    font-weight: bold;
+  }
+  .source-frame {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    border: 0;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    overflow: hidden;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 9pt;
+  }
+  col:nth-child(1) { width: 8%; }
+  col:nth-child(2) { width: 13%; }
+  col:nth-child(3) { width: 25%; }
+  col:nth-child(4) { width: 10%; }
+  col:nth-child(5) { width: 34%; }
+  col:nth-child(6) { width: 10%; }
+  th, td {
+    padding: 0.055in 0.065in;
+    border: 1px solid var(--border);
+    text-align: left;
+    vertical-align: middle;
+    overflow-wrap: anywhere;
+  }
+  th {
+    background: var(--header);
+    font-weight: bold;
+  }
+  tbody tr:nth-child(even) td { background: var(--row); }
+  tbody tr.row-start td { border-top: 3px solid #50584f; }
+  tbody tr { break-inside: avoid; }
+  thead { display: table-header-group; }
+  .plant-check {
+    width: 0.17in;
+    height: 0.17in;
+    margin: 0;
+    vertical-align: middle;
+    accent-color: var(--accent);
+  }
+  .metal-tag {
+    font-size: 10pt;
+    font-weight: bold;
+    letter-spacing: 0.1px;
+    white-space: nowrap;
+  }
+  .duplicate-tag {
+    display: block;
+    margin-top: 1px;
+    color: var(--muted);
+    font-size: 7.5pt;
+    font-weight: normal;
+    line-height: 1.15;
+    white-space: normal;
+  }
+  .source-note {
+    color: var(--muted);
+    font-size: 7.5pt;
+    line-height: 1.15;
+  }
+  @page {
+    size: 8.5in 11in;
+    margin: 0.38in;
+  }
+  @media print {
+    body {
+      max-width: none;
+      margin: 0;
+      padding: 0;
+      font-size: 9pt;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+    h1 { font-size: 16pt; }
+    .print-help, .status { display: none; }
+    .instructions { break-inside: avoid; }
+    table { font-size: 8.25pt; }
+    th, td { padding: 0.035in 0.05in; }
+    .metal-tag { font-size: 9pt; }
+    .duplicate-tag, .source-note { font-size: 7pt; }
+  }
+</style>
+</head>
+<body>
+<h1>Metal Tag to Orchard Position — Planting Checklist</h1>
+<p class="subtitle">Dedicated field sheet for the Prairie Plants orchard grid</p>
+
+<div class="print-help"><strong>Print setup:</strong> Letter (8.5 × 11 in), portrait, 100% scale. Turn off browser headers and footers. Background graphics are optional.</div>
+
+<section class="instructions" aria-label="Planting directions">
+  <p><strong>Rows:</strong> Start at the south end with R1 and work north toward R15.</p>
+  <p><strong>Columns:</strong> Within each row, start at C1 on the west/windbreak side and work east toward C13.</p>
+  <p><strong>Match:</strong> Use the exact metal <strong>Tag ID</strong> first. Tree name, code, and inventory row are cross-checks. When one Tag ID covers several trees, use the printed sequence for those otherwise identical trees.</p>
+</section>
+
+<p class="status">114 orchard trees in planting order.</p>
+<main id="checklist">
+<table aria-label="Metal tag to orchard position planting checklist">
+<colgroup><col><col><col><col><col><col></colgroup>
+<thead><tr><th>Planted</th><th>Grid position</th><th>Metal Tag ID</th><th>Code</th><th>Tree</th><th>Inventory row</th></tr></thead>
+<tbody>
+<tr class="row-start"><td><input class="plant-check" type="checkbox" aria-label="Planted R2-C1 Foxwhelp Cider Apple"></td><td><strong>R2-C1</strong></td><td><span class="metal-tag">AL-Foxwhelp</span></td><td><strong>FOX</strong></td><td><strong>Foxwhelp Cider Apple</strong><div class="source-note">Inventory name: Foxwhelp Cider</div></td><td>39</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R2-C2 Braeburn"></td><td><strong>R2-C2</strong></td><td><span class="metal-tag">AL-Brae Dwf</span></td><td><strong>BB</strong></td><td><strong>Braeburn</strong><div class="source-note">Inventory name: Braeburn Dwarf</div></td><td>27</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R2-C3 Jonagold"></td><td><strong>R2-C3</strong></td><td><span class="metal-tag">AL-Jon G<span class="duplicate-tag">Tree 1 of 2 with this tag</span></span></td><td><strong>JG</strong></td><td><strong>Jonagold</strong></td><td>53</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R2-C4 Fuji"></td><td><strong>R2-C4</strong></td><td><span class="metal-tag">AL-Fuji</span></td><td><strong>FJ</strong></td><td><strong>Fuji</strong></td><td>42</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R2-C5 Honeycrisp"></td><td><strong>R2-C5</strong></td><td><span class="metal-tag">AL-Hon Cris<span class="duplicate-tag">Tree 1 of 2 with this tag</span></span></td><td><strong>HC</strong></td><td><strong>Honeycrisp</strong></td><td>49</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R2-C6 Cortland"></td><td><strong>R2-C6</strong></td><td><span class="metal-tag">AL-Cort/ AL-Cortland<span class="duplicate-tag">Tree 1 of 3 with this tag</span></span></td><td><strong>CL</strong></td><td><strong>Cortland</strong></td><td>29</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R2-C7 Pink Lady (Cripps Pink)"></td><td><strong>R2-C7</strong></td><td><span class="metal-tag">AL-Pink/ AL-Pink Lady<span class="duplicate-tag">Tree 1 of 2 with this tag</span></span></td><td><strong>PL</strong></td><td><strong>Pink Lady (Cripps Pink)</strong><div class="source-note">Inventory name: Pink Lady</div></td><td>59</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R2-C8 Jonagold"></td><td><strong>R2-C8</strong></td><td><span class="metal-tag">AL-Jon G<span class="duplicate-tag">Tree 2 of 2 with this tag</span></span></td><td><strong>JG</strong></td><td><strong>Jonagold</strong></td><td>53</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R2-C9 Gala"></td><td><strong>R2-C9</strong></td><td><span class="metal-tag">AL-Gala</span></td><td><strong>GL</strong></td><td><strong>Gala</strong></td><td>45</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R2-C10 Arkansas Black Spur (FT015)"></td><td><strong>R2-C10</strong></td><td><span class="metal-tag">AL-Ark Blk</span></td><td><strong>AB</strong></td><td><strong>Arkansas Black Spur (FT015)</strong><div class="source-note">Inventory name: Arkansas Black</div></td><td>26</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R2-C11 Cox&#39;s Orange Pippin"></td><td><strong>R2-C11</strong></td><td><span class="metal-tag">AL-O Pip<span class="duplicate-tag">Tree 1 of 2 with this tag</span></span></td><td><strong>CO</strong></td><td><strong>Cox&#39;s Orange Pippin</strong><div class="source-note">Inventory name: Cox Orange Pippin</div></td><td>30</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R2-C12 Franklin Cider"></td><td><strong>R2-C12</strong></td><td><span class="metal-tag">AL-Frank C</span></td><td><strong>FC</strong></td><td><strong>Franklin Cider</strong></td><td>40</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R2-C13 Frequin Rouge Cider Apple"></td><td><strong>R2-C13</strong></td><td><span class="metal-tag">AL-Frequin</span></td><td><strong>FRQ</strong></td><td><strong>Frequin Rouge Cider Apple</strong><div class="source-note">Inventory name: Frequin Rouge</div></td><td>41</td></tr>
+<tr class="row-start"><td><input class="plant-check" type="checkbox" aria-label="Planted R3-C1 Kerr Crab Seedling"></td><td><strong>R3-C1</strong></td><td><span class="metal-tag">AL-Kerr Crab<span class="duplicate-tag">Tree 1 of 3 with this tag</span></span></td><td><strong>KER</strong></td><td><strong>Kerr Crab Seedling</strong><div class="source-note">Inventory name: Crabapple, Kerr</div></td><td>32</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R3-C2 Cortland"></td><td><strong>R3-C2</strong></td><td><span class="metal-tag">AL-Cort/ AL-Cortland<span class="duplicate-tag">Tree 2 of 3 with this tag</span></span></td><td><strong>CL</strong></td><td><strong>Cortland</strong></td><td>29</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R3-C3 Kingston Black"></td><td><strong>R3-C3</strong></td><td><span class="metal-tag">AL-G Orch-7</span></td><td><strong>KB</strong></td><td><strong>Kingston Black</strong></td><td>54</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R3-C4 Mutsu Crispin"></td><td><strong>R3-C4</strong></td><td><span class="metal-tag">AL-Crisp</span></td><td><strong>MC</strong></td><td><strong>Mutsu Crispin</strong><div class="source-note">Inventory name: Crispin</div></td><td>35</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R3-C5 Pink Lady (Cripps Pink)"></td><td><strong>R3-C5</strong></td><td><span class="metal-tag">AL-Pink/ AL-Pink Lady<span class="duplicate-tag">Tree 2 of 2 with this tag</span></span></td><td><strong>PL</strong></td><td><strong>Pink Lady (Cripps Pink)</strong><div class="source-note">Inventory name: Pink Lady</div></td><td>59</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R3-C6 Aztec Fuji"></td><td><strong>R3-C6</strong></td><td><span class="metal-tag">AL-Az Fuji<span class="duplicate-tag">Tree 1 of 2 with this tag</span></span></td><td><strong>FA</strong></td><td><strong>Aztec Fuji</strong><div class="source-note">Inventory name: Fuji Aztec</div></td><td>43</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R3-C7 Unidentified apple"></td><td><strong>R3-C7</strong></td><td><span class="metal-tag">AL-UnKn<span class="duplicate-tag">Tree 1 of 6 with this tag</span></span></td><td><strong>UNK</strong></td><td><strong>Unidentified apple</strong><div class="source-note">Inventory name: Unknown</div></td><td>62</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R3-C8 Honeycrisp"></td><td><strong>R3-C8</strong></td><td><span class="metal-tag">AL-Hon Cris<span class="duplicate-tag">Tree 2 of 2 with this tag</span></span></td><td><strong>HC</strong></td><td><strong>Honeycrisp</strong></td><td>49</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R3-C9 Aztec Fuji"></td><td><strong>R3-C9</strong></td><td><span class="metal-tag">AL-Az Fuji<span class="duplicate-tag">Tree 2 of 2 with this tag</span></span></td><td><strong>FA</strong></td><td><strong>Aztec Fuji</strong><div class="source-note">Inventory name: Fuji Aztec</div></td><td>43</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R3-C10 GoldRush"></td><td><strong>R3-C10</strong></td><td><span class="metal-tag">AL-Gld Rsh</span></td><td><strong>GO</strong></td><td><strong>GoldRush</strong><div class="source-note">Inventory name: Goldrush</div></td><td>46</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R3-C11 Red Delicious"></td><td><strong>R3-C11</strong></td><td><span class="metal-tag">AL-Red Del</span></td><td><strong>RD</strong></td><td><strong>Red Delicious</strong><div class="source-note">Inventory name: Delicious, Red</div></td><td>37</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R3-C12 Unidentified apple"></td><td><strong>R3-C12</strong></td><td><span class="metal-tag">AL-UnKn<span class="duplicate-tag">Tree 2 of 6 with this tag</span></span></td><td><strong>UNK</strong></td><td><strong>Unidentified apple</strong><div class="source-note">Inventory name: Unknown</div></td><td>62</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R3-C13 Newtown Pippen"></td><td><strong>R3-C13</strong></td><td><span class="metal-tag">AL-G Orch-111</span></td><td><strong>NP</strong></td><td><strong>Newtown Pippen</strong><div class="source-note">Inventory name: Newton Yellow Pippin</div></td><td>58</td></tr>
+<tr class="row-start"><td><input class="plant-check" type="checkbox" aria-label="Planted R4-C1 Cox&#39;s Orange Pippin"></td><td><strong>R4-C1</strong></td><td><span class="metal-tag">AL-O Pip<span class="duplicate-tag">Tree 2 of 2 with this tag</span></span></td><td><strong>CO</strong></td><td><strong>Cox&#39;s Orange Pippin</strong><div class="source-note">Inventory name: Cox Orange Pippin</div></td><td>30</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R4-C2 Unidentified apple"></td><td><strong>R4-C2</strong></td><td><span class="metal-tag">AL-UnKn<span class="duplicate-tag">Tree 3 of 6 with this tag</span></span></td><td><strong>UNK</strong></td><td><strong>Unidentified apple</strong><div class="source-note">Inventory name: Unknown</div></td><td>62</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R4-C3 Honeycrisp (Super Red)"></td><td><strong>R4-C3</strong></td><td><span class="metal-tag">AL-Hny Crisp</span></td><td><strong>HC</strong></td><td><strong>Honeycrisp (Super Red)</strong><div class="source-note">Inventory name: Honeycrisp, Super Red</div></td><td>50</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R4-C4 Golden Delicious"></td><td><strong>R4-C4</strong></td><td><span class="metal-tag">AL-Gold D</span></td><td><strong>GD</strong></td><td><strong>Golden Delicious</strong><div class="source-note">Inventory name: Delicious, Golden</div></td><td>36</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R4-C5 Unidentified apple"></td><td><strong>R4-C5</strong></td><td><span class="metal-tag">AL-UnKn<span class="duplicate-tag">Tree 4 of 6 with this tag</span></span></td><td><strong>UNK</strong></td><td><strong>Unidentified apple</strong><div class="source-note">Inventory name: Unknown</div></td><td>62</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R4-C6 Zestar"></td><td><strong>R4-C6</strong></td><td><span class="metal-tag">AL-Zestar<span class="duplicate-tag">Tree 1 of 2 with this tag</span></span></td><td><strong>ZT</strong></td><td><strong>Zestar</strong></td><td>66</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R4-C7 Wickson Crab"></td><td><strong>R4-C7</strong></td><td><span class="metal-tag">AL-Wickson cr</span></td><td><strong>WC</strong></td><td><strong>Wickson Crab</strong><div class="source-note">Inventory name: Crabapple, Wickson</div></td><td>33</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R4-C8 Unidentified apple"></td><td><strong>R4-C8</strong></td><td><span class="metal-tag">AL-UnKn<span class="duplicate-tag">Tree 5 of 6 with this tag</span></span></td><td><strong>UNK</strong></td><td><strong>Unidentified apple</strong><div class="source-note">Inventory name: Unknown</div></td><td>62</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R4-C9 Tandgy green Urban Columnar"></td><td><strong>R4-C9</strong></td><td><span class="metal-tag">AL-UrbGrn</span></td><td><strong>UG</strong></td><td><strong>Tandgy green Urban Columnar</strong><div class="source-note">Inventory name: Urban Green</div></td><td>64</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R4-C10 Unidentified apple"></td><td><strong>R4-C10</strong></td><td><span class="metal-tag">AL-UnKn<span class="duplicate-tag">Tree 6 of 6 with this tag</span></span></td><td><strong>UNK</strong></td><td><strong>Unidentified apple</strong><div class="source-note">Inventory name: Unknown</div></td><td>62</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R4-C11 Auvil Early Fuji"></td><td><strong>R4-C11</strong></td><td><span class="metal-tag">AL-Fuji</span></td><td><strong>AF</strong></td><td><strong>Auvil Early Fuji</strong><div class="source-note">Inventory name: Fuji, Early</div></td><td>44</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R4-C12 Harrison"></td><td><strong>R4-C12</strong></td><td><span class="metal-tag">AL-Harrison<span class="duplicate-tag">Tree 1 of 2 with this tag</span></span></td><td><strong>HR</strong></td><td><strong>Harrison</strong></td><td>48</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R4-C13 Dolgo Crabapple"></td><td><strong>R4-C13</strong></td><td><span class="metal-tag">AL-Dolgo</span></td><td><strong>DLG</strong></td><td><strong>Dolgo Crabapple</strong><div class="source-note">Inventory name: Crabapple, Dolgo</div></td><td>31</td></tr>
+<tr class="row-start"><td><input class="plant-check" type="checkbox" aria-label="Planted R5-C1 Campfield Cider Apple"></td><td><strong>R5-C1</strong></td><td><span class="metal-tag">AL-Campfield</span></td><td><strong>CAM</strong></td><td><strong>Campfield Cider Apple</strong><div class="source-note">Inventory name: Campfield Cide</div></td><td>28</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R5-C2 Idared"></td><td><strong>R5-C2</strong></td><td><span class="metal-tag">AL-Idared</span></td><td><strong>ID</strong></td><td><strong>Idared</strong></td><td>52</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R5-C3 Hudson&#39;s Golden Gem"></td><td><strong>R5-C3</strong></td><td><span class="metal-tag">AL-Gold Gem</span></td><td><strong>HG</strong></td><td><strong>Hudson&#39;s Golden Gem</strong><div class="source-note">Inventory name: Hudsons Golden Gem</div></td><td>51</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R5-C4 Liberty"></td><td><strong>R5-C4</strong></td><td><span class="metal-tag">AL-Liberty</span></td><td><strong>LB</strong></td><td><strong>Liberty</strong></td><td>55</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R5-C5 Sweet Sixteen"></td><td><strong>R5-C5</strong></td><td><span class="metal-tag">AL- S Six</span></td><td><strong>SS</strong></td><td><strong>Sweet Sixteen</strong></td><td>60</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R5-C6 Cortland"></td><td><strong>R5-C6</strong></td><td><span class="metal-tag">AL-Cort/ AL-Cortland<span class="duplicate-tag">Tree 3 of 3 with this tag</span></span></td><td><strong>CL</strong></td><td><strong>Cortland</strong></td><td>29</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R5-C7 Macintosh"></td><td><strong>R5-C7</strong></td><td><span class="metal-tag">AL-Mc In</span></td><td><strong>MT</strong></td><td><strong>Macintosh</strong><div class="source-note">Inventory name: McIntosh</div></td><td>57</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R5-C8 Zestar"></td><td><strong>R5-C8</strong></td><td><span class="metal-tag">AL-Zestar<span class="duplicate-tag">Tree 2 of 2 with this tag</span></span></td><td><strong>ZT</strong></td><td><strong>Zestar</strong></td><td>66</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R5-C9 Tasty Red Urban Columnar"></td><td><strong>R5-C9</strong></td><td><span class="metal-tag">AL-UrbR</span></td><td><strong>UR</strong></td><td><strong>Tasty Red Urban Columnar</strong><div class="source-note">Inventory name: Urban Red</div></td><td>65</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R5-C10 Blushing Delight Urban Columnar"></td><td><strong>R5-C10</strong></td><td><span class="metal-tag">AL-UrbGld</span></td><td><strong>UD</strong></td><td><strong>Blushing Delight Urban Columnar</strong><div class="source-note">Inventory name: Urban Gold</div></td><td>63</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R5-C11 Harrison"></td><td><strong>R5-C11</strong></td><td><span class="metal-tag">AL-Harrison<span class="duplicate-tag">Tree 2 of 2 with this tag</span></span></td><td><strong>HR</strong></td><td><strong>Harrison</strong></td><td>48</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R5-C12 CrimsonCrisp"></td><td><strong>R5-C12</strong></td><td><span class="metal-tag">AL-Crimson</span></td><td><strong>CC</strong></td><td><strong>CrimsonCrisp</strong><div class="source-note">Inventory name: Crimson Crisp</div></td><td>34</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R5-C13 Kerr Crab Seedling"></td><td><strong>R5-C13</strong></td><td><span class="metal-tag">AL-Kerr Crab<span class="duplicate-tag">Tree 2 of 3 with this tag</span></span></td><td><strong>KER</strong></td><td><strong>Kerr Crab Seedling</strong><div class="source-note">Inventory name: Crabapple, Kerr</div></td><td>32</td></tr>
+<tr class="row-start"><td><input class="plant-check" type="checkbox" aria-label="Planted R6-C1 Kerr Crab Seedling"></td><td><strong>R6-C1</strong></td><td><span class="metal-tag">AL-Kerr Crab<span class="duplicate-tag">Tree 3 of 3 with this tag</span></span></td><td><strong>KER</strong></td><td><strong>Kerr Crab Seedling</strong><div class="source-note">Inventory name: Crabapple, Kerr</div></td><td>32</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R6-C2 Granny Smith"></td><td><strong>R6-C2</strong></td><td><span class="metal-tag">AL-Gran S</span></td><td><strong>GS</strong></td><td><strong>Granny Smith</strong></td><td>47</td></tr>
+<tr class="row-start"><td><input class="plant-check" type="checkbox" aria-label="Planted R7-C1 Yellow Huffcapp European Perry Pear"></td><td><strong>R7-C1</strong></td><td><span class="metal-tag">PR- Yw Huffcapp</span></td><td><strong>YHC</strong></td><td><strong>Yellow Huffcapp European Perry Pear</strong><div class="source-note">Inventory name: Yellow Huffcapp</div></td><td>110</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R7-C2 Shinseiki - Asian"></td><td><strong>R7-C2</strong></td><td><span class="metal-tag">PR-Shin Asian</span></td><td><strong>SA</strong></td><td><strong>Shinseiki - Asian</strong><div class="source-note">Inventory name: Asian, Shinseiki</div></td><td>95</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R7-C3 Olympic Giant - Asian"></td><td><strong>R7-C3</strong></td><td><span class="metal-tag">PR-Olympic</span></td><td><strong>OG</strong></td><td><strong>Olympic Giant - Asian</strong><div class="source-note">Inventory name: Olympic Giant</div></td><td>106</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R7-C4 Red Bartlett"></td><td><strong>R7-C4</strong></td><td><span class="metal-tag">PR-R Bart</span></td><td><strong>RB</strong></td><td><strong>Red Bartlett</strong><div class="source-note">Inventory name: Bartlett, Red</div></td><td>98</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R7-C5 Anjou"></td><td><strong>R7-C5</strong></td><td><span class="metal-tag">PR-Anjou</span></td><td><strong>AU</strong></td><td><strong>Anjou</strong><div class="source-note">Inventory name: Anjou Stan. Supreme</div></td><td>92</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R7-C6 Comice"></td><td><strong>R7-C6</strong></td><td><span class="metal-tag">PR-Comice<span class="duplicate-tag">Tree 1 of 3 with this tag</span></span></td><td><strong>CE</strong></td><td><strong>Comice</strong></td><td>100</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R7-C7 Barnett European Perry Pear"></td><td><strong>R7-C7</strong></td><td><span class="metal-tag">PR-Barnet</span></td><td><strong>BNT</strong></td><td><strong>Barnett European Perry Pear</strong><div class="source-note">Inventory name: Barnet Euro</div></td><td>96</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R7-C8 SummerCrisp"></td><td><strong>R7-C8</strong></td><td><span class="metal-tag">PR-Sum Cris<span class="duplicate-tag">Tree 1 of 2 with this tag</span></span></td><td><strong>SMC</strong></td><td><strong>SummerCrisp</strong><div class="source-note">Inventory name: Summercrisp</div></td><td>109</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R7-C9 Parker"></td><td><strong>R7-C9</strong></td><td><span class="metal-tag">PR-Parker</span></td><td><strong>PKR</strong></td><td><strong>Parker</strong></td><td>107</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R7-C10 SummerCrisp"></td><td><strong>R7-C10</strong></td><td><span class="metal-tag">PR-Sum Cris<span class="duplicate-tag">Tree 2 of 2 with this tag</span></span></td><td><strong>SMC</strong></td><td><strong>SummerCrisp</strong><div class="source-note">Inventory name: Summercrisp</div></td><td>109</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R7-C11 Comice"></td><td><strong>R7-C11</strong></td><td><span class="metal-tag">PR-Comice<span class="duplicate-tag">Tree 2 of 3 with this tag</span></span></td><td><strong>CE</strong></td><td><strong>Comice</strong></td><td>100</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R7-C12 Keiffer"></td><td><strong>R7-C12</strong></td><td><span class="metal-tag">PR-Kief</span></td><td><strong>KF</strong></td><td><strong>Keiffer</strong><div class="source-note">Inventory name: Kieffer</div></td><td>104</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R7-C13 Butt European Perry Pear"></td><td><strong>R7-C13</strong></td><td><span class="metal-tag">PR-Butt Euro</span></td><td><strong>BUT</strong></td><td><strong>Butt European Perry Pear</strong><div class="source-note">Inventory name: Butt Euro Perry</div></td><td>99</td></tr>
+<tr class="row-start"><td><input class="plant-check" type="checkbox" aria-label="Planted R8-C1 Starking Hardy Giant - Asian"></td><td><strong>R8-C1</strong></td><td><span class="metal-tag">PR-Asian</span></td><td><strong>HG</strong></td><td><strong>Starking Hardy Giant - Asian</strong><div class="source-note">Inventory name: Asian, Hardy Giant</div></td><td>94</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R8-C2 Hosui - Asian"></td><td><strong>R8-C2</strong></td><td><span class="metal-tag">PR-Asian H</span></td><td><strong>HA</strong></td><td><strong>Hosui - Asian</strong><div class="source-note">Inventory name: Asian Hosui</div></td><td>93</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R8-C3 Pineapple"></td><td><strong>R8-C3</strong></td><td><span class="metal-tag">PR-Pineap</span></td><td><strong>PE</strong></td><td><strong>Pineapple</strong></td><td>108</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R8-C4 Hendre Huffcapp European Perry Pear"></td><td><strong>R8-C4</strong></td><td><span class="metal-tag">PR-Hendre<span class="duplicate-tag">Tree 1 of 2 with this tag</span></span></td><td><strong>HHC</strong></td><td><strong>Hendre Huffcapp European Perry Pear</strong><div class="source-note">Inventory name: Hendre Huffeap</div></td><td>103</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R8-C5 Bartlett"></td><td><strong>R8-C5</strong></td><td><span class="metal-tag">PR-Bart<span class="duplicate-tag">Tree 1 of 2 with this tag</span></span></td><td><strong>BT</strong></td><td><strong>Bartlett</strong></td><td>97</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R8-C6 Moonglow"></td><td><strong>R8-C6</strong></td><td><span class="metal-tag">PR-Moon</span></td><td><strong>MW</strong></td><td><strong>Moonglow</strong></td><td>105</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R8-C7 Anjou"></td><td><strong>R8-C7</strong></td><td><span class="metal-tag">PR-D&#39;an<span class="duplicate-tag">Tree 1 of 2 with this tag</span></span></td><td><strong>AU</strong></td><td><strong>Anjou</strong><div class="source-note">Inventory name: D&#39;Anjou</div></td><td>101</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R8-C8 Hendre Huffcapp European Perry Pear"></td><td><strong>R8-C8</strong></td><td><span class="metal-tag">PR-Hendre<span class="duplicate-tag">Tree 2 of 2 with this tag</span></span></td><td><strong>HHC</strong></td><td><strong>Hendre Huffcapp European Perry Pear</strong><div class="source-note">Inventory name: Hendre Huffeap</div></td><td>103</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R8-C9 Starking Delicious"></td><td><strong>R8-C9</strong></td><td><span class="metal-tag">PR-Delic</span></td><td><strong>SD</strong></td><td><strong>Starking Delicious</strong><div class="source-note">Inventory name: Delicious</div></td><td>102</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R8-C10 Anjou"></td><td><strong>R8-C10</strong></td><td><span class="metal-tag">PR-D&#39;an<span class="duplicate-tag">Tree 2 of 2 with this tag</span></span></td><td><strong>AU</strong></td><td><strong>Anjou</strong><div class="source-note">Inventory name: D&#39;Anjou</div></td><td>101</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R8-C11 Bartlett"></td><td><strong>R8-C11</strong></td><td><span class="metal-tag">PR-Bart<span class="duplicate-tag">Tree 2 of 2 with this tag</span></span></td><td><strong>BT</strong></td><td><strong>Bartlett</strong></td><td>97</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R8-C12 Comice"></td><td><strong>R8-C12</strong></td><td><span class="metal-tag">PR-Comice<span class="duplicate-tag">Tree 3 of 3 with this tag</span></span></td><td><strong>CE</strong></td><td><strong>Comice</strong></td><td>100</td></tr>
+<tr class="row-start"><td><input class="plant-check" type="checkbox" aria-label="Planted R9-C1 Bing"></td><td><strong>R9-C1</strong></td><td><span class="metal-tag">CR-Bing<span class="duplicate-tag">Tree 1 of 2 with this tag</span></span></td><td><strong>BB</strong></td><td><strong>Bing</strong></td><td>72</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R9-C2 Royalton Sweet"></td><td><strong>R9-C2</strong></td><td><span class="metal-tag">CR-Royalton</span></td><td><strong>RS</strong></td><td><strong>Royalton Sweet</strong></td><td>80</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R9-C3 Bing"></td><td><strong>R9-C3</strong></td><td><span class="metal-tag">CR-Bing<span class="duplicate-tag">Tree 2 of 2 with this tag</span></span></td><td><strong>BB</strong></td><td><strong>Bing</strong></td><td>72</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R9-C4 Stella"></td><td><strong>R9-C4</strong></td><td><span class="metal-tag">CR-Stella</span></td><td><strong>ST</strong></td><td><strong>Stella</strong><div class="source-note">Inventory name: Sweet Stella</div></td><td>82</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R9-C5 Nanking (bush)"></td><td><strong>R9-C5</strong></td><td><span class="metal-tag">CR-Ian Nan<span class="duplicate-tag">Tree 1 of 2 with this tag</span></span></td><td><strong>NKI</strong></td><td><strong>Nanking (bush)</strong><div class="source-note">Inventory name: Nanking, Ian</div></td><td>78</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R9-C6 Unidentified sweet cherry"></td><td><strong>R9-C6</strong></td><td><span class="metal-tag">CR-Sweet<span class="duplicate-tag">Tree 1 of 3 with this tag</span></span></td><td><strong>SWT</strong></td><td><strong>Unidentified sweet cherry</strong><div class="source-note">Inventory name: Sweet</div></td><td>81</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R9-C7 Hardy Giant Antque Sweet"></td><td><strong>R9-C7</strong></td><td><span class="metal-tag">CR-Hardy Antq</span></td><td><strong>HG</strong></td><td><strong>Hardy Giant Antque Sweet</strong><div class="source-note">Inventory name: Hardy Giant Antique</div></td><td>75</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R9-C8 Nanking (bush)"></td><td><strong>R9-C8</strong></td><td><span class="metal-tag">CR-Ian Nan<span class="duplicate-tag">Tree 2 of 2 with this tag</span></span></td><td><strong>NKI</strong></td><td><strong>Nanking (bush)</strong><div class="source-note">Inventory name: Nanking, Ian</div></td><td>78</td></tr>
+<tr class="row-start"><td><input class="plant-check" type="checkbox" aria-label="Planted R10-C1 Black Tartarian"></td><td><strong>R10-C1</strong></td><td><span class="metal-tag">CR-Black T<span class="duplicate-tag">Tree 1 of 2 with this tag</span></span></td><td><strong>BT</strong></td><td><strong>Black Tartarian</strong></td><td>73</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R10-C2 Lapins"></td><td><strong>R10-C2</strong></td><td><span class="metal-tag">CR-Lapins</span></td><td><strong>LP</strong></td><td><strong>Lapins</strong><div class="source-note">Inventory name: Lapins Sweet</div></td><td>76</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R10-C3 Black Tartarian"></td><td><strong>R10-C3</strong></td><td><span class="metal-tag">CR-Black T<span class="duplicate-tag">Tree 2 of 2 with this tag</span></span></td><td><strong>BT</strong></td><td><strong>Black Tartarian</strong></td><td>73</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R10-C4 Unidentified sweet cherry"></td><td><strong>R10-C4</strong></td><td><span class="metal-tag">CR-Sweet<span class="duplicate-tag">Tree 2 of 3 with this tag</span></span></td><td><strong>SWT</strong></td><td><strong>Unidentified sweet cherry</strong><div class="source-note">Inventory name: Sweet</div></td><td>81</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R10-C5 Montmorency"></td><td><strong>R10-C5</strong></td><td><span class="metal-tag">CR-Mont<span class="duplicate-tag">Tree 1 of 2 with this tag</span></span></td><td><strong>MNT</strong></td><td><strong>Montmorency</strong></td><td>77</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R10-C6 Nanking (bush)"></td><td><strong>R10-C6</strong></td><td><span class="metal-tag">CR-Juls Nan</span></td><td><strong>NKJ</strong></td><td><strong>Nanking (bush)</strong><div class="source-note">Inventory name: Nanking, Jules</div></td><td>79</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R10-C7 Unidentified sweet cherry"></td><td><strong>R10-C7</strong></td><td><span class="metal-tag">CR-Sweet<span class="duplicate-tag">Tree 3 of 3 with this tag</span></span></td><td><strong>SWT</strong></td><td><strong>Unidentified sweet cherry</strong><div class="source-note">Inventory name: Sweet</div></td><td>81</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R10-C8 Montmorency"></td><td><strong>R10-C8</strong></td><td><span class="metal-tag">CR-Mont<span class="duplicate-tag">Tree 2 of 2 with this tag</span></span></td><td><strong>MNT</strong></td><td><strong>Montmorency</strong></td><td>77</td></tr>
+<tr class="row-start"><td><input class="plant-check" type="checkbox" aria-label="Planted R11-C1 Moorpark"></td><td><strong>R11-C1</strong></td><td><span class="metal-tag">AT-moorpark<span class="duplicate-tag">Tree 1 of 2 with this tag</span></span></td><td><strong>MP</strong></td><td><strong>Moorpark</strong><div class="source-note">Inventory name: Moore Park</div></td><td>70</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R11-C2 Unidentified apricot"></td><td><strong>R11-C2</strong></td><td><span class="metal-tag">AT-Unk</span></td><td><strong>UNK</strong></td><td><strong>Unidentified apricot</strong><div class="source-note">Inventory name: Unknown</div></td><td>71</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R11-C3 Giant Tilton"></td><td><strong>R11-C3</strong></td><td><span class="metal-tag">AT-Tilton</span></td><td><strong>GT</strong></td><td><strong>Giant Tilton</strong></td><td>68</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R11-C7 Italian Plum"></td><td><strong>R11-C7</strong></td><td><span class="metal-tag">PM- It Lov<span class="duplicate-tag">Tree 1 of 3 with this tag</span></span></td><td><strong>IPL</strong></td><td><strong>Italian Plum</strong><div class="source-note">Inventory name: Italian Lovell</div></td><td>111</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R11-C8 Contender"></td><td><strong>R11-C8</strong></td><td><span class="metal-tag">PC-Contender</span></td><td><strong>CR</strong></td><td><strong>Contender</strong></td><td>85</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R11-C9 Redhaven"></td><td><strong>R11-C9</strong></td><td><span class="metal-tag">PC-Rd Haven</span></td><td><strong>RH</strong></td><td><strong>Redhaven</strong></td><td>89</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R11-C10 JH Hale"></td><td><strong>R11-C10</strong></td><td><span class="metal-tag">PC-Hale</span></td><td><strong>JH</strong></td><td><strong>JH Hale</strong><div class="source-note">Inventory name: Hale</div></td><td>88</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R11-C11 Frost"></td><td><strong>R11-C11</strong></td><td><span class="metal-tag">PC-Frost</span></td><td><strong>FT</strong></td><td><strong>Frost</strong></td><td>87</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R11-C12 Canadian Harmony"></td><td><strong>R11-C12</strong></td><td><span class="metal-tag">PC-Can Harm</span></td><td><strong>CH</strong></td><td><strong>Canadian Harmony</strong></td><td>84</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R11-C13 Reliance"></td><td><strong>R11-C13</strong></td><td><span class="metal-tag">PC-Reliance<span class="duplicate-tag">Tree 1 of 2 with this tag</span></span></td><td><strong>RC</strong></td><td><strong>Reliance</strong></td><td>90</td></tr>
+<tr class="row-start"><td><input class="plant-check" type="checkbox" aria-label="Planted R12-C1 Harcot"></td><td><strong>R12-C1</strong></td><td><span class="metal-tag">AT-Harcot</span></td><td><strong>HT</strong></td><td><strong>Harcot</strong></td><td>69</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R12-C2 Moorpark"></td><td><strong>R12-C2</strong></td><td><span class="metal-tag">AT-moorpark<span class="duplicate-tag">Tree 2 of 2 with this tag</span></span></td><td><strong>MP</strong></td><td><strong>Moorpark</strong><div class="source-note">Inventory name: Moore Park</div></td><td>70</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R12-C6 Italian Plum"></td><td><strong>R12-C6</strong></td><td><span class="metal-tag">PM- It Lov<span class="duplicate-tag">Tree 2 of 3 with this tag</span></span></td><td><strong>IPL</strong></td><td><strong>Italian Plum</strong><div class="source-note">Inventory name: Italian Lovell</div></td><td>111</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R12-C7 Italian Plum"></td><td><strong>R12-C7</strong></td><td><span class="metal-tag">PM- It Lov<span class="duplicate-tag">Tree 3 of 3 with this tag</span></span></td><td><strong>IPL</strong></td><td><strong>Italian Plum</strong><div class="source-note">Inventory name: Italian Lovell</div></td><td>111</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R12-C9 Reliance"></td><td><strong>R12-C9</strong></td><td><span class="metal-tag">PC-Reliance<span class="duplicate-tag">Tree 2 of 2 with this tag</span></span></td><td><strong>RC</strong></td><td><strong>Reliance</strong></td><td>90</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R12-C10 Unidentified peach"></td><td><strong>R12-C10</strong></td><td><span class="metal-tag">PC-Unk<span class="duplicate-tag">Tree 1 of 2 with this tag</span></span></td><td><strong>UNK</strong></td><td><strong>Unidentified peach</strong><div class="source-note">Inventory name: Unknown</div></td><td>91</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R12-C11 BlazingStar"></td><td><strong>R12-C11</strong></td><td><span class="metal-tag">PC-Blaz Star</span></td><td><strong>BS</strong></td><td><strong>BlazingStar</strong><div class="source-note">Inventory name: Blazing Star</div></td><td>83</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R12-C12 Unidentified peach"></td><td><strong>R12-C12</strong></td><td><span class="metal-tag">PC-Unk<span class="duplicate-tag">Tree 2 of 2 with this tag</span></span></td><td><strong>UNK</strong></td><td><strong>Unidentified peach</strong><div class="source-note">Inventory name: Unknown</div></td><td>91</td></tr>
+<tr><td><input class="plant-check" type="checkbox" aria-label="Planted R12-C13 Elberta"></td><td><strong>R12-C13</strong></td><td><span class="metal-tag">PC-Elberta</span></td><td><strong>EA</strong></td><td><strong>Elberta</strong></td><td>86</td></tr>
+</tbody>
+</table>
+</main>
+</body>
+</html>

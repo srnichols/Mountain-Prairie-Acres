@@ -1,0 +1,2357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orchard Pollination Grid and West Windbreak — Prairie Plants</title>
+<style>
+  :root {
+    --bg: #ffffff; --bg2: #f5f4f0; --bg3: #eae8e1;
+    --text: #2C2C2A; --text2: #5F5E5A; --text3: #888780;
+    --border: #d3d1c7; --link: #185FA5;
+    --cell-width: 68px; --cell-height: 42px; --cell-gap: 3px; --row-gap: 5px; --row-label-width: 32px;
+    --colnum-h: 16px; --colnum-gap: 3px;
+    --wb-fence: 22px; --wb-stripe: 30px; --wb-alley: 26px; --wb-gap: 2px; --wb-margin: 6px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text);
+    padding: 24px; max-width: 1440px; margin: 0 auto; line-height: 1.6;
+  }
+  h1 { font-size: 22px; font-weight: 500; margin-bottom: 2px; }
+  h2 { font-size: 16px; font-weight: 500; margin: 24px 0 8px; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+  h3 { font-size: 13px; font-weight: 500; margin: 12px 0 4px; color: var(--text2); }
+  .subtitle { font-size: 13px; color: var(--text2); margin-bottom: 12px; }
+  .grid-section, .table-scroll { overflow-x: auto; }
+  .map-wrap { display: flex; align-items: stretch; width: max-content; }
+  .grid-block { display: flex; flex-direction: column; align-items: flex-end; }
+  .grid { display: flex; flex-direction: column; align-items: flex-end; gap: var(--row-gap); padding: 4px 0; width: max-content; }
+  .row-wrap { display: flex; align-items: center; gap: 0; }
+  .row-label { width: var(--row-label-width); font-size: 11px; color: var(--text3); text-align: left; padding-left: 6px; flex-shrink: 0; font-weight: 500; }
+  .row { display: flex; flex-direction: row-reverse; gap: var(--cell-gap); flex-shrink: 0; }
+  .cell {
+    position: relative; width: var(--cell-width); height: var(--cell-height); border-radius: 5px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 10px; line-height: 1.2; text-align: center; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.08);
+  }
+  .cell .code { font-weight: 600; font-size: 11px; }
+  .cell .fg { font-size: 9px; opacity: 0.85; }
+  .empty { background: var(--bg2); color: var(--text3); }
+  .reserved { background: repeating-linear-gradient(135deg, #FCE9E3 0 6px, #F5D3C8 6px 12px); border: 1.5px dashed #C2412F; color: #7A2416; }
+  .tri { border: 2px dashed #F2C14E !important; }
+  .star { box-shadow: inset 0 0 0 2px rgba(255,180,0,0.55); }
+  .psm::after {
+    content: ""; position: absolute; top: -1px; right: -1px; border-style: solid;
+    border-width: 0 12px 12px 0; border-color: transparent #FFE066 transparent transparent; border-top-right-radius: 5px;
+  }
+  /* Two lime dots on the alley (west, right-hand) edge of a C1 cell that has a berry guild. */
+  .guild::before {
+    content: ""; position: absolute; right: 3px; bottom: 3px; width: 7px; height: 7px; border-radius: 50%; background: #7CC242;
+    box-shadow: 0 0 0 1px #fff, 0 -9px 0 0 #7CC242, 0 -9px 0 1px #fff;
+  }
+  .guild-key { background: #7CC242; border-radius: 50%; }
+  .off { margin-right: calc((var(--cell-width) + var(--cell-gap)) / 2); }
+  .col-nums { display: flex; flex-direction: row-reverse; align-items: flex-end; gap: var(--cell-gap); height: var(--colnum-h); margin-right: var(--row-label-width); margin-bottom: var(--colnum-gap); width: max-content; }
+  .col-num { width: var(--cell-width); text-align: center; font-size: 10px; color: var(--text3); flex-shrink: 0; font-weight: 500; }
+  .col-east { margin-right: calc((var(--cell-width) + var(--cell-gap)) / 2 + 6px); font-size: 10px; font-weight: 600; color: var(--text2); white-space: nowrap; }
+  .row-desc { font-size: 10px; color: var(--text2); margin-right: 8px; width: 148px; flex-shrink: 0; line-height: 1.4; text-align: right; }
+  .edge-label { font-size: 11px; font-weight: 600; color: var(--text2); letter-spacing: 0.4px; margin: 2px 0; }
+  .wb-band { display: flex; gap: var(--wb-gap); margin: calc(var(--colnum-h) + var(--colnum-gap) + 4px) 0 4px var(--wb-margin); }
+  .wb-fence, .wb-stripe, .wb-alley { display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .wb-fence { width: var(--wb-fence); border-left: 4px solid #6B5A45; }
+  .wb-stripe { width: var(--wb-stripe); border-radius: 4px; color: #fff; }
+  .wb-alley {
+    width: var(--wb-alley); border: 1px dashed var(--text3); border-radius: 4px; color: var(--text2);
+    background: repeating-linear-gradient(135deg, transparent 0 6px, rgba(128,128,128,0.16) 6px 12px);
+  }
+  .vtext { writing-mode: vertical-rl; transform: rotate(180deg); font-size: 10px; line-height: 1.2; white-space: nowrap; }
+  .wb-fence .vtext { font-weight: 600; letter-spacing: 1px; color: var(--text2); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 11px; color: var(--text2); margin: 12px 0; }
+  .legend div { display: flex; align-items: center; gap: 5px; }
+  .lbox { width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.08); }
+  .legend-note { font-size: 11px; color: var(--text2); margin: 4px 0; }
+
+  .note-section { margin: 16px 0; font-size: 12px; color: var(--text2); line-height: 1.7; }
+  .note-section strong { color: var(--text); font-weight: 600; }
+  .note-section p + p { margin-top: 8px; }
+  .change-list { font-size: 12px; color: var(--text2); padding-left: 20px; margin: 8px 0 16px; }
+  .change-list li { margin: 4px 0; }
+  .notice { background: var(--bg2); border-left: 4px solid #BA7517; border-radius: 4px; padding: 10px 12px; margin: 12px 0; font-size: 12px; }
+  .error { border-color: #E24B4A; }
+  a { color: var(--link); }
+  .source-note { font-size: 11px; color: var(--text2); }
+  .source-list { padding-left: 20px; font-size: 12px; }
+  .source-list li { margin: 6px 0; }
+
+  table.detail { width: 100%; border-collapse: collapse; font-size: 11px; margin: 8px 0 16px; }
+  table.detail th { background: var(--bg3); text-align: left; padding: 5px 8px; font-weight: 500; color: var(--text); border: 1px solid var(--border); }
+  table.detail td { padding: 4px 8px; border: 1px solid var(--border); vertical-align: top; }
+  table.detail tr:nth-child(even) td { background: var(--bg2); }
+  .tag { display: inline-block; padding: 1px 5px; border-radius: 3px; font-size: 10px; font-weight: 500; margin-right: 3px; }
+  .tag-tri { background: #FAEEDA; color: #854F0B; border: 1px solid #BA7517; }
+  .tag-self { background: #EAF3DE; color: #3B6D11; border: 1px solid #97C459; }
+  .tag-star { background: #FAEEDA; color: #633806; border: 1px solid #EF9F27; }
+  .tag-psm { background: #FFF6CC; color: #6B5300; border: 1px solid #E0B800; }
+  .tag-unk { background: #EEEDEA; color: #3d3c38; border: 1px solid #AAA89F; }
+  .planting-checklist { margin-top: 8px; }
+  .planting-checklist col:nth-child(1) { width: 42px; }
+  .planting-checklist col:nth-child(2) { width: 76px; }
+  .planting-checklist col:nth-child(3) { width: 170px; }
+  .planting-checklist col:nth-child(4) { width: 80px; }
+  .planting-checklist col:nth-child(6) { width: 100px; }
+  .planting-checklist .row-start td { border-top: 3px solid var(--text2); }
+  .plant-check {
+    width: 18px; height: 18px; vertical-align: middle; accent-color: #3B6D11;
+  }
+  .metal-tag { font-size: 13px; font-weight: 700; letter-spacing: 0.2px; white-space: nowrap; }
+  .duplicate-tag { display: block; font-size: 10px; color: var(--text2); font-weight: 400; white-space: normal; }
+
+  .specs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 12px 0; }
+  .spec { background: var(--bg2); border-radius: 8px; padding: 10px 12px; }
+  .spec .label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
+  .spec .value { font-size: 16px; font-weight: 500; }
+
+  .diagram { display: block; width: 100%; height: auto; margin: 8px 0 12px; }
+  .wb-figures { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; margin: 8px 0; }
+  .wb-figure figcaption { font-size: 11px; font-weight: 600; color: var(--text2); margin-bottom: 4px; }
+  .wb-figure .diagram { margin-top: 0; }
+  @media screen and (max-width: 1100px) { .wb-figures { grid-template-columns: 1fr; } }
+  .cross-section { max-width: 720px; }
+  .plan-blowup { max-width: 760px; }
+  .site-plan { max-width: 760px; }
+  .site-layout { display: grid; grid-template-columns: minmax(0, 760px) minmax(0, 1fr); gap: 24px; align-items: start; }
+  .site-notes h3 { margin: 8px 0 4px; }
+  @media screen and (max-width: 1100px) { .site-layout { grid-template-columns: 1fr; } }
+  .diagram text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: #3d3c38; }
+  .diagram .t-title { font-weight: 600; fill: #2C2C2A; }
+  .d-ground { stroke: #5F5E5A; stroke-width: 2; }
+  .d-tick { stroke: #888780; stroke-width: 1; }
+  .d-strip { fill: #EEF5E8; }
+  .d-alley { fill: #E9E9E5; stroke: #888780; stroke-dasharray: 6 4; }
+  .d-plot { fill: none; stroke: #888780; stroke-dasharray: 8 5; }
+  .d-fence { stroke: #6B5A45; stroke-width: 4; }
+  .d-post { fill: #6B5A45; }
+  .d-trunk { fill: #7A5C3E; }
+  .d-wind { stroke: #2F7FC1; stroke-width: 2.5; fill: none; }
+  .d-wind-lift { stroke: #2F7FC1; stroke-width: 2; fill: none; stroke-dasharray: 7 5; }
+  .d-open { fill: #fff; stroke: #888780; stroke-dasharray: 2 2; }
+  .d-reserved { fill: #FCE9E3; stroke: #C2412F; stroke-width: 1.5; stroke-dasharray: 3 2; }
+  .d-driveway { fill: #E2E0D8; }
+  .d-dim { stroke: #2C2C2A; stroke-width: 1.2; }
+  .d-frame { fill: none; stroke: #5F5E5A; stroke-width: 1.5; }
+  .d-future { fill: none; stroke-width: 1.5; stroke-dasharray: 4 3; }
+  .diagram .halo { paint-order: stroke; stroke: #fff; stroke-width: 3px; stroke-linejoin: round; }
+  .d-orchard-crown { fill: #E24B4A; fill-opacity: 0.35; stroke: #993C1D; }
+
+  .footer { margin-top: 24px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text3); }
+  .print-only { display: none; }
+
+  @page {
+    size: 17in 11in;
+    margin: 10mm;
+    @bottom-left { content: "Prairie Plants - Orchard pollination plan and west windbreak"; font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+  }
+  @media print {
+    :root {
+      --text: #222; --text2: #333; --text3: #444; --border: #999;
+      --cell-width: 22.5mm; --cell-height: 7.6mm; --cell-gap: 0.9mm; --row-gap: 0.9mm; --row-label-width: 8mm;
+      --colnum-h: 4mm; --colnum-gap: 0.5mm;
+      --wb-fence: 5mm; --wb-stripe: 7mm; --wb-alley: 6.5mm; --wb-gap: 0.6mm; --wb-margin: 2mm;
+    }
+    body { padding: 0; margin: 0; max-width: none; font-size: 9pt; line-height: 1.3; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    .print-help, .screen-only { display: none; }
+    .print-only { display: inline; }
+    .map-sheet { break-inside: avoid; break-after: page; }
+    .page-break { break-before: page; }
+    h1 { font-size: 17pt; line-height: 1.15; }
+    h2 { font-size: 12pt; margin: 3mm 0 1.5mm; padding-bottom: 1mm; }
+    h3, summary { font-size: 10pt; font-weight: 600; }
+    h1, h2, h3, summary { break-after: avoid; }
+    p { orphans: 3; widows: 3; }
+    .subtitle { font-size: 9pt; margin-bottom: 1.5mm; }
+    .source-note { font-size: 8pt; line-height: 1.3; }
+    h2 + .source-note { break-after: avoid; }
+    .specs { grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 2mm; margin: 2mm 0; }
+    .spec { padding: 1.5mm 2mm; border-radius: 1mm; }
+    .spec .label { font-size: 7pt; letter-spacing: 0; }
+    .spec .value { font-size: 10.5pt; }
+    .notice { font-size: 8pt; padding: 1.5mm 2mm; margin: 2mm 0; }
+    .map-sheet h2 { margin-top: 2mm; }
+    .grid-section, .table-scroll { overflow: visible; }
+    .grid-section, .row-wrap, .diagram { break-inside: avoid; }
+    .grid { padding: 0.6mm 0; }
+    .cell { border-radius: 1mm; }
+    .cell .code { font-size: 9pt; }
+    .cell .fg { font-size: 7pt; opacity: 1; }
+    .psm::after { border-width: 0 3mm 3mm 0; border-top-right-radius: 1mm; }
+    .guild::before { right: 0.8mm; bottom: 0.8mm; width: 1.7mm; height: 1.7mm; box-shadow: 0 0 0 0.25mm #fff, 0 -2.2mm 0 0 #7CC242, 0 -2.2mm 0 0.25mm #fff; }
+    .empty { color: #444; }
+    .row-label { font-size: 8.5pt; padding-left: 1.5mm; }
+    .row-desc { font-size: 7.5pt; line-height: 1.2; margin-right: 2mm; width: 30mm; }
+    .col-num, .col-east { font-size: 8pt; }
+    .edge-label { font-size: 8pt; margin: 0.5mm 0; }
+    .vtext { font-size: 7pt; }
+    .wb-fence { border-left-width: 1.2mm; }
+    .wb-band { margin-top: calc(var(--colnum-h) + var(--colnum-gap) + 0.6mm); margin-bottom: 0.6mm; }
+    .legend { font-size: 8pt; gap: 1mm 4mm; margin: 1.5mm 0; }
+    .lbox { width: 3mm; height: 3mm; }
+    .legend-note { font-size: 7.5pt; line-height: 1.25; margin: 0.6mm 0; }
+    .note-section { font-size: 9pt; line-height: 1.3; margin: 2mm 0; }
+    .note-section p + p { margin-top: 1.5mm; }
+    .change-list { font-size: 9pt; line-height: 1.3; }
+    .wb-figures { gap: 6mm; margin: 2mm 0; }
+    .wb-figure figcaption { font-size: 8.5pt; margin-bottom: 1mm; }
+    .cross-section { max-width: 115mm; }
+    .plan-blowup { max-width: 185mm; }
+    .site-plan { max-width: 180mm; }
+    .site-layout { grid-template-columns: 180mm minmax(0, 1fr); gap: 8mm; }
+    .site-notes h3 { margin: 2mm 0 1mm; }
+    table.detail { table-layout: fixed; font-size: 8.5pt; line-height: 1.25; margin: 2mm 0 3mm; }
+    table.detail th, table.detail td { padding: 1mm 2mm; overflow-wrap: anywhere; }
+    table.detail th { font-weight: 600; }
+    table.detail tr { break-inside: avoid; }
+    thead { display: table-header-group; }
+    .tag { font-size: 8pt; }
+    .planting-form { break-before: page; }
+    .planting-checklist { font-size: 9pt; }
+    .planting-checklist col:nth-child(1) { width: 5%; }
+    .planting-checklist col:nth-child(2) { width: 9%; }
+    .planting-checklist col:nth-child(3) { width: 22%; }
+    .planting-checklist col:nth-child(4) { width: 8%; }
+    .planting-checklist col:nth-child(5) { width: 42%; }
+    .planting-checklist col:nth-child(6) { width: 14%; }
+    .planting-checklist .row-start td { border-top-width: 0.7mm; }
+    .plant-check { width: 4mm; height: 4mm; }
+    .metal-tag { font-size: 10pt; }
+    .duplicate-tag { font-size: 7.5pt; }
+    .inventory-detail col:nth-child(1) { width: 6%; }
+    .inventory-detail col:nth-child(2) { width: 4%; }
+    .inventory-detail col:nth-child(3) { width: 14%; }
+    .inventory-detail col:nth-child(4) { width: 6%; }
+    .inventory-detail col:nth-child(5) { width: 7%; }
+    .inventory-detail col:nth-child(6) { width: 7%; }
+    .inventory-detail col:nth-child(7) { width: 9%; }
+    .inventory-detail col:nth-child(8) { width: 40%; }
+    .inventory-detail col:nth-child(9) { width: 7%; }
+    .pairings-detail col:nth-child(1) { width: 18%; }
+    .pairings-detail col:nth-child(2) { width: 7%; }
+    .pairings-detail col:nth-child(3) { width: 33%; }
+    .pairings-detail col:nth-child(4) { width: 42%; }
+    .research-detail col:nth-child(1) { width: 19%; }
+    .research-detail col:nth-child(2) { width: 6%; }
+    .research-detail col:nth-child(3) { width: 7%; }
+    .research-detail col:nth-child(4) { width: 11%; }
+    .research-detail col:nth-child(5) { width: 57%; }
+    .row-detail col:nth-child(1) { width: 7%; }
+    .row-detail col:nth-child(2) { width: 14%; }
+    .row-detail col:nth-child(3) { width: 6%; }
+    .row-detail col:nth-child(4) { width: 9%; }
+    .row-detail col:nth-child(5) { width: 64%; }
+    .windbreak-detail col:nth-child(1) { width: 11%; }
+    .windbreak-detail col:nth-child(2) { width: 11%; }
+    .windbreak-detail col:nth-child(3) { width: 5%; }
+    .windbreak-detail col:nth-child(4) { width: 7%; }
+    .windbreak-detail col:nth-child(5) { width: 9%; }
+    .windbreak-detail col:nth-child(6) { width: 9%; }
+    .windbreak-detail col:nth-child(7) { width: 9%; }
+    .windbreak-detail col:nth-child(8) { width: 12%; }
+    .windbreak-detail col:nth-child(9) { width: 27%; }
+    .recon-detail col:nth-child(1) { width: 6%; }
+    .recon-detail col:nth-child(2) { width: 19%; }
+    .recon-detail col:nth-child(3) { width: 4%; }
+    .recon-detail col:nth-child(4) { width: 23%; }
+    .recon-detail col:nth-child(5) { width: 16%; }
+    .recon-detail col:nth-child(6) { width: 32%; }
+    .diff-detail col:nth-child(1) { width: 28%; }
+    .diff-detail col:nth-child(2) { width: 8%; }
+    .diff-detail col:nth-child(3) { width: 8%; }
+    .diff-detail col:nth-child(4) { width: 8%; }
+    .diff-detail col:nth-child(5) { width: 8%; }
+    .diff-detail col:nth-child(6) { width: 40%; }
+    .separate-detail col:nth-child(1) { width: 10%; }
+    .separate-detail col:nth-child(2) { width: 32%; }
+    .separate-detail col:nth-child(3) { width: 5%; }
+    .separate-detail col:nth-child(4) { width: 53%; }
+    .separate-detail .source-note { display: inline; }
+    .separate-detail .source-note::before { content: " · "; }
+    .partner-list > div, .partner-list .source-note { display: inline; }
+    .partner-list .source-note::before { content: " - "; }
+    .partner-list > div + div::before { content: "; "; }
+    details::details-content { display: block; content-visibility: visible; }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    .source-list { font-size: 8.5pt; padding-left: 5mm; columns: 3; column-gap: 10mm; }
+    .source-list li { margin: 0.8mm 0; break-inside: avoid; }
+    a { text-decoration: none; }
+    .footer { font-size: 8pt; margin-top: 4mm; padding-top: 2mm; }
+  }
+</style>
+</head>
+<body>
+
+<div class="notice print-help" role="note"><strong>Print setup:</strong> Tabloid / Ledger (11 × 17 in), landscape, 100% scale. Turn on background graphics and turn off the browser's headers and footers. Page 1 is the planting map, followed by the metal-tag planting checklist, windbreak plan, site plan, and reference tables. Collapsed sections open automatically when printing.</div>
+<section class="map-sheet" aria-label="Printable orchard planting map">
+<h1>Orchard Pollination Planting Grid and West Windbreak</h1>
+<p class="subtitle" id="subtitle"></p>
+<p class="source-note">Sources: <a href="Inventory_PrairiePlants.xlsx">Inventory_PrairiePlants.xlsx</a> (what is actually at Prairie, saved October 4, 2026), matched to <a href="Trees.xlsx">Trees.xlsx</a>, Fruit sheet (cultivar, rootstock, fertility, and flowering-group data, including the September 24 bloom research). Only trees found at Prairie are planned. This standalone page is a snapshot, not a live spreadsheet connection.</p>
+
+<div class="specs">
+  <div class="spec"><div class="label">Orchard plot</div><div class="value" id="plot-size">—</div></div>
+  <div class="spec"><div class="label">West windbreak</div><div class="value" id="wb-width">—</div></div>
+  <div class="spec"><div class="label">Tractor alley</div><div class="value" id="alley-width">—</div></div>
+  <div class="spec"><div class="label">Tree spacing</div><div class="value">18 ft in-row</div></div>
+  <div class="spec"><div class="label">Row spacing</div><div class="value">20 ft N–S</div></div>
+  <div class="spec"><div class="label">Diagonal neighbor</div><div class="value" id="diagonal">—</div></div>
+  <div class="spec"><div class="label">Orchard trees</div><div class="value" id="tree-count">—</div></div>
+  <div class="spec"><div class="label">Open positions</div><div class="value" id="open-count">—</div></div>
+  <div class="spec"><div class="label">Rows</div><div class="value" id="row-count">—</div></div>
+  <div class="spec"><div class="label">Windbreak · hedge · guilds</div><div class="value" id="wb-count">—</div></div>
+</div>
+<div class="notice" id="plot-warning" role="note"></div>
+<div class="notice error" id="data-error" role="alert" hidden></div>
+<noscript><div class="notice error">JavaScript is required to calculate and display this planting plan.</div></noscript>
+
+<h2>Planting Map — South at Top, West Fence on the Right</h2>
+<p class="source-note" id="map-note"></p>
+
+<div class="grid-section" role="region" aria-label="Orchard planting map with the west windbreak" tabindex="0">
+<div class="edge-label" id="south-label">▲ SOUTH</div>
+<div class="map-wrap">
+  <div class="grid-block">
+    <div class="col-nums" id="colnums"></div>
+    <div class="grid" id="grid"></div>
+  </div>
+  <div class="wb-band" id="wb-band" aria-label="West windbreak strip (schematic)"></div>
+</div>
+<div class="edge-label">▼ NORTH</div>
+</div>
+
+<div class="legend" id="legend"></div>
+<p class="legend-note">▲ Dashed border = <strong>triploid</strong>, excluded as a pollen donor and placed near two different diploid cultivars. ★ Gold glow = <strong>good pollen donor in the workbook</strong>, not a guarantee of compatibility with every nearby tree.</p>
+<p class="legend-note">◥ Yellow corner = <strong>Pseudomonas (bacterial canker) positive, untreated</strong> in the inventory. When one tag covers several trees and only some tested positive, the inventory does not say which, so all of them are flagged.</p>
+<p class="legend-note"><strong>S</strong> = self-fertile according to the planning notes; <strong>?</strong> = information missing or needing confirmation; <strong>UNK</strong> / <strong>SWT</strong> = unidentified tree (not counted as a pollen donor until identified). Different trees of the same cultivar, including color sports, are not counted as different pollen partners.</p>
+<p class="legend-note">Apple <strong>FG</strong> means flowering group, not harvest season. <strong>*</strong> after a group number means sources differ; the planning value follows Orange Pippin. <strong>FG 2?</strong> marks a provisional estimate. <strong>Midseason; FG ?</strong> records nursery bloom guidance without inventing a numbered group.</p>
+</section>
+
+<h2 id="windbreak">West Windbreak (35 ft Strip) and East Elderberry Hedge</h2>
+<p class="source-note" id="wb-summary"></p>
+<div class="wb-figures">
+  <figure class="wb-figure"><figcaption id="wb-plan-caption">Blow-up plan view</figcaption><div id="wb-plan"></div></figure>
+  <figure class="wb-figure"><figcaption>Profile, looking south: plant heights step down from the fence toward the orchard</figcaption><div id="wb-cross"></div></figure>
+</div>
+<div class="table-scroll">
+<table class="detail windbreak-detail">
+<colgroup><col><col><col><col><col><col><col><col><col></colgroup>
+<thead><tr><th>Layer (west → east)</th><th>Plant</th><th>Count</th><th>From west fence</th><th>In-row spacing</th><th>First plant</th><th>Last plant</th><th>Mature size</th><th>Notes</th></tr></thead>
+<tbody id="wb-table"></tbody>
+</table>
+</div>
+
+<form class="planting-form" aria-labelledby="planting-checklist-heading">
+<h2 id="planting-checklist-heading">Metal Tag to Orchard Position — Planting Checklist</h2>
+<p class="source-note">Start at the south end of the orchard with R1 and work north. Within each row, start at C1 on the west/windbreak side and work east toward C13. Match the exact metal <strong>Tag ID</strong> first; the tree name and inventory row are cross-checks. When several trees share one Tag ID, the sequence identifies each otherwise identical inventory instance.</p>
+<div class="table-scroll">
+<table class="detail planting-checklist">
+<colgroup><col><col><col><col><col><col></colgroup>
+<thead><tr><th>Planted</th><th>Grid position</th><th>Metal Tag ID</th><th>Code</th><th>Tree</th><th>Inventory row</th></tr></thead>
+<tbody id="planting-checklist"></tbody>
+</table>
+</div>
+</form>
+
+<h2 class="page-break" id="site-plan-heading">Site Plan — To Scale, South Up</h2>
+<p class="source-note" id="site-plan-note"></p>
+<div class="site-layout">
+  <div id="site-plan"></div>
+  <section class="site-notes" aria-labelledby="wb-notes-heading">
+    <h3 id="wb-notes-heading">Windbreak, hedge, and berry guild notes</h3>
+    <div class="note-section" id="wb-notes"></div>
+  </section>
+</div>
+
+<h2 class="page-break" id="update-summary">October 4, 2026 Update — What Changed</h2>
+<ul class="change-list" id="change-list"></ul>
+
+<h2 id="reconciliation">Prairie Inventory vs. Purchase List</h2>
+<p class="source-note" id="recon-summary"></p>
+<h3>Purchased vs. found — differences only</h3>
+<div class="table-scroll">
+<table class="detail diff-detail">
+<colgroup><col><col><col><col><col><col></colgroup>
+<thead><tr><th>Purchase record(s), Trees.xlsx Fruit sheet</th><th>Purchased</th><th>At Prairie</th><th>Elsewhere</th><th>Difference</th><th>Notes</th></tr></thead>
+<tbody id="diff-table"></tbody>
+</table>
+</div>
+<details>
+<summary>Show every inventory line used in this plan and where it goes</summary>
+<div class="table-scroll">
+<table class="detail recon-detail">
+<colgroup><col><col><col><col><col><col></colgroup>
+<thead><tr><th>Inventory row</th><th>Prairie inventory</th><th>Qty</th><th>Matched purchase record(s)</th><th>Plan / positions</th><th>Notes</th></tr></thead>
+<tbody id="recon-table"></tbody>
+</table>
+</div>
+</details>
+<p class="source-note" id="other-inventory"></p>
+
+<h2 id="apple-bloom-research">Apple Flowering-Group Research — September 24, 2026</h2>
+<p class="source-note">Research covers the apple records that were missing flowering groups plus Harrison, mirrored from the dated notes in the Trees.xlsx F Group cells. Numbered assignments generally follow Orange Pippin; Foxwhelp follows Raintree, its recorded vendor; seed-grown Kerr uses an owner-approved best guess. Flowering groups are not universally standardized, and local bloom overlap still needs checking.</p>
+<div class="table-scroll">
+<table class="detail research-detail">
+<colgroup><col><col><col><col><col></colgroup>
+<thead><tr><th>Apple / inventory record</th><th>Trees at Prairie</th><th>Workbook FG</th><th>Planning bloom / FG</th><th>Evidence, limitations, and sources</th></tr></thead>
+<tbody id="apple-bloom-table"></tbody>
+</table>
+</div>
+
+<h2>Pollination Layout Check</h2>
+<p class="source-note">Counts use the same screening as the partner lists below. Self-fertile trees are not counted as needing cross-pollination. Unidentified trees and trees without bloom or compatibility data have no screened partner yet; proximity alone is not counted as evidence.</p>
+<div class="table-scroll">
+<table class="detail">
+<thead><tr><th>Fruit type</th><th>Rows</th><th>Trees</th><th>Need cross-pollination</th><th>With a screened candidate ≤ 50 ft</th><th>With 2 distinct candidates ≤ 50 ft</th><th>Triploid/disputed with 2 mutual donors ≤ 50 ft</th><th>No screened partner yet</th><th>Adjacent same-cultivar pairs</th></tr></thead>
+<tbody id="layout-check"></tbody>
+</table>
+</div>
+
+<h2>Pollination Design Notes</h2>
+<div class="note-section" id="design-notes"></div>
+<div class="table-scroll">
+<table class="detail row-detail">
+<colgroup><col><col><col><col><col></colgroup>
+<thead><tr><th>Row</th><th>Fruit type</th><th>Trees</th><th>Open</th><th>Placement notes</th></tr></thead>
+<tbody id="row-summary"></tbody>
+</table>
+</div>
+
+<h2 class="page-break">Priority Pollination Pairings</h2>
+<p class="source-note">Trees that are not self-fertile, plus triploid or disputed apples. Candidates are screened by fruit type, bloom timing, and recorded compatibility; distances are between tree centers.</p>
+<div class="table-scroll">
+<table class="detail pairings-detail">
+<colgroup><col><col><col><col></colgroup>
+<thead><tr><th>Tree needing pollen</th><th>Position</th><th>Nearby candidates</th><th>Evidence / limitation</th></tr></thead>
+<tbody id="pairings-table"></tbody>
+</table>
+</div>
+
+<h2 class="page-break">Full Tree Inventory by Row</h2>
+<p class="source-note">One record per planted tree, south (R1) to north and west (C1) to east. The tag is the inventory tag ID to look for in the field. Original workbook fertility values are retained; planning corrections and uncertainty are shown separately.</p>
+<div class="table-scroll">
+<table class="detail inventory-detail">
+<colgroup><col><col><col><col><col><col><col><col><col></colgroup>
+<thead><tr><th>Position</th><th>Code</th><th>Variety and tag</th><th>Fruit type</th><th>Rootstock</th><th>Bloom / FG</th><th>Fertility (workbook)</th><th>Planning notes / nearest candidates</th><th>Inventory row (Fruit row)</th></tr></thead>
+<tbody id="detail-table"></tbody>
+</table>
+</div>
+
+<h2>Not in the Main Orchard</h2>
+<p class="source-note">Nut trees are kept out of the main orchard. Rootstocks need grafting before they can be planted as fruit trees, and the Boise trees were not moved to Prairie. Windbreak, east-hedge, and berry guild plants are covered in the windbreak section and the site plan notes.</p>
+<div class="table-scroll">
+<table class="detail separate-detail">
+<colgroup><col><col><col><col></colgroup>
+<thead><tr><th>Inventory row</th><th>Item</th><th>Qty</th><th>Status and notes</th></tr></thead>
+<tbody id="separate-table"></tbody>
+</table>
+</div>
+<div class="note-section" id="separate-notes"></div>
+
+<h2>Planning Corrections and Sources</h2>
+<div class="note-section" id="source-notes"></div>
+<ol class="source-list" id="sources"></ol>
+
+<div class="footer" id="footer"></div>
+<script>
+window.addEventListener('error', event => {
+  const notice = document.getElementById('data-error');
+  notice.textContent = `The planting plan could not be completed: ${event.message}`;
+  notice.hidden = false;
+});
+
+const printOpenedDetails = new Set();
+window.addEventListener('beforeprint', () => {
+  document.querySelectorAll('details:not([open])').forEach(details => {
+    printOpenedDetails.add(details);
+    details.open = true;
+  });
+});
+window.addEventListener('afterprint', () => {
+  printOpenedDetails.forEach(details => { details.open = false; });
+  printOpenedDetails.clear();
+});
+
+/* MODEL START: inventory data and planning rules (no DOM). The layout optimizer evaluates this block unchanged. */
+const PLAN_DATE = 'October 4, 2026';
+
+// Trees.xlsx, Fruit sheet (purchase list): row, quantity, fruit, variety, code, rootstock, fertility, pollen quality, ploidy, FG, pollenizers.
+const FRUIT_SHEET = [
+  [2,1,"Apple","Arkansas Black Spur (FT015)","AB","M-111","Not self-fertile","Poor","Triploid",3,""],
+  [3,1,"Apple","Auvil Early Fuji","AF","M-111","Not self-fertile","Average","Diploid",4,""],
+  [4,1,"Apple","Aztec Fuji","FA","Semi Dwarf","Not self-fertile","Average","Diploid",4,""],
+  [5,2,"Apple","Aztec Fuji","FA","Dwarf","Not self-fertile","Average","Diploid",4,""],
+  [6,1,"Apple","Blushing Delight Urban Columnar","UD","10x3","Not self-fertile","Average","Diploid",null,"Cortland, Cox, Cripps, Empire, Fuji, Granny, Harrison, HudsonGolden, NewtownPippen, WicksonCrab"],
+  [7,1,"Apple","Braeburn","BB","M-111","Self-fertile","Average","Diploid",4,"Cortland, Cox, Cripps, Empire, Fuji, Golden Russet, Granny, Harrison, Hudson Golden Gem, Wickson Crag"],
+  [8,1,"Apple","Braeburn","BB","","Self-fertile","Average","Diploid",4,"Cortland, Cox, Cripps, Empire, Fuji, Golden Russet, Granny, Harrison, Hudson Golden Gem, NewtownPippen"],
+  [9,1,"Apple","Campfield Cider Apple","","Semi Dwarf","","","",3,"Cortland, Cox, Cripps, Empire, Fuji, Gala, GoldenRusset, GoldRush, Granny, Harrison, Honeycrisp, HudsonGolden,  KingstonBlack, WicksonCrab"],
+  [10,5,"Apple","Cortland","CL","M-111","Partly self-fertile","Average","Diploid",3,"Empire, Gala, GoldenDelicious, Granny, Honeycrisp, KingstonBlack, Cox, NewtownPippen,"],
+  [11,2,"Apple","Cox's Orange Pippin","CO","M-7","Self-fertile","Average","Diploid",3,"Cox, Cripps, Fuji, Gala, GoldenRusset, GoldRush, Granny, Harrison, HoneyCrisp, KingstonBlack, NewTownPippin, WicksonCrab"],
+  [12,1,"Apple","CrimsonCrisp","CC","M-111","Not self-fertile","Average","Diploid",3,"Braeburn, Cortland, Cripps, Empire, Fuji, Gala, GoldenRusset, GoldRush, GoldenDelicious, Granny, Harrison, Honeycrisp, KingstonBlack, NewtownPippin, WicksonCrab"],
+  [13,2,"Apple","Dolgo Crabapple","","","","","",2,"Cox, Cripps, Gala, Fuji, Granny, GoldenRusset, GoldRush, Harrison, Honeycrist, HudsonGold, KingstonBlack, NewtownPippen, WicksonCrab"],
+  [14,1,"Apple","Empire","EP","M-111","Self-fertile","Average","Diploid",3,"Cortland, Cox, Cripps, Empire, Fuji, Gala, GoldenRusset, GoldRush, Harrison, Honsycrist, hudsonGolden, KingstonBlack, NewtownPippen, WicksonCrab"],
+  [15,1,"Apple","Foxwhelp Cider Apple","","Semi Dwarf","","","",3,"Cortland, Cox, Cripps,  Empire, Fuji, Gala, Granny,GoldenRusset, GoldRush,  Honsycrist, hudsonGolden, KingstonBlack, NewtownPippen, WicksonCrab"],
+  [16,1,"Apple","Franklin Cider","FC","Semi Dwarf","Not self-fertile","Average","Diploid",4,"Cortland, Cox, Cripps, Empire, Fuji, Gala, Granny, GoldenRusset, GoldRush,  Harrison, Honsycrist, KingstonBlack, NewtownPippen, WicksonCrab"],
+  [17,1,"Apple","Frequin Rouge Cider Apple","","Semi Dwarf","","","",4,"Cortland, Cox, Empire, Fuji, GoldenRusset, Granny, Harrison, Honrycrisp, HudsonGolden, KingstonBlack, NewtownPippen, WicksonCrab"],
+  [18,1,"Apple","Fuji","FJ","Semi Dwarf","Not self-fertile","Average","Diploid",4,"Cortland, Cox, Cripps, Empire, Fuji, Gala, GoldenRusset, GoldRush, Granny, Harrison, Honeycrisp, HudsonGolden,  KingstonBlack, WicksonCrab"],
+  [19,1,"Apple","Gala","GL","M-111","Self-fertile","Average","Diploid",4,"Cortland, Cox, Cripps, Empire, Fuji, Gala, GoldenRusset, GoldRush, Granny, Harrison, Honeycrisp, HudsonGolden,  KingstonBlack, WicksonCrab"],
+  [20,1,"Apple","Gala","GL","M-111","Self-fertile","Average","Diploid",4,"Cortland, Cox, Cripps, Empire, Fuji, Gala, GoldenRusset, GoldRush, Granny, Harrison, Honeycrisp, HudsonGolden,  KingstonBlack, WicksonCrab"],
+  [21,1,"Apple","Golden Delicious","GD","M-111","Partly Self-fertile","Good","Diploid",4,"Braeburn, Cortland, Cox, Cripps, Gala, GoldenRusset, GoldRush, Ganny, Harrison, Honeycrisp, HudsonGolden, KingstonBlack, NewtownPippin, WicksonCrab"],
+  [22,1,"Apple","Golden Russet","GR","M-111","Partly self-fertile","Average","Diploid",2,"Cortland, Cox, Cripps, Empire, Fuji, Gala, GoldRush, Granny, Harrison, KingstonBlack, NewtownPippen"],
+  [24,1,"Apple","GoldRush","GO","B-118","Not self-fertile","Average","Diploid",4,"Braeburn, Cortland, Cox, Cripps, Gala, GoldenRusset, GoldRush, Ganny, Harrison, Honeycrisp, HudsonGolden, KingstonBlack, NewtownPippin, WicksonCrab"],
+  [25,1,"Apple","Granny Smith","GS","Semi Dwarf","Self-fertile","Good","Diploid",3,"Gala, GoldenDelicious, GrannySmith, Honeycrisp, KingstonBlack, Cox"],
+  [26,1,"Apple","Harrison","HR","M-111","Not self-fertile","Average","Diploid",3,"Gala, Honeycrisp, KingstonBlack"],
+  [27,1,"Apple","Harrison Cider Apple","HR","Semi Dwarf","","","",3,"Cortland, Empire, Fuji, Granny, Harrison, Honeycrisp, HudsonGolden, KingstonBlack, NewtownPippen"],
+  [28,3,"Apple","Honeycrisp","HC","M-111","Not self-fertile","Average","Diploid",4,"Braeburn, GrannySmith, Honeycrisp, KingstonBlack, Cox"],
+  [29,1,"Apple","Honeycrisp (Super Red)","HC","M-7","Not self-fertile","Average","Diploid",4,"Cortland, Cox, Empire, Fuji, Granny, Harrison, Honeycrisp, HudsonGolden, KingstonBlack, NewtownPippin"],
+  [30,1,"Apple","Hudson's Golden Gem","HG","M-111","Partly self-fertile","Average","Diploid",3,"Cortland, Cox, Cripps, Empire, Fuji, Gala, GoldRush, Granny, Harrison, KingstonBlack, NewtownPippen"],
+  [31,1,"Apple","Idared","ID","M-111","Not self-fertile","Average","Diploid",2,"Cortland, Cox, Empire, Fuji, Franklin, Gala, Granny, Harrison, Honeycrisp, HudsonGolden, KingstonBlack, Newtown Pippin"],
+  [32,2,"Apple","Jonagold","JG","Semi Dwarf","Not self-fertile","Poor","Triploid",4,"Cortland, Cox, Cripps, Empire, Fuji, Gala, GoldRush, Grany, Harrison, Honeycrisp, HudsonGolden, NewtownPippin"],
+  [33,2,"Apple","Kerr Crab Seedling","","","","","",2,""],
+  [34,1,"Apple","Kingston Black","KB","M-7","Not self-fertile","Average","Diploid",4,""],
+  [35,1,"Apple","Liberty","LB","M-111","Not self-fertile","Poor","Triploid",2,""],
+  [36,1,"Apple","Macintosh","MT","Semi Dwarf","semi-self fertile","Average","Diploid",2,""],
+  [37,1,"Apple","Mutsu Crispin","MC","M-111","Not self-fertile","Poor","Triploid",3,"Wickson, Idared, Cox's Orange Pippin, Mcintosh"],
+  [38,1,"Apple","Newtown Pippen","NP","M-111","Self-fertile","Average","Diploid",3,""],
+  [39,2,"Apple","Pink Lady (Cripps Pink)","PL","","Not self-fertile","Average","Diploid",3,""],
+  [40,1,"Apple","Red Delicious","RD","M-111","Not self-fertile","Average","Diploid",4,""],
+  [41,2,"Apple","Sweet Sixteen","SS","M-7","Not self-fertile","Average","Diploid",3,""],
+  [42,1,"Apple","Tandgy green Urban Columnar","UG","10x3","Not self-fertile","Average","Diploid",null,""],
+  [43,1,"Apple","Tasty Red Urban Columnar","UR","10x3 (MM106)","Not self-fertile","Average","Diploid",null,""],
+  [44,1,"Apple","Wickson Crab","WC","B-9","Not self-fertile","Good","Diploid",2,""],
+  [45,3,"Apple","Zestar","ZT","M-111","Not self-fertile","Average","Diploid",1,""],
+  [46,1,"Apricot","Chinese (Mormon)","CE","Semi Dwarf","Self-fertile","","",null,""],
+  [47,1,"Apricot","Giant Tilton","GT","Standard","Self-fertile","","",null,""],
+  [48,1,"Apricot","Harcot","HT","Semi Dwarf","Self-fertile","","",null,""],
+  [49,1,"Apricot","Moorpark","MP","","Self-fertile","","",null,""],
+  [50,1,"Apricot","Patterson","PN","Standard","Self-fertile","","",null,""],
+  [53,1,"Cherry","Bing","BB","Semi Dwarf","Partly self-fertile","","",null,""],
+  [54,1,"Cherry","Bing","BB","Semi Dwarf","Partly self-fertile","","",null,""],
+  [55,3,"Cherry","Black Tartarian","BT","Standard","Partly self-fertile","","",null,""],
+  [56,1,"Cherry","Black Tartarian","BT","Standard","Partly self-fertile","","",null,"Bartlett"],
+  [57,1,"Cherry","Craig's Crimson","CC","Semi Dwarf","Self-fertile","","",null,"Bartlett"],
+  [58,1,"Cherry","Hardy Giant Antque Sweet","HG","Semi Dwarf","Partly self-fertile","","",null,""],
+  [59,1,"Cherry","Lapins","LP","","Partly self-fertile","","",null,"Moonglow, Anjou"],
+  [60,2,"Cherry","Montmorency","","","","","",null,"Bartlett"],
+  [61,3,"Cherry","Nanking (bush)","","","","","",null,"Bartlett"],
+  [62,1,"Cherry","Regina","RA","","Not self-fertile","","",null,""],
+  [63,1,"Cherry","Royalton Sweet","RS","Semi Dwarf","Partly self-fertile","","",null,""],
+  [64,1,"Cherry","Sam Sweet","SS","Semi Dwarf","Partly self-fertile","","",null,""],
+  [65,1,"Cherry","Stella","ST","Semi Dwarf","self-fertile","","",null,""],
+  [68,2,"Nut","Heartnut","","","","","",null,""],
+  [69,10,"Nut","Hican","HN","seedlings","","","",null,""],
+  [70,25,"Nut","Hybrid Hazelnut","","","Not self-fertile","","",null,""],
+  [71,1,"Nut","Jefferson Filbert Hazelnut","","","Not self-fertile","","",null,""],
+  [74,10,"Nut","Pecan (Native Hardy)","PC","seedlings","","","",null,""],
+  [75,10,"Nut","Shellbark Hickory","HS","seedlings","","","",null,""],
+  [76,1,"Nut","Theta Filbert Hazelnut","","","Not self-fertile","","",null,""],
+  [77,1,"Peach","BlazingStar","BS","","Self-fertile","","",null,""],
+  [78,1,"Peach","Canadian Harmony","CH","Semi Dwarf","Self-fertile","","",null,""],
+  [79,2,"Peach","Contender","CR","Standard","Self-fertile","","",null,""],
+  [80,2,"Peach","Elberta","EA","Standard","Self-fertile","","",null,""],
+  [81,1,"Peach","Frost","FT","Semi Dwarf","Self-fertile","","",null,""],
+  [83,1,"Peach","JH Hale","JH","Semi Dwarf","Self-fertile","","",null,""],
+  [84,1,"Peach","Redhaven","RH","Semi Dwarf","Self-fertile","","",null,""],
+  [85,1,"Peach","Reliance","RC","","Self-fertile","","",null,""],
+  [86,1,"Peach","Reliance","RC","","Self-fertile","","",null,""],
+  [87,1,"Peach","Reliance","RC","Standard","Self-fertile","","",null,""],
+  [88,1,"Peach","Veteran","VT","Standard","","","",null,""],
+  [89,2,"Pear","Anjou","AU","Standard","Partly self-fertile","","",null,""],
+  [90,1,"Pear","Barnett European Perry Pear","","Semi Dwarf","","","",null,""],
+  [91,1,"Pear","Bartlett","BT","Standard","Partly self-fertile","","",null,""],
+  [92,1,"Pear","Bartlett","BT","Standard","Partly self-fertile","","",null,""],
+  [93,1,"Pear","Butt European Perry Pear","","Semi Dwarf","","","",null,""],
+  [94,3,"Pear","Comice","CE","Semi Dwarf","Self-fertile","","",null,""],
+  [95,1,"Pear","Hendre Huffcapp European Perry Pear","","Semi Dwarf","","","",null,"Jefferson"],
+  [96,1,"Pear","Hosui - Asian","HA","Standard","Not self-fertile","","",null,"Theta"],
+  [97,1,"Pear","Keiffer","KF","","","","",null,""],
+  [98,1,"Pear","Moonglow","MW","Standard","Partly self-fertile","","",null,""],
+  [99,1,"Pear","Olympic Giant - Asian","OG","Standard","Partly self-fertile","","",null,""],
+  [100,1,"Pear","Parker","","","","","",null,""],
+  [101,1,"Pear","Pineapple","PE","Semi Dwarf","Self-fertile","","",null,""],
+  [102,1,"Pear","Red Bartlett","RB","","","","",null,""],
+  [103,1,"Pear","Shinseiki - Asian","SA","Semi Dwarf","Partly self-fertile","","",null,""],
+  [104,1,"Pear","Starking Delicious","SD","Standard","Partly self-fertile","","",null,""],
+  [105,1,"Pear","Starking Hardy Giant - Asian","HG","Semi Dwarf","Not self-fertile","","",null,"50-70 feet tall with a 50-60 foot spread."],
+  [106,2,"Pear","SummerCrisp","","","","","",null,""],
+  [107,1,"Pear","Thorn European Perry Pear","","Semi Dwarf","","","",null,""],
+  [108,1,"Pear","Yellow Huffcapp European Perry Pear","","Semi Dwarf","","","",null,""],
+  [109,2,"Plum","Italian Plum","","","","","",null,""],
+  [110,2,"Plum","Italian Seedling","","","","","",null,""],
+  [115,25,"Elderbery","Sambucus canadensis","","","","","",null,""],
+  [116,25,"Red Mulberry","Morus rubra","","","","","",null,""],
+  [117,25,"Serviceberry","Amelanchier canadensis","","","","","",null,""],
+  [118,50,"Nut","Hybrid Hazelnut (controlled-cross)","","","","","",null,""],
+];
+
+// Inventory_PrairiePlants.xlsx, Inventory sheet (saved October 4, 2026): row, qty, category, subcategory, type, variety,
+// tag ID, Pseudomonas status, Psm. qty, location, relocation date, notes.
+const INVENTORY = [
+  [2,3,"Bush","Berry","Blackberry","various","","",0,"Prairie","3.28.2026",""],
+  [3,7,"Bush","Berry","Currant","Red Berry","Currant","",0,"Prairie","3.28.2026",""],
+  [4,19,"Bush","Berry","Elderberry","","","",0,"Prairie","3.28.2026",""],
+  [5,3,"Bush","Berry","Gooseberry","","GooseBerry","",0,"Prairie","3.28.2026",""],
+  [6,4,"Bush","Berry","Hardy Kiwi","","Hrdy Kiwi","",0,"Prairie","3.28.2026",""],
+  [7,11,"Bush","Berry","Honeyberry","","Hny Bry","",0,"Prairie","3.28.2026",""],
+  [8,4,"Bush","Berry","Josta","Giant","JstB-G","",0,"Prairie","3.07.2026",""],
+  [9,10,"Bush","Berry","Josta","Red","JstB-R","",0,"Prairie","3.07.2026",""],
+  [10,4,"Bush","Berry","Josta","Regular","JstB","",0,"Prairie","3.07.2026",""],
+  [11,25,"Bush","Berry","Mullberry","Red","","",0,"Prairie","3.15.2026",""],
+  [12,11,"Bush","Berry","Sea Berry","","Sea Berry","",0,"Prairie","3.28.2026",""],
+  [13,2,"Bush","Berry","Viking","","Viking","",0,"Prairie","3.28.2026",""],
+  [14,1,"Bush","Berry","","Rasberry?","","",0,"Prairie","3.28.2026",""],
+  [15,34,"Bush","Nut","Hazlenut","Jefferson Filbert","","",0,"Prairie","3.15.2026",""],
+  [16,25,"Forb","Perennial","Comfrey","","","",0,"Prairie","3.28.2026",""],
+  [17,18,"Forb","Perennial","Mint","various","","",0,"Prairie","3.28.2026","all planted"],
+  [18,15,"Forb","Perennial","Rhubarb","","","",0,"Prairie","3.28.2026",""],
+  [19,2,"Tree","Evergreen","Fir","Douglas","Dg. Fir","",0,"Prairie","3.28.2026",""],
+  [20,7,"Tree","Evergreen","Juniper","Eastern Red Ceder","","",0,"Prairie","3.28.2026",""],
+  [21,8,"Tree","Evergreen","Juniper","Variety","","",0,"Prairie","3.28.2026",""],
+  [22,7,"Tree","Evergreen","Pine","Austrian Black","","",0,"Prairie","3.28.2026",""],
+  [23,18,"Tree","Evergreen","Pine","Ponderosa","","",0,"Prairie","3.28.2026",""],
+  [24,2,"Tree","Evergreen","Pine","White","Wht. Pine","",0,"Prairie","3.28.2026",""],
+  [25,4,"Tree","Evergreen","Spruce","Blue","","",0,"Prairie","3.28.2026",""],
+  [26,1,"Tree","Fruit","Apple","Arkansas Black","AL-Ark Blk","",0,"Prairie","3.15.2026",""],
+  [27,1,"Tree","Fruit","Apple","Braeburn Dwarf","AL-Brae Dwf","",0,"Prairie","3.15.2026",""],
+  [28,1,"Tree","Fruit","Apple","Campfield Cide","AL-Campfield","",0,"Prairie","3.15.2026",""],
+  [29,3,"Tree","Fruit","Apple","Cortland","AL-Cort/ AL-Cortland","",0,"Prairie","3.07.2026",""],
+  [30,2,"Tree","Fruit","Apple","Cox Orange Pippin","AL-O Pip","",0,"Prairie","3.07.2026",""],
+  [31,1,"Tree","Fruit","Apple","Crabapple, Dolgo","AL-Dolgo","",0,"Prairie","3.07.2026",""],
+  [32,3,"Tree","Fruit","Apple","Crabapple, Kerr","AL-Kerr Crab","",0,"Prairie","3.28.2026",""],
+  [33,1,"Tree","Fruit","Apple","Crabapple, Wickson","AL-Wickson cr","",0,"Prairie","3.15.2026",""],
+  [34,1,"Tree","Fruit","Apple","Crimson Crisp","AL-Crimson","",0,"Prairie","3.15.2026",""],
+  [35,1,"Tree","Fruit","Apple","Crispin","AL-Crisp","",0,"Prairie","3.07.2026",""],
+  [36,1,"Tree","Fruit","Apple","Delicious, Golden","AL-Gold D","",0,"Prairie","3.07.2026",""],
+  [37,1,"Tree","Fruit","Apple","Delicious, Red","AL-Red Del","",0,"Prairie","3.15.2026",""],
+  [38,2,"Tree","Fruit","Apple","EMLA7 Apple Rootstock","AL-Rtsk-EMLA7","",0,"Prairie","3.28.2026",""],
+  [39,1,"Tree","Fruit","Apple","Foxwhelp Cider","AL-Foxwhelp","",0,"Prairie","3.15.2026",""],
+  [40,1,"Tree","Fruit","Apple","Franklin Cider","AL-Frank C","",0,"Prairie","3.07.2026",""],
+  [41,1,"Tree","Fruit","Apple","Frequin Rouge","AL-Frequin","",0,"Prairie","3.15.2026",""],
+  [42,1,"Tree","Fruit","Apple","Fuji","AL-Fuji","",0,"Prairie","3.07.2026",""],
+  [43,2,"Tree","Fruit","Apple","Fuji Aztec","AL-Az Fuji","",0,"Prairie","3.07.2026",""],
+  [44,1,"Tree","Fruit","Apple","Fuji, Early","AL-Fuji","",0,"Prairie","3.15.2026",""],
+  [45,1,"Tree","Fruit","Apple","Gala","AL-Gala","",0,"Prairie","3.15.2026",""],
+  [46,1,"Tree","Fruit","Apple","Goldrush","AL-Gld Rsh","",0,"Prairie","3.15.2026",""],
+  [47,1,"Tree","Fruit","Apple","Granny Smith","AL-Gran S","",0,"Prairie","3.07.2026",""],
+  [48,2,"Tree","Fruit","Apple","Harrison","AL-Harrison","",0,"Prairie","3.15.2026",""],
+  [49,2,"Tree","Fruit","Apple","Honeycrisp","AL-Hon Cris","",0,"Prairie","3.07.2026",""],
+  [50,1,"Tree","Fruit","Apple","Honeycrisp, Super Red","AL-Hny Crisp","",0,"Prairie","3.15.2026",""],
+  [51,1,"Tree","Fruit","Apple","Hudsons Golden Gem","AL-Gold Gem","",0,"Prairie","3.15.2026",""],
+  [52,1,"Tree","Fruit","Apple","Idared","AL-Idared","",0,"Prairie","3.15.2026",""],
+  [53,2,"Tree","Fruit","Apple","Jonagold","AL-Jon G","",0,"Prairie","3.07.2026",""],
+  [54,1,"Tree","Fruit","Apple","Kingston Black","AL-G Orch-7","",0,"Prairie","3.07.2026",""],
+  [55,1,"Tree","Fruit","Apple","Liberty","AL-Liberty","",0,"Prairie","3.15.2026",""],
+  [56,12,"Tree","Fruit","Apple","M 111 Rootstock","AL-Rstk M111","",0,"Prairie","3.28.2026",""],
+  [57,1,"Tree","Fruit","Apple","McIntosh","AL-Mc In","",0,"Prairie","3.07.2026",""],
+  [58,1,"Tree","Fruit","Apple","Newton Yellow Pippin","AL-G Orch-111","",0,"Prairie","3.07.2026",""],
+  [59,2,"Tree","Fruit","Apple","Pink Lady","AL-Pink/ AL-Pink Lady","",0,"Prairie","3.07.2026",""],
+  [60,1,"Tree","Fruit","Apple","Sweet Sixteen","AL- S Six","",0,"Prairie","3.07.2026",""],
+  [61,1,"Tree","Fruit","Apple","Ukn Rootstock","AL-Rtsk Unk","",0,"Prairie","3.28.2026",""],
+  [62,6,"Tree","Fruit","Apple","Unknown","AL-UnKn","",0,"Prairie","3.07.2026",""],
+  [63,1,"Tree","Fruit","Apple","Urban Gold","AL-UrbGld","",0,"Prairie","3.07.2026",""],
+  [64,1,"Tree","Fruit","Apple","Urban Green","AL-UrbGrn","",0,"Prairie","3.07.2026",""],
+  [65,1,"Tree","Fruit","Apple","Urban Red","AL-UrbR","",0,"Prairie","3.07.2026",""],
+  [66,2,"Tree","Fruit","Apple","Zestar","AL-Zestar","",0,"Prairie","3.07.2026",""],
+  [67,1,"Tree","Fruit","Apricot","Chinese (Mormon)","AT-Chinese","Mulched",1,"Boise","","Girdled"],
+  [68,1,"Tree","Fruit","Apricot","Giant Tilton","AT-Tilton","Pos. Untreated",1,"Prairie","3.21.2026",""],
+  [69,1,"Tree","Fruit","Apricot","Harcot","AT-Harcot","Pos. Untreated",1,"Prairie","3.21.2026",""],
+  [70,2,"Tree","Fruit","Apricot","Moore Park","AT-moorpark","Pos. Untreated",1,"Prairie","3.15.2026","Pos. Untreated in Boise"],
+  [71,1,"Tree","Fruit","Apricot","Unknown","AT-Unk","Pos. Untreated",1,"Prairie","3.21.2026",""],
+  [72,2,"Tree","Fruit","Cherry","Bing","CR-Bing","Pos. Untreated",1,"Prairie","3.07.2026","both at Prairie"],
+  [73,2,"Tree","Fruit","Cherry","Black Tartarian","CR-Black T","Pos. Untreated",1,"Prairie","3.07.2026","both at prairie"],
+  [74,1,"Tree","Fruit","Cherry","Craigs Crimson","CR-Crimson","Mulched",1,"Boise","","Girdled"],
+  [75,1,"Tree","Fruit","Cherry","Hardy Giant Antique","CR-Hardy Antq","Pos. Untreated",1,"Prairie","3.21.2026",""],
+  [76,1,"Tree","Fruit","Cherry","Lapins Sweet","CR-Lapins","",0,"Prairie","3.15.2026",""],
+  [77,2,"Tree","Fruit","Cherry","Montmorency","CR-Mont","",0,"Prairie","3.07.2026",""],
+  [78,2,"Tree","Fruit","Cherry","Nanking, Ian","CR-Ian Nan","",0,"Prairie","3.28.2026",""],
+  [79,1,"Tree","Fruit","Cherry","Nanking, Jules","CR-Juls Nan","",0,"Prairie","3.28.2026",""],
+  [80,1,"Tree","Fruit","Cherry","Royalton Sweet","CR-Royalton","Pos. Untreated",1,"Prairie","3.21.2026",""],
+  [81,3,"Tree","Fruit","Cherry","Sweet","CR-Sweet","Pos. Untreated",1,"Prairie","3.15.2026","Pos. Untreated in Boise"],
+  [82,1,"Tree","Fruit","Cherry","Sweet Stella","CR-Stella","Pos. Untreated",1,"Prairie","3.07.2026",""],
+  [83,1,"Tree","Fruit","Peach","Blazing Star","PC-Blaz Star","Pos. Untreated",1,"Prairie","3.21.2026",""],
+  [84,1,"Tree","Fruit","Peach","Canadian Harmony","PC-Can Harm","Pos. Untreated",1,"Prairie","3.07.2026",""],
+  [85,1,"Tree","Fruit","Peach","Contender","PC-Contender","",0,"Prairie","3.15.2026",""],
+  [86,1,"Tree","Fruit","Peach","Elberta","PC-Elberta","",0,"Prairie","3.07.2026",""],
+  [87,1,"Tree","Fruit","Peach","Frost","PC-Frost","Pos. Untreated",1,"Prairie","3.21.2026",""],
+  [88,1,"Tree","Fruit","Peach","Hale","PC-Hale","Pos. Untreated",1,"Prairie","3.21.2026",""],
+  [89,1,"Tree","Fruit","Peach","Redhaven","PC-Rd Haven","Pos. Untreated",1,"Prairie","3.21.2026",""],
+  [90,2,"Tree","Fruit","Peach","Reliance","PC-Reliance","Pos. Untreated",2,"Prairie","3.21.2026",""],
+  [91,2,"Tree","Fruit","Peach","Unknown","PC-Unk","Pos. Untreated",2,"Prairie","3.21.2026",""],
+  [92,1,"Tree","Fruit","Pear","Anjou Stan. Supreme","PR-Anjou","",0,"Prairie","3.07.2026",""],
+  [93,1,"Tree","Fruit","Pear","Asian Hosui","PR-Asian H","",0,"Prairie","3.15.2026",""],
+  [94,1,"Tree","Fruit","Pear","Asian, Hardy Giant","PR-Asian","",0,"Prairie","3.07.2026",""],
+  [95,1,"Tree","Fruit","Pear","Asian, Shinseiki","PR-Shin Asian","",0,"Prairie","3.15.2026",""],
+  [96,1,"Tree","Fruit","Pear","Barnet Euro","PR-Barnet","",0,"Prairie","3.15.2026",""],
+  [97,2,"Tree","Fruit","Pear","Bartlett","PR-Bart","",0,"Prairie","3.07.2026",""],
+  [98,1,"Tree","Fruit","Pear","Bartlett, Red","PR-R Bart","",0,"Prairie","3.07.2026",""],
+  [99,1,"Tree","Fruit","Pear","Butt Euro Perry","PR-Butt Euro","",0,"Prairie","3.15.2026",""],
+  [100,3,"Tree","Fruit","Pear","Comice","PR-Comice","",0,"Prairie","3.15.2026",""],
+  [101,2,"Tree","Fruit","Pear","D'Anjou","PR-D'an","",0,"Prairie","3.07.2026",""],
+  [102,1,"Tree","Fruit","Pear","Delicious","PR-Delic","",0,"Prairie","3.15.2026",""],
+  [103,2,"Tree","Fruit","Pear","Hendre Huffeap","PR-Hendre","",0,"Prairie","3.15.2026",""],
+  [104,1,"Tree","Fruit","Pear","Kieffer","PR-Kief","",0,"Prairie","3.07.2026",""],
+  [105,1,"Tree","Fruit","Pear","Moonglow","PR-Moon","",0,"Prairie","3.07.2026",""],
+  [106,1,"Tree","Fruit","Pear","Olympic Giant","PR-Olympic","",0,"Prairie","3.15.2026",""],
+  [107,1,"Tree","Fruit","Pear","Parker","PR-Parker","",0,"Prairie","3.07.2026",""],
+  [108,1,"Tree","Fruit","Pear","Pineapple","PR-Pineap","",0,"Prairie","3.15.2026",""],
+  [109,2,"Tree","Fruit","Pear","Summercrisp","PR-Sum Cris","",0,"Prairie","3.07.2026",""],
+  [110,1,"Tree","Fruit","Pear","Yellow Huffcapp","PR- Yw Huffcapp","",0,"Prairie","3.15.2026",""],
+  [111,3,"Tree","Fruit","Plum","Italian Lovell","PM- It Lov","",0,"Prairie","3.07.2026",""],
+  [112,10,"Tree","Nut","Hican","","hican","",0,"Prairie","3.28.2026",""],
+  [113,4,"Tree","Nut","Pecan","","","",0,"Prairie","3.15.2026",""],
+  [114,4,"Tree","Nut","Walnut","English","WL-Enligsh","",0,"Prairie","3.28.2026","3 planted"],
+  [115,2,"Tree","Nut","Walnut","Heartnut Japanese","WL-Heart J","",0,"Prairie","3.07.2026",""],
+  [116,3,"Tree","Shade","Ash","","ash","",0,"Prairie","3.28.2026","2 already planted"],
+  [117,15,"Tree","Shade","Aspen","Trembling","","",0,"Prairie","3.07.2026","5 planted"],
+  [118,10,"Tree","Shade","Maple","Sugar","Sgr Mpl","",0,"Prairie","3.28.2026","2 planted"],
+  [119,1,"Tree","Shade","Maple","","","",0,"Prairie","2023","planted"],
+  [120,8,"Tree","Shade","Oak","various","","",0,"Prairie","3.07.2026","5 planted"]
+];
+
+// Inventory line -> Trees.xlsx Fruit-sheet record(s). The first record supplies the cultivar data used for screening.
+const INVENTORY_MATCH = {
+  3:{ rows:[], berry:"Berry rows 4–7: 5 currants (1 red, 3 black, 1 white)", note:"7 currants listed as red at Prairie vs. 5 purchased (1 red, 3 black, 1 white). Self-fertile per the Berry sheet." },
+  5:{ rows:[], berry:"Berry rows 16–20: 5 gooseberries (Captivator, Hinnonmaki Red ×2, Invicta, Pixwell)", note:"3 at Prairie, 2 fewer than purchased. Self-fertile per the Berry sheet." },
+  7:{ rows:[], berry:"Berry rows 26–31: 12 honeyberries (Blue Diamond ×3, Blue Palm ×3, Indigo Treat ×2, Cinderella ×2, Maxine, Sunrise)", note:"11 at Prairie, 1 fewer than purchased. The Berry sheet says they need another honeyberry, so plant them as one group and mix the varieties." },
+  8:{ rows:[], berry:"Berry rows 32–34: 7 jostaberries (6 black, 1 red)", note:"18 jostaberries at Prairie on lines 8–10, 11 more than purchased. Self-fertile per the Berry sheet." },
+  9:{ rows:[], berry:"Berry rows 32–34: 7 jostaberries (6 black, 1 red)", note:"18 jostaberries at Prairie on lines 8–10, 11 more than purchased. Self-fertile per the Berry sheet." },
+  10:{ rows:[], berry:"Berry rows 32–34: 7 jostaberries (6 black, 1 red)", note:"18 jostaberries at Prairie on lines 8–10, 11 more than purchased. Self-fertile per the Berry sheet." },
+  13:{ rows:[], berry:"Berry rows 2–3: 2 Viking aronia (chokeberry)", note:"Matches the purchase list. Self-fertile per the Berry sheet." },
+  4:{ rows:[115], note:"Planted as a hedge along the east fence by the driveway. The purchase list also has 9 named elderberries on the Berry sheet (American, Bob Gordon ×2, Marge ×2, Perl, Ranch, Wyldewood, York). The 19 at Prairie are not identified by cultivar." },
+  11:{ rows:[116] },
+  15:{ rows:[70,71,76,118], note:"Listed as Jefferson Filbert, but the purchase list has 75 Forestag hybrid seedlings, 1 Jefferson, and 1 Theta. Most are probably hybrids; if the Jefferson and Theta can be identified, plant them side by side (Theta pollinizes Jefferson)." },
+  26:{ rows:[2] },
+  27:{ rows:[8,7], rootstock:"Not recorded (tag says Dwarf)", note:"1 of 2 purchased Braeburns found. The tag says Dwarf, so it is matched to the Lowes tree with no recorded rootstock (row 8) rather than the M-111 tree (row 7)." },
+  28:{ rows:[9] },
+  29:{ rows:[10], note:"3 of 5 purchased found." },
+  30:{ rows:[11] },
+  31:{ rows:[13], note:"1 of 2 purchased found." },
+  32:{ rows:[33], note:"3 found, but 2 were purchased. All are seed-grown, so each may bloom differently." },
+  33:{ rows:[44] },
+  34:{ rows:[12] },
+  35:{ rows:[37] },
+  36:{ rows:[21] },
+  37:{ rows:[40] },
+  38:{ rows:[], note:"Ungrafted EMLA 7 rootstock, for grafting." },
+  39:{ rows:[15] },
+  40:{ rows:[16] },
+  41:{ rows:[17] },
+  42:{ rows:[18], note:"Same tag text (AL-Fuji) as the Early Fuji; check the variety label when planting." },
+  43:{ rows:[4,5], rootstock:"Semi Dwarf or Dwarf", note:"2 of 3 purchased found (row 4: 1 semi-dwarf; row 5: 2 dwarf); the inventory does not say which." },
+  44:{ rows:[3], note:"Same tag text (AL-Fuji) as the Fuji; check the variety label when planting." },
+  45:{ rows:[19,20], note:"1 of 2 purchased found." },
+  46:{ rows:[24] },
+  47:{ rows:[25] },
+  48:{ rows:[26,27], rootstock:"M-111 or Semi Dwarf", note:"The workbook lists one Harrison (row 26, M-111) and one Harrison Cider (row 27, semi-dwarf), the same cultivar. The tags do not say which is which, so both use the row 26 cultivar data." },
+  49:{ rows:[28], note:"2 of 3 purchased found." },
+  50:{ rows:[29] },
+  51:{ rows:[30] },
+  52:{ rows:[31] },
+  53:{ rows:[32] },
+  54:{ rows:[34], note:"Tag AL-G Orch-7 (Grandpa's Orchard, M-7) matches the workbook." },
+  55:{ rows:[35] },
+  56:{ rows:[], note:"Ungrafted M-111 rootstock, for grafting." },
+  57:{ rows:[36] },
+  58:{ rows:[38], note:"Tag AL-G Orch-111 (Grandpa's Orchard, M-111) matches the workbook." },
+  59:{ rows:[39] },
+  60:{ rows:[41], note:"1 of 2 purchased found." },
+  61:{ rows:[], note:"Rootstock of unknown type, for grafting." },
+  62:{ rows:[], name:"Unidentified apple", note:"Tag AL-UnKn. Purchased apples not otherwise found at Prairie: Braeburn 1, Cortland 2, Dolgo 1, Empire 1, Aztec Fuji 1, Gala 1, Golden Russet 1, Honeycrisp 1, Sweet Sixteen 1, Zestar 1. Some of these 6 may be those trees; identify them at bloom or harvest." },
+  63:{ rows:[6], note:"Urban Gold is matched to Blushing Delight, the yellow Urban apple that was purchased (row 6). The workbook's Golden Treat Urban (row 23) has QTY 0; confirm the label." },
+  64:{ rows:[42] },
+  65:{ rows:[43] },
+  66:{ rows:[45], note:"2 of 3 purchased found." },
+  67:{ rows:[46], note:"Still in Boise (girdled, mulched); not planned for Prairie." },
+  68:{ rows:[47] },
+  69:{ rows:[48] },
+  70:{ rows:[49], note:"2 found, but 1 Moorpark was purchased. Patterson (row 50) was not found; one of these may be Patterson." },
+  71:{ rows:[], name:"Unidentified apricot", note:"Tag AT-Unk. The purchased Patterson (row 50) was not otherwise found." },
+  72:{ rows:[53,54] },
+  73:{ rows:[55,56], note:"2 of 4 purchased found." },
+  74:{ rows:[57], note:"Still in Boise (girdled, mulched); not planned for Prairie." },
+  75:{ rows:[58] },
+  76:{ rows:[59] },
+  77:{ rows:[60] },
+  78:{ rows:[61], note:"Nanking 'Ian' (2) and 'Jules' (1) together match the 3 purchased Nanking bushes." },
+  79:{ rows:[61], note:"Nanking 'Ian' (2) and 'Jules' (1) together match the 3 purchased Nanking bushes." },
+  80:{ rows:[63] },
+  81:{ rows:[], name:"Unidentified sweet cherry", note:"Tag CR-Sweet. Purchased sweet cherries not otherwise found at Prairie: Black Tartarian 2, Regina 1, Sam 1." },
+  82:{ rows:[65] },
+  83:{ rows:[77] },
+  84:{ rows:[78] },
+  85:{ rows:[79], note:"1 of 2 purchased found." },
+  86:{ rows:[80], note:"1 of 2 purchased found." },
+  87:{ rows:[81] },
+  88:{ rows:[83] },
+  89:{ rows:[84] },
+  90:{ rows:[85,86,87], note:"2 of 3 purchased found." },
+  91:{ rows:[], name:"Unidentified peach", note:"Tag PC-Unk. Purchased peaches not otherwise found at Prairie: Contender 1, Elberta 1, Reliance 1, Veteran 1." },
+  92:{ rows:[89], note:"Inventory rows 92 (Anjou) and 101 (D'Anjou) together hold 3 Anjou, but 2 were purchased." },
+  93:{ rows:[96] },
+  94:{ rows:[105] },
+  95:{ rows:[103] },
+  96:{ rows:[90] },
+  97:{ rows:[91,92] },
+  98:{ rows:[102] },
+  99:{ rows:[93] },
+  100:{ rows:[94] },
+  101:{ rows:[89], note:"Inventory rows 92 (Anjou) and 101 (D'Anjou) together hold 3 Anjou, but 2 were purchased." },
+  102:{ rows:[104] },
+  103:{ rows:[95], note:"2 found, but 1 was purchased. Thorn (row 107) was not found; one of these may be Thorn." },
+  104:{ rows:[97] },
+  105:{ rows:[98] },
+  106:{ rows:[99] },
+  107:{ rows:[100] },
+  108:{ rows:[101] },
+  109:{ rows:[106] },
+  110:{ rows:[108] },
+  111:{ rows:[109,110], note:"3 of 4 found (2 named Italian plums, row 109; 2 Italian seedlings, row 110). Lovell is a peach rootstock, which suggests grafted trees; confirm whether any are seedlings." },
+  112:{ rows:[69] },
+  113:{ rows:[74], note:"4 of 10 purchased found." },
+  114:{ rows:[], note:"Not on the Fruit sheet. The inventory notes 3 are already planted." },
+  115:{ rows:[68] }
+};
+
+// Fruit types from south (R1, top of the map) to north. Apples are at the south end at the owner's request.
+const TYPE_ORDER = ['Apple','Pear','Cherry','Peach','Apricot','Plum'];
+// Owner-chosen row layout: cherries in two rows. Other types fill full 13-tree rows,
+// or form a nearly square block when they cannot fill a row.
+const BLOCK_ROWS = { Cherry:2 };
+// Owner-chosen rows shared by several fruit types (next to each other in TYPE_ORDER). Each block lists its trees per row,
+// south to north: 'west' blocks start at C1 (right on the map), 'east' blocks end at C13 (left on the map), and
+// 'center' blocks take the positions nearest the middle of the row.
+const SHARED_ROWS = [
+  { blocks:[
+    { type:'Apricot', align:'west', perRow:[3, 2] },
+    { type:'Plum', align:'center', perRow:[1, 2] },
+    { type:'Peach', align:'east', perRow:[6, 5] }
+  ] }
+];
+// Full rows held for future trees, placed on the south (top) side of their fruit type's block.
+const RESERVED_ROWS = { Apple:{ count:13, label:'Grafted rootstock apples' } };
+// Owner-set orchard size. Rows the current trees do not need stay open at the north end for trees bought or grafted later.
+const ORCHARD_ROWS = 15;
+
+// Inventory-sheet rows for each orchard row, R1 (south) first, listed west (C1) to east (C13).
+// Repeating a number places the next tree from that inventory line; null is an open position and "R" a reserved one.
+const ROW_PLAN = [
+  /* R1 */ ["R","R","R","R","R","R","R","R","R","R","R","R","R"],
+  /* R2 */ [39,27,53,42,49,29,59,53,45,26,30,40,41],
+  /* R3 */ [32,29,54,35,59,43,62,49,43,46,37,62,58],
+  /* R4 */ [30,62,50,36,62,66,33,62,64,62,44,48,31],
+  /* R5 */ [28,52,51,55,60,29,57,66,65,63,48,34,32],
+  /* R6 */ [32,47,null,null,null,null,null,null,null,null,null,null,null],
+  /* R7 */ [110,95,106,98,92,100,96,109,107,109,100,104,99],
+  /* R8 */ [94,93,108,103,97,105,101,103,102,101,97,100,null],
+  /* R9 */ [72,80,72,82,78,81,75,78,null,null,null,null,null],
+  /* R10 */ [73,76,73,81,77,79,81,77,null,null,null,null,null],
+  /* R11 */ [70,71,68,null,null,null,111,85,89,88,87,84,90],
+  /* R12 */ [69,70,null,null,null,111,111,null,90,91,83,91,86],
+  /* R13 */ [null,null,null,null,null,null,null,null,null,null,null,null,null],
+  /* R14 */ [null,null,null,null,null,null,null,null,null,null,null,null,null],
+  /* R15 */ [null,null,null,null,null,null,null,null,null,null,null,null,null]
+];
+
+const GRID_COLUMNS = 13;
+// Owner-measured 232 ft plus 5 ft taken from the open ground to the east, so the last trees have 9 ft to the east line.
+const PLOT_WIDTH = 237;
+// Owner-reported east side, measured from the original 232 ft orchard line: 33 ft of open ground, a 22 ft driveway,
+// then 10 ft to the east fence.
+const EAST_SIDE = { originalPlotWidth:232, groundToDriveway:33, driveway:22, drivewayToFence:10 };
+const PLOT_DEPTH = 600;
+const TREE_SPACING = 18;
+const ROW_SPACING = 20;
+const LOCAL_RADIUS = 50;
+// C1 trunks of the unshifted rows stand this far inside the orchard plot's west line.
+const ORCHARD_WEST_SETBACK = 3;
+// Owner-reported: the closest juniper or red cedar is 200+ ft south of the orchard.
+const JUNIPER_DISTANCE = 200;
+// West windbreak strip between the orchard and the west fence. Offsets are row centerlines measured from the fence.
+// Rows without a fixed spacing spread their plants over the full length; rows with one start at the south end
+// and mark positions for plants to add later. A walking and picking lane runs between the first row's trunks and the
+// second row; USDA's hybrid hazelnut guide puts taller tree rows at least 15 ft from hazelnuts (shadeGap).
+const WINDBREAK = {
+  width:35, minAlley:6, orchardLimbAllowance:6, endMargin:6, shadeGap:15,
+  rows:[
+    { key:'mulberry', invRows:[11], name:'Red mulberry', latin:'Morus rubra', layer:'Tall layer on the west fence',
+      offset:5, managedWidth:20, height:'35–50 ft', spread:'35–40 ft wide naturally; keep about 20 ft', color:'#5B2A86',
+      profile:{ trunk:10, crownMid:28, crownHalfHeight:14, label:'Red mulberry', size:'35–50 ft' } },
+    { key:'hazelnut', invRows:[15], name:'Hazelnut', latin:'Corylus hybrids', layer:'Shrub layer beside the alley',
+      offset:20, managedWidth:10, fullWidth:12, height:'Up to about 12 ft', spread:'nearly as wide as tall; keep about 10 ft', color:'#6E6B2F',
+      profile:{ trunk:2, crownMid:6.2, crownHalfHeight:5.4, label:'Hazelnut', size:'up to ~12 ft' } }
+  ]
+};
+// Berry guilds around the west-column (C1) trees, the owner's design. Even rows' C1 trees stand 9 ft farther from the alley,
+// so they get an arc on the south and west sides; odd rows' C1 trees are only 6 ft from the alley, so their bushes go on
+// the south side. Bearings are degrees clockwise from north and radius is feet from the trunk. Bushes fill the guilds of
+// planted C1 trees from south to north in the group order below; C1 spots without a tree yet show future positions.
+const C1_GUILDS = {
+  even:{ radius:7, bearings:[135, 180, 225, 270, 315] },
+  odd:{ radius:6, bearings:[155, 205] },
+  bushWidth:5, color:'#7CC242',
+  groups:[
+    { name:'honeyberry', code:'HB', invRows:[7] }, { name:'red currant', code:'CU', invRows:[3] },
+    { name:'gooseberry', code:'GB', invRows:[5] }, { name:'Viking aronia', code:'AR', invRows:[13] },
+    { name:'jostaberry', code:'JO', invRows:[8,9,10] }
+  ]
+};
+// Elderberry hedge in the strip between the driveway and the east fence: full sun, one row, fixed spacing from the south end.
+const EAST_HEDGE = {
+  key:'elderberry', invRows:[4], name:'American elderberry', latin:'Sambucus canadensis', fromFence:5, spacing:8, managedWidth:6,
+  height:'6–12 ft', spread:'6–8 ft or wider; keep about 6 ft', color:'#2E7D5B'
+};
+// Owner updates that are not yet in the inventory workbook, by inventory row.
+const OWNER_NOTES = { 24:'owner reports both died' };
+// Display codes for inventory lines whose Fruit-sheet code is blank or that are unidentified.
+const GENERATED_CODES = {
+  28:'CAM', 31:'DLG', 32:'KER', 39:'FOX', 41:'FRQ', 62:'UNK', 71:'UNK', 77:'MNT', 78:'NKI', 79:'NKJ', 81:'SWT',
+  91:'UNK', 96:'BNT', 99:'BUT', 103:'HHC', 107:'PKR', 109:'SMC', 110:'YHC', 111:'IPL'
+};
+const FAMILY_OVERRIDES = {
+  2:'arkansasblack', 3:'fuji', 4:'fuji', 5:'fuji', 18:'fuji', 27:'harrison',
+  29:'honeycrisp', 36:'mcintosh', 38:'newtownpippin', 39:'pinklady',
+  99:'asiangiant', 102:'bartlett', 105:'asiangiant'
+};
+const APPLE_ALIASES = {
+  cox:'coxsorangepippin', cripps:'pinklady', granny:'grannysmith', ganny:'grannysmith',
+  grany:'grannysmith', honeycrist:'honeycrisp', honsycrist:'honeycrisp', honrycrisp:'honeycrisp',
+  hudsongolden:'hudsonsgoldengem', hudsongold:'hudsonsgoldengem', hudsongoldengem:'hudsonsgoldengem',
+  newtownpippen:'newtownpippin', wickson:'wicksoncrab', wicksoncrag:'wicksoncrab',
+  franklin:'franklincider', macintosh:'mcintosh'
+};
+// Confidence and source notes accompany the workbook's flowering-group values.
+const HARRISON_BLOOM_RESEARCH = {
+  fg:3, sourceDependent:true,
+  note:'Orange Pippin assigns Harrison to group 3, matching the existing Harrison workbook entry. The same assignment is used for Harrison Cider Apple, not a different pollen partner. Raintree instead lists group 4 (mid-late); retain this source difference and verify local bloom.',
+  sources:[
+    ['Orange Pippin: Harrison (FG 3)', 'https://www.orangepippintrees.com/trees/cider-apple-trees/harrison'],
+    ['Raintree: Harrison (bloom group 4)', 'https://raintreenursery.com/products/harrison-cider-apple-semi-dwarf']
+  ]
+};
+const APPLE_BLOOM_RESEARCH = {
+  6: {
+    fg:null, period:'Midseason',
+    note:'Raintree describes the Urban Apple series as midseason bloomers and recommends different Urban cultivars for one another. No numbered flowering group was verified for Blushing Delight.',
+    sources:[['Raintree: Blushing Delight', 'https://raintreenursery.com/products/blushing-delight%E2%84%A2-urban%E2%84%A2-columnar-apple-semi-dwarf']]
+  },
+  9: {
+    fg:3,
+    note:'Orange Pippin explicitly assigns Campfield to flowering group 3. Raintree independently lists bloom group 3 (midseason). Both refer to flowering, not harvest season.',
+    sources:[
+      ['Orange Pippin: Campfield (FG 3)', 'https://www.orangepippintrees.com/trees/cider-apple-trees/campfield'],
+      ['Raintree: Campfield (bloom group 3)', 'https://raintreenursery.com/products/campfield-cider-apple-semi-dwarf']
+    ]
+  },
+  13: {
+    fg:2,
+    note:'Orange Pippin explicitly assigns the named Dolgo cultivar to flowering group 2 and describes early blossom. This assignment assumes these are the named cultivar, not unnamed seedlings.',
+    sources:[['Orange Pippin: Dolgo', 'https://www.orangepippintrees.com/trees/crab-apple-trees/malus-pink-glow-dolgo']]
+  },
+  15: {
+    fg:3,
+    note:'The workbook records RainTree as the vendor for this tree, supporting the owner-selected Raintree group 3 (midseason). Raintree identifies its stock as Sonoma/Geneva Foxwhelp (Fauxwhelp), not authenticated English Foxwhelp. Other sources describe different Foxwhelp material (Orange Pippin group 5; RV Roger group B); those classifications are not substituted for the recorded supplier. Confirm local bloom.',
+    sources:[
+      ['Raintree: Fauxwhelp stock (bloom group 3)', 'https://raintreenursery.com/products/foxwhelp-cider-apple-semi-dwarf'],
+      ['Orange Pippin: generic Foxwhelp entry (group 5; identity caveat)', 'https://www.orangepippin.com/varieties/apples/foxwhelp'],
+      ['RV Roger: Foxwhelp (lettered group B)', 'https://rvroger.co.uk/apple-foxwhelp/']
+    ]
+  },
+  17: {
+    fg:4, sourceDependent:true,
+    note:'Orange Pippin assigns Frequin Rouge to group 4, corroborated by Raintree (mid-late). Cummins instead lists group 5 in its five-group system and warns that the precise Frequin Rouge variant in North America is uncertain. Use 4 as the source-attributed planning value, not proof of local bloom or a reason to substitute another Frequin cultivar.',
+    sources:[
+      ['Orange Pippin: Frequin Rouge (FG 4)', 'https://www.orangepippintrees.com/trees/cider-apple-trees/frequin-rouge'],
+      ['Raintree: Frequin Rouge (bloom group 4)', 'https://raintreenursery.com/products/frequin-rouge-cider-apple-semi-dwarf'],
+      ['Cummins: Frequin Rouge (group 5; variant uncertainty)', 'https://www.cumminsnursery.com/buy-trees/product-detail.php?type=tree&id=23273'],
+      ['Cummins: five-group bloom scheme', 'https://www.cumminsnursery.com/learn-trees/choosing-trees/pollination/fruit-tree-bloom-dates']
+    ]
+  },
+  26:HARRISON_BLOOM_RESEARCH,
+  33: {
+    fg:2, provisional:true,
+    note:'BEST GUESS: group 2 is an owner-approved planning estimate based on the published group for the named Kerr cultivar. The owner confirmed the Kerr trees were grown from seed (3 are at Prairie), so they are genetically different from that cultivar and may bloom at different times, including from each other. This is not a verified assignment. Record each seedling\'s first, full, and final bloom alongside known cultivars and revise the group if needed.',
+    sources:[
+      ['Orange Pippin: named Kerr cultivar (FG 2 only for the cultivar)', 'https://www.orangepippintrees.com/trees/crab-apple-trees/kerr'],
+      ['Iowa State Extension: apple seedlings do not come true to type', 'https://yardandgarden.extension.iastate.edu/faq/can-i-grow-apple-tree-seed']
+    ]
+  },
+  42: {
+    fg:null, period:'Midseason',
+    note:'The workbook spelling "Tandgy green" is treated as Tangy Green Urban Apple (AK-98); confirm the nursery label. Raintree gives midseason bloom guidance for the series and recommends other Urban cultivars. No numbered flowering group was verified.',
+    sources:[['Raintree: Tangy Green', 'https://raintreenursery.com/products/tangy-green%E2%84%A2-urban%E2%84%A2-columnar-apple-semi-dwarf']]
+  },
+  43: {
+    fg:null, period:'Midseason',
+    note:'Raintree explicitly describes Urban Apple varieties as midseason bloomers and recommends them for one another. No numbered flowering group was verified for Tasty Red.',
+    sources:[['Raintree: Tasty Red', 'https://raintreenursery.com/products/tasty-red%E2%84%A2-urban%E2%84%A2-columnar-apple-semi-dwarf']]
+  }
+};
+const URBAN_APPLE_ROWS = [6,42,43];
+const PEAR_BLOOM = {
+  89:['Early–mid','early','mid'], 91:['Early–mid','early','mid'], 92:['Early–mid','early','mid'],
+  94:['Mid–late','mid','late'], 95:['Early (perry chart)','early'], 96:['Early','early'],
+  97:['Late','late'], 98:['Early–mid','early','mid'], 101:['Early','early'],
+  102:['Early–mid','early','mid'], 104:['Early–mid','early','mid'], 105:['Early','early'],
+  107:['Mid (perry chart)','mid'], 93:['Late (perry chart)','late']
+};
+// OSU compatibility group and relative bloom period; self-fertile donors have no blocking group.
+const CHERRY_CHART = {
+  53:{ group:'III', bloom:3 }, 54:{ group:'III', bloom:3 },
+  55:{ group:'I', bloom:1 }, 56:{ group:'I', bloom:1 },
+  59:{ group:null, bloom:2 }, 62:{ group:'II', bloom:5 },
+  63:{ group:'XIII', bloom:3 }, 64:{ group:'XIII', bloom:5 }, 65:{ group:null, bloom:3 }
+};
+
+const FRUIT_BY_ROW = new Map(FRUIT_SHEET.map(([sourceRow, quantity, fruit, name, code, rootstock, fertility, pollenQuality, ploidy, fg, pollenizers]) =>
+  [sourceRow, { sourceRow, quantity, fruit, name, code, rootstock, fertility, pollenQuality, ploidy, fg, pollenizers }]));
+const INVENTORY_BY_ROW = new Map(INVENTORY.map(line => [line[0], line]));
+const ORCHARD_X0 = WINDBREAK.width + ORCHARD_WEST_SETBACK;
+// Marks a reserved position in ROW_PLAN.
+const RESERVED = 'R';
+
+function fruitRecord(row) {
+  const record = FRUIT_BY_ROW.get(row);
+  if (!record) throw new Error(`Fruit sheet row ${row} is missing from the snapshot`);
+  return record;
+}
+
+function inventoryLine(row) {
+  const line = INVENTORY_BY_ROW.get(row);
+  if (!line) throw new Error(`Inventory row ${row} is missing from the snapshot`);
+  return line;
+}
+
+function normalizeName(name) {
+  return name.toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function placementOf(line) {
+  const [invRow, , category, subcategory, , variety, , , , location] = line;
+  if (WINDBREAK.rows.some(row => row.invRows.includes(invRow))) return 'windbreak';
+  if (EAST_HEDGE.invRows.includes(invRow)) return 'east-hedge';
+  if (C1_GUILDS.groups.some(group => group.invRows.includes(invRow))) return 'guild';
+  if (location !== 'Prairie') return 'elsewhere';
+  if (category === 'Tree' && subcategory === 'Fruit') return /rootstock/i.test(variety) ? 'rootstock' : 'orchard';
+  if (category === 'Tree' && subcategory === 'Nut') return 'nut';
+  return 'other';
+}
+
+function buildOrchardTrees() {
+  const trees = [];
+  INVENTORY.forEach(line => {
+    if (placementOf(line) !== 'orchard') return;
+    const [invRow, qty, , , type, variety, tag, psm, psmQty] = line;
+    const match = INVENTORY_MATCH[invRow];
+    if (!match) throw new Error(`Inventory row ${invRow} (${variety}) has no purchase-list match`);
+    const source = match.rows.length ? fruitRecord(match.rows[0]) : null;
+    if (source && source.fruit !== type) throw new Error(`Inventory row ${invRow} is matched to a ${source.fruit} record`);
+    if (!source && !match.name) throw new Error(`Unidentified inventory row ${invRow} needs a display name`);
+    const recorded = [...new Set(match.rows.map(row => fruitRecord(row).rootstock).filter(Boolean))];
+    const rootstock = match.rootstock || recorded.join(' or ');
+    const code = (source && source.code) || GENERATED_CODES[invRow];
+    if (!code) throw new Error(`Missing display code for inventory row ${invRow}`);
+    const appleBloom = source ? APPLE_BLOOM_RESEARCH[source.sourceRow] : undefined;
+    if (appleBloom && appleBloom.fg !== source.fg) {
+      throw new Error(`Flowering-group research differs from the workbook at Fruit row ${source.sourceRow}`);
+    }
+    for (let instance = 1; instance <= qty; instance++) {
+      const id = `i${invRow}-${instance}`;
+      const name = source ? source.name : match.name;
+      trees.push({
+        id, invRow, instance, lineQty:qty, tag, invVariety:variety, type, fruit:type, unknown:!source,
+        sourceRow:source ? source.sourceRow : null, fruitRows:match.rows, name, code, rootstock,
+        fertility:source ? source.fertility : '', pollenQuality:source ? source.pollenQuality : '',
+        ploidy:source ? source.ploidy : '', fg:source ? source.fg : null, pollenizers:source ? source.pollenizers : '',
+        family:source ? FAMILY_OVERRIDES[source.sourceRow] || normalizeName(name) : `unidentified-${id}`,
+        appleBloom, planningFg:source ? source.fg : null,
+        planningPloidy:!source ? '' : source.sourceRow === 35 ? 'Disputed' : source.ploidy,
+        pearAsian:type === 'Pear' && /Asian/.test(name),
+        selfFertile:!!source && source.sourceRow !== 83 &&
+          (/^self-fertile$/i.test(source.fertility) || [59,60,109].includes(source.sourceRow)),
+        listedPartners:new Set((source ? source.pollenizers : '').split(',').map(entry => {
+          const key = normalizeName(entry);
+          return APPLE_ALIASES[key] || key;
+        }).filter(Boolean)),
+        psm, psmQty, matchNote:match.note || ''
+      });
+    }
+  });
+  return trees;
+}
+
+function balancedRows(count, rowCount) {
+  const base = Math.floor(count / rowCount);
+  const extra = count % rowCount;
+  return Array.from({ length:rowCount }, (_, index) => base + (index < extra ? 1 : 0));
+}
+
+// Row lengths for one fruit type, west-justified and listed south to north.
+function blockShape(count, type) {
+  const requested = BLOCK_ROWS[type];
+  const squareRows = Math.max(1, Math.round(Math.sqrt(count)));
+  let shape;
+  if (requested) {
+    shape = balancedRows(count, requested === 'square' ? squareRows : requested);
+  } else if (count >= GRID_COLUMNS) {
+    const full = Math.floor(count / GRID_COLUMNS);
+    const rest = count % GRID_COLUMNS;
+    shape = [...Array(full).fill(GRID_COLUMNS), ...(rest ? [rest] : [])];
+  } else {
+    shape = balancedRows(count, squareRows);
+  }
+  if (shape[0] > GRID_COLUMNS) throw new Error(`${type} needs more than ${GRID_COLUMNS} positions in a row`);
+  return shape;
+}
+
+function sharedGroupOf(type) {
+  return SHARED_ROWS.find(group => group.blocks.some(block => block.type === type)) || null;
+}
+
+// Positions (C numbers) for a block of n trees: 'west' from C1, 'east' ending at C13, 'center' nearest the row's middle.
+function blockColumns(align, n, off) {
+  const columns = Array.from({ length:GRID_COLUMNS }, (_, index) => index + 1);
+  if (align === 'west') return columns.slice(0, n);
+  if (align === 'east') return columns.slice(GRID_COLUMNS - n);
+  if (align !== 'center') throw new Error(`Unknown block alignment: ${align}`);
+  const middle = ((GRID_COLUMNS - 1) * TREE_SPACING + TREE_SPACING / 2) / 2;
+  const distance = c => Math.abs((c - 1) * TREE_SPACING + (off ? TREE_SPACING / 2 : 0) - middle);
+  return columns.sort((a, b) => distance(a) - distance(b) || a - b).slice(0, n).sort((a, b) => a - b);
+}
+
+// The planned use of every position, row by row from R1 (south): a fruit type, RESERVED, or null for an open position.
+function rowTemplate(trees) {
+  const countOf = type => trees.filter(tree => tree.type === type).length;
+  const present = TYPE_ORDER.filter(countOf);
+  const template = [];
+  const filled = (length, value) => Array.from({ length:GRID_COLUMNS }, (_, index) => index < length ? value : null);
+  for (let index = 0; index < present.length; index++) {
+    const type = present[index];
+    const group = sharedGroupOf(type);
+    if (!group) {
+      const reserve = RESERVED_ROWS[type];
+      if (reserve) template.push({ types:[type], cells:filled(reserve.count, RESERVED), reserved:reserve.count, shared:false, future:false });
+      blockShape(countOf(type), type).forEach(length => template.push({ types:[type], cells:filled(length, type), reserved:0, shared:false, future:false }));
+      continue;
+    }
+    const groupTypes = group.blocks.map(block => block.type);
+    if (present.slice(index, index + groupTypes.length).sort().join() !== [...groupTypes].sort().join()) {
+      throw new Error(`${groupTypes.join(', ')} share rows, so they must be next to each other in TYPE_ORDER`);
+    }
+    const rowCount = group.blocks[0].perRow.length;
+    const cells = Array.from({ length:rowCount }, () => Array(GRID_COLUMNS).fill(null));
+    group.blocks.forEach(block => {
+      if (BLOCK_ROWS[block.type] || RESERVED_ROWS[block.type]) throw new Error(`${block.type} has both its own row settings and shared rows`);
+      if (block.perRow.length !== rowCount) throw new Error('Every block in a shared group needs the same number of rows');
+      const total = block.perRow.reduce((sum, n) => sum + n, 0);
+      if (total !== countOf(block.type)) throw new Error(`${block.type}: the shared rows hold ${total} trees, but ${countOf(block.type)} are at Prairie`);
+      block.perRow.forEach((n, k) => {
+        const r = template.length + k + 1;
+        blockColumns(block.align, n, r % 2 === 0).forEach(c => {
+          if (cells[k][c - 1]) throw new Error(`R${r}-C${c}: the ${block.type} block overlaps the ${cells[k][c - 1]} block`);
+          cells[k][c - 1] = block.type;
+        });
+      });
+    });
+    cells.forEach(row => template.push({ types:[...new Set(row.filter(Boolean))], cells:row, reserved:0, shared:true, future:false }));
+    index += groupTypes.length - 1;
+  }
+  if (template.length > ORCHARD_ROWS) throw new Error(`The trees need ${template.length} rows, more than the ${ORCHARD_ROWS} in the orchard`);
+  while (template.length < ORCHARD_ROWS) template.push({ types:[], cells:Array(GRID_COLUMNS).fill(null), reserved:0, shared:false, future:true });
+  return template;
+}
+
+// Places the trees listed in a row plan (see ROW_PLAN) after checking every position against the row template.
+function layoutRows(plan, trees) {
+  const template = rowTemplate(trees);
+  if (plan.length !== template.length) throw new Error(`The row plan has ${plan.length} rows, but the layout needs ${template.length}`);
+  const byLine = new Map();
+  trees.forEach(tree => {
+    if (!byLine.has(tree.invRow)) byLine.set(tree.invRow, []);
+    byLine.get(tree.invRow).push(tree);
+  });
+  const used = new Map();
+  const rows = template.map(({ types, cells, reserved, shared, future }, index) => {
+    const r = index + 1;
+    const off = r % 2 === 0;
+    const planned = plan[index];
+    if (planned.length > GRID_COLUMNS) throw new Error(`R${r} lists more than ${GRID_COLUMNS} positions`);
+    const placed = cells.map((expected, column) => {
+      const id = planned[column] ?? null;
+      if (expected === null || expected === RESERVED) {
+        if (id !== expected) throw new Error(`R${r}-C${column + 1} should be ${expected === null ? 'open' : 'reserved'} in the row plan`);
+        return null;
+      }
+      const list = byLine.get(id) || [];
+      const next = used.get(id) || 0;
+      const tree = list[next];
+      if (!tree || tree.type !== expected) throw new Error(`R${r}-C${column + 1}: inventory row ${id} is not an available ${expected}`);
+      used.set(id, next + 1);
+      return Object.assign(tree, { r, c:column + 1, x:column * TREE_SPACING + (off ? TREE_SPACING / 2 : 0), y:index * ROW_SPACING });
+    });
+    return { r, off, types, type:types.length === 1 ? types[0] : null, shared, reserved, future, trees:placed };
+  });
+  byLine.forEach((list, invRow) => {
+    const placed = used.get(invRow) || 0;
+    if (placed !== list.length) throw new Error(`Inventory row ${invRow}: ${list.length} trees at Prairie, but ${placed} placed`);
+  });
+  return rows;
+}
+
+function lineCount(invRows) {
+  return invRows.reduce((sum, row) => sum + inventoryLine(row)[1], 0);
+}
+
+// Lays out one plant row along the orchard (north–south). Rows with a fixed spacing start at the south end and mark the
+// remaining positions for plants to add later; other rows spread their plants over the full length, centered on the orchard.
+function layoutPlantRow(row, x, span) {
+  const target = span + 2 * WINDBREAK.endMargin;
+  const count = lineCount(row.invRows);
+  let spacing, start, positions;
+  if (row.spacing) {
+    spacing = row.spacing;
+    start = -WINDBREAK.endMargin;
+    positions = Math.max(count, Math.ceil(target / spacing - 1e-9) + 1);
+  } else {
+    spacing = Math.ceil(target / (count - 1) * 2 - 1e-9) / 2;
+    start = span / 2 - spacing * (count - 1) / 2;
+    positions = count;
+  }
+  const all = Array.from({ length:positions }, (_, index) => ({ x, y:start + index * spacing, planted:index < count }));
+  const plants = all.filter(position => position.planted);
+  return {
+    ...row, x, count, spacing, start, end:all[all.length - 1].y, plantedEnd:plants[plants.length - 1].y,
+    plants, future:all.filter(position => !position.planted)
+  };
+}
+
+function windbreakLayout(rowCount) {
+  WINDBREAK.rows.forEach((row, index) => {
+    if (index && row.offset <= WINDBREAK.rows[index - 1].offset) throw new Error('Windbreak rows must run west to east');
+  });
+  return WINDBREAK.rows.map(row => layoutPlantRow(row, row.offset, (rowCount - 1) * ROW_SPACING));
+}
+
+function eastHedgeLayout(rowCount, eastFenceX) {
+  return layoutPlantRow(EAST_HEDGE, eastFenceX - EAST_HEDGE.fromFence, (rowCount - 1) * ROW_SPACING);
+}
+
+function alleyGeometry() {
+  const lastRow = WINDBREAK.rows[WINDBREAK.rows.length - 1];
+  const hedgeEdge = lastRow.offset + lastRow.managedWidth / 2;
+  const limbEdge = ORCHARD_X0 - WINDBREAK.orchardLimbAllowance;
+  const clear = limbEdge - hedgeEdge;
+  if (hedgeEdge > WINDBREAK.width) throw new Error('The windbreak rows do not fit inside the strip');
+  if (clear < WINDBREAK.minAlley) throw new Error(`The tractor alley is ${clear} ft, less than the ${WINDBREAK.minAlley} ft minimum`);
+  return { hedgeEdge, limbEdge, clear, ground:ORCHARD_X0 - hedgeEdge };
+}
+
+// Walking and picking lane from the tall row's trunks to the next row's west edge. The tall row is pruned so it does not
+// overhang the next row, and the rows keep USDA's 15 ft shade gap.
+function laneGeometry() {
+  const [tall, next] = WINDBREAK.rows;
+  const east = next.offset - next.managedWidth / 2;
+  if (next.offset - tall.offset < WINDBREAK.shadeGap) throw new Error(`The ${next.name.toLowerCase()} row is closer than ${WINDBREAK.shadeGap} ft to the ${tall.name.toLowerCase()} row`);
+  if (tall.offset + tall.managedWidth / 2 > east) throw new Error(`The ${tall.name.toLowerCase()} crowns would overhang the ${next.name.toLowerCase()} row`);
+  return { west:tall.offset, east, width:east - tall.offset };
+}
+
+// Guild positions around each C1 trunk (x from the west fence, y north of the R1 line). Bushes go around planted C1 trees;
+// positions around C1 spots without a tree become future positions, and bushes beyond the room are returned as spares.
+function guildLayout(rows) {
+  const queue = C1_GUILDS.groups.flatMap(group => Array(lineCount(group.invRows)).fill(group));
+  const bushes = [], future = [];
+  const alleyEdge = ORCHARD_X0 - WINDBREAK.orchardLimbAllowance;
+  rows.forEach(row => {
+    const spec = row.off ? C1_GUILDS.even : C1_GUILDS.odd;
+    const trunkX = ORCHARD_X0 + (row.off ? TREE_SPACING / 2 : 0), trunkY = (row.r - 1) * ROW_SPACING;
+    spec.bearings.forEach(bearing => {
+      const angle = bearing * Math.PI / 180;
+      const spot = { r:row.r, x:trunkX + spec.radius * Math.sin(angle), y:trunkY + spec.radius * Math.cos(angle) };
+      if (spot.x - C1_GUILDS.bushWidth / 2 < alleyEdge) throw new Error(`R${row.r}: a guild bush would reach into the tractor alley`);
+      if (row.trees[0] && queue.length) bushes.push({ ...spot, group:queue.shift() });
+      else future.push(spot);
+    });
+  });
+  return { bushes, future, spare:queue };
+}
+
+function treeDistance(a, b) {
+  return Math.hypot(a.x - b.x, a.y - b.y);
+}
+
+function needsTwoDonors(tree) {
+  return tree.planningPloidy === 'Triploid' || tree.planningPloidy === 'Disputed';
+}
+
+function compatiblePair(recipient, donor) {
+  if (recipient.id === donor.id || recipient.type !== donor.type || recipient.family === donor.family) return null;
+  if (recipient.type === 'Apple') {
+    if (donor.planningPloidy !== 'Diploid' || donor.pollenQuality === 'Poor') return null;
+    const listed = recipient.listedPartners.has(donor.family);
+    if (recipient.planningFg !== null && donor.planningFg !== null) {
+      if (Math.abs(recipient.planningFg - donor.planningFg) > 1) return null;
+      const basis = listed ? 'Workbook-listed + bloom group' : 'Bloom-group candidate';
+      const provisional = (recipient.appleBloom && recipient.appleBloom.provisional) || (donor.appleBloom && donor.appleBloom.provisional);
+      return { basis:basis + (provisional ? '; provisional flowering group' : '') };
+    }
+    if (URBAN_APPLE_ROWS.includes(recipient.sourceRow) && URBAN_APPLE_ROWS.includes(donor.sourceRow)) {
+      return { basis:'Raintree Urban Apple recommendation; confirm local bloom' };
+    }
+    return listed ? { basis:'Workbook-listed; confirm bloom' } : null;
+  }
+  if (recipient.type === 'Pear') {
+    if (recipient.pearAsian !== donor.pearAsian) return null;
+    if (recipient.sourceRow === 106 && donor.sourceRow === 100) {
+      return { basis:'Nursery-recommended Parker for Summercrisp; confirm local bloom' };
+    }
+    const a = PEAR_BLOOM[recipient.sourceRow];
+    const b = PEAR_BLOOM[donor.sourceRow];
+    if (!a || !b || !a.slice(1).some(period => b.slice(1).includes(period))) return null;
+    return { basis:'Pear bloom-chart candidate; confirm compatibility' };
+  }
+  if (recipient.type === 'Cherry') {
+    const a = CHERRY_CHART[recipient.sourceRow];
+    const b = CHERRY_CHART[donor.sourceRow];
+    if (!a || !b || (a.group && a.group === b.group) || Math.abs(a.bloom - b.bloom) > 1) return null;
+    if ([53,54].includes(recipient.sourceRow) && donor.sourceRow === 65) return null;
+    return { basis:'Cherry compatibility + bloom chart; confirm local overlap' };
+  }
+  if (recipient.type === 'Peach' && recipient.sourceRow === 83) {
+    if (donor.sourceRow === 88) return { basis:'UC Davis names Veteran for J.H. Hale' };
+    if (donor.unknown || donor.sourceRow === 80) return null;
+    return { basis:'UC Davis: almost any non-Elberta peach; match chill and bloom' };
+  }
+  return null;
+}
+
+function nearestPartners(tree, donorPool) {
+  const candidates = donorPool.map(donor => {
+    const pair = compatiblePair(tree, donor);
+    return pair ? { donor, distance:treeDistance(tree, donor), basis:pair.basis } : null;
+  }).filter(Boolean).sort((a, b) => a.distance - b.distance || a.donor.id.localeCompare(b.donor.id));
+  const families = new Set();
+  const distinct = candidates.filter(candidate => {
+    if (families.has(candidate.donor.family)) return false;
+    families.add(candidate.donor.family);
+    return true;
+  });
+  if (!needsTwoDonors(tree)) return distinct;
+  let bestPair = null;
+  let shortest = Infinity;
+  distinct.forEach((a, index) => distinct.slice(index + 1).forEach(b => {
+    if (compatiblePair(a.donor, b.donor) && compatiblePair(b.donor, a.donor) && a.distance + b.distance < shortest) {
+      bestPair = [a, b];
+      shortest = a.distance + b.distance;
+    }
+  }));
+  return bestPair ? [...bestPair, ...distinct.filter(candidate => !bestPair.includes(candidate))] : [];
+}
+/* MODEL END */
+
+const orchardTrees = buildOrchardTrees();
+const rows = layoutRows(ROW_PLAN, orchardTrees);
+const allTrees = rows.flatMap(row => row.trees.filter(Boolean));
+const windbreakRows = windbreakLayout(rows.length);
+const alley = alleyGeometry();
+const lane = laneGeometry();
+const partnerMap = new Map(allTrees.map(tree => [tree.id, nearestPartners(tree, allTrees)]));
+const rowSpan = (GRID_COLUMNS - 1) * TREE_SPACING;
+const gridWidth = rowSpan + TREE_SPACING / 2;
+const gridDepth = (rows.length - 1) * ROW_SPACING;
+const reservedRows = rows.filter(row => row.reserved);
+const reservedTotal = reservedRows.reduce((sum, row) => sum + row.reserved, 0);
+const openCount = rows.length * GRID_COLUMNS - allTrees.length - reservedTotal;
+const neighborDistance = Math.hypot(TREE_SPACING / 2, ROW_SPACING);
+const windbreakTotal = windbreakRows.reduce((sum, row) => sum + row.count, 0);
+const guilds = guildLayout(rows);
+const guildSpots = [...guilds.bushes, ...guilds.future];
+const guildRows = [...new Set(guilds.bushes.map(bush => bush.r))];
+const rowSpanText = list => list.length > 1 ? `R${list[0]}–R${list[list.length - 1]}` : `R${list[0]}`;
+// Each berry type's guild rows, south to north, plus any bushes left over.
+const guildRuns = C1_GUILDS.groups.map(group => {
+  const list = guilds.bushes.filter(bush => bush.group === group);
+  return { group, count:list.length, rows:[...new Set(list.map(bush => bush.r))], spare:guilds.spare.filter(item => item === group).length };
+});
+// Narrowest walking gap between bushes of neighboring guilds, and the nearest bush edge to the alley.
+const guildGap = Math.min(...guildSpots.flatMap((a, i) => guildSpots.slice(i + 1).filter(b => b.r !== a.r)
+  .map(b => Math.hypot(a.x - b.x, a.y - b.y)))) - C1_GUILDS.bushWidth;
+const guildWestEdge = Math.min(...guildSpots.map(spot => spot.x)) - C1_GUILDS.bushWidth / 2;
+// Describes a fixed-spacing row's planted stretch and the positions left for later.
+const fillText = row => row.future.length ?
+  `${row.count} planted from ${nsLabel(row.start)} to ${nsLabel(row.plantedEnd)}; ${row.future.length} more positions continue to ${nsLabel(row.end)}` :
+  `${row.count} planted`;
+const unidentified = allTrees.filter(tree => tree.unknown);
+const PLURAL = { Apple:'apples', Apricot:'apricots', Cherry:'cherries', Peach:'peaches', Pear:'pears', Plum:'plums' };
+const capitalize = text => text[0].toUpperCase() + text.slice(1);
+const typeRows = type => rows.filter(row => row.types.includes(type));
+const typeCount = (row, type) => row.trees.filter(tree => tree && tree.type === type).length;
+const rowRange = type => {
+  const list = typeRows(type);
+  return list.length > 1 ? `R${list[0].r}–R${list[list.length - 1].r}` : `R${list[0].r}`;
+};
+const typeOffset = type => (typeRows(type)[0].r - 1) * ROW_SPACING;
+const listText = items => items.length > 2 ? `${items.slice(0, -1).join(', ')}, and ${items[items.length - 1]}` : items.join(' and ');
+const layoutText = type => {
+  const list = typeRows(type).filter(row => !row.reserved);
+  const lengths = list.map(row => typeCount(row, type));
+  const base = BLOCK_ROWS[type] === 'square' ? `a ${list.length} × ${lengths[0]} square block` :
+    `${list.length} row${list.length > 1 ? 's' : ''} (${lengths.join(' + ')})`;
+  const held = typeRows(type).filter(row => row.reserved);
+  return held.length ? `${base} plus ${held.map(row => `reserved R${row.r} (${row.reserved} spots)`).join(', ')}` : base;
+};
+// Shared rows: where each block sits, by compass direction and as drawn on the map (west on the right).
+const ALIGN_TEXT = { west:'at the west end', center:'in the center', east:'at the east end' };
+const ALIGN_MAP = { west:'right-justified', center:'centered', east:'left-justified' };
+const firstOfGroup = type => TYPE_ORDER.find(other => sharedGroupOf(type).blocks.some(block => block.type === other)) === type;
+const sharedText = group => `${listText(group.blocks.map(block =>
+  `${PLURAL[block.type]} ${ALIGN_TEXT[block.align]} (${typeRows(block.type).map(row => typeCount(row, block.type)).join(' + ')})`))} share ${rowRange(group.blocks[0].type)}`;
+const sharedMapText = group => `in ${rowRange(group.blocks[0].type)} the ${listText(group.blocks.map(block => `${PLURAL[block.type]} are ${ALIGN_MAP[block.align]}`))}, so the open spots there are between the blocks`;
+const presentGroups = SHARED_ROWS.filter(group => group.blocks.some(block => typeRows(block.type).length));
+// Rows held open at the north end for trees bought or grafted later.
+const futureRows = rows.filter(row => row.future);
+const futureRange = futureRows.length > 1 ? `R${futureRows[0].r}–R${futureRows[futureRows.length - 1].r}` : futureRows.length ? `R${futureRows[0].r}` : '';
+const futureText = futureRows.length ? `${futureRange} ${futureRows.length > 1 ? 'are' : 'is'} open for trees you buy or graft later` : '';
+// The fruit-type rows from south to north, with each group of shared rows described once, then any open future rows.
+const rowPlanText = () => [...TYPE_ORDER.filter(type => typeRows(type).length).flatMap(type => {
+  const group = sharedGroupOf(type);
+  if (!group) return [`${PLURAL[type]} in ${layoutText(type)}`];
+  return firstOfGroup(type) ? [sharedText(group)] : [];
+}), futureText].filter(Boolean).join('; ');
+const typeOrderText = () => TYPE_ORDER.filter(type => typeRows(type).length).flatMap(type => {
+  const group = sharedGroupOf(type);
+  if (!group) return [PLURAL[type]];
+  return firstOfGroup(type) ? [`then ${listText(group.blocks.map(block => PLURAL[block.type]))} sharing ${rowRange(type)}`] : [];
+}).join(', ');
+// Map label for a row; shared rows list their types left to right as drawn (east to west).
+const rowLabel = row => row.future ? 'Future trees' :
+  row.shared ? [...row.types].reverse().map((type, index) => index ? type.toLowerCase() : type).join(' · ') : row.types[0];
+const columnText = (row, type) => {
+  const columns = row.trees.flatMap((tree, index) => tree && tree.type === type ? [index + 1] : []);
+  const contiguous = columns.length > 1 && columns[columns.length - 1] - columns[0] === columns.length - 1;
+  return contiguous ? `C${columns[0]}–C${columns[columns.length - 1]}` : columns.map(c => `C${c}`).join(', ');
+};
+// Friendly names for the rootstock lines in the inventory.
+const ROOTSTOCK_LABELS = { 38:'EMLA 7', 56:'M-111', 61:'unknown' };
+const rootstockSummary = INVENTORY.filter(line => placementOf(line) === 'rootstock')
+  .map(line => `${line[1]} ${ROOTSTOCK_LABELS[line[0]] || line[5]}`).join(', ');
+const unidentifiedByType = type => allTrees.filter(tree => tree.unknown && tree.type === type).length;
+const wbRow = key => windbreakRows.find(row => row.key === key);
+const num = value => String(Math.round(value * 100) / 100);
+const ftIn = value => {
+  const inches = Math.round(Math.abs(value) * 12);
+  const inchPart = inches % 12;
+  return inchPart ? `${Math.floor(inches / 12)} ft ${inchPart} in` : `${inches / 12} ft`;
+};
+const nsLabel = y => y < 0 ? `${num(-y)} ft south of the R1 line` :
+  y > gridDepth ? `${num(y - gridDepth)} ft north of the R${rows.length} line` : `${num(y)} ft north of the R1 line`;
+const eastSpare = PLOT_WIDTH - ORCHARD_WEST_SETBACK - gridWidth;
+if (eastSpare < 0) throw new Error('The staggered grid is wider than the orchard plot');
+const drivewayWest = WINDBREAK.width + EAST_SIDE.originalPlotWidth + EAST_SIDE.groundToDriveway;
+const drivewayEast = drivewayWest + EAST_SIDE.driveway;
+const eastFence = drivewayEast + EAST_SIDE.drivewayToFence;
+const headland = drivewayWest - (WINDBREAK.width + PLOT_WIDTH);
+if (headland < 0) throw new Error('The orchard plot overlaps the driveway');
+const eastHedge = eastHedgeLayout(rows.length, eastFence);
+if (eastHedge.x - eastHedge.managedWidth / 2 < drivewayEast) throw new Error('The east hedge does not fit between the driveway and the fence');
+const plantRows = [...windbreakRows, eastHedge];
+const plantedSouth = Math.min(0, ...plantRows.map(row => row.start), ...guildSpots.map(spot => spot.y));
+const plantedNorth = Math.max(gridDepth, ...plantRows.map(row => row.end), ...guildSpots.map(spot => spot.y));
+const plantedDepth = plantedNorth - plantedSouth;
+if (plantedDepth > PLOT_DEPTH) throw new Error('The planted block is deeper than the plot');
+const countBy = placement => INVENTORY.filter(line => placementOf(line) === placement).reduce((sum, line) => sum + line[1], 0);
+
+const legend = [
+  ['apple-fg1','#BA7517','Apple FG 1'], ['apple-fg2','#D85A30','Apple FG 2'],
+  ['apple-fg3','#E24B4A','Apple FG 3'], ['apple-fg4','#993C1D','Apple FG 4'],
+  ['apple-season-known','#5B6F69','Apple — relative bloom only; FG unverified'],
+  ['apple-unknown','#66645E','Apple — unidentified or bloom unconfirmed'],
+  ['pear-eur','#378ADD','Pear — European'], ['pear-asian','#185FA5','Pear — Asian'],
+  ['pear-perry','#0C447C','Pear — Perry'], ['Cherry','#D4537E','Cherry'],
+  ['Apricot','#A65B21','Apricot'], ['Peach','#A94739','Peach'], ['Plum','#993556','Plum']
+];
+const colors = new Map(legend.map(([key, color]) => [key, color]));
+
+function element(tag, text = '', className = '') {
+  const node = document.createElement(tag);
+  node.textContent = text;
+  if (className) node.className = className;
+  return node;
+}
+
+function addTableRow(tableId, values) {
+  const tr = element('tr');
+  values.forEach(value => {
+    const td = element('td');
+    td.append(value);
+    tr.append(td);
+  });
+  document.getElementById(tableId).append(tr);
+  return tr;
+}
+
+function addPlantingChecklistRow(tree) {
+  const checkbox = element('input');
+  checkbox.type = 'checkbox';
+  checkbox.className = 'plant-check';
+  checkbox.setAttribute('aria-label', `Planted ${position(tree)} ${tree.name}`);
+
+  const tag = element('span', tree.tag || 'NO METAL TAG', 'metal-tag');
+  if (tree.lineQty > 1) {
+    tag.append(element('span', `Tree ${tree.instance} of ${tree.lineQty} with this tag`, 'duplicate-tag'));
+  }
+
+  const treeName = element('div');
+  treeName.append(element('strong', tree.name));
+  if (tree.name !== tree.invVariety) {
+    treeName.append(element('div', `Inventory name: ${tree.invVariety}`, 'source-note'));
+  }
+
+  const tr = addTableRow('planting-checklist', [
+    checkbox, element('strong', position(tree)), tag, element('strong', tree.code), treeName, tree.invRow
+  ]);
+  if (tree.c === 1) tr.classList.add('row-start');
+}
+
+function noteParagraph(title, text) {
+  const paragraph = element('p');
+  paragraph.append(element('strong', title), ' ', text);
+  return paragraph;
+}
+
+function position(tree) {
+  return `R${tree.r}-C${tree.c}`;
+}
+
+function treeLink(tree, text) {
+  const link = element('a', text);
+  link.href = `#tree-${tree.id}`;
+  return link;
+}
+
+function colorCategory(tree) {
+  if (tree.type === 'Apple') {
+    if (tree.planningFg !== null) return `apple-fg${tree.planningFg}`;
+    return tree.appleBloom && tree.appleBloom.period ? 'apple-season-known' : 'apple-unknown';
+  }
+  if (tree.type === 'Pear') return tree.pearAsian ? 'pear-asian' : /Perry/.test(tree.name) ? 'pear-perry' : 'pear-eur';
+  return tree.type;
+}
+
+function bloomLabel(tree) {
+  if (tree.type === 'Apple') {
+    if (tree.planningFg !== null) {
+      const qualifier = tree.appleBloom && tree.appleBloom.provisional ? '?' : tree.appleBloom && tree.appleBloom.sourceDependent ? '*' : '';
+      return `FG ${tree.planningFg}${qualifier}`;
+    }
+    return tree.appleBloom && tree.appleBloom.period ? `${tree.appleBloom.period}; FG ?` : 'FG ?';
+  }
+  if (tree.type === 'Pear') return (PEAR_BLOOM[tree.sourceRow] || [])[0] || 'Unconfirmed';
+  if (CHERRY_CHART[tree.sourceRow]) return `Cherry period ${CHERRY_CHART[tree.sourceRow].bloom}`;
+  return 'Unconfirmed';
+}
+
+function psmLabel(tree) {
+  if (!/^Pos\./.test(tree.psm)) return '';
+  const status = tree.psm.replace(/^Pos\.\s*/, '').toLowerCase();
+  const share = tree.lineQty > 1 && tree.psmQty < tree.lineQty ? `; ${tree.psmQty} of the ${tree.lineQty} trees with this tag` : '';
+  return `Pseudomonas positive, ${status}${share}`;
+}
+
+function planningNote(tree) {
+  if (tree.unknown) {
+    if (tree.type === 'Apple') return 'Unidentified apple: bloom group and ploidy are unknown, so it is not counted as a pollen donor. Placed among identified apples of several bloom groups; identify it at bloom or harvest, then re-check its partners.';
+    if (tree.type === 'Cherry') return 'Unidentified sweet cherry, possibly one of the purchased Black Tartarian, Regina, or Sam trees not otherwise found. Its compatibility group is unknown, so it is not counted as a donor until identified.';
+    if (tree.type === 'Peach') return 'Unidentified peach, possibly Contender, Elberta, Reliance, or Veteran. Not counted as a J.H. Hale pollinizer until identified, because Elberta does not work for Hale.';
+    return 'Unidentified apricot, possibly the purchased Patterson (self-fertile in the workbook). Confirm its identity.';
+  }
+  if (tree.sourceRow === 35) return 'Liberty ploidy/donor status is disputed. Excluded as a donor; given two diploid candidates.';
+  if (tree.planningPloidy === 'Triploid') return 'Triploid: not a pollen donor. Two distinct, mutually screened diploid candidates required.';
+  if (tree.sourceRow === 83) return 'J.H. Hale needs pollen from another peach, despite the workbook label. Veteran, its earlier partner, was not found at Prairie. UC Davis says almost any other peach works except Elberta and its close relatives, so Hale sits beside identified non-Elberta peaches; match chill and bloom.';
+  if (tree.sourceRow === 61) return 'Nanking bush cherry: needs a genetically different Nanking with overlapping bloom and is not a sweet-cherry pollen donor. The Ian and Jules plants are kept together in case they are different seedling lines.';
+  if (tree.sourceRow === 60) return 'Montmorency is a self-fertile tart cherry; not used in the sweet-cherry donor network.';
+  if (tree.sourceRow === 59) return 'Lapins is self-fertile in the reference chart and is the only identified sweet cherry within one bloom period of both Black Tartarian and Bing, so the sweet cherries are grouped around it.';
+  if ([55,56].includes(tree.sourceRow)) return 'Black Tartarian blooms very early; Lapins is its only identified donor in an adjacent bloom period. Two of the four purchased Black Tartarians were not found and may be among the unidentified sweet cherries.';
+  if ([53,54].includes(tree.sourceRow)) return 'Treat Bing as cross-pollination dependent. Stella is conservatively excluded as its donor.';
+  if (tree.sourceRow === 63) return 'Royalton and Sam are incompatible, but Sam was not found at Prairie. Royalton uses Bing, Lapins, and Stella.';
+  if (tree.sourceRow === 58) return 'Sweet-cherry donor compatibility was not verified; do not rely on this tree to supply other varieties.';
+  if (tree.sourceRow === 90) return 'Confirm whether Barnett is Barnet. Barnet is very late in the perry chart; no partner is assumed.';
+  if (tree.sourceRow === 108) return 'Yellow Huffcap bloom and compatibility need confirmation; do not assume all perry pears overlap.';
+  if ([95,93].includes(tree.sourceRow)) return 'Perry bloom window is from UK observations; confirm cultivar identity, local bloom, and genetic compatibility.';
+  if (tree.sourceRow === 100) return 'Parker is recommended for Summercrisp; the reverse pairing was not verified.';
+  if ([99,105].includes(tree.sourceRow)) return 'Confirm Asian-pear nursery identity and bloom. The two Giant selections are not counted as independent partners.';
+  if (tree.sourceRow === 103) return 'Shinseiki is grouped near the other Asian pears; a named compatible pair remains unconfirmed.';
+  if (tree.sourceRow === 109) return 'Tag "Italian Lovell": Italian plum, probably on Lovell rootstock. The named Italian plum is self-fertile or partly self-fertile in references; if one of these is a purchased Italian seedling, its fertility is unknown.';
+  if (tree.appleBloom) return tree.appleBloom.note + (!tree.planningPloidy ? ' Pollen-donor status remains unverified in this plan; a flowering group alone does not establish it.' : '');
+  if (tree.type === 'Apple' && (tree.planningFg === null || !tree.planningPloidy)) return 'Missing bloom/ploidy data: placed near possible donors, but not assumed to be a universal pollenizer.';
+  return tree.selfFertile ? 'Self-fertility is useful insurance; local bloom and insect activity still affect cropping.' : 'Confirm overlapping bloom locally before relying on these candidates.';
+}
+
+function partnerList(tree) {
+  const box = element('div', '', 'partner-list');
+  const partners = partnerMap.get(tree.id).slice(0, 2);
+  if (!partners.length) {
+    box.textContent = tree.selfFertile ? 'No extra partner required under the current self-fertility guidance.' :
+      'Unconfirmed — no screened partner in the available data.';
+  }
+  partners.forEach(({ donor, distance, basis }) => {
+    const item = element('div');
+    item.append(treeLink(donor, `${donor.name} (${position(donor)}, ${distance.toFixed(1)} ft)`));
+    item.append(element('div', basis + (distance > LOCAL_RADIUS ? ' — farther than the 50 ft planning target' : ''), 'source-note'));
+    box.append(item);
+  });
+  return box;
+}
+
+const SVG_NS = 'http://www.w3.org/2000/svg';
+function svgNode(tag, attrs = {}, text) {
+  const node = document.createElementNS(SVG_NS, tag);
+  Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+document.getElementById('subtitle').textContent = `Prairie Plants — inventory of ${PLAN_DATE} — orchard plot ${PLOT_WIDTH} × ${PLOT_DEPTH} ft plus a ${WINDBREAK.width} ft west windbreak — ${GRID_COLUMNS} positions per row — ${TREE_SPACING} ft in-row (E–W) × ${ROW_SPACING} ft rows (N–S), triangular offset`;
+document.getElementById('plot-size').textContent = `${PLOT_WIDTH} × ${PLOT_DEPTH} ft`;
+document.getElementById('wb-width').textContent = `${WINDBREAK.width} ft, ${windbreakRows.length} rows`;
+document.getElementById('alley-width').textContent = `${num(alley.clear)} ft clear`;
+document.getElementById('diagonal').textContent = `${neighborDistance.toFixed(1)} ft`;
+document.getElementById('tree-count').textContent = allTrees.length;
+document.getElementById('open-count').textContent = openCount;
+document.getElementById('row-count').textContent = `${rows.length} (S→N)`;
+document.getElementById('wb-count').textContent = `${windbreakTotal} + ${eastHedge.count} + ${guilds.bushes.length}`;
+document.getElementById('plot-warning').textContent = `Width, west to east: the ${WINDBREAK.width} ft windbreak strip (${windbreakRows.length} plant rows with a ${num(lane.width)} ft walking lane between them, then the tractor alley), then the ${PLOT_WIDTH} ft orchard plot. C1 trunks stand ${ORCHARD_WEST_SETBACK} ft inside the orchard's west line, ${ORCHARD_X0} ft from the fence. ${GRID_COLUMNS} staggered positions span ${gridWidth} ft, leaving ${num(eastSpare)} ft to the east line beside the offset rows' C13 trees (${num(eastSpare + TREE_SPACING / 2)} ft beside the others); a 14th position would need ${gridWidth + TREE_SPACING} ft. East of the orchard: ${num(headland)} ft of open ground for turning at the row ends, the ${EAST_SIDE.driveway} ft driveway, then ${EAST_SIDE.drivewayToFence} ft to the east fence (${eastFence} ft from the west fence), with the elderberry hedge ${EAST_HEDGE.fromFence} ft inside it. Depth: ${rows.length} rows span ${gridDepth} ft between the outer row centers. With the windbreak ends, the planted block uses about ${Math.round(plantedDepth)} ft of the ${PLOT_DEPTH} ft depth, leaving about ${PLOT_DEPTH - Math.round(plantedDepth)} ft for headlands and future rows. Distances are tree centers, before mature-canopy clearance; the ${TREE_SPACING} × ${ROW_SPACING} ft spacing is a planning assumption, not a mature-spacing recommendation for every rootstock.`;
+
+const mapNote = document.getElementById('map-note');
+mapNote.append(`South is up, the west fence and windbreak are on the right, and east is on the left: the view from the north end looking south. Rows start at the west alley (C1, on the right) and fill toward the east (left), so open spots are at the east ends, ready to fill in from the east later${presentGroups.length ? `, except that ${presentGroups.map(sharedMapText).join('; ')}` : ''}. Rows from south to north (top to bottom): ${rowPlanText()}. ${reservedRows.map(row => `R${row.r} is held for ${row.reserved} grafted rootstock apples.`).join(' ')} The C1 trees in ${rowSpanText(guildRows)} have berry guilds on their alley side (green dots); exact spots are on the site plan. The windbreak band is schematic; exact positions are in the windbreak table and site plan, which also shows the elderberry hedge along the east fence. `);
+mapNote.append(element('span', 'Hover over a tree for its full name, tag, and notes.', 'screen-only'),
+  element('span', 'Full names, tags, and notes are listed by position in the inventory.', 'print-only'));
+document.getElementById('south-label').textContent = `▲ SOUTH — the closest juniper or red cedar is ${JUNIPER_DISTANCE}+ ft beyond this end`;
+
+// Columns and cells are listed C1 (west) first; CSS row-reverse draws C1 on the right.
+const colnums = document.getElementById('colnums');
+for (let c = 1; c <= GRID_COLUMNS; c++) colnums.append(element('div', c, 'col-num'));
+colnums.append(element('div', '← EAST', 'col-east'));
+
+rows.forEach(row => {
+  const trees = row.trees.filter(Boolean);
+  const wrap = element('div', '', 'row-wrap');
+  wrap.append(element('span', row.reserved ? `${row.type} — ${row.reserved} reserved for rootstock apples` :
+    row.future ? `Future trees — ${GRID_COLUMNS} open` :
+    `${rowLabel(row)} — ${trees.length} trees; ${GRID_COLUMNS - trees.length} open`, 'row-desc'));
+  const rowDiv = element('div', '', 'row' + (row.off ? ' off' : ''));
+  rowDiv.dataset.fruitType = row.types.join(' ');
+  row.trees.forEach((tree, index) => {
+    const reserved = !tree && index < row.reserved;
+    const cell = element('div', '', 'cell' + (tree ? '' : reserved ? ' reserved' : ' empty'));
+    if (tree) {
+      const color = colors.get(colorCategory(tree));
+      if (!color) throw new Error(`Missing color for ${tree.name}`);
+      cell.style.background = color;
+      cell.style.color = '#fff';
+      if (tree.planningPloidy === 'Triploid') cell.classList.add('tri');
+      if (tree.pollenQuality === 'Good') cell.classList.add('star');
+      if (psmLabel(tree)) cell.classList.add('psm');
+      const guild = index === 0 ? guilds.bushes.filter(bush => bush.r === row.r) : [];
+      if (guild.length) cell.classList.add('guild');
+      cell.dataset.treeId = tree.id;
+      cell.title = [
+        `${position(tree)} — ${tree.name}`,
+        `Tag ${tree.tag || 'none'} (inventory row ${tree.invRow}); rootstock ${tree.rootstock || 'not recorded'}`,
+        `${bloomLabel(tree)}. ${planningNote(tree)}`,
+        psmLabel(tree),
+        guild.length ? `Berry guild on the alley side: ${guild.map(bush => bush.group.name).join(', ')}` : ''
+      ].filter(Boolean).join('\n');
+      cell.setAttribute('aria-label', cell.title);
+      const shortLabel = tree.type === 'Apple' ? bloomLabel(tree) + (tree.selfFertile ? ' S' : '') :
+        tree.selfFertile ? 'Self' :
+        tree.type === 'Cherry' && CHERRY_CHART[tree.sourceRow] ? `Period ${CHERRY_CHART[tree.sourceRow].bloom}` :
+        tree.pearAsian ? 'Asian' : '?';
+      cell.append(element('span', tree.code, 'code'), element('span', shortLabel, 'fg'));
+    } else if (reserved) {
+      cell.title = `R${row.r}-C${index + 1} — reserved for a grafted rootstock apple (${rootstockSummary} rootstocks in the inventory)`;
+      cell.setAttribute('aria-label', cell.title);
+      cell.append(element('span', 'RS', 'code'), element('span', 'Rootstock', 'fg'));
+    } else {
+      cell.title = row.future ? `R${row.r}-C${index + 1} — open position in a row held for trees you buy or graft later` :
+        row.shared ? `R${row.r}-C${index + 1} — open position in the rows shared by ${listText(row.types.map(type => PLURAL[type]))}` :
+        `R${row.r}-C${index + 1} — open ${row.type.toLowerCase()} position; fill from the east later`;
+      cell.append(element('span', '—', 'code'), element('span', 'Open', 'fg'));
+    }
+    rowDiv.append(cell);
+  });
+  wrap.append(rowDiv, element('div', `R${row.r}`, 'row-label'));
+  document.getElementById('grid').append(wrap);
+});
+
+// West is on the right: draw the alley first and the west fence last, with the walking lane before the tall row.
+const band = document.getElementById('wb-band');
+const alleyBox = element('div', '', 'wb-alley');
+alleyBox.title = `Tractor alley: ${num(alley.clear)} ft clear between the ${windbreakRows[windbreakRows.length - 1].name.toLowerCase()} row and the orchard limbs`;
+alleyBox.append(element('span', `Tractor alley · ${num(alley.clear)} ft clear`, 'vtext'));
+band.append(alleyBox);
+[...windbreakRows].reverse().forEach(row => {
+  if (row === windbreakRows[0]) {
+    const laneBox = element('div', '', 'wb-alley');
+    laneBox.title = `Walking lane: ${num(lane.width)} ft from the ${row.name.toLowerCase()} trunks to the ${windbreakRows[1].name.toLowerCase()} row, for picking`;
+    laneBox.append(element('span', `Walking lane · ${num(lane.width)} ft`, 'vtext'));
+    band.append(laneBox);
+  }
+  const stripe = element('div', '', 'wb-stripe');
+  stripe.style.background = row.color;
+  const toAdd = row.future.length ? ` + ${row.future.length} to add` : '';
+  stripe.title = `${row.name}: ${row.count} plants${toAdd}, ${row.offset} ft from the west fence, every ${num(row.spacing)} ft`;
+  stripe.append(element('span', `${row.name} ×${row.count}${toAdd} · ${row.offset} ft from fence · every ${num(row.spacing)} ft`, 'vtext'));
+  band.append(stripe);
+});
+const fence = element('div', '', 'wb-fence');
+fence.title = 'West fence';
+fence.append(element('span', 'WEST FENCE', 'vtext'));
+band.append(fence);
+
+const legendBox = document.getElementById('legend');
+function addLegend(color, label) {
+  const box = element('span', '', 'lbox');
+  box.style.background = color;
+  const item = element('div');
+  item.append(box, label);
+  legendBox.append(item);
+}
+legend.forEach(([, color, label]) => addLegend(color, label));
+if (reservedTotal) {
+  const box = element('span', '', 'lbox reserved');
+  const item = element('div');
+  item.append(box, 'Reserved: grafted rootstock apple (RS)');
+  legendBox.append(item);
+}
+windbreakRows.forEach(row => addLegend(row.color, `Windbreak: ${row.name}`));
+if (guilds.bushes.length) {
+  const item = element('div');
+  item.append(element('span', '', 'lbox guild-key'), 'Berry guild on the alley side of the C1 tree');
+  legendBox.append(item);
+}
+
+const mulberry = wbRow('mulberry');
+const hazelnut = wbRow('hazelnut');
+const futureTotal = plantRows.reduce((sum, row) => sum + row.future.length, 0);
+document.getElementById('wb-summary').textContent = `Two north–south rows step down from the west fence toward the orchard: red mulberry (tallest) along the fence and hybrid hazelnut ${num(hazelnut.offset - mulberry.offset)} ft east of it, so the prevailing west wind is pushed up and over the fruit trees. A ${num(lane.width)} ft walking lane under the mulberries leads to the hazelnuts for picking. The strip is added west of the ${PLOT_WIDTH} ft orchard plot; the orchard was not reduced. Both rows spread the plants you have along the orchard and reach at least ${WINDBREAK.endMargin} ft past R1 and R${rows.length}. The ${guilds.bushes.length + guilds.spare.length} berry bushes came out of the strip to make room for the lane and now form guilds on the alley side of the C1 orchard trees in ${rowSpanText(guildRows)}. The elderberry hedge runs ${EAST_HEDGE.fromFence} ft inside the east fence beside the driveway at its proper spacing from the south end, with ${futureTotal} positions marked for plants to add later. East–west positions are measured from the west fence and north–south positions from the R1 row line. General notes are beside the site plan.`;
+
+// Mirrored to match the map: west (fence) on the right, looking south.
+function drawCrossSection() {
+  const S = 10, left = -22, right = ORCHARD_X0 + 20, top = 58, bottom = -10;
+  const X = x => (right - x) * S;
+  const Y = h => (top - h) * S;
+  const root = svgNode('svg', { viewBox:`0 0 ${(right - left) * S} ${(top - bottom) * S}`, class:'diagram cross-section', role:'img', 'aria-labelledby':'cross-title' });
+  root.append(svgNode('title', { id:'cross-title' }, `Windbreak cross-section looking south, west on the right. West fence at 0 ft; ${windbreakRows.map(row => `${row.profile.label.toLowerCase()} row ${row.offset} ft from the fence`).join('; ')}; tractor alley ${num(alley.hedgeEdge)}–${num(alley.limbEdge)} ft; first orchard trunks ${ORCHARD_X0} ft from the fence.`));
+  const defs = svgNode('defs');
+  const marker = svgNode('marker', { id:'wind-arrow', viewBox:'0 0 10 10', refX:'9', refY:'5', markerWidth:'7', markerHeight:'7', orient:'auto-start-reverse' });
+  marker.append(svgNode('path', { d:'M0,0 L10,5 L0,10 z', fill:'#2F7FC1' }));
+  defs.append(marker);
+  root.append(defs);
+  root.append(svgNode('rect', { x:X(WINDBREAK.width), y:Y(top), width:WINDBREAK.width * S, height:top * S, class:'d-strip' }));
+  root.append(svgNode('rect', { x:X(alley.limbEdge), y:Y(top), width:alley.clear * S, height:top * S, class:'d-alley' }));
+  root.append(svgNode('line', { x1:X(WINDBREAK.width), y1:Y(top), x2:X(WINDBREAK.width), y2:Y(0), class:'d-plot' }));
+  root.append(svgNode('rect', { x:X(0.35), y:Y(5), width:0.7 * S, height:5 * S, class:'d-post' }));
+  root.append(svgNode('text', { x:X(0), y:Y(6.2), 'text-anchor':'middle', 'font-size':12 }, 'Fence'));
+  windbreakRows.forEach(row => {
+    const p = row.profile;
+    root.append(svgNode('rect', { x:X(row.offset + 0.35), y:Y(p.trunk), width:0.7 * S, height:p.trunk * S, class:'d-trunk' }));
+    root.append(svgNode('ellipse', { cx:X(row.offset), cy:Y(p.crownMid), rx:row.managedWidth / 2 * S, ry:p.crownHalfHeight * S,
+      fill:row.color, 'fill-opacity':0.5, stroke:row.color, 'stroke-width':1.5 }));
+    const labelBase = p.crownMid + p.crownHalfHeight + 1.2;
+    root.append(svgNode('text', { x:X(row.offset), y:Y(labelBase + 2), 'text-anchor':'middle', 'font-size':13, class:'t-title' }, p.label));
+    root.append(svgNode('text', { x:X(row.offset), y:Y(labelBase), 'text-anchor':'middle', 'font-size':12 }, p.size));
+  });
+  const crown = WINDBREAK.orchardLimbAllowance;
+  root.append(svgNode('rect', { x:X(ORCHARD_X0 + 0.4), y:Y(5), width:0.8 * S, height:5 * S, class:'d-trunk' }));
+  root.append(svgNode('circle', { cx:X(ORCHARD_X0), cy:Y(5 + crown), r:crown * S, class:'d-orchard-crown' }));
+  root.append(svgNode('text', { x:X(WINDBREAK.width + 0.8), y:Y(5 + 2 * crown + 3.2), 'text-anchor':'end', 'font-size':13, class:'t-title' }, 'First orchard trees'));
+  root.append(svgNode('text', { x:X(WINDBREAK.width + 0.8), y:Y(5 + 2 * crown + 1.2), 'text-anchor':'end', 'font-size':12 }, `C1; limbs kept ${crown} ft from trunk`));
+  // A guild bush on the odd-row C1 tree's alley side, the low layer east of the alley.
+  const nearBush = guildSpots.filter(spot => spot.r % 2 === 1).reduce((a, b) => (a && a.x <= b.x ? a : b), null);
+  if (nearBush) {
+    root.append(svgNode('ellipse', { cx:X(nearBush.x), cy:Y(2.6), rx:C1_GUILDS.bushWidth / 2 * S, ry:2.5 * S,
+      fill:C1_GUILDS.color, 'fill-opacity':0.7, stroke:'#4E8A26', 'stroke-width':1.5 }));
+    root.append(svgNode('text', { x:X(alley.limbEdge - 0.4), y:Y(3.7), 'text-anchor':'start', 'font-size':12, class:'halo t-title' }, 'Berry guild'));
+    root.append(svgNode('text', { x:X(alley.limbEdge - 0.4), y:Y(2.0), 'text-anchor':'start', 'font-size':12, class:'halo' }, '4–6 ft'));
+  }
+  root.append(svgNode('line', { x1:X(left), y1:Y(0), x2:X(right), y2:Y(0), class:'d-ground' }));
+  [5, 17, 32].forEach(h => root.append(svgNode('line', { x1:X(left + 1), y1:Y(h), x2:X(-8), y2:Y(h), class:'d-wind', 'marker-end':'url(#wind-arrow)' })));
+  root.append(svgNode('path', { d:`M${X(left + 1)},${Y(44)} C${X(0)},${Y(57)} ${X(24)},${Y(56)} ${X(right - 1)},${Y(30)}`, class:'d-wind-lift', 'marker-end':'url(#wind-arrow)' }));
+  root.append(svgNode('text', { x:X(left + 1), y:Y(40), 'text-anchor':'end', 'font-size':13, class:'t-title' }, 'Prevailing west wind'));
+  const alleyMid = (alley.hedgeEdge + alley.limbEdge) / 2;
+  root.append(svgNode('text', { x:X(alleyMid), y:Y(30), 'text-anchor':'middle', 'font-size':12, class:'t-title' }, 'Tractor'));
+  root.append(svgNode('text', { x:X(alleyMid), y:Y(28.2), 'text-anchor':'middle', 'font-size':12, class:'t-title' }, 'alley'));
+  root.append(svgNode('text', { x:X(alleyMid), y:Y(26.4), 'text-anchor':'middle', 'font-size':12 }, `${num(alley.clear)} ft clear`));
+  const laneMid = (lane.west + lane.east) / 2;
+  root.append(svgNode('text', { x:X(laneMid), y:Y(5.6), 'text-anchor':'middle', 'font-size':12, class:'t-title' }, 'Walking lane'));
+  root.append(svgNode('text', { x:X(laneMid), y:Y(3.8), 'text-anchor':'middle', 'font-size':12 }, `${num(lane.width)} ft`));
+  const ticks = [...new Set([0, ...windbreakRows.map(row => row.offset), lane.east, alley.hedgeEdge, alley.limbEdge, WINDBREAK.width, ORCHARD_X0])];
+  ticks.forEach(x => {
+    root.append(svgNode('line', { x1:X(x), y1:Y(0), x2:X(x), y2:Y(-1.6), class:'d-tick' }));
+    root.append(svgNode('text', { x:X(x), y:Y(-3.3), 'text-anchor':'middle', 'font-size':12 }, num(x)));
+  });
+  root.append(svgNode('text', { x:X(left + 1), y:Y(-3.3), 'text-anchor':'end', 'font-size':12 }, 'ft from fence'));
+  root.append(svgNode('line', { x1:X(0), y1:Y(-5.2), x2:X(WINDBREAK.width), y2:Y(-5.2), class:'d-tick' }));
+  root.append(svgNode('text', { x:X(WINDBREAK.width / 2), y:Y(-7.2), 'text-anchor':'middle', 'font-size':12 }, `Windbreak strip — ${WINDBREAK.width} ft`));
+  root.append(svgNode('text', { x:X(WINDBREAK.width + 0.8), y:Y(-7.2), 'text-anchor':'end', 'font-size':12 }, '← Orchard plot'));
+  return root;
+}
+document.getElementById('wb-cross').append(drawCrossSection());
+
+// To-scale plan blow-up of a short stretch of the windbreak and the nearest orchard trees (south up, west on the right).
+function drawPlanBlowup() {
+  const S = 10;
+  const first = rows.find(row => !row.reserved) || rows[0];
+  const next = rows[first.r] || first;
+  const y0 = (first.r - 1) * ROW_SPACING - 6, y1 = y0 + 2 * ROW_SPACING - 2;
+  const xWest = -12, windowEast = ORCHARD_X0 + TREE_SPACING * 1.5 + 8, xEast = windowEast + 7;
+  const top = y0 - 5, bottom = y1 + 6;
+  const X = x => (xEast - x) * S;
+  const Y = y => (y - top) * S;
+  const inWindow = (y, margin) => y >= y0 - margin && y <= y1 + margin;
+  const root = svgNode('svg', { viewBox:`0 0 ${(xEast - xWest) * S} ${(bottom - top) * S}`, class:'diagram plan-blowup', role:'img', 'aria-labelledby':'plan-title' });
+  root.append(svgNode('title', { id:'plan-title' }, `Plan-view blow-up, to scale, south up and west on the right: ${num(y1 - y0)} ft of the windbreak beside R${first.r} and R${next.r}, with in-row spacing of ${windbreakRows.map(row => `${num(row.spacing)} ft for ${row.profile.label.toLowerCase()}`).join(', ')}, the tractor alley, and the first orchard trees.`));
+  const defs = svgNode('defs');
+  const clip = svgNode('clipPath', { id:'plan-clip' });
+  clip.append(svgNode('rect', { x:X(windowEast), y:Y(y0), width:(windowEast - xWest) * S, height:(y1 - y0) * S }));
+  defs.append(clip);
+  root.append(defs);
+
+  const field = svgNode('g', { 'clip-path':'url(#plan-clip)' });
+  field.append(svgNode('rect', { x:X(WINDBREAK.width), y:Y(y0), width:WINDBREAK.width * S, height:(y1 - y0) * S, class:'d-strip' }));
+  field.append(svgNode('rect', { x:X(alley.limbEdge), y:Y(y0), width:alley.clear * S, height:(y1 - y0) * S, class:'d-alley' }));
+  field.append(svgNode('line', { x1:X(WINDBREAK.width), y1:Y(y0), x2:X(WINDBREAK.width), y2:Y(y1), class:'d-plot' }));
+  // Lighter fill for the tall, overlapping mulberry crowns so the shrub row beneath stays visible.
+  const canopyOpacity = { mulberry:0.13, hazelnut:0.3 };
+  windbreakRows.forEach(row => row.plants.forEach(plant => {
+    if (!inWindow(plant.y, row.managedWidth)) return;
+    field.append(svgNode('circle', { cx:X(plant.x), cy:Y(plant.y), r:row.managedWidth / 2 * S, fill:row.color, 'fill-opacity':canopyOpacity[row.key] || 0.28, stroke:row.color, 'stroke-opacity':0.45 }));
+  }));
+  let futureShown = false;
+  windbreakRows.forEach(row => row.future.forEach(plant => {
+    if (!inWindow(plant.y, 0)) return;
+    futureShown = true;
+    field.append(svgNode('circle', { cx:X(plant.x), cy:Y(plant.y), r:row.managedWidth / 2 * S, stroke:row.color, class:'d-future' }));
+  }));
+  rows.filter(row => inWindow((row.r - 1) * ROW_SPACING, 6)).forEach(row => {
+    const y = (row.r - 1) * ROW_SPACING;
+    [0, 1].forEach(index => {
+      const x = ORCHARD_X0 + index * TREE_SPACING + (row.off ? TREE_SPACING / 2 : 0);
+      const tree = row.trees[index];
+      const reserved = !tree && index < row.reserved;
+      const color = tree ? colors.get(colorCategory(tree)) : null;
+      field.append(tree ? svgNode('circle', { cx:X(x), cy:Y(y), r:WINDBREAK.orchardLimbAllowance * S, fill:color, 'fill-opacity':0.35, stroke:color }) :
+        svgNode('circle', { cx:X(x), cy:Y(y), r:(reserved ? WINDBREAK.orchardLimbAllowance : 3) * S, class:reserved ? 'd-reserved' : 'd-open' }));
+      field.append(svgNode('circle', { cx:X(x), cy:Y(y), r:0.6 * S, class:'d-trunk' }));
+      field.append(svgNode('text', { x:X(x), y:Y(y) + 20, 'text-anchor':'middle', 'font-size':12, class:'halo t-title' },
+        tree ? `${tree.code} (R${row.r}-C${index + 1})` : reserved ? `RS (R${row.r}-C${index + 1})` : 'open'));
+    });
+  });
+  windbreakRows.forEach(row => row.plants.forEach(plant => {
+    if (inWindow(plant.y, 0.5)) field.append(svgNode('circle', { cx:X(plant.x), cy:Y(plant.y), r:0.6 * S, fill:row.color }));
+  }));
+  const guildShown = guilds.bushes.filter(bush => inWindow(bush.y, C1_GUILDS.bushWidth / 2));
+  guildShown.forEach(bush => {
+    field.append(svgNode('circle', { cx:X(bush.x), cy:Y(bush.y), r:C1_GUILDS.bushWidth / 2 * S, fill:C1_GUILDS.color, 'fill-opacity':0.6, stroke:'#4E8A26', 'stroke-width':1.5 }));
+    field.append(svgNode('text', { x:X(bush.x), y:Y(bush.y) + 4, 'text-anchor':'middle', 'font-size':11, class:'halo t-title' }, bush.group.code));
+  });
+  guilds.future.filter(spot => inWindow(spot.y, 0)).forEach(spot => {
+    futureShown = true;
+    field.append(svgNode('circle', { cx:X(spot.x), cy:Y(spot.y), r:C1_GUILDS.bushWidth / 2 * S, stroke:'#4E8A26', class:'d-future' }));
+  });
+  field.append(svgNode('line', { x1:X(0), y1:Y(y0), x2:X(0), y2:Y(y1), class:'d-fence' }));
+  const alleyMid = X((alley.hedgeEdge + alley.limbEdge) / 2), alleyY = Y((y0 + y1) / 2);
+  field.append(svgNode('text', { x:alleyMid, y:alleyY + 4, 'text-anchor':'middle', transform:`rotate(-90 ${alleyMid} ${alleyY})`, 'font-size':12, class:'t-title' }, `Tractor alley · ${num(alley.clear)} ft clear`));
+  const laneMid = X(lane.east - 2.5), laneY = Y(y0 + (y1 - y0) * 0.62);
+  field.append(svgNode('text', { x:laneMid, y:laneY + 4, 'text-anchor':'middle', transform:`rotate(-90 ${laneMid} ${laneY})`, 'font-size':12, class:'halo t-title' }, `Walking lane · ${num(lane.width)} ft`));
+  root.append(field);
+  root.append(svgNode('rect', { x:X(windowEast), y:Y(y0), width:(windowEast - xWest) * S, height:(y1 - y0) * S, class:'d-frame' }));
+
+  // Dimensions: in-row spacing along each windbreak row, orchard row spacing, tree spacing, and stagger.
+  const dimV = (x, ya, yb, label, toWest, at = 0.5) => {
+    root.append(svgNode('line', { x1:X(x), y1:Y(ya), x2:X(x), y2:Y(yb), class:'d-dim' }));
+    [ya, yb].forEach(y => root.append(svgNode('line', { x1:X(x) - 6, y1:Y(y), x2:X(x) + 6, y2:Y(y), class:'d-dim' })));
+    root.append(svgNode('text', { x:X(x) + (toWest ? 9 : -9), y:Y(ya + (yb - ya) * at) + 4, 'text-anchor':toWest ? 'start' : 'end', 'font-size':13, class:'halo t-title' }, label));
+  };
+  const dimH = (xa, xb, y, label) => {
+    root.append(svgNode('line', { x1:X(xa), y1:Y(y), x2:X(xb), y2:Y(y), class:'d-dim' }));
+    [xa, xb].forEach(x => root.append(svgNode('line', { x1:X(x), y1:Y(y) - 6, x2:X(x), y2:Y(y) + 6, class:'d-dim' })));
+    root.append(svgNode('text', { x:X((xa + xb) / 2), y:Y(y) - 8, 'text-anchor':'middle', 'font-size':13, class:'halo t-title' }, label));
+  };
+  windbreakRows.forEach(row => {
+    const index = row.plants.findIndex((plant, i) => plant.y >= y0 + 0.5 && row.plants[i + 1] && row.plants[i + 1].y <= y1 - 0.5);
+    if (index < 0) return;
+    dimV(row.offset, row.plants[index].y, row.plants[index + 1].y, `${num(row.spacing)} ft`, false);
+  });
+  const firstY = (first.r - 1) * ROW_SPACING, nextY = (next.r - 1) * ROW_SPACING;
+  if (next !== first) {
+    dimV(windowEast + 2.5, firstY, nextY, `${ROW_SPACING} ft`, false);
+    const xFirst = ORCHARD_X0 + (first.off ? TREE_SPACING / 2 : 0), xNext = ORCHARD_X0 + (next.off ? TREE_SPACING / 2 : 0);
+    dimH(Math.min(xFirst, xNext), Math.max(xFirst, xNext), (firstY + nextY) / 2, `${TREE_SPACING / 2} ft stagger`);
+    const lower = nextY + WINDBREAK.orchardLimbAllowance + 1.5;
+    if (lower < y1) dimH(xNext, xNext + TREE_SPACING, lower, `${TREE_SPACING} ft`);
+  }
+  [first, next].forEach(row => root.append(svgNode('text', { x:X(windowEast + 5.2), y:Y((row.r - 1) * ROW_SPACING) + 5, 'text-anchor':'middle', 'font-size':12, class:'t-title' }, `R${row.r}`)));
+
+  // Headers above the window and fence-distance ticks below it.
+  [[0, 'Fence'], [mulberry.offset, 'Mulberry'], [hazelnut.offset, 'Hazelnut'],
+   [(alley.hedgeEdge + alley.limbEdge) / 2, 'Alley'], [ORCHARD_X0 + TREE_SPACING, 'Orchard']].forEach(([x, label]) =>
+    root.append(svgNode('text', { x:X(x), y:Y(y0) - 10, 'text-anchor':'middle', 'font-size':12, class:'t-title' }, label)));
+  root.append(svgNode('text', { x:X(xEast) + 4, y:Y(y0) - 10, 'font-size':12, class:'t-title' }, '▲ South'));
+  const ticks = [...new Set([0, ...windbreakRows.map(row => row.offset), lane.east, alley.hedgeEdge, alley.limbEdge, WINDBREAK.width,
+    ORCHARD_X0, ORCHARD_X0 + TREE_SPACING / 2, ORCHARD_X0 + TREE_SPACING, ORCHARD_X0 + TREE_SPACING * 1.5])];
+  ticks.forEach(x => {
+    root.append(svgNode('line', { x1:X(x), y1:Y(y1), x2:X(x), y2:Y(y1) + 10, class:'d-tick' }));
+    root.append(svgNode('text', { x:X(x), y:Y(y1) + 26, 'text-anchor':'middle', 'font-size':11 }, num(x)));
+  });
+  root.append(svgNode('text', { x:X(xWest) - 4, y:Y(y1) + 26, 'text-anchor':'end', 'font-size':11 }, 'ft from fence'));
+  const guildCodes = [...new Set(guildShown.map(bush => bush.group))];
+  root.append(svgNode('text', { x:X(xEast) + 4, y:Y(bottom) - 6, 'font-size':11 },
+    `Stretch shown: ${num(y0)}–${num(y1)} ft north of the R1 line.${guildCodes.length ? ` Green circles: berry guild bushes around the C1 trees (${guildCodes.map(group => `${group.code} ${group.name}`).join(', ')}).` : ''}${futureShown ? ' Dashed rings: positions for plants to add later.' : ''}`));
+  return root;
+}
+document.getElementById('wb-plan').append(drawPlanBlowup());
+document.getElementById('wb-plan-caption').textContent = `Blow-up plan view, to scale: a ${num(2 * ROW_SPACING - 2)} ft stretch of the windbreak beside the first apple rows (south up, west on the right)`;
+
+const WB_NOTES = {
+  mulberry: row => `Main wind barrier. ${num(row.spacing)} ft ${row.spacing >= 6 && row.spacing <= 15 ? 'is within' : 'falls outside'} the 6–15 ft in-row range UNL gives for deciduous windbreak trees. It is a tree, usually 15–70 ft tall (USDA Forest Service), but grown in the open it tends to have a short trunk with large, low, spreading limbs (Purdue) and it sprouts from the roots (USDA Forest Service), so left alone it can look like a wide, many-stemmed bush. Seedlings are usually male or female, so expect some fruitless trees (MOBOT). Red and white mulberry cross and are hard to tell apart (Purdue); white (Russian) mulberry, long planted in western windbreaks, is often a smaller, many-branched tree. Prune the east side back to about ${num(row.managedWidth / 2)} ft from the trunk so it stays over the walking lane, not the hazelnuts. Ripe mulberries may also draw birds away from the cherries.`,
+  hazelnut: row => `${num(row.offset - mulberry.offset)} ft from the mulberries; USDA's hybrid hazelnut guide keeps taller tree rows at least ${WINDBREAK.shadeGap} ft away so they do not shade out the hazels. Hybrids grow as multi-stemmed bushes, not trees, up to about 12 ft tall and nearly as wide, which can take ten years or more (UMHDI). ${num(row.spacing)} ft apart ${row.spacing >= 6 && row.spacing <= 9 ? 'is within' : 'falls outside'} the 6–9 ft UMHDI gives for nut production; layer low stems into the gaps to close the row sooner. Pick by hand as soon as the nuts loosen in their husks (UMHDI); seedlings ripen over a month or more, late August into October (UMHDI harvest bulletin), so plan several passes. After about 12 years, cut a few bushes to the ground each winter to keep them small enough to pick (UMHDI).`,
+  elderberry: row => `A separate, tighter hedge in full sun between the driveway and the east fence. WVU suggests at least 8–9 ft apart in the row for fruit production (plants with a 6–8 ft spread). Several Berry-sheet elderberries need another variety, so mix the named cultivars along the row. Fill the open positions with dormant hardwood cuttings, which WVU says root easily. Prune to about ${row.managedWidth} ft wide so it stays ${num(row.x - row.managedWidth / 2 - drivewayEast)} ft off the driveway, mow suckers, and keep plowed snow off young plants. At 6–12 ft tall it shelters roughly 30–60 ft to the west (about 5 times its height, UNL): the driveway, the headland, and at full height the orchard's east edge, ${num(row.x - WINDBREAK.width - PLOT_WIDTH)} ft away.`
+};
+const plantCell = row => {
+  const plant = element('div');
+  plant.append(element('strong', row.name), element('div', row.latin, 'source-note'));
+  return plant;
+};
+const countCell = row => row.future.length ? `${row.count} planted + ${row.future.length} to add` : String(row.count);
+const spacingCell = row => `${num(row.spacing)} ft${Number.isInteger(row.spacing) ? '' : ` (${ftIn(row.spacing)})`}`;
+const lastCell = row => row.future.length ? `${nsLabel(row.plantedEnd)} (last planted); open positions to ${nsLabel(row.end)}` : nsLabel(row.end);
+windbreakRows.forEach((row, index) => addTableRow('wb-table', [
+  `${index + 1}. ${row.layer}`, plantCell(row), countCell(row), `${row.offset} ft`, spacingCell(row), nsLabel(row.start), lastCell(row),
+  `${row.height} tall; ${row.spread}`, WB_NOTES[row.key](row)
+]));
+addTableRow('wb-table', [
+  'East hedge beside the driveway', plantCell(eastHedge), countCell(eastHedge), `${num(eastHedge.x)} ft (${EAST_HEDGE.fromFence} ft inside the east fence)`,
+  spacingCell(eastHedge), nsLabel(eastHedge.start), lastCell(eastHedge), `${eastHedge.height} tall; ${eastHedge.spread}`, WB_NOTES.elderberry(eastHedge)
+]);
+
+const wbNotes = document.getElementById('wb-notes');
+const fullHazelEdge = hazelnut.offset + hazelnut.fullWidth / 2;
+[
+  ['Row spacing.', `The two rows are ${num(hazelnut.offset - mulberry.offset)} ft apart: USDA's hybrid hazelnut guide keeps taller tree rows at least ${WINDBREAK.shadeGap} ft from the hazels, and UNL's windbreak guide typically spaces rows 12–16 ft apart. The berry bushes moved out of the strip to make this room and now form guilds around the C1 trees.`],
+  ['Walking lane.', `The ${num(lane.width)} ft from the mulberry trunks to the west edge of the hazelnuts (${num(lane.west)}–${num(lane.east)} ft from the fence) is for walking and picking. Train each mulberry to one trunk, cut the root sprouts every year, and raise the crown a little each winter so you can walk under it. Remove low limbs while they are small: mulberry cuts on limbs 2 in or thicker may not heal (Ask Extension), and pruning in late fall or winter avoids bleeding (MOBOT). Mulberries are picked by shaking branches over a tarp (Ask Extension), so keep the lane mowed or mulched and clear. Pick the hazelnuts' west side from the lane and their east side from the tractor alley.`],
+  ['Tractor alley.', `The hazelnut row's east edge is ${num(alley.hedgeEdge)} ft from the fence and the first orchard trunks are ${ORCHARD_X0} ft from it, leaving ${num(alley.ground)} ft at ground level. Keep the alley-side limbs of the row-end orchard trees within ${WINDBREAK.orchardLimbAllowance} ft of the trunk to hold a ${num(alley.clear)} ft clear lane. If the hazelnuts reach their full ${hazelnut.fullWidth} ft width, the alley narrows to ${num(alley.limbEdge - fullHazelEdge)} ft (your minimum is ${WINDBREAK.minAlley} ft). C1 trees in the even rows stand another ${TREE_SPACING / 2} ft east.`],
+  ['Protection.', `UNL reports that a moderately dense windbreak cuts a 20 mph wind to about 5 mph out to 5 times its height. Mature mulberries (35–50 ft) would reach roughly 175–250 ft into the ${PLOT_WIDTH} ft orchard; in the first years the hazelnuts mainly shelter the west end. Leafless rows are thinner in early spring, when the stone fruit bloom.`],
+  ['Length.', `Wind wraps around the ends, so UNL recommends extending a windbreak 100–200 ft beyond the area it protects. The mulberry and hazelnut rows cover R1–R${rows.length} plus at least ${WINDBREAK.endMargin} ft at each end. The east hedge starts at the south end; ${eastHedge.future.length} more elderberries at the same spacing finish it to the north end. The plot has room to extend all the rows north and south later.`],
+  ['Junipers.', `Junipers and Eastern red cedar host cedar–apple rust, and UMN advises keeping them a few hundred yards from apples; spores can travel more than a mile. Yours are south of the orchard, the closest ${JUNIPER_DISTANCE}+ ft away, and the apples are at the south end as requested: R${typeRows('Apple')[0].r} is about ${JUNIPER_DISTANCE + typeOffset('Apple')}+ ft from the closest juniper, and the pears (occasional hosts of a related rust) about ${JUNIPER_DISTANCE + typeOffset('Pear')}+ ft. UMN suggests inspecting nearby junipers and red cedars in late winter or early spring and pruning out brown, woody galls before the orange, gelatinous structures form, and notes that the rust is only a minor problem on resistant or partially resistant apples. Do not add junipers or red cedars to this windbreak, and watch the apples for orange leaf spots in late spring.`],
+  ['Pollination.', 'Hazelnuts are wind-pollinated and cannot pollinate themselves (UMHDI); the seedling hybrids should pollinate one another. Several named elderberries need another variety (Berry sheet), so mix the cultivars along the hedge.'],
+  ['Berry guilds.', `Each C1 tree in ${rowSpanText(guildRows)} has berry bushes on its alley side: an arc of ${C1_GUILDS.even.bearings.length} around the south and west of each even-row tree, which stands ${TREE_SPACING / 2} ft farther from the alley, and ${C1_GUILDS.odd.bearings.length} on the south side of each odd-row tree. They sit ${C1_GUILDS.odd.radius}–${C1_GUILDS.even.radius} ft from the trunks and about 5 ft apart, all east of the alley (the nearest bush edge is ${num(Math.round(guildWestEdge * 2) / 2)} ft from the fence), with a walking gap of at least ${num(Math.floor(guildGap * 2) / 2)} ft between neighboring guilds. South to north: ${guildRuns.filter(run => run.count).map(run => `${run.group.name} ×${run.count} (${rowSpanText(run.rows)})`).join(', ')}.${guilds.spare.length ? ` Left over: ${listText(guildRuns.filter(run => run.spare).map(run => `${run.spare} ${run.spare > 1 ? `${run.group.name}s` : run.group.name}`))}.` : ''} The ${guilds.future.length} dashed positions around the C1 spots in ${listText([...new Set(guilds.future.map(spot => `R${spot.r}`))])} wait for those trees. The south side of each tree gets the most sun. Honeyberries tolerate partial shade and need at least two varieties that pollinate each other (UAF Extension), so mix their varieties; currants and gooseberries tolerate partial shade but fruit more in full sun (UMN). Comfrey could fill the east side of each guild, in the tree row, but its deep roots make it difficult to eradicate once established (WSU). Keep one side of each tree open for a ladder.`],
+  ['Blister rust.', 'White pine blister rust attacks five-needle (white) pines and uses currants and gooseberries as alternate hosts (WSU). Your white pines died, and ponderosa and Austrian pines are not five-needle pines, so the guild currants and gooseberries put no pines at risk; UMN also lists jostaberry as resistant. Avoid planting white pines near them later.']
+].forEach(([title, text]) => wbNotes.append(noteParagraph(title, text)));
+
+// South up and west (fence) on the right, matching the planting map.
+function drawSitePlan() {
+  const S = 2;
+  const south = plantedSouth - 10, north = plantedNorth + 10;
+  const west = -30, east = eastFence + 22;
+  const plotEast = WINDBREAK.width + PLOT_WIDTH;
+  const topY = south - 46, bottomY = north + 34;
+  const X = x => (east - x) * S;
+  const Y = y => (y - topY) * S;
+  const height = (north - south) * S;
+  const root = svgNode('svg', { viewBox:`0 0 ${(east - west) * S} ${(bottomY - topY) * S}`, class:'diagram site-plan', role:'img', 'aria-labelledby':'site-title' });
+  root.append(svgNode('title', { id:'site-title' }, `Site plan to scale, south up and west on the right: west fence, ${WINDBREAK.width} ft windbreak strip with ${windbreakTotal} plants, tractor alley, ${allTrees.length} orchard trees in ${rows.length} rows, ${num(headland)} ft of open ground, the driveway, the ${eastHedge.count}-plant elderberry hedge, and the east fence.`));
+  root.append(svgNode('rect', { x:X(WINDBREAK.width), y:Y(south), width:WINDBREAK.width * S, height, class:'d-strip' }));
+  root.append(svgNode('rect', { x:X(plotEast), y:Y(south), width:PLOT_WIDTH * S, height, class:'d-plot' }));
+  root.append(svgNode('rect', { x:X(alley.limbEdge), y:Y(south), width:alley.clear * S, height, class:'d-alley' }));
+  root.append(svgNode('rect', { x:X(drivewayEast), y:Y(south - 14), width:EAST_SIDE.driveway * S, height:(north - south + 28) * S, class:'d-driveway' }));
+  root.append(svgNode('line', { x1:X(0), y1:Y(south - 14), x2:X(0), y2:Y(north + 14), class:'d-fence' }));
+  root.append(svgNode('line', { x1:X(eastFence), y1:Y(south - 14), x2:X(eastFence), y2:Y(north + 14), class:'d-fence' }));
+  plantRows.forEach(row => row.plants.forEach(plant => {
+    root.append(svgNode('circle', { cx:X(plant.x), cy:Y(plant.y), r:row.managedWidth / 2 * S, fill:row.color, 'fill-opacity':0.12 }));
+  }));
+  plantRows.forEach(row => row.future.forEach(plant => {
+    const ring = svgNode('circle', { cx:X(plant.x), cy:Y(plant.y), r:row.managedWidth / 2 * S, stroke:row.color, class:'d-future' });
+    ring.append(svgNode('title', {}, `${row.name}: open position, ${nsLabel(plant.y)}`));
+    root.append(ring);
+  }));
+  plantRows.forEach(row => row.plants.forEach((plant, index) => {
+    const dot = svgNode('circle', { cx:X(plant.x), cy:Y(plant.y), r:1.8 * S, fill:row.color });
+    dot.append(svgNode('title', {}, `${row.name} (${index + 1} of ${row.count} in the row): ${num(plant.x)} ft from the west fence, ${nsLabel(plant.y)}`));
+    root.append(dot);
+  }));
+  rows.forEach(row => row.trees.forEach((tree, index) => {
+    const x = ORCHARD_X0 + index * TREE_SPACING + (row.off ? TREE_SPACING / 2 : 0);
+    const y = (row.r - 1) * ROW_SPACING;
+    if (!tree && index < row.reserved) {
+      const ring = svgNode('circle', { cx:X(x), cy:Y(y), r:3 * S, class:'d-reserved' });
+      ring.append(svgNode('title', {}, `R${row.r}-C${index + 1} reserved for a grafted rootstock apple`));
+      root.append(ring);
+      return;
+    }
+    if (!tree) {
+      root.append(svgNode('circle', { cx:X(x), cy:Y(y), r:2.4 * S, class:'d-open' }));
+      return;
+    }
+    const dot = svgNode('circle', { cx:X(x), cy:Y(y), r:3.4 * S, fill:colors.get(colorCategory(tree)), stroke:'#fff', 'stroke-width':1 });
+    dot.append(svgNode('title', {}, `${position(tree)} ${tree.name} (tag ${tree.tag || 'none'})`));
+    root.append(dot);
+  }));
+  guilds.future.forEach(spot => {
+    const ring = svgNode('circle', { cx:X(spot.x), cy:Y(spot.y), r:C1_GUILDS.bushWidth / 2 * S, stroke:'#4E8A26', class:'d-future' });
+    ring.append(svgNode('title', {}, `R${spot.r} C1 berry guild: open position, ${num(spot.x)} ft from the west fence, ${nsLabel(spot.y)}`));
+    root.append(ring);
+  });
+  guilds.bushes.forEach(bush => {
+    const dot = svgNode('circle', { cx:X(bush.x), cy:Y(bush.y), r:C1_GUILDS.bushWidth / 2 * S, fill:C1_GUILDS.color, stroke:'#4E8A26', 'stroke-width':0.8 });
+    dot.append(svgNode('title', {}, `${capitalize(bush.group.name)}, R${bush.r} C1 berry guild: ${num(bush.x)} ft from the west fence, ${nsLabel(bush.y)}`));
+    root.append(dot);
+  });
+  rows.forEach(row => root.append(svgNode('text', { x:X(plotEast + 1.5), y:Y((row.r - 1) * ROW_SPACING) + 4, 'text-anchor':'end', 'font-size':8 }, `R${row.r}`)));
+  TYPE_ORDER.forEach(type => {
+    const list = typeRows(type);
+    if (!list.length) return;
+    if (sharedGroupOf(type)) {
+      // Shared rows: label each block just north of its last row.
+      const xs = allTrees.filter(tree => tree.type === type).map(tree => ORCHARD_X0 + tree.x);
+      const labelY = (list[list.length - 1].r - 1) * ROW_SPACING + 11;
+      root.append(svgNode('text', { x:X((Math.min(...xs) + Math.max(...xs)) / 2), y:Y(labelY) + 3, 'text-anchor':'middle', 'font-size':9, class:'t-title' }, capitalize(PLURAL[type])));
+      return;
+    }
+    const middle = ((list[0].r + list[list.length - 1].r) / 2 - 1) * ROW_SPACING;
+    root.append(svgNode('text', { x:X(plotEast + 11), y:Y(middle) + 4, 'text-anchor':'end', 'font-size':9, class:'t-title' }, capitalize(PLURAL[type])));
+  });
+  if (futureRows.length) {
+    const middle = ((futureRows[0].r + futureRows[futureRows.length - 1].r) / 2 - 1) * ROW_SPACING;
+    ['Future', 'trees'].forEach((word, index) => root.append(svgNode('text', { x:X(plotEast + 11), y:Y(middle) - 1 + index * 10, 'text-anchor':'end', 'font-size':9, class:'t-title' }, word)));
+  }
+  const midY = Y((north + south) / 2);
+  root.append(svgNode('text', { x:X(-13), y:midY, 'text-anchor':'middle', transform:`rotate(90 ${X(-13)} ${midY})`, 'font-size':12, class:'t-title' }, 'WEST FENCE'));
+  root.append(svgNode('text', { x:X(eastFence + 9), y:midY, 'text-anchor':'middle', transform:`rotate(-90 ${X(eastFence + 9)} ${midY})`, 'font-size':12, class:'t-title' }, 'EAST FENCE'));
+  const drivewayMid = X((drivewayWest + drivewayEast) / 2);
+  root.append(svgNode('text', { x:drivewayMid, y:midY, 'text-anchor':'middle', transform:`rotate(-90 ${drivewayMid} ${midY})`, 'font-size':11 }, `DRIVEWAY (${EAST_SIDE.driveway} ft)`));
+  const hedgeLabelX = X(drivewayEast - 4), hedgeLabelY = Y((eastHedge.start + eastHedge.plantedEnd) / 2);
+  root.append(svgNode('text', { x:hedgeLabelX, y:hedgeLabelY, 'text-anchor':'middle', transform:`rotate(-90 ${hedgeLabelX} ${hedgeLabelY})`, 'font-size':10, style:`fill:${eastHedge.color}`, class:'t-title' },
+    `Elderberry hedge, ${EAST_HEDGE.fromFence} ft inside the fence`));
+  root.append(svgNode('text', { x:X((plotEast + drivewayWest) / 2), y:Y(south - 4), 'text-anchor':'middle', 'font-size':9 }, `${num(headland)} ft open`));
+  root.append(svgNode('text', { x:X((drivewayEast + eastFence) / 2), y:Y(south - 4), 'text-anchor':'middle', 'font-size':9 }, `${EAST_SIDE.drivewayToFence} ft`));
+  root.append(svgNode('text', { x:X((alley.hedgeEdge + alley.limbEdge) / 2), y:Y(south - 4), 'text-anchor':'middle', 'font-size':9 }, 'alley'));
+  root.append(svgNode('text', { x:X((lane.west + lane.east) / 2), y:Y(south - 4), 'text-anchor':'middle', 'font-size':9 }, 'lane'));
+  root.append(svgNode('text', { x:X(WINDBREAK.width / 2), y:Y(south - 26), 'text-anchor':'middle', 'font-size':11, class:'t-title' }, `${WINDBREAK.width} ft`));
+  root.append(svgNode('text', { x:X(WINDBREAK.width / 2), y:Y(south - 18), 'text-anchor':'middle', 'font-size':10 }, 'windbreak'));
+  const plotMid = X(WINDBREAK.width + PLOT_WIDTH / 2);
+  root.append(svgNode('text', { x:plotMid, y:Y(south - 36), 'text-anchor':'middle', 'font-size':11 },
+    `▲ South: closest juniper or red cedar ${JUNIPER_DISTANCE}+ ft beyond the orchard`));
+  root.append(svgNode('text', { x:plotMid, y:Y(south - 22), 'text-anchor':'middle', 'font-size':12, class:'t-title' },
+    `Orchard plot — ${PLOT_WIDTH} ft wide, ${PLOT_DEPTH} ft deep (planted part shown)`));
+  const arrowX = X(east - 10), arrowY = Y(north + 6);
+  root.append(svgNode('path', { d:`M${arrowX},${arrowY + 22} l8,-22 l-8,6 l-8,-6 z`, fill:'#2C2C2A' }));
+  root.append(svgNode('text', { x:arrowX, y:arrowY + 38, 'text-anchor':'middle', 'font-size':13, class:'t-title' }, 'N'));
+  const barY = Y(north + 16);
+  root.append(svgNode('line', { x1:X(150), y1:barY, x2:X(100), y2:barY, stroke:'#2C2C2A', 'stroke-width':3 }));
+  root.append(svgNode('text', { x:X(125), y:barY - 6, 'text-anchor':'middle', 'font-size':11 }, '50 ft'));
+  return root;
+}
+document.getElementById('site-plan').append(drawSitePlan());
+document.getElementById('site-plan-note').textContent = `To scale, south up and west on the right, matching the planting map (the view from the north end looking south). East–west distances are from the west fence; north–south distances are from the R1 row line. Large dots are orchard trees in fruit-type colors, dashed red rings are positions reserved for grafted rootstock apples, and dashed gray circles are open positions. Small dots are windbreak plants (purple red mulberry, olive hazelnut) with their managed mature width shaded; the ${num(lane.width)} ft walking lane runs between the two rows. Lime dots beside the C1 trees are the berry guilds, and dashed lime rings are guild positions waiting for the R1 and future-row trees. The green dots between the driveway and the east fence are the elderberry hedge, and its dashed rings mark positions for plants to add later. East of the orchard are ${num(headland)} ft of open ground for turning at the row ends, the driveway, the hedge, and the east fence. The plot is ${PLOT_DEPTH} ft deep; only the planted ${Math.round(plantedDepth)} ft is drawn. The block can slide north or south, but keeping it toward the north end adds distance from the junipers. Hover over a dot for its position.`;
+
+[
+  `Planned from what is at Prairie: ${allTrees.length} fruit trees from Inventory_PrairiePlants.xlsx, each matched to its Trees.xlsx purchase record. ${unidentified.length} unidentified trees are placed with their fruit type but not counted as pollen donors. The September plan used the full purchase list (122 fruit trees and 32 nut trees).`,
+  `Orchard plot set to ${PLOT_WIDTH} × ${PLOT_DEPTH} ft: the measured ${EAST_SIDE.originalPlotWidth} ft plus ${PLOT_WIDTH - EAST_SIDE.originalPlotWidth} ft from the open ground to the east, so the last trees have ${num(eastSpare)} ft (half the tree spacing) to the east line. About ${num(headland)} ft remains between the orchard and the driveway for turning. The September plan used 225 ft plus a 5 ft buffer.`,
+  `A ${WINDBREAK.width} ft windbreak strip was added between the orchard and the west fence without shrinking the orchard: rows of ${listText(windbreakRows.map(row => row.profile.label.toLowerCase()))} step down from west to east, followed by a ${num(alley.clear)} ft clear tractor alley.`,
+  `The elderberries moved out of the west windbreak to their own hedge ${EAST_HEDGE.fromFence} ft inside the east fence, beside the driveway: ${num(eastHedge.spacing)} ft apart for a tighter grouping and some shelter from east winds. The ${eastHedge.count} plants fill the south ${num(eastHedge.plantedEnd - eastHedge.start)} ft; ${eastHedge.future.length} more positions are marked to finish the hedge.`,
+  `To leave room to walk and pick, the west strip is now two rows: red mulberry ${num(mulberry.offset)} ft and hazelnut ${num(hazelnut.offset)} ft from the fence, ${num(hazelnut.offset - mulberry.offset)} ft apart as USDA's hybrid hazelnut guide advises, with a ${num(lane.width)} ft walking lane under the mulberries.`,
+  `The berry bushes moved out of the west strip into guilds on the alley side of the C1 trees in ${rowSpanText(guildRows)}, following your sketch: ${guilds.bushes.length} bushes (${guildRuns.filter(run => run.count).map(run => `${run.group.name} ×${run.count}`).join(', ')})${guilds.spare.length ? `, with ${guilds.spare.length} left over` : ''}. ${guilds.future.length} more positions wait for the trees in R1 and the future rows.`,
+  'The two white pines died (owner report), so white pine blister rust, which alternates between five-needle pines and currants or gooseberries, is no longer a concern for the currants and gooseberries; ponderosa and Austrian pines are not five-needle pines.',
+  'The main orchard holds fruit trees only. Nut trees, rootstocks, and the two Boise trees are listed separately, and the hazelnuts moved to the windbreak.',
+  `Rows start at the west alley and fill eastward, so open positions are at the east ends${presentGroups.length ? `, except that ${presentGroups.map(sharedMapText).join('; ')}` : ''}.`,
+  `Rows by fruit type: ${rowPlanText()}. The cherries use the two rows you chose${presentGroups.length ? `, and the shared rows ${listText(presentGroups.map(group => rowRange(group.blocks[0].type)))} follow your layout` : ''}; the orchard keeps all ${rows.length} rows.`,
+  ...reservedRows.map(row => `Added R${row.r}, a full ${row.type.toLowerCase()} row at the top of the map with ${row.reserved} spots reserved for grafted rootstock apples. The inventory has ${countBy('rootstock')} rootstocks (${rootstockSummary}).`),
+  `The fruit types run south to north as ${typeOrderText()}, with the apples at the top of the map; the September plan had apples, pears, cherries, apricots, peaches, and plums, each in its own rows. The apples are about ${JUNIPER_DISTANCE + typeOffset('Apple')}+ ft from the closest juniper, closer than UMN advises; the windbreak notes list ways to limit cedar–apple rust.`,
+  'J.H. Hale now relies on other non-Elberta peaches nearby because Veteran, its earlier partner, was not found at Prairie.',
+  'The map is drawn with south at the top and the west fence on the right, the view from the north end looking south; the site plan and windbreak cross-section match. The earlier grid put south at the top but kept west on the left, which mirrored the real layout.'
+].forEach(text => document.getElementById('change-list').append(element('li', text)));
+
+const placementLabels = {
+  'east-hedge':`East hedge, ${EAST_HEDGE.fromFence} ft inside the east fence`,
+  rootstock:reservedRows.length ? `Graft first; reserved row R${reservedRows[0].r} holds ${reservedTotal} of them` : 'Not planted yet: rootstock for grafting',
+  nut:'Not in the main orchard (nut tree)',
+  elsewhere:'Not at Prairie'
+};
+INVENTORY.filter(line => placementOf(line) !== 'other').forEach(line => {
+  const [invRow, qty, , , type, variety, tag, , , location] = line;
+  const match = INVENTORY_MATCH[invRow];
+  if (!match) throw new Error(`Inventory row ${invRow} (${type} ${variety}) has no purchase-list match`);
+  const name = element('div');
+  name.append(element('strong', [type, variety].filter(Boolean).join(' — ')));
+  if (tag) name.append(element('div', `Tag ${tag}`, 'source-note'));
+  const records = match.rows.length ? match.rows.map(row => {
+    const record = fruitRecord(row);
+    return `Row ${row}: ${record.name} (${record.quantity})`;
+  }).join('; ') : match.berry || 'No purchase record matched';
+  const placement = placementOf(line);
+  const windbreakRow = WINDBREAK.rows.find(row => row.invRows.includes(invRow));
+  const guildRun = guildRuns.find(run => run.group.invRows.includes(invRow));
+  let plan = placement === 'windbreak' ? `West windbreak, ${windbreakRow.name.toLowerCase()} row` :
+    placement === 'guild' ? `C1 berry guilds, ${guildRun.count ? rowSpanText(guildRun.rows) : 'none yet'}${guildRun.spare ? ` (${guildRun.spare} left over)` : ''}` :
+    placementLabels[placement] + (placement === 'elsewhere' ? ` (${location})` : '');
+  if (placement === 'orchard') {
+    plan = element('div');
+    allTrees.filter(tree => tree.invRow === invRow).forEach((tree, index) => {
+      if (index) plan.append(', ');
+      plan.append(treeLink(tree, position(tree)));
+    });
+  }
+  addTableRow('recon-table', [invRow, name, qty, records, plan, match.note || '']);
+});
+
+const purchaseGroups = [];
+INVENTORY.forEach(line => {
+  const match = INVENTORY_MATCH[line[0]];
+  if (!match || !match.rows.length) return;
+  const merged = { rows:new Set(match.rows), lines:[line] };
+  purchaseGroups.filter(group => match.rows.some(row => group.rows.has(row))).forEach(group => {
+    group.rows.forEach(row => merged.rows.add(row));
+    merged.lines.push(...group.lines);
+    purchaseGroups.splice(purchaseGroups.indexOf(group), 1);
+  });
+  purchaseGroups.push(merged);
+});
+FRUIT_SHEET.forEach(([row]) => {
+  if (!purchaseGroups.some(group => group.rows.has(row))) purchaseGroups.push({ rows:new Set([row]), lines:[] });
+});
+let missingFruit = 0;
+let extraFruit = 0;
+purchaseGroups.map(group => {
+  const sourceRows = [...group.rows].sort((a, b) => a - b);
+  const purchased = sourceRows.reduce((sum, row) => sum + fruitRecord(row).quantity, 0);
+  const atPrairie = group.lines.filter(line => line[9] === 'Prairie').reduce((sum, line) => sum + line[1], 0);
+  const elsewhere = group.lines.filter(line => line[9] !== 'Prairie').reduce((sum, line) => sum + line[1], 0);
+  return { sourceRows, fruit:fruitRecord(sourceRows[0]).fruit, purchased, atPrairie, elsewhere, difference:atPrairie + elsewhere - purchased, lines:group.lines };
+}).filter(entry => entry.difference !== 0 || entry.elsewhere).sort((a, b) => a.sourceRows[0] - b.sourceRows[0]).forEach(entry => {
+  if (TYPE_ORDER.includes(entry.fruit)) {
+    if (entry.difference < 0) missingFruit -= entry.difference;
+    else extraFruit += entry.difference;
+  }
+  const label = element('div');
+  label.append(element('strong', [...new Set(entry.sourceRows.map(row => fruitRecord(row).name))].join(' / ')));
+  label.append(element('div', `${entry.fruit}; Fruit row${entry.sourceRows.length > 1 ? 's' : ''} ${entry.sourceRows.join(', ')}`, 'source-note'));
+  const notes = [...new Set(entry.lines.map(line => INVENTORY_MATCH[line[0]].note).filter(Boolean))];
+  if (!entry.lines.length) notes.push('Not in the Prairie inventory.');
+  const unknownCount = TYPE_ORDER.includes(entry.fruit) ? unidentifiedByType(entry.fruit) : 0;
+  if (entry.difference < 0 && unknownCount) {
+    const kind = entry.fruit === 'Cherry' ? 'sweet cherr' : entry.fruit.toLowerCase();
+    notes.push(unknownCount === 1 ? `May be the unidentified ${entry.fruit === 'Cherry' ? 'sweet cherry' : kind} at Prairie.` :
+      `May be among the ${unknownCount} unidentified ${entry.fruit === 'Cherry' ? 'sweet cherries' : PLURAL[entry.fruit]} at Prairie.`);
+  }
+  addTableRow('diff-table', [label, entry.purchased, entry.atPrairie, entry.elsewhere || '',
+    entry.difference > 0 ? `+${entry.difference}` : entry.difference, notes.join(' ')]);
+});
+document.getElementById('recon-summary').textContent = `At Prairie: ${allTrees.length} fruit trees (${unidentified.length} unidentified), ${countBy('rootstock')} apple rootstocks, ${countBy('nut')} nut trees, ${windbreakTotal} west windbreak plants, ${eastHedge.count} elderberries for the east hedge, and ${guilds.bushes.length + guilds.spare.length} berry bushes for the C1 guilds. Compared with the Trees.xlsx Fruit sheet, ${missingFruit} purchased fruit trees were not found at Prairie, ${extraFruit} more than purchased were found for a few varieties, and ${countBy('elsewhere')} trees remain in Boise. Some missing trees may be among the unidentified ones. The table lists only the differences; the line-by-line match is below it.`;
+
+const OTHER_GROUPS = { Berry:'Berry bushes', Perennial:'Perennials', Evergreen:'Evergreens', Shade:'Shade trees' };
+const otherParts = Object.entries(OTHER_GROUPS).map(([subcategory, label]) => {
+  const items = INVENTORY.filter(line => placementOf(line) === 'other' && line[3] === subcategory).map(line => {
+    const [invRow, qty, , , type, variety] = line;
+    return `${type ? (variety ? `${type} (${variety})` : type) : variety} ${qty}${OWNER_NOTES[invRow] ? ` (${OWNER_NOTES[invRow]})` : ''}`;
+  });
+  return items.length ? `${label}: ${items.join(', ')}` : '';
+}).filter(Boolean);
+document.getElementById('other-inventory').textContent = `Also at Prairie but outside this plan. ${otherParts.join('. ')}.`;
+
+Object.entries(APPLE_BLOOM_RESEARCH).forEach(([sourceRow, research]) => {
+  const trees = allTrees.filter(item => item.sourceRow === Number(sourceRow));
+  if (!trees.length || trees[0].type !== 'Apple') throw new Error(`Apple research has no matching Prairie tree: Fruit row ${sourceRow}`);
+  const tree = trees[0];
+  const evidence = element('div');
+  evidence.append(element('p', planningNote(tree)));
+  research.sources.forEach(([label, url]) => {
+    const link = element('a', label);
+    link.href = url;
+    const line = element('div');
+    line.append(link);
+    evidence.append(line);
+  });
+  const name = element('div');
+  name.append(treeLink(tree, tree.name), element('div', `Fruit sheet row ${sourceRow}; ${trees.map(position).join(', ')}`, 'source-note'));
+  const tr = addTableRow('apple-bloom-table', [name, trees.length, tree.fg ?? 'Not recorded', bloomLabel(tree), evidence]);
+  tr.id = `apple-research-${sourceRow}`;
+});
+
+TYPE_ORDER.forEach(type => {
+  const trees = allTrees.filter(tree => tree.type === type);
+  const needing = trees.filter(tree => needsTwoDonors(tree) || !tree.selfFertile);
+  const within = (tree, rank) => (partnerMap.get(tree.id)[rank - 1]?.distance ?? Infinity) <= LOCAL_RADIUS;
+  const triploids = trees.filter(needsTwoDonors);
+  const adjacent = trees.reduce((sum, tree, index) => sum + trees.slice(index + 1).filter(other =>
+    tree.family === other.family && treeDistance(tree, other) <= neighborDistance + 1e-9).length, 0);
+  addTableRow('layout-check', [
+    capitalize(PLURAL[type]), rowRange(type), trees.length, needing.length,
+    `${needing.filter(tree => within(tree, 1)).length} of ${needing.length}`,
+    `${needing.filter(tree => within(tree, 2)).length} of ${needing.length}`,
+    triploids.length ? `${triploids.filter(tree => within(tree, 2)).length} of ${triploids.length}` : '—',
+    needing.filter(tree => !partnerMap.get(tree.id).length).length,
+    adjacent
+  ]);
+});
+
+const missingCandidates = allTrees.filter(tree => !tree.selfFertile && !partnerMap.get(tree.id).length);
+const unidentifiedSummary = TYPE_ORDER.map(type => [type, unidentifiedByType(type)]).filter(([, count]) => count)
+  .map(([type, count]) => `${count} ${type === 'Cherry' ? (count > 1 ? 'sweet cherries' : 'sweet cherry') : count > 1 ? PLURAL[type] : type.toLowerCase()}`).join(', ');
+[
+  `All ${allTrees.length} fruit trees found at Prairie are placed once, honoring each inventory quantity. Each fruit type has its own rows${presentGroups.length ? ` except ${presentGroups.map(group => `${rowRange(group.blocks[0].type)}, which the ${listText(group.blocks.map(block => PLURAL[block.type]))} share`).join('; ')}` : ''}. Open positions (${openCount} in all) are at the east ends${presentGroups.length ? ', between the blocks in the shared rows,' : ''}${futureRows.length ? ` and across ${futureRange}, which ${futureRows.length > 1 ? 'are' : 'is'} held for trees you buy or graft later` : ''}; they are not additional trees.`,
+  `Row layouts: ${rowPlanText()}. Single-type blocks start at the west end, and a type's shorter row sits against its fuller rows to keep partners close.`,
+  `Within each type, positions were chosen by a search that uses the same screening rules shown on this page. It favors two distinct candidates within ${LOCAL_RADIUS} ft, two mutually screened diploid donors for triploid and disputed apples, and separation of copies of the same cultivar. It is a screened arrangement, not a guarantee of the best possible one.`,
+  'Apple candidates use the workbook pollenizer lists and same/adjacent flowering groups, supplemented by the linked bloom research. The three Urban apples also use Raintree\'s within-series recommendation. Known triploids, disputed Liberty, unidentified trees, and unverified pollen donors are excluded as suppliers. Fuji/Aztec/Auvil, Honeycrisp/Super Red, and Bartlett/Red Bartlett count as shared cultivar identities.',
+  'Pear bloom charts are a screening tool, not proof of cross-compatibility. Asian pears are grouped without assuming European pears will pollinate them, and perry pears with different bloom windows are not treated as interchangeable.',
+  'Sweet cherries use compatibility groups plus same/adjacent bloom periods. Lapins is the only identified sweet cherry within one bloom period of both Black Tartarian and Bing, so the sweet cherries are grouped around it. Stella is not relied on for Bing. Montmorency is a self-fertile tart cherry, and the Nanking bushes are kept together and are not sweet-cherry donors.',
+  'J.H. Hale needs another peach. With Veteran missing, it sits beside identified non-Elberta peaches, following UC Davis guidance; unidentified peaches are not counted because one could be Elberta.',
+  `${unidentified.length} unidentified trees (${unidentifiedSummary}) are placed among identified trees of their type but are not counted as donors until identified.`,
+  `${missingCandidates.length} trees that are not self-fertile still have no screened partner, mostly unidentified trees and trees missing bloom or compatibility data. They are marked unconfirmed below; proximity alone is not counted as pollination evidence.`
+].forEach(text => document.getElementById('design-notes').append(element('p', text)));
+
+rows.forEach(row => {
+  const trees = row.trees.filter(Boolean);
+  if (row.future) {
+    const lastApples = typeRows('Apple').filter(other => other.trees.some(Boolean)).pop();
+    addTableRow('row-summary', [`R${row.r}`, 'Future trees', 0, GRID_COLUMNS,
+      `Held open for trees you buy or graft onto your rootstock later.${lastApples ? ` Apples grafted here would be ${(row.r - lastApples.r) * ROW_SPACING} ft from the nearest apples (R${lastApples.r}), so plant at least two cultivars with overlapping bloom together.` : ''}`]);
+    return;
+  }
+  if (row.reserved) {
+    addTableRow('row-summary', [`R${row.r}`, `${row.type} (reserved)`, `0 (${row.reserved} reserved)`, GRID_COLUMNS - row.reserved,
+      `Reserved for ${row.reserved} grafted rootstock apples; the inventory has ${countBy('rootstock')} rootstocks (${rootstockSummary}). Choose scion varieties whose bloom overlaps the apples in the next rows.`]);
+    return;
+  }
+  const TYPE_NOTES = {
+    Pear: 'European/perry bloom windows and the Asian group checked separately.',
+    Cherry: 'Sweet cherries grouped around Lapins; tart and Nanking kept out of the sweet-cherry network.',
+    Peach: 'J.H. Hale beside non-Elberta peaches; the others are self-fertile.',
+    Apricot: 'Compact block of self-fertile apricots.',
+    Plum: 'Italian plums, self-fertile.'
+  };
+  if (row.shared) {
+    const group = sharedGroupOf(row.types[0]);
+    const blocks = group.blocks.filter(block => row.types.includes(block.type)).map(block =>
+      `${typeCount(row, block.type) > 1 ? PLURAL[block.type] : block.type.toLowerCase()} ${columnText(row, block.type)} ${ALIGN_TEXT[block.align]}`);
+    addTableRow('row-summary', [`R${row.r}`, `${listText(row.types.map((type, index) => index ? type.toLowerCase() : type))} (shared)`, trees.length, GRID_COLUMNS - trees.length,
+      `${capitalize(listText(blocks))}. ${row.types.map(type => TYPE_NOTES[type]).join(' ')}`]);
+    return;
+  }
+  const notes = row.type === 'Apple' ? `Planning bloom: ${[...new Set(trees.map(bloomLabel))].sort().join(', ')}.` : TYPE_NOTES[row.type];
+  addTableRow('row-summary', [`R${row.r}`, row.type, trees.length, GRID_COLUMNS - trees.length, notes]);
+});
+
+allTrees.forEach(tree => {
+  addPlantingChecklistRow(tree);
+  const notes = element('div');
+  if (needsTwoDonors(tree)) notes.append(element('span', tree.planningPloidy, 'tag tag-tri'));
+  if (tree.selfFertile) notes.append(element('span', 'Self-fertile', 'tag tag-self'));
+  if (tree.pollenQuality === 'Good') notes.append(element('span', '★ Good donor', 'tag tag-star'));
+  if (tree.unknown) notes.append(element('span', 'Unidentified', 'tag tag-unk'));
+  if (psmLabel(tree)) notes.append(element('span', 'Pseudomonas +', 'tag tag-psm'));
+  notes.append(element('p', planningNote(tree)), partnerList(tree));
+  if (tree.matchNote) notes.append(element('p', `Inventory match: ${tree.matchNote}`, 'source-note'));
+  if (psmLabel(tree)) notes.append(element('p', `${psmLabel(tree)}.`, 'source-note'));
+  if (tree.appleBloom) {
+    const link = element('a', 'Bloom research and sources');
+    link.href = `#apple-research-${tree.sourceRow}`;
+    notes.append(link);
+  }
+  const name = element('div');
+  name.append(element('strong', tree.name), element('div', `Tag ${tree.tag || 'none'}; inventory name: ${tree.invVariety}`, 'source-note'));
+  const tr = addTableRow('detail-table', [
+    position(tree), element('strong', tree.code), name, tree.type, tree.rootstock || 'Not recorded',
+    bloomLabel(tree), tree.fertility || 'Not recorded', notes,
+    `${tree.invRow}${tree.fruitRows.length ? ` (${tree.fruitRows.join(', ')})` : ''}`
+  ]);
+  tr.id = `tree-${tree.id}`;
+  if (needsTwoDonors(tree) || !tree.selfFertile) {
+    addTableRow('pairings-table', [tree.name, treeLink(tree, position(tree)), partnerList(tree), planningNote(tree)]);
+  }
+});
+
+INVENTORY.filter(line => ['nut', 'rootstock', 'elsewhere'].includes(placementOf(line))).forEach(line => {
+  const [invRow, qty, , , type, variety, tag, , , location] = line;
+  const placement = placementOf(line);
+  const match = INVENTORY_MATCH[invRow] || {};
+  const item = element('div');
+  item.append(element('strong', [type, variety].filter(Boolean).join(' — ')));
+  if (tag) item.append(element('div', `Tag ${tag}`, 'source-note'));
+  const status = placement === 'nut' ? 'Nut tree: kept out of the main orchard.' :
+    placement === 'rootstock' ? (reservedRows.length ? `Rootstock: graft first, then plant in reserved row R${reservedRows[0].r}.` : 'Rootstock: graft before planting as an orchard tree.') : `Still in ${location}.`;
+  const note = match.note || '';
+  addTableRow('separate-table', [invRow, item, qty, note.startsWith(status.replace(/\.$/, '')) ? note : [status, note].filter(Boolean).join(' ')]);
+});
+const appleRows = typeRows('Apple').filter(row => !row.reserved);
+const appleOpen = appleRows.reduce((sum, row) => sum + row.trees.filter(tree => !tree).length, 0);
+const shortAppleRow = appleRows.filter(row => row.trees.some(tree => !tree)).pop();
+const rootstockCount = countBy('rootstock');
+const leftover = rootstockCount - reservedTotal;
+[
+  'Penn State notes that black walnut and butternut are the best-known sources of juglone, a compound that injures many plants, and that English walnut and hickories (the group that includes pecans and hicans) also produce it to a lesser degree. Heartnut is a walnut closely related to butternut. Site these nut trees away from the orchard rather than beside it.',
+  reservedTotal ?
+    `Once grafted, ${Math.min(rootstockCount, reservedTotal)} of the ${rootstockCount} rootstocks go in reserved row R${reservedRows[0].r}${leftover > 0 ? `; the other ${leftover} can fill open spots at the east end of ${shortAppleRow ? `R${shortAppleRow.r}, the short apple row` : 'a new apple row'} (${appleOpen} open)` : ''}.${futureRows.length ? ` ${futureRange} ${futureRows.length > 1 ? 'are' : 'is'} held open for more trees you buy or graft later.` : ''}` :
+    `Once grafted, ${Math.min(rootstockCount, appleOpen)} of the ${rootstockCount} rootstocks can fill the open positions at the east end of the apple rows${rootstockCount > appleOpen ? `; the other ${rootstockCount - appleOpen} would need another apple row` : ''}.`,
+  'The Chinese apricot and Craig\'s Crimson cherry are still in Boise (girdled and mulched) and are not part of the Prairie plan.'
+].forEach(text => document.getElementById('separate-notes').append(element('p', text)));
+
+[
+  `Inventory_PrairiePlants.xlsx decides which trees are planned; the Trees.xlsx Fruit sheet supplies cultivar data. Every inventory line is matched to its purchase record(s) in the reconciliation table. When one inventory line matches several records of the same cultivar (for example Harrison or Aztec Fuji), the first record's cultivar data is used and the rootstock lists the possibilities. The plot width, east-side spacing, windbreak, east hedge, juniper distance, and white pine losses are owner updates recorded in this page, not in the workbooks. Berry bushes are matched to the Trees.xlsx Berry sheet.`,
+  'Invalid cross-species spreadsheet entries are not used: Bartlett/Moonglow/Anjou are not cherry pollenizers, and Jefferson/Theta are not pear pollenizers. The size note in the Asian Hardy Giant pollenizer cell is not a pollination relationship.',
+  'Planning corrections are separate from the source fields: Liberty donor status remains disputed; Lapins and Montmorency are treated as self-fertile; Bing is not treated as reliably self-fertile; J.H. Hale needs another peach despite its workbook label, and Elberta is not used for it. Original fertility values remain visible in the inventory.',
+  'Apple flowering-group research is dated September 24, 2026 and linked in its own table. Workbook FG values drive the grid colors, bloom labels, and candidate screening. Seed-grown Kerr uses group 2 only as an owner-approved best guess (FG 2?). Qualitative Urban Apple bloom seasons remain unnumbered.',
+  'Pseudomonas (bacterial canker) results come from the inventory. Positive, untreated trees are flagged but not relocated; the layout is driven by pollination.',
+  'Before planting, confirm cultivar identities, bloom overlap, local climate suitability, rootstock and mature size, and insect activity. Windbreak sizes and spacings are planning values from the cited guides; adjust them to the plants you have.'
+].forEach(text => document.getElementById('source-notes').append(element('p', text)));
+
+[
+  ['Flowering groups and overlapping bloom — Orange Pippin', 'https://www.orangepippintrees.com/articles/planting-growing/pollination-of-fruit-trees'],
+  ['Fruit-tree pollination, cultivar identity, and cherry/plum cautions — Cummins Nursery', 'https://www.cumminsnursery.com/learn-trees/fruit-tree-pollination'],
+  ['Apple cross-compatibility and pollenizers — Washington State University', 'https://treefruit.wsu.edu/article/cross-compatibility-of-apple-cultivars-and-pollinizers/'],
+  ['Liberty: disputed ploidy and pollenizing ability — Orange Pippin', 'https://www.orangepippintrees.com/trees/apple-trees/liberty'],
+  ['Pear bloom and pollination chart — Stark Bro’s', 'https://www.starkbros.com/page/pear-tree-bloom-and-pollination-chart'],
+  ['Perry-pear flowering observations — National Perry Pear Centre', 'https://www.nationalperrypearcentre.org.uk/the-collection/research/pollination/'],
+  ['Summercrisp: Parker named as a pollenizer — Charlie the Tree Guy', 'http://charliethetreeguy.ca/index.php?r=sBCms/displayTree&id=22'],
+  ['Sweet-cherry compatibility and bloom chart — Oregon State University', 'https://extension.oregonstate.edu/catalog/em-9484-sweet-cherry-compatibility-bloom-timing-chart-commercial-growers'],
+  ['J.H. Hale: almost any other peach except Elberta; Veteran named — UC Davis Foundation Plant Services', 'https://fps.ucdavis.edu/treedetails.cfm?v=806'],
+  ['J.H. Hale pollinizers and the Elberta exception — Ask Extension', 'https://ask.extension.org/kb/faq.php?id=226814'],
+  ['Windbreak row spacing, in-row spacing, end extension, and protection distance — University of Nebraska–Lincoln EC1767', 'https://extensionpublications.unl.edu/assets/pdf/ec1767.pdf'],
+  ['Hybrid hazelnut growth habit, spacing, hand harvest, and coppicing — Upper Midwest Hazelnut Development Initiative', 'https://www.midwesthazelnuts.org/uploads/3/8/3/5/38359971/hazel_production_guide_v_3__jan_2015.pdf'],
+  ['Hazelnut seedlings ripening late August into October — UMHDI harvest timing bulletin', 'https://www.midwesthazelnuts.org/uploads/3/8/3/5/38359971/harvest_timing_bulletin_jan_2021.pdf'],
+  ['Hybrid hazelnuts in windbreaks: taller tree rows at least 15 ft away — USDA National Agroforestry Center', 'https://www.fs.usda.gov/nac/assets/documents/morepublications/sfp4_HybridHazelnuts.pdf'],
+  ['Theta as a Jefferson hazelnut pollenizer — Oregon State University', 'https://agsci.oregonstate.edu/eta-and-theta-hazelnut-pollenizers'],
+  ['Elderberry spacing and hardwood cuttings — West Virginia University Extension', 'https://extension.wvu.edu/agriculture/horticulture/elderberry'],
+  ['Currant and gooseberry spacing, sun, self-fertility, and jostaberry rust resistance — University of Minnesota Extension', 'https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-currants-and-gooseberries-in-the-home-garden'],
+  ['White pine blister rust: five-needle pines and currant/gooseberry hosts — WSU HortSense', 'https://hortsense.cahnrs.wsu.edu/fact-sheet/pine-white-pine-blister-rust/'],
+  ['Honeyberries: partial shade and two varieties for pollination — University of Alaska Fairbanks Cooperative Extension', 'https://ces.open.uaf.edu/2025/04/13/haskap-hype-meet-the-hardy-tasty-berry-you-didnt-know-you-needed/'],
+  ['Comfrey: deep roots make it difficult to eradicate — WSU HortSense', 'https://hortsense.cahnrs.wsu.edu/fact-sheet/weeds-comfrey-symphytum-officinale/'],
+  ['Red mulberry size, male/female trees, and pruning time — Missouri Botanical Garden', 'https://www.missouribotanicalgarden.org/PlantFinder/PlantFinderDetails.aspx?kempercode=c125'],
+  ['Red mulberry: a tree, root sprouting, and crosses with white mulberry — USDA Forest Service (FEIS)', 'https://www.fs.usda.gov/database/feis/plants/tree/morrub/all.html'],
+  ['Red vs. white mulberry: open-grown form and western windbreaks — Purdue Extension FNR-237', 'https://www.extension.purdue.edu/extmedia/FNR/FNR_237.pdf'],
+  ['Harvesting mulberries by shaking branches over a tarp — Ask Extension', 'https://ask.extension.org/kb/faq.php?id=546273'],
+  ['Mulberry pruning: cuts on limbs 2 in or thicker heal poorly — Ask Extension', 'https://ask.extension.org/kb/faq.php?id=442231'],
+  ['Cedar-apple rust and keeping junipers away from apples — University of Minnesota Extension', 'https://extension.umn.edu/plant-diseases/cedar-apple-rust'],
+  ['Juglone and nut trees — Penn State Extension', 'https://extension.psu.edu/landscaping-and-gardening-around-walnuts-and-other-juglone-producing-plants']
+].forEach(([label, url]) => {
+  const link = element('a', label);
+  link.href = url;
+  const item = element('li');
+  item.append(link);
+  document.getElementById('sources').append(item);
+});
+
+document.getElementById('footer').textContent = `Prairie Plants Orchard — Inventory-based planting plan, ${PLAN_DATE} — ${PLOT_WIDTH} × ${PLOT_DEPTH} ft orchard plot plus ${WINDBREAK.width} ft west windbreak, C1 berry guilds, and east elderberry hedge — ${GRID_COLUMNS} across — ${TREE_SPACING} × ${ROW_SPACING} ft triangular offset — Planning schematic; verify site suitability, identities, and bloom before planting.`;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orchard Rain and Snowmelt Harvesting Plan — Prairie Plants</title>
+<style>
+  :root {
+    --bg: #ffffff; --bg2: #f5f4f0; --bg3: #eae8e1;
+    --text: #2C2C2A; --text2: #5F5E5A; --text3: #888780;
+    --border: #d3d1c7; --link: #185FA5;
+    --water: #0F86AE; --water-fill: #D3EDF5; --berm: #8B5E34; --contour: #9C8466; --cold: #6C5BA7; --stone: #8A4A17;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text);
+    padding: 24px; max-width: 1100px; margin: 0 auto; line-height: 1.6;
+  }
+  h1 { font-size: 22px; font-weight: 500; margin-bottom: 2px; }
+  h2 { font-size: 16px; font-weight: 500; margin: 24px 0 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+  h3 { font-size: 13px; font-weight: 600; margin: 12px 0 4px; color: var(--text2); }
+  p { margin: 6px 0; }
+  a { color: var(--link); }
+  .subtitle { font-size: 13px; color: var(--text2); margin-bottom: 8px; }
+  .source-note { font-size: 11px; color: var(--text2); }
+  .lead { font-size: 13px; line-height: 1.65; }
+  .notice { background: var(--bg2); border-left: 4px solid #BA7517; border-radius: 4px; padding: 10px 12px; margin: 12px 0; font-size: 12px; }
+  .notice.water { border-left-color: var(--water); }
+  .notice.cold { border-left-color: var(--cold); }
+  .notice.error { border-left-color: #E24B4A; }
+  ul.points, ol.steps { font-size: 12.5px; padding-left: 20px; margin: 6px 0; }
+  ul.points li, ol.steps li { margin: 4px 0; }
+  .specs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 12px 0; }
+  .spec { background: var(--bg2); border-radius: 8px; padding: 10px 12px; }
+  .spec .label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
+  .spec .value { font-size: 16px; font-weight: 500; }
+  .spec .hint { font-size: 10px; color: var(--text2); line-height: 1.3; }
+
+  .diagram { display: block; width: 100%; height: auto; margin: 8px 0 12px; }
+  .diagram text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: #2C2C2A; }
+  .diagram .t-title { font-weight: 600; }
+  .diagram .t-note { fill: #5F5E5A; }
+  .diagram .t-water { fill: #0B5F7C; }
+  .diagram .t-stone { fill: #8A4A17; font-weight: 600; }
+  .diagram .halo { paint-order: stroke; stroke: #fff; stroke-width: 3px; stroke-linejoin: round; }
+  .c-grid { stroke: #e2e0d8; stroke-width: 1; }
+  .c-axis { stroke: #888780; stroke-width: 1; }
+  .c-ppt { fill: #5B9BD5; }
+  .c-et { fill: none; stroke: #D9822B; stroke-width: 2.5; }
+  .c-et-dot { fill: #D9822B; stroke: #fff; stroke-width: 1; }
+  .c-dormant { fill: #EEF2F7; }
+  .d-strip { fill: #EEF5E8; }
+  .d-plot { fill: none; stroke: #888780; stroke-dasharray: 8 5; }
+  .d-alley { fill: #E9E9E5; stroke: #888780; stroke-dasharray: 6 4; }
+  .d-driveway { fill: #E2E0D8; }
+  .d-fence { stroke: #6B5A45; stroke-width: 4; }
+  .d-open { fill: #fff; stroke: #888780; stroke-dasharray: 2 2; }
+  .d-reserved { fill: #FCE9E3; stroke: #C2412F; stroke-width: 1.5; stroke-dasharray: 3 2; }
+  .d-homestead { fill: #ECE8DF; stroke: #A39E92; stroke-dasharray: 5 3; }
+  .w-contour { fill: none; stroke: var(--contour); stroke-width: 1.1; }
+  .w-contour-label { font-size: 8px; fill: #7A6248 !important; }
+  .w-usgs-flow { fill: none; stroke: #2B8FD6; stroke-width: 1.3; opacity: 0.6; }
+  .w-divide { fill: none; stroke: #2DB82D; stroke-width: 1.5; stroke-dasharray: 5 3; }
+  .topo-layout { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 16px; align-items: start; }
+  .soil-layout { display: grid; grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr); gap: 16px; align-items: start; }
+  .topo { max-height: 1000px; }
+  .w-crescent { fill: none; stroke: var(--berm); stroke-width: 2.2; stroke-linecap: round; }
+  .w-crescent-small { fill: none; stroke: var(--berm); stroke-width: 1.4; stroke-linecap: round; }
+  .w-flow { stroke: var(--water); stroke-width: 1; fill: none; opacity: 0.75; }
+  .w-flow-strong { stroke: var(--water); stroke-width: 2.2; fill: none; }
+  .w-basin { fill: var(--water-fill); stroke: var(--water); stroke-width: 1; }
+  .w-lane { fill: #DCEBF7; }
+  .w-check { stroke: var(--berm); stroke-width: 1.6; }
+  .w-bar { stroke: var(--berm); stroke-width: 3; stroke-linecap: round; }
+  .w-dip { stroke: #5F5E5A; stroke-width: 2; stroke-dasharray: 5 3; }
+  .w-spreader { fill: none; stroke: var(--berm); stroke-width: 2.6; stroke-linecap: round; }
+  .w-spreader-basin { stroke: var(--water-fill); stroke-width: 7; stroke-linecap: round; }
+  .w-cold { stroke: var(--cold); stroke-width: 3; fill: none; stroke-dasharray: 9 5; }
+  .w-break { fill: none; stroke: #888780; stroke-width: 1.2; }
+  .w-apricot { fill: none; stroke: #A65B21; stroke-width: 1.6; stroke-dasharray: 5 3; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 11px; color: var(--text2); margin: 8px 0; }
+  .legend div { display: flex; align-items: center; gap: 6px; }
+  .legend svg { width: 28px; height: 14px; flex-shrink: 0; overflow: visible; }
+
+  table.detail { width: 100%; border-collapse: collapse; font-size: 11px; margin: 8px 0 16px; }
+  table.detail th { background: var(--bg3); text-align: left; padding: 5px 8px; font-weight: 500; border: 1px solid var(--border); }
+  table.detail td { padding: 4px 8px; border: 1px solid var(--border); vertical-align: top; }
+  table.detail tr:nth-child(even) td { background: var(--bg2); }
+  table.detail td.num, table.detail th.num { text-align: right; white-space: nowrap; }
+  .plant-check { width: 16px; height: 16px; accent-color: var(--water); vertical-align: middle; }
+  .calc input { width: 100%; font: inherit; padding: 2px 4px; border: 1px solid var(--border); border-radius: 3px; text-align: right; }
+  .calc input.name { text-align: left; }
+  .log td { height: 30px; }
+  .figures { display: grid; grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.25fr); gap: 16px; align-items: start; margin: 8px 0; }
+  figure figcaption { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 4px; }
+  .two-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .source-list { padding-left: 20px; font-size: 12px; }
+  .source-list li { margin: 5px 0; }
+  .footer { margin-top: 24px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text3); }
+
+  @page {
+    size: 8.5in 11in;
+    margin: 10mm 10mm 12mm;
+    @bottom-left { content: "Prairie Plants - Orchard rain and snowmelt harvesting plan"; font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+  }
+  @media print {
+    body { padding: 0; margin: 0; max-width: none; font-size: 9pt; line-height: 1.3; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    .print-help, .screen-only { display: none; }
+    .page-break { break-before: page; }
+    h1 { font-size: 16pt; line-height: 1.15; }
+    h2 { font-size: 12pt; margin: 3mm 0 1.5mm; padding-bottom: 1mm; }
+    h3 { font-size: 10pt; margin: 2mm 0 1mm; }
+    h1, h2, h3 { break-after: avoid; }
+    p { orphans: 3; widows: 3; }
+    .subtitle { font-size: 9pt; margin-bottom: 1.5mm; }
+    .source-note { font-size: 7.5pt; line-height: 1.3; }
+    .lead { font-size: 9pt; line-height: 1.35; }
+    ul.points, ol.steps { font-size: 8.5pt; line-height: 1.3; padding-left: 5mm; }
+    ul.points li, ol.steps li { margin: 0.6mm 0; }
+    .specs { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2mm; margin: 2mm 0; }
+    .spec { padding: 1.5mm 2mm; border-radius: 1mm; }
+    .spec .label { font-size: 6.5pt; letter-spacing: 0; }
+    .spec .value { font-size: 10.5pt; }
+    .spec .hint { font-size: 6.5pt; }
+    .notice { font-size: 8pt; padding: 1.5mm 2mm; margin: 2mm 0; }
+    .chart { max-height: 2.5in; }
+    .site-plan { max-height: 7.5in; width: auto; max-width: 100%; margin: 1mm auto; }
+    .topo { max-height: 9.3in; width: auto; max-width: 100%; }
+    .soil { max-height: 5.4in; width: auto; max-width: 100%; }
+    .topo-layout, .soil-layout { gap: 5mm; }
+    .crescent-plan { max-height: 3.1in; }
+    .crescent-section { max-height: 2.5in; }
+    .figures { gap: 5mm; }
+    .legend { font-size: 7.5pt; gap: 1mm 4mm; margin: 1.5mm 0; }
+    table.detail { table-layout: fixed; font-size: 7.8pt; line-height: 1.25; margin: 2mm 0 3mm; }
+    table.detail th, table.detail td { padding: 1mm 1.5mm; overflow-wrap: anywhere; }
+    table.detail tr { break-inside: avoid; }
+    thead { display: table-header-group; }
+    .plant-check { width: 3.5mm; height: 3.5mm; }
+    .calc input { border: none; padding: 0; }
+    .log td { height: 9.5mm; }
+    .source-list { font-size: 7.5pt; padding-left: 5mm; }
+    .source-list li { margin: 0.6mm 0; }
+    a { text-decoration: none; color: inherit; }
+    .footer { font-size: 7.5pt; margin-top: 3mm; padding-top: 2mm; }
+  }
+</style>
+</head>
+<body>
+
+<div class="notice print-help" role="note"><strong>Print setup:</strong> Letter (8.5 × 11 in), portrait, 100% scale. Turn on background graphics and turn off the browser's headers and footers.</div>
+<noscript><div class="notice error">JavaScript is required to draw the chart, the site plan, the basin drawings, and the calculated tables.</div></noscript>
+<div class="notice error" id="render-error" hidden></div>
+
+<section aria-labelledby="page-title">
+<h1 id="page-title">Orchard Rain and Snowmelt Harvesting Plan</h1>
+<p class="subtitle">Prairie Plants · Ideas from Brad Lancaster's <em>Rainwater Harvesting for Drylands and Beyond</em> (Vol. 1, 3rd ed., and Vol. 2, 2nd ed., both 2019), adapted to a snowy site with dry summers</p>
+<p class="source-note">Companion page; it does not change the planting or pollination plans. Tree positions are a snapshot of the October 4, 2026 plan in <a href="orchard_pollination_grid.html">orchard_pollination_grid.html</a>. Slope from the owner's USGS 1 m contour and flow-path maps (October 6, 2026), checked against a drone photo: the homestead pad is the high point, the land falls north and west to the low northwest corner by the road, and the planted block sits at the south end of the 600 ft strip, R1 about 15 ft inside its south line. Climate from PRISM 1991–2020 normals and ERA5 reanalysis (see Sources and Assumptions).</p>
+<div class="specs" id="specs"></div>
+
+<h2>The Plan in Brief</h2>
+<p class="lead">PRISM puts Prairie at about <strong>22 in</strong> of precipitation a year, about double the ~11 in often quoted for Elmore County, which reflects the low desert around Mountain Home. NRCS lists 12–16 in for your soil's setting, so your lot may get less; a rain gauge will settle it. Either way it's more than Lancaster gets in Tucson. The catch is timing: about two-thirds falls from November through March, and about half of the year's total arrives as snow while the trees are dormant. July through September brings only about an inch, just when a mature orchard's demand peaks. The plan:</p>
+<ul class="points">
+  <li><strong>Start at the top.</strong> The homestead roofs and gravel pad sit at the high point just south of the orchard. Catch their water and spread it into the top rows.</li>
+  <li><strong>Catch it where it lands.</strong> A basin at every tree soaks snowmelt and spring rain deep, filling the soil "tank" before summer.</li>
+  <li><strong>Pass the overflow downhill.</strong> Each basin spills to the next tree, and the chain ends in a sponge basin at the low northwest corner by the road.</li>
+  <li><strong>Let the drip fill the July–September gap.</strong> Harvested water won't replace the drip, but it can delay the first run, shorten the season, and soften dry spells.</li>
+</ul>
+
+<h2>Water In vs. Water Demand, by Month</h2>
+<div id="chart-host"></div>
+<p class="source-note">Bars: PRISM 1991–2020 normal precipitation (inches of water) at Prairie. Line: FAO-56 reference evapotranspiration (ET₀) from ERA5, 1995–2024, the water a well-watered grass surface would use; mature trees with full canopies use a similar amount per area of canopy, young trees far less. In the shaded months the mean temperature is below about 36 °F, so most of that precipitation arrives as snow.</p>
+</section>
+
+<section class="page-break" aria-labelledby="land-heading">
+<h2 id="land-heading">The Land: USGS 1 m Contours and Flow Paths</h2>
+<div class="topo-layout">
+  <figure><figcaption>Whole field, north up like the USGS maps</figcaption><div id="topo-host"></div></figure>
+  <div>
+    <ul class="points" id="slope-points"></ul>
+    <div class="legend" id="topo-legend"></div>
+    <p class="source-note">Traced from the owner's USGS 1 m contour and flow-path maps and scaled to the fences (a 330 × 1,320 ft lot). Contours are 1 m (3.3 ft) apart, labeled in meters as on the USGS map. Divides are where runoff splits; south of the homestead the lot drains south, away from the orchard.</p>
+  </div>
+</div>
+</section>
+
+<section class="page-break" aria-labelledby="soil-heading">
+<h2 id="soil-heading">The Soil: Simonton Loam and How Water Moves Through It</h2>
+<p class="source-note">USDA NRCS Web Soil Survey report for the property: map unit 149, Simonton loam, 2 to 12 percent slopes (Elmore County Area, Idaho, survey version 14, August 31, 2026), with layer data from NRCS Soil Data Access. Owner: no rock on the property and about 10 ft of soil before rock.</p>
+<div class="soil-layout">
+  <figure><figcaption>Typical profile, to scale</figcaption><div id="soil-host"></div></figure>
+  <div><ul class="points" id="soil-points"></ul></div>
+</div>
+<table class="detail" id="soil-table">
+<colgroup><col style="width:9%"><col style="width:10%"><col style="width:11%"><col style="width:7%"><col style="width:14%"><col style="width:11%"><col style="width:38%"></colgroup>
+<thead><tr><th>Layer</th><th>Depth</th><th>Texture</th><th class="num">Clay</th><th class="num">Soaks in, in/hr</th><th class="num">Holds, in per ft</th><th>What it means for water</th></tr></thead>
+<tbody></tbody></table>
+<p class="source-note">"Soaks in" is NRCS's saturated hydraulic conductivity (Ksat), typical value with the low–high range; "holds" is available water capacity, the water roots can use. Hydrologic soil group C; well drained; no flooding or ponding; no water table or restrictive layer within 80 in.</p>
+</section>
+
+<section class="page-break" aria-labelledby="site-heading">
+<h2 id="site-heading">Water-Harvesting Site Plan — To Scale, South Up, West Fence on the Right</h2>
+<p class="source-note">Same orientation as the planting map (the view from the north end looking south), so the homestead, the high point, is at the top and the road, the low end, is at the bottom. Distances are from the west fence and the R1 row line. Hover over a tree for its position.</p>
+<div id="site-plan-host"></div>
+<div class="legend" id="site-legend"></div>
+<p class="source-note" id="site-note"></p>
+</section>
+<section class="page-break" aria-labelledby="zones-heading">
+<h2 id="zones-heading">Techniques by Zone, Top of the Slope to the Bottom</h2>
+<p class="source-note">Lancaster's second principle: start at the top of the watershed and work down. Book references are chapters in Volume 1 (3rd ed.) or Volume 2 (2nd ed.).</p>
+<table class="detail">
+<colgroup><col style="width:13%"><col style="width:40%"><col style="width:26%"><col style="width:12%"><col style="width:9%"></colgroup>
+<thead><tr><th>Zone</th><th>What to build</th><th>Size and specs</th><th>Book</th><th>When</th></tr></thead>
+<tbody>
+<tr><td><strong>1. Homestead</strong> (the high point)</td><td>Start here. Gutter the red shed, container, white building, and any future house into tanks for early-summer watering, or straight into the spreader below. Let winter snow slide off roofs into basins, not onto paths. Send the gravel pad's runoff north in a gently sloped diversion swale to the spreader.</td><td>Each 1,000 sq ft of roof sheds about 620 gal per inch, about 4,900 gal from March through June. A tank at the homestead sits above the orchard rows and gives about 0.43 psi per foot of drop: enough for low-pressure gravity drip, not for your 15 psi drip tape without a pump. Use the calculator on the budget page for your own areas.</td><td>Vol. 1 Ch. 3 (Cistern Systems); Vol. 2 Ch. 8 (Hardscape Runoff), Ch. 9 (Diversion Swales)</td><td>Spring–summer 2027</td></tr>
+<tr><td><strong>2. Spreader above R1</strong></td><td>Catch the homestead water, and any sheet flow from upslope, in short, staggered on-contour berm 'n basins across the top of the block, spilling into the R1–R2 basins. The apples there are the best-drained trees and the best able to use it. Contours here cross the rows at a slant (<span data-calc="fall-range">17–56</span>°), so a single long contour line would cut through rows: keep each segment short and level.</td><td>Segments 30–60 ft long, 3–4 in of water depth, level crests, spillways at the ends lined with sod (no rock needed)</td><td>Vol. 2 Ch. 3 (Berm 'n Basins), Ch. 9</td><td>With the first apples</td></tr>
+<tr><td><strong>3. Every orchard tree</strong></td><td>A crescent berm 'n basin on the downhill side (northwest to north-northwest here), with its spillway aimed at the next tree downhill, usually the northwest diagonal. Plant on the basin's upper edge, never in its bottom. Put the drip emitters inside the basin.</td><td>Start 3–4 ft from the trunk; widen toward the drip line as the tree grows. Tree on a low mound at the upper edge; level floor dug no deeper than about 2 in, so it stays above the slower clay-loam subsoil. Spillway 3–4 in above the floor (3 in or less for stone fruit), lined with sod; berm crest level and 2–3 in above it; low and rounded so you can mow over it.</td><td>Vol. 2 Ch. 3 (Berm 'n Basins)</td><td>At planting (now)</td></tr>
+<tr><td><strong>4. Orchard floor</strong></td><td>Living sponge: wood chips in the basins (chip the windbreak and orchard prunings), perennial grass-and-clover cover in the alleys, clippings mowed or blown onto the tree rows. Mulched soil freezes less deeply, so snowmelt can soak in instead of sheeting off frozen ground. Stay off soft rows during snowmelt; ruts become ditches running west.</td><td>Chips 2–3 in deep in basins (about 2 in for stone fruit), surface at least 1 in below the spillway, kept 6–12 in back from trunks; 3–4 in elsewhere. Hardware-cloth trunk guards: mulch plus snow cover hides voles.</td><td>Vol. 2 Ch. 7 (Mulching)</td><td>At planting; top up yearly</td></tr>
+<tr><td><strong>5. Driveway</strong> (east side)</td><td>It runs downhill along the orchard, and the land tilts west, so its runoff, plus some from the higher neighbor's side, heads into the headland. Catch it in a chain of shallow, mowable basins along the driveway's west edge, stepped down the slope by low check berms, each spilling west to the east-end (C13) trees. If the drive is gravel, broad rolling dips across it kick water into the basins. Push salt-free plowed snow into the basins, not onto young plants.</td><td>Basins about 6 ft wide with 3–4 in of water depth; the drive falls about 3% along the block, so a check berm about every 12–15 ft keeps each cell level. Each 100 ft of the 22 ft drive sheds up to about 1,370 gal per inch of rain. Never route salted snow or oily runoff to plants.</td><td>Vol. 2 Ch. 8; Ch. 5 (Infiltration Trenches)</td><td>Spring–summer 2027</td></tr>
+<tr><td><strong>6. Elderberry hedge</strong></td><td>It sits upslope of most of the driveway's runoff, so it lives on its own rain and snow. If the drive is crowned and its east half drains east, small crescents on each bush's downhill side catch that water.</td><td>Crescents 2–3 ft out, 3–4 in of water depth</td><td>Vol. 2 Ch. 3</td><td>As the cuttings root</td></tr>
+<tr><td><strong>7. West windbreak</strong> (snow fence)</td><td>Snow-drift harvesting: west winds will drop drifts just east of the hazelnut row, over the tractor alley and the C1 berry guilds. Let them melt in place. Brush heavy snow off young limbs, and expect the alley to stay blocked until the drift melts.</td><td>Drifts grow with the windbreak. A dense, bushy bottom piles snow close; a more open row spreads it farther and thinner.</td><td>Vol. 1 App. 8; Vol. 2 Ch. 3 ("Harvesting Windswept Snow")</td><td>Every winter</td></tr>
+<tr><td><strong>8. Tractor alley</strong></td><td>Low, broad, drivable diagonal humps (water bars) so wheel ruts can't turn into a gully running north. Each one turns water west into the hazelnut row.</td><td>Every 75–100 ft; 4–6 in high; angled about 30° across the alley</td><td>Vol. 2 Ch. 9 (Diversion Swales)</td><td>When ruts appear</td></tr>
+<tr><td><strong>9. Walking lane</strong></td><td>Make the mulberry–hazelnut lane a sunken wood-chip path between the two planted rows, so it soaks up overflow for both. Low cross-berms keep water from running north along it.</td><td>Cross-berms 4–6 in high every 20–25 ft (the west side falls about 2%)</td><td>Vol. 1 Ch. 4, pattern 6 (Raised Paths, Sunken Basins)</td><td>When the lane is laid out</td></tr>
+<tr><td><strong>10. Northwest corner</strong> (by the road)</td><td>The final overflow "sponge": a broad, shallow infiltration basin planted with wet-tolerant, later-blooming shrubs such as elderberry (from your hardwood cuttings) and aronia. Keep it inside your line and back from the road so overflow never cuts the road edge, and keep it in the corner rather than a solid hedge across the north end, so cold air can still drain away.</td><td>6 in deep or less and wide; size it after watching one snowmelt; give it a spillway too.</td><td>Vol. 2 Ch. 2 (Infiltration Basins)</td><td>After a season of watching</td></tr>
+</tbody></table>
+
+<h2>Lancaster's Eight Principles, Applied Here</h2>
+<table class="detail">
+<colgroup><col style="width:4%"><col style="width:34%"><col style="width:62%"></colgroup>
+<thead><tr><th>#</th><th>Principle (Lancaster's wording)</th><th>On your site</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Begin with long and thoughtful observation.</td><td>Walk the block during snowmelt and after summer storms. Flag where water runs and ponds and where snow and frost linger, and use the log on the last page.</td></tr>
+<tr><td>2</td><td>Start at the top (highpoint) of your watershed and work your way down.</td><td>Your high point is the homestead pad: its roofs and gravel come first, then the driveway and the top rows. The northwest corner by the road comes last.</td></tr>
+<tr><td>3</td><td>Start small and simple.</td><td>One crescent per tree at planting. Add the spreader, driveway basins, lane, and corner basin after a season of watching.</td></tr>
+<tr><td>4</td><td>Slow, spread, and infiltrate the flow of water.</td><td>Level basin floors and level berm crests; many small basins instead of one ditch; mulch everywhere water lands.</td></tr>
+<tr><td>5</td><td>Always plan an overflow route, and manage that overflow as a resource.</td><td>Every basin spills to the next tree downhill, and the chain ends in the northwest sponge basin, not the road.</td></tr>
+<tr><td>6</td><td>Maximize living and organic groundcover.</td><td>Wood chips in the basins, perennial cover in the alleys, clippings blown onto the rows.</td></tr>
+<tr><td>7</td><td>Maximize beneficial relationships and efficiency by "stacking functions."</td><td>The windbreak is also a snow fence, a nut crop, and a mulch source; the berry guilds sit in the drift zone; elderberry cuttings plant the sponge basin; roof tanks double as gravity-fed drip.</td></tr>
+<tr><td>8</td><td>Continually reassess your system: the "feedback loop."</td><td>Each fall, widen basins toward the drip line and fix spots where water broke through or stood too long.</td></tr>
+</tbody></table>
+</section>
+
+<section class="page-break" aria-labelledby="crescent-heading">
+<h2 id="crescent-heading">Crescent Berm 'n Basin at Each Tree</h2>
+<div class="figures">
+  <figure><figcaption>Plan view, oriented like the site plan (south up, west on the right)</figcaption><div id="crescent-plan-host"></div></figure>
+  <figure><figcaption>Section down the fall line (uphill on the left), drawn to true scale</figcaption><div id="crescent-section-host"></div></figure>
+</div>
+<h3>Build it as you plant</h3>
+<ol class="steps">
+  <li>Plant on a low mound, 3–4 in high and wider than the root ball, so the root flare ends up 1–2 in above the future spillway level after the soil settles.</li>
+  <li>Find the downhill direction at the tree with a level. Expect northwest in R1–R5 and north-northwest farther north (the site plan shows each tree), but local bumps rule.</li>
+  <li>Mark an arc on the downhill side, 3–4 ft from the trunk, with its ends running along the contour and curving slightly uphill.</li>
+  <li>Shape a shallow, level-floored saucer between the mound and the arc, digging no deeper than about 2 in so the floor stays in the loam above the stickier clay-loam subsoil. Get the rest of the depth from the berm: pile soil on the arc (scrape extra from the alley side, never from the basin floor), tamp it, and level its crest.</li>
+  <li>Cut a spillway notch in the middle of the berm so water can stand 3–4 in deep at most (3 in or less for stone fruit), with the crest 2–3 in higher. You don't need rock: line the notch with a strip of sod from the alley, or a paver or board set flush, so overflow can't cut it. Aim it at the next tree downhill, usually the northwest diagonal about 22 ft away (the site plan shows which).</li>
+  <li>Mulch the basin with 2–3 in of wood chips (about 2 in for stone fruit), keeping the chip surface at least 1 in below the spillway and a 6–12 in bare ring around the trunk, and add a hardware-cloth guard.</li>
+  <li>Set the drip emitters inside the basin under the outer canopy, and move them outward as the tree grows.</li>
+  <li>Test with a hose or the first storm. Water should spread along the berm, not pour out one end, and soak in within about a day.</li>
+  <li>Each fall, extend the arc outward toward the drip line.</li>
+</ol>
+<div class="two-col">
+  <div>
+    <h3>Find the contour</h3>
+    <p class="lead">An A-frame level, a water level (clear tubing filled with water), or a laser level all work; Volume 2, Appendix 1 covers all three. With an A-frame, mark where the plumb line crosses the crossbar, flip the frame end for end on the same two spots, and mark again; halfway between the marks is level. Then walk the frame across the slope, swinging one leg until the line hits the level mark, and flag each foot. The flags trace a contour. On your ground, expect contours to run east-northeast to northeast, crossing the tree rows at about <span data-calc="fall-range">17–56</span>°.</p>
+  </div>
+  <div>
+    <h3>Test how fast your soil drinks</h3>
+    <p class="lead">Dig a hole about 12 in deep and 8 in wide near the south end, the middle, and the northwest part of the block; its sides also show where the stickier clay loam starts. Fill it, let it drain, refill it, and measure how far the water drops in one hour. NRCS rates the clay-loam subsoil at about 0.4 in per hour (0.2–0.6), so 4 in of water should be gone in about 10 hours (7–20). For a basin to empty within about a day, keep its water depth no more than 24 times your hourly drop. Where water still stands after a day, send extra water only to wet-tolerant plants.</p>
+  </div>
+</div>
+</section>
+<section class="page-break" aria-labelledby="fruit-heading">
+<h2 id="fruit-heading">Who Gets the Water</h2>
+<p class="source-note">Counts and positions come from the planting-plan snapshot. Wet-soil tolerance follows UC IPM's fruit site-selection guidance; canker notes follow the inventory flags shown on the pollination grid.</p>
+<table class="detail" id="fruit-table">
+<colgroup><col style="width:10%"><col style="width:15%"><col style="width:16%"><col style="width:22%"><col style="width:11%"><col style="width:26%"></colgroup>
+<thead><tr><th>Fruit</th><th>Where · trees</th><th>Wet-soil tolerance</th><th>Basin</th><th>Send overflow?</th><th>Notes</th></tr></thead>
+<tbody></tbody></table>
+<div class="notice cold"><strong>Cold air follows the water.</strong> On frosty spring nights cold air drains the same way water does, toward the northwest corner by the road. With the block at the south end of the strip, that open corner, about 300 ft past R15, is the frost pocket, not the orchard. Within the block the stone fruit (R9–R12) is on the lower half but on its steepest band, so cold air keeps moving, and the apricots (R11–R12, C1–C3) are the lowest planted trees. Stone fruit blooms first, and UC IPM notes that bacterial canker, already flagged on many of these trees, is worse in low spots and after spring freezes; drought stress and irrigation that wets the trunk also set trees up for it. So these trees need water that soaks through, never water that stands, plus steady drip in summer. Don't plant a solid hedge across the block's north end, where it would dam cold air against them. NRCS lists only 60–100 frost-free days for this soil's setting, so that cold-air drainage matters.</div>
+
+<h2 class="page-break">Row-by-Row Build Tracker</h2>
+<table class="detail" id="tracker">
+<colgroup><col style="width:6%"><col style="width:31%"><col style="width:19%"><col style="width:9%"><col style="width:9%"><col style="width:9%"><col style="width:17%"></colgroup>
+<thead><tr><th>Row</th><th>Trees in the plan (west to east)</th><th>Basin</th><th>Crescents shaped</th><th>Chips + guards</th><th>Drip in basins</th><th>Notes</th></tr></thead>
+<tbody></tbody></table>
+</section>
+
+<section class="page-break" aria-labelledby="budget-heading">
+<h2 id="budget-heading">Water Budget (Lancaster's Formula)</h2>
+<p class="source-note">Gallons = area (sq ft) × inches of precipitation × 0.623 (Vol. 1 Ch. 2 and App. 3). These are gross volumes, before runoff, evaporation, and snow sublimation; the earthworks exist to keep more of it on your ground. They use PRISM's 22 in; if your gauge shows NRCS's 12–16 in, multiply by about 0.55–0.75.</p>
+<table class="detail" id="budget-table">
+<colgroup><col style="width:31%"><col style="width:11%"><col style="width:11%"><col style="width:13%"><col style="width:12%"><col style="width:11%"><col style="width:11%"></colgroup>
+<thead><tr><th>Catchment</th><th class="num">Area, sq ft</th><th class="num">Gal per inch</th><th class="num">Gal per average year</th><th class="num">Nov–Mar</th><th class="num">Apr–Jun</th><th class="num">Jul–Sep</th></tr></thead>
+<tbody></tbody></table>
+
+<h3>Your homestead catchments (type in the areas)</h3>
+<p class="source-note">Measure each roof's footprint including the eaves, and the pad. The runoff factor is the rough share that runs off: about 0.9 for metal roofs and 0.5 for compacted gravel; edit to suit. March through June is the tank-filling season; the year total is gross.</p>
+<table class="detail calc" id="calc-table">
+<colgroup><col style="width:34%"><col style="width:13%"><col style="width:13%"><col style="width:13%"><col style="width:13%"><col style="width:14%"></colgroup>
+<thead><tr><th>Catchment</th><th class="num">Area, sq ft</th><th class="num">Runoff factor</th><th class="num">Gal per inch</th><th class="num">Gal Mar–Jun</th><th class="num">Gal per year</th></tr></thead>
+<tbody></tbody>
+<tfoot></tfoot></table>
+
+<h3>Summer gap for one mature tree (rough)</h3>
+<table class="detail" id="gap-table">
+<colgroup><col style="width:60%"><col style="width:15%"><col style="width:25%"></colgroup>
+<thead><tr><th>On one tree's 18 × 20 ft space</th><th class="num">Inches</th><th class="num">Gallons</th></tr></thead>
+<tbody></tbody></table>
+<p class="lead" id="gap-note"></p>
+</section>
+
+<section class="page-break" aria-labelledby="calendar-heading">
+<h2 id="calendar-heading">Season-by-Season Calendar</h2>
+<table class="detail">
+<colgroup><col style="width:12%"><col style="width:28%"><col style="width:60%"></colgroup>
+<thead><tr><th>When</th><th>What's happening</th><th>Water-harvesting work</th></tr></thead>
+<tbody>
+<tr><td>Oct–Nov (now)</td><td>Planting; first snow (November averages 2.4 in of water)</td><td>Shape a crescent as each tree goes in; add chips and trunk guards; flag the fall line at a few trees; run a perc test in three spots before the ground freezes. If fall stays dry, give one deep drip watering before freeze-up. Set up a rain gauge; CoCoRaHS volunteers report daily, snow included.</td></tr>
+<tr><td>Dec–Feb</td><td>Snowiest months (about 9 in of water)</td><td>Push salt-free plowed snow into the driveway-edge basins, never onto young plants; note where drifts form; brush heavy snow off young limbs; let roof snow slide into basins.</td></tr>
+<tr><td>Mar–Apr</td><td>Snowmelt plus spring rain (about 4.8 in): the main harvest</td><td>Walk the block during melt and after rain-on-snow; log where water runs and ponds; check that basins empty within about a day; repair breached berms; stay off soft rows; open the gutters to the tanks.</td></tr>
+<tr><td>May–Jun</td><td>Last dependable rain (about 3 in); bloom and leaf-out</td><td>Start the drip only when the soil 6–12 in down is drying (check with a trowel or probe); widen crescents; top up chips; mow and blow the alleys onto the rows.</td></tr>
+<tr><td>Jul–Sep</td><td>Nearly dry (about 1.2 in in all); demand peaks (ET₀ about 7.9 in in July)</td><td>Drip runs inside the basins, topped up from the roof tanks while they last; after any thunderstorm, check for erosion and where the runoff went.</td></tr>
+<tr><td>Late Sep–Oct</td><td>Reassess (principle 8)</td><td>Widen basins toward the drip line, fix trouble spots, drain tanks and hoses before hard freezes, and choose the next project (spreader, driveway basins, lane, corner basin).</td></tr>
+</tbody></table>
+<h2>Sources and Assumptions</h2>
+<ul class="source-list">
+  <li>Brad Lancaster, <a href="https://www.harvestingrainwater.com/product/rainwater-harvesting-for-drylands-and-beyond-volume-1-3rd-edition-new-2019/"><em>Rainwater Harvesting for Drylands and Beyond</em>, Vol. 1, 3rd ed.</a> (Rainsource Press, 2019): eight principles (Ch. 1), site water budget (Ch. 2), earthworks and cistern overview (Ch. 3), "Raised Paths, Sunken Basins" (Ch. 4), calculations (App. 3), windbreaks and snow-drift harvesting (App. 8).</li>
+  <li>Brad Lancaster, <a href="https://www.harvestingrainwater.com/product/rainwater-harvesting-for-drylands-and-beyond-volume-2-3rd-edition-new-2019/"><em>Rainwater Harvesting for Drylands and Beyond</em>, Vol. 2, 2nd ed.</a> (2019): infiltration basins (Ch. 2), berm 'n basins including "Harvesting Windswept Snow" (Ch. 3), infiltration trenches (Ch. 5), mulching (Ch. 7), hardscape runoff (Ch. 8), diversion swales including "Snow Diversion Berms" (Ch. 9), greywater (Ch. 12); water, A-frame, and laser levels (App. 1).</li>
+  <li>Brad Lancaster, <a href="https://www.harvestingrainwater.com/water-harvesting/water-harvesting-principles/">Water Harvesting Principles</a> (wording of the eight principles).</li>
+  <li><a href="https://prism.oregonstate.edu/normals/">PRISM Climate Group, Oregon State University</a>: 1991–2020 monthly normals, 800 m grid, sampled at Prairie (43.50° N, 115.57° W): about 22 in a year.</li>
+  <li><a href="https://open-meteo.com/en/docs/historical-weather-api">Open-Meteo Historical Weather API</a> (ERA5 reanalysis), 1995–2024 at the same point: FAO-56 reference evapotranspiration, and about 52% of precipitation falling as snow.</li>
+  <li>Idaho Department of Water Resources, <a href="https://idwr.idaho.gov/wp-content/uploads/sites/2/legal/guidance/Adjudication-Memo-11.pdf">Adjudication Memorandum #11, Private and Diffused Waters</a>: a landowner may use diffused surface water from rain and melting snow before it enters a natural channel (even one that flows only in spring), unless intercepting it measurably injures a prior water right.</li>
+  <li>UC IPM: <a href="https://ipm.ucanr.edu/agriculture/cherry/bacterial-canker/">Bacterial Canker (cherry)</a>, worse in low or sandy spots, after spring freezes, and with drought stress or irrigation that wets the tree; <a href="https://ipm.ucanr.edu/home-and-landscape/site-selection-fruit/">Site Selection (Fruit)</a>, pears tolerate wet soils better than other fruit trees, while cherries and peaches cannot tolerate saturated soil; <a href="https://ipm.ucanr.edu/home-and-landscape/phytophthora-root-and-crown-rot/">Phytophthora Root and Crown Rot</a>, avoid prolonged saturation or standing water at the base of trees.</li>
+  <li>USDA NRCS <a href="https://websoilsurvey.nrcs.usda.gov/">Web Soil Survey</a> report for the property (soil folder): map unit 149, Simonton loam, 2 to 12 percent slopes, Elmore County Area, Idaho (version 14, August 31, 2026); layer data (Ksat, available water, clay) from NRCS <a href="https://sdmdataaccess.sc.egov.usda.gov/">Soil Data Access</a>.</li>
+  <li><a href="https://www.cocorahs.org/">CoCoRaHS</a>: volunteer network that measures daily rain and snow at home with a standard gauge.</li>
+  <li>USGS 1 m elevation data: contour (1 m interval) and flow-path maps provided by the owner (October 6, 2026), traced by color and scaled to the fence lines (332 ft fence to fence, 1,320 ft from the north line to the south line). Elevations between contours are interpolated on a 10 ft grid, so features smaller than the contour spacing don't show. This replaces the earlier field estimate (about 25 ft of fall to the north over 600 ft and 5–10 ft to the west): the north fall in the strip is closer to 10 ft, and the west tilt is about as strong.</li>
+  <li>Block placement (owner's choice, October 6, 2026): R1 about 15 ft inside the south line of the 600 ft orchard strip, which is taken to start at the north fence, so R15 is about 305 ft from the road.</li>
+  <li>Plan geometry (pollination grid snapshot, October 4, 2026): offset grid of 18 ft by 20 ft, C1 trunks 38 ft from the west fence, 35 ft windbreak (mulberry 5 ft and hazelnut 20 ft from the fence), alley 25–32 ft, orchard plot 35–272 ft, driveway 300–322 ft, east fence 332 ft with the elderberry hedge 5 ft inside it. The planted block is taken as 237 × 300 ft.</li>
+  <li>Rough factors: a mature semi-dwarf tree uses about 0.8 × ET₀ over its 360 sq ft and roots 3–4 ft deep; the soil tank uses the Simonton layer values, about 6.4–8.1 in of available water in that depth. The owner reports no rock and about 10 ft of soil to rock.</li>
+</ul>
+</section>
+
+<section class="page-break" aria-labelledby="log-heading">
+<h2 id="log-heading">Snowmelt and Storm Observation Log</h2>
+<p class="source-note">Fill this in during snowmelt (March–April), after rain-on-snow, and after summer thunderstorms. Lancaster's first and last principles in practice: observe, then adjust. Use row–column positions (for example R7-C4) or landmarks.</p>
+<table class="detail log" id="log-table">
+<colgroup><col style="width:10%"><col style="width:14%"><col style="width:30%"><col style="width:10%"><col style="width:16%"><col style="width:20%"></colgroup>
+<thead><tr><th>Date</th><th>Event</th><th>Where water ran or ponded</th><th>Gone within a day?</th><th>Snow or frost notes</th><th>Fix or follow-up</th></tr></thead>
+<tbody></tbody></table>
+
+</section>
+
+<div class="footer">Prairie Plants · Orchard rain and snowmelt harvesting plan · created October 6, 2026 · companion to <a href="orchard_pollination_grid.html">orchard_pollination_grid.html</a>, which this page does not modify.</div>
+
+<script>
+'use strict';
+/* Snapshot of the planting plan in orchard_pollination_grid.html (October 4, 2026). This page only reads these values;
+   if the planting plan changes, update ROW_PLAN and the dimensions here to match. Distances are feet: x east of the
+   west fence, y north of the R1 row line. */
+const TREE_SPACING = 18, ROW_SPACING = 20;
+const WINDBREAK_WIDTH = 35, ORCHARD_WEST_SETBACK = 3, ORCHARD_LIMB_ALLOWANCE = 6;
+const ORCHARD_X0 = WINDBREAK_WIDTH + ORCHARD_WEST_SETBACK;
+const PLOT_WIDTH = 237, PLOT_EAST = WINDBREAK_WIDTH + PLOT_WIDTH;
+const DRIVEWAY_WEST = 300, DRIVEWAY_WIDTH = 22, DRIVEWAY_TO_FENCE = 10;
+const DRIVEWAY_EAST = DRIVEWAY_WEST + DRIVEWAY_WIDTH, EAST_FENCE = DRIVEWAY_EAST + DRIVEWAY_TO_FENCE;
+const MULBERRY_X = 5, HAZELNUT_X = 20, HAZELNUT_WIDTH = 10;
+const LANE = { west: MULBERRY_X, east: HAZELNUT_X - HAZELNUT_WIDTH / 2 };
+const ALLEY = { west: HAZELNUT_X + HAZELNUT_WIDTH / 2, east: ORCHARD_X0 - ORCHARD_LIMB_ALLOWANCE };
+const ELDERBERRY_X = EAST_FENCE - 5, ELDERBERRY_SPACING = 8;
+// Inventory-sheet rows by orchard row, R1 (south) first, listed C1 (west) to C13; null is open, 'R' is reserved.
+const ROW_PLAN = [
+  /* R1 */ ['R','R','R','R','R','R','R','R','R','R','R','R','R'],
+  /* R2 */ [39,27,53,42,49,29,59,53,45,26,30,40,41],
+  /* R3 */ [32,29,54,35,59,43,62,49,43,46,37,62,58],
+  /* R4 */ [30,62,50,36,62,66,33,62,64,62,44,48,31],
+  /* R5 */ [28,52,51,55,60,29,57,66,65,63,48,34,32],
+  /* R6 */ [32,47,null,null,null,null,null,null,null,null,null,null,null],
+  /* R7 */ [110,95,106,98,92,100,96,109,107,109,100,104,99],
+  /* R8 */ [94,93,108,103,97,105,101,103,102,101,97,100,null],
+  /* R9 */ [72,80,72,82,78,81,75,78,null,null,null,null,null],
+  /* R10 */ [73,76,73,81,77,79,81,77,null,null,null,null,null],
+  /* R11 */ [70,71,68,null,null,null,111,85,89,88,87,84,90],
+  /* R12 */ [69,70,null,null,null,111,111,null,90,91,83,91,86],
+  /* R13 */ Array(13).fill(null),
+  /* R14 */ Array(13).fill(null),
+  /* R15 */ Array(13).fill(null)
+];
+// Inventory rows 26–66 are apples, 68–71 apricots, 72–82 cherries, 83–91 peaches, 92–110 pears, and 111 plums.
+const typeOf = id => id <= 66 ? 'Apple' : id <= 71 ? 'Apricot' : id <= 82 ? 'Cherry' : id <= 91 ? 'Peach' : id <= 110 ? 'Pear' : 'Plum';
+
+// Owner's choice (October 6, 2026): R1 sits about 15 ft inside the south end of the 600 ft orchard strip, which starts
+// at the north fence by the road. Field distances (yN) are feet south of the north line; plan y is feet north of R1.
+const STRIP_DEPTH = 600, R1_FROM_NORTH = 585, SHED_FROM_NORTH = 732;
+const fieldY = planY => R1_FROM_NORTH - planY;
+// USGS 1 m data traced from the owner's contour and flow-path maps (October 6, 2026): 1 m contours, flow paths, and
+// divides in feet (x east of the west fence, yN south of the north line), plus a 10 ft elevation grid interpolated
+// between the contours (cm above 1440 m).
+const USGS = {"contours":[{"m":1445,"p":[[76,134],[79,150],[75,156],[79,160],[79,166],[74,168],[71,164],[70,171],[62,177],[41,175],[37,170],[29,171],[6,152],[4,153],[0,149],[-4,150]]},{"m":1445,"p":[[31,-2],[30,0],[32,2],[35,5],[36,3],[52,18],[54,24],[53,29],[64,42],[62,47],[68,50],[70,49],[73,54],[73,69],[63,78],[67,82],[68,89],[76,97],[72,103],[73,111]]},{"m":1446,"p":[[187,239],[188,259],[180,272],[182,274],[176,280],[170,283],[169,282],[161,289],[140,288],[134,292],[107,295],[92,290],[74,292],[58,282],[47,280],[41,272],[32,275],[23,274],[11,265],[7,257],[2,253],[3,248],[-2,242],[-4,244]]},{"m":1446,"p":[[143,-3],[148,6],[147,12],[151,16],[150,20],[154,27],[154,33],[150,42]]},{"m":1446,"p":[[150,67],[152,72],[148,79],[147,87],[155,91],[156,102],[154,108],[156,126],[163,133],[163,139],[166,148],[165,156],[169,163],[169,172],[174,184],[171,205],[176,212],[174,214],[179,219]]},{"m":1447,"p":[[255,238],[251,208],[244,199],[245,184],[241,174],[242,163],[238,156],[240,144],[237,139],[237,136],[242,136],[240,127],[246,106],[244,91],[249,87],[253,75],[254,76],[246,54],[249,49],[247,49],[257,47],[257,43],[253,39],[257,31],[253,29],[250,24],[256,18],[267,14],[265,6],[269,2],[268,1]]},{"m":1447,"p":[[261,260],[262,268],[266,275],[264,287],[266,293],[262,299]]},{"m":1447,"p":[[260,308],[255,320],[246,321],[240,331],[228,337],[222,336],[218,340],[217,339],[212,346],[201,347],[189,344],[180,353],[170,355],[150,357],[143,361],[134,363],[119,360],[113,364],[104,363],[97,367],[77,369],[64,373],[56,372],[43,374],[35,370],[29,372],[18,385],[8,393],[9,395],[4,410],[-3,416],[-7,416]]},{"m":1448,"p":[[318,359],[317,362],[318,368],[310,372],[309,377],[300,386],[292,387],[286,392],[280,389],[268,390],[261,401],[258,404],[256,403],[249,410],[247,409],[231,416],[222,417],[210,414],[191,425],[186,424],[177,427],[173,434],[162,433],[143,449],[137,452],[131,451]]},{"m":1448,"p":[[118,464],[111,469],[110,480],[98,489],[93,496],[94,497],[86,502],[88,513],[81,517],[79,537],[76,540],[75,538],[73,546],[66,553],[67,555],[56,565],[58,567],[54,571],[55,573],[46,579],[45,578],[38,584],[37,592],[32,596],[34,598],[23,605],[24,606],[14,620],[16,621],[11,623],[7,631],[-7,638]]},{"m":1448,"p":[[298,230],[296,232],[302,241],[303,233],[300,230]]},{"m":1449,"p":[[156,584],[154,590],[155,595],[148,598],[148,604],[146,607],[137,612],[135,611],[134,615],[132,614],[123,626],[124,628],[120,630],[116,628],[98,629],[99,634],[106,640],[106,643],[98,654]]},{"m":1449,"p":[[76,679],[70,685],[65,684],[58,697],[56,696],[40,713],[35,714],[28,721],[14,720],[10,724],[8,723],[-8,742]]},{"m":1449,"p":[[229,521],[229,517],[235,508],[243,510],[253,506],[258,507],[271,493],[273,494],[283,487],[294,486],[300,480],[300,475],[298,475],[304,477],[304,475]]},{"m":1449,"p":[[201,540],[201,538],[203,540],[208,536],[209,537],[214,532],[215,534],[219,529]]},{"m":1449,"p":[[140,560],[149,562],[151,559],[150,553],[153,550],[164,551],[168,555],[176,556],[176,559],[174,559],[174,561],[182,571],[178,576]]},{"m":1450,"p":[[162,729],[149,745],[135,750],[128,758],[123,759],[118,766],[117,765],[112,770],[111,768],[108,771],[104,779],[101,781],[95,780],[91,785],[90,784],[79,797],[47,795],[44,798],[46,812],[35,819],[34,827],[32,826],[24,833],[23,832],[12,842],[11,841],[5,846],[6,848],[2,852],[3,854],[-10,861]]},{"m":1450,"p":[[2,1008],[3,1006],[-5,994],[-2,982],[-4,976],[4,970],[5,964],[14,956],[15,957],[17,946],[22,945],[24,940],[21,937],[13,939],[4,934],[2,935],[-2,932],[-7,932],[-11,928]]},{"m":1450,"p":[[324,568],[319,576],[310,580],[309,586],[303,592],[295,596],[288,603],[282,602],[279,606],[277,605],[277,612],[282,615],[285,614],[285,622],[282,624],[277,623],[273,627],[267,626],[264,630],[262,629],[255,633],[252,632],[252,634],[244,635],[242,643],[231,651],[220,650],[216,655],[222,662],[218,670],[199,683],[200,685],[191,700],[180,702],[177,706]]},{"m":1451,"p":[[177,864],[174,870],[177,878],[180,878],[198,878],[204,874],[209,875],[221,870]]},{"m":1451,"p":[[253,862],[253,863],[264,860],[273,861],[280,858],[283,860]]},{"m":1451,"p":[[321,740],[313,747],[312,752],[306,754],[298,753],[298,757],[309,762],[309,764],[304,770],[298,768],[294,784],[283,783],[272,791],[271,789],[259,798],[260,800],[257,806],[249,810],[258,816],[258,818],[252,821],[238,820],[235,822],[236,824],[225,825],[219,831],[216,831],[214,828],[216,825],[222,825],[225,830],[231,829],[234,831],[231,836],[219,842],[213,841],[203,848],[201,847],[194,854],[186,856]]},{"m":1451,"p":[[243,880],[244,884],[246,885],[252,885],[255,882]]},{"m":1451,"p":[[279,883],[268,892],[267,897],[261,901],[261,906],[256,903],[259,901]]},{"m":1451,"p":[[264,906],[266,912],[262,916],[263,918],[253,922],[249,927],[250,932],[251,931],[256,939],[264,938],[270,940],[271,948],[282,947],[286,951],[300,950],[310,955],[319,955],[325,952],[336,954]]},{"m":1451,"p":[[249,804],[250,806],[244,804],[241,807],[244,812],[246,810]]}],"flows":[[[340,400],[330,400],[329,395],[323,397],[321,390],[315,389],[314,376],[290,370],[277,353],[260,348],[259,339],[252,344],[244,336],[230,337],[226,332],[222,333],[207,310],[201,310],[203,312],[198,316],[198,330],[206,336],[208,345],[214,347],[214,372],[208,376],[208,386],[221,405],[219,419],[229,421],[237,438],[247,435],[258,461],[256,463],[265,468],[264,474],[289,482],[335,487],[333,489],[343,494],[344,504]],[[204,306],[186,287],[185,281],[182,283],[174,277],[160,278],[155,274],[141,275],[135,268],[136,259],[127,257],[119,243],[129,244],[133,250],[130,250],[130,254],[133,254],[127,261],[127,276],[133,287],[132,301],[127,309],[136,318],[131,324],[130,346],[136,353],[137,372],[128,386],[134,394],[140,395],[138,412],[148,416],[146,430],[170,457],[174,471],[178,474],[184,473],[195,483],[194,488],[203,490],[202,501]],[[126,246],[126,236],[119,235],[110,222],[97,221],[97,224],[92,218],[78,220],[68,212],[69,202],[73,202],[74,195],[64,184],[74,191],[84,188]],[[4,519],[23,515],[34,521],[48,520],[50,526],[52,524],[64,532],[85,535],[98,547],[103,547],[105,542],[129,543],[135,531],[144,531],[160,548],[167,545],[177,548],[172,554],[176,570],[186,573],[193,565],[200,565],[201,570],[210,575],[209,581],[218,586],[220,592],[221,590],[223,596],[225,594],[227,599],[229,597],[241,606],[251,605],[264,621],[277,620],[280,624],[285,616],[303,616],[308,621],[313,620],[315,625],[320,626],[318,623],[322,620],[329,622],[329,619],[333,625]],[[151,-9],[146,-11],[140,-5],[134,-4],[122,-8],[115,-5],[108,-12],[93,-4],[61,-6],[55,2],[46,4],[44,14],[37,20],[34,19],[30,24],[8,22],[4,25]],[[221,68],[207,55],[194,56],[192,61],[185,60],[170,68],[156,68],[149,63],[125,90],[98,89],[93,98],[163,96],[170,105],[218,105],[223,100],[244,99],[252,105],[277,104],[282,112],[289,114],[325,113],[340,103]],[[136,28],[97,26],[75,44],[77,46],[64,48],[63,58],[53,68],[42,64],[34,76],[24,71],[16,79],[4,70],[20,102],[27,109],[45,114],[42,128],[48,134],[42,137],[42,147],[52,158],[45,158],[41,183],[27,191],[26,198],[18,205],[4,205]],[[49,117],[78,113],[84,106],[83,100],[89,98]],[[52,162],[56,169],[54,172],[60,172],[60,169],[66,174],[64,180],[57,176]],[[97,228],[103,235],[101,242],[115,245]],[[104,246],[102,283],[106,287],[107,308],[98,310],[94,317],[94,337]],[[130,236],[141,245],[156,244],[160,249],[174,239],[210,242]],[[189,281],[196,286],[214,284],[219,290],[232,288],[238,297],[247,296],[249,300],[266,295],[270,300],[281,299],[281,304],[299,303],[306,307],[308,315],[324,315],[324,310],[328,310],[330,320],[339,325],[337,327],[343,329],[341,331],[345,334]],[[262,339],[266,344],[277,343],[279,348],[285,349],[281,354],[292,346],[300,352],[321,350],[328,361],[326,363],[332,365],[338,374],[344,373]],[[4,409],[5,420],[16,426],[30,424],[32,430],[48,428],[50,433],[69,432],[72,437],[84,435],[85,438],[82,438],[88,446],[83,453],[86,459],[100,464],[98,468],[103,468],[107,477]],[[237,442],[239,444],[234,457],[234,467],[240,468],[243,472],[242,478],[247,480],[246,493],[258,505],[256,518],[261,516],[276,531],[275,542],[280,542],[278,552],[284,560],[279,564],[279,567],[283,567],[281,569]],[[319,630],[324,631],[326,641],[335,648],[333,666],[336,670],[334,669],[340,668],[341,676],[343,674]],[[4,646],[12,651],[26,650],[31,655],[38,653],[46,676],[80,675],[79,680],[83,684],[93,685],[97,700],[94,710],[101,717],[118,716],[120,720],[126,719],[138,728]],[[133,818],[115,820],[114,815],[108,816],[104,807],[98,806],[98,799],[107,789],[102,787],[100,778],[91,772],[90,762],[93,759],[89,756],[89,759],[86,755],[75,757],[71,752],[30,747],[27,742],[4,742]],[[344,877],[318,879],[314,870],[307,876],[296,866],[285,870],[277,879],[270,870],[252,870],[247,875],[237,874],[232,879],[227,878],[221,886],[212,885],[210,890],[197,889],[195,894],[186,892],[184,897],[168,900],[163,905],[156,903],[152,908],[146,907],[147,916],[130,922],[129,931],[123,934],[112,934],[104,928],[86,928],[78,932],[64,930],[59,935],[52,933],[45,939],[41,937],[34,943],[45,946],[45,944],[75,949],[111,947],[123,957],[130,957],[134,952],[145,953],[149,948],[159,949],[164,944],[182,945],[186,937],[192,938],[198,930],[203,931],[205,926],[211,927],[216,918],[221,918],[218,920]],[[4,557],[11,557],[16,563],[29,561],[34,567],[45,564],[46,570],[55,575],[54,588],[62,590],[71,600],[78,598],[93,604],[119,601],[123,611],[133,619],[131,628],[166,634],[170,639],[177,638],[179,648],[184,649],[186,655],[190,658],[195,657],[197,662],[206,664],[208,669],[217,668],[226,680],[243,675],[245,681],[251,685],[252,700],[256,706],[258,704]],[[4,601],[33,608]],[[41,653],[49,659],[107,668],[116,680],[121,680],[124,675],[137,674],[144,675],[146,680],[159,678],[164,684],[173,682],[178,692],[184,690],[182,696],[197,710],[206,715],[209,733],[220,746],[232,745],[237,750],[241,745],[247,745],[253,754],[258,752],[262,756],[267,765],[276,767]],[[97,759],[108,760],[112,765],[126,764],[134,772],[141,771],[142,780],[155,791],[159,790],[159,786],[170,787],[171,782],[178,782]],[[341,845],[334,852],[332,861],[318,873]],[[30,941],[4,946]]],"divides":[[[344,0],[340,0],[341,2],[333,-4],[333,-1],[329,-4],[331,-8],[326,-8],[322,-1],[312,-8],[310,-14],[304,-12]],[[336,621],[335,616],[322,618],[318,613],[311,617],[310,612],[308,614],[304,610],[307,605],[300,598],[290,596],[290,599],[299,603]],[[4,361],[7,365],[5,393],[13,400],[18,398],[20,404],[23,401],[30,404],[32,401],[34,408],[38,405],[45,408],[45,405],[60,408],[60,405],[64,412],[71,409],[78,412],[78,416],[75,416],[76,419],[81,417],[82,423],[78,423],[80,426],[85,425],[83,430],[97,428],[103,432],[98,438],[102,442],[107,440],[104,438],[104,445],[107,445],[94,450],[100,452],[99,457],[94,456],[105,467],[110,465],[112,474],[115,474],[115,469],[119,469],[119,474],[125,474],[127,465],[130,465],[132,470],[134,462],[140,464],[138,479],[141,479],[142,485],[145,486],[144,483],[151,490],[149,500],[155,502],[153,514],[163,520],[160,523],[163,532],[171,527],[170,532],[177,525],[175,520],[178,517],[180,521],[185,517],[186,522],[193,524],[192,529],[189,526],[196,526],[203,531],[200,534],[204,538],[202,540],[210,539],[212,544],[218,542],[221,546],[221,549],[215,548],[216,552],[221,552],[223,562],[226,557],[230,557],[230,562],[232,557],[236,561],[234,566],[234,563],[244,566],[244,561],[241,561],[250,561],[252,567],[258,568],[253,570],[253,577],[267,591],[271,583],[274,588],[278,588],[278,583],[282,588],[284,583],[294,590],[289,592],[285,589]],[[3,896],[8,903],[5,902],[6,906],[10,906],[4,916],[8,914],[16,916],[16,911],[20,911],[22,916],[24,908],[26,912],[30,912],[31,908],[38,912],[38,908],[42,907],[44,912],[46,906],[53,909],[56,904],[60,906],[56,909],[64,906],[81,909],[86,903],[78,906]],[[344,909],[344,906],[330,908],[332,913],[326,914],[328,916],[304,915],[306,920],[300,917],[296,921],[297,919],[298,923],[294,927],[293,922],[288,928],[286,926],[287,931],[281,931],[282,926],[278,932],[280,934],[274,932],[267,934],[259,926],[252,938],[248,938],[248,933],[241,938],[238,933],[233,942],[226,941],[226,946],[229,946],[222,946],[222,941],[218,941],[218,946],[215,946],[215,941],[211,949],[207,949],[207,944],[200,953],[200,948],[188,964],[185,959],[178,964],[175,959],[170,968],[173,968],[171,963],[167,963],[167,968],[163,968],[163,963],[159,963],[160,967],[156,967],[156,963],[152,963],[152,967],[148,967],[149,963],[145,967],[137,967],[134,963],[132,971],[130,966],[126,966],[126,971],[120,966],[115,975],[112,975],[112,970],[108,970],[108,975],[105,970],[100,978],[93,974],[90,982],[90,977],[86,980],[78,977],[78,982],[75,977],[64,984],[56,981],[52,989],[49,988],[41,997],[36,996],[37,1000],[32,999],[34,1004],[30,1008],[24,1007]],[[45,988],[30,991],[27,988],[27,991],[23,988],[8,991],[4,988],[4,991]],[[344,829],[340,832],[326,829],[321,835],[319,829],[322,829],[318,836],[301,833],[296,843],[293,840],[289,844],[291,848],[274,844],[269,850],[264,848],[262,854],[248,848],[242,851],[243,858],[245,848]],[[238,855],[235,862],[222,859],[219,862],[221,865],[215,866],[215,862],[211,869],[208,866],[204,877],[200,876],[200,873],[193,880],[178,877],[166,887],[145,884],[141,891],[131,888],[126,898],[120,895],[118,902],[115,899],[108,902],[108,899],[100,902],[97,899],[96,905],[93,902],[89,905]]],"grid":{"step":10,"nx":34,"ny":101,"base":1440,"z":[500,500,500,500,501,504,509,516,525,535,545,556,568,580,593,602,610,619,629,638,648,658,668,677,685,692,697,700,701,702,703,704,704,704,500,500,500,500,500,502,508,515,524,534,545,556,567,579,592,600,609,619,628,638,648,658,668,677,686,694,699,700,702,703,703,704,704,705,500,500,500,500,500,500,505,513,523,533,544,555,566,578,590,600,608,618,628,638,648,658,668,678,688,700,700,701,702,703,704,704,705,705,500,500,500,500,500,500,502,510,520,531,542,554,565,577,589,598,606,618,628,639,649,659,669,679,689,700,700,701,702,703,704,705,705,706,500,500,500,500,500,500,500,506,517,528,540,552,564,576,588,600,607,618,628,639,649,659,670,680,690,698,701,702,703,704,705,706,706,706,500,500,500,500,500,500,500,500,512,526,538,551,563,576,587,598,608,618,629,639,649,660,670,681,693,700,701,702,703,705,706,706,707,707,500,500,500,500,500,500,500,500,509,523,537,550,563,575,587,599,609,619,629,639,649,660,671,682,693,700,701,703,704,706,707,708,708,709,500,500,500,500,500,500,500,500,508,522,536,549,562,575,588,600,609,619,629,639,650,660,671,682,692,700,701,703,705,707,708,709,710,710,500,500,500,500,500,500,500,501,510,522,535,548,561,575,590,600,608,618,628,639,650,660,671,682,692,700,702,704,706,708,710,711,712,712,500,500,500,500,500,500,500,500,509,521,534,547,560,574,588,600,606,617,628,639,650,661,672,683,694,700,703,705,708,710,711,713,714,714,500,500,500,500,500,500,500,500,507,519,532,546,559,572,584,595,605,616,627,638,649,661,672,683,695,701,704,707,709,712,714,715,716,717,500,500,500,500,500,500,500,500,504,517,531,544,557,570,582,594,605,615,626,637,649,661,673,685,695,702,705,708,711,714,716,718,719,720,500,500,500,500,500,500,500,500,500,516,530,543,556,569,581,593,604,613,624,636,648,661,674,687,700,703,707,710,714,717,719,721,723,724,500,500,500,500,500,500,500,500,503,516,529,543,555,568,579,591,600,610,622,635,648,661,674,689,700,704,708,712,716,720,723,725,727,728,500,500,500,500,500,500,500,500,500,516,530,543,555,567,578,588,597,607,620,633,646,660,674,690,700,705,710,715,719,724,727,730,732,733,500,500,500,500,500,500,500,500,500,516,531,544,556,567,577,587,596,605,618,631,645,659,673,687,700,706,711,717,723,728,732,736,738,739,503,502,500,500,500,500,500,500,500,518,533,545,557,567,577,586,595,600,615,629,643,657,671,686,700,706,713,720,726,733,738,743,745,747,510,508,504,500,500,500,500,500,508,524,537,548,559,568,577,586,594,600,613,627,641,655,670,684,700,706,714,722,731,739,746,751,754,755,518,517,514,512,508,508,509,513,522,532,543,553,562,570,578,586,593,600,609,625,639,653,668,682,696,705,715,725,735,745,755,762,764,764,528,527,526,524,522,522,524,527,534,541,549,557,565,573,580,587,593,600,610,623,637,651,665,680,693,705,716,727,739,752,766,780,776,773,539,538,537,536,535,535,536,539,544,549,556,562,569,575,582,588,594,600,609,622,635,649,663,677,692,703,716,729,743,758,774,800,784,779,550,550,548,547,546,546,547,550,553,557,562,567,573,578,583,589,594,599,606,619,632,646,661,675,689,700,715,730,746,762,776,785,784,782,563,562,560,558,557,557,557,559,561,564,568,572,577,581,585,590,594,598,600,616,629,644,658,672,686,700,713,730,749,769,782,785,784,782,578,575,571,568,567,566,566,567,568,571,574,577,580,584,587,591,595,598,603,612,626,641,656,670,684,696,710,730,751,779,800,790,784,782,600,587,581,578,576,574,574,574,575,577,579,581,584,587,590,592,595,598,600,600,622,639,654,668,682,694,709,727,748,773,800,790,781,779,600,595,590,586,584,582,581,581,581,582,584,585,587,589,592,594,596,598,599,600,620,638,654,668,680,693,706,723,740,758,772,776,775,774,601,600,596,593,591,589,588,587,587,587,588,589,591,592,594,595,597,598,599,600,622,640,654,668,680,691,700,717,733,747,758,764,767,768,604,602,600,599,600,596,594,593,592,592,592,593,594,595,596,597,598,599,600,610,628,643,657,669,680,690,700,710,727,740,750,757,761,763,610,608,606,604,603,600,600,597,596,596,596,596,597,597,598,599,599,600,600,620,635,649,661,672,681,690,697,708,723,735,745,752,757,759,617,616,615,613,611,608,605,600,600,600,600,599,599,600,600,600,600,610,620,632,644,656,666,675,684,691,698,708,722,734,743,750,754,757,626,625,624,623,622,619,617,615,613,612,609,609,610,613,616,618,621,627,636,645,654,663,672,680,687,694,700,709,723,734,743,750,755,757,635,635,634,633,632,631,629,628,627,626,625,625,626,629,631,634,638,643,650,657,664,672,679,686,692,697,700,714,727,737,746,752,757,759,644,644,644,643,643,642,641,641,640,640,640,640,642,644,646,649,653,658,663,669,675,681,686,692,697,700,707,721,733,743,750,757,761,763,654,654,654,654,654,653,653,653,653,653,654,655,657,658,661,664,667,671,676,681,685,690,695,697,700,711,720,731,741,750,757,763,767,769,663,664,664,664,665,665,665,665,666,667,668,669,671,673,675,678,681,684,689,693,695,697,700,707,714,723,732,741,750,758,765,771,775,776,673,673,674,675,676,676,677,677,678,679,681,683,685,687,688,692,694,695,700,703,706,708,714,721,728,736,744,752,760,767,774,781,785,785,681,682,684,686,687,687,688,689,690,693,694,696,700,700,700,700,705,707,709,715,720,724,729,735,742,749,756,763,770,776,784,793,800,794,689,690,693,700,700,698,700,700,700,700,704,705,708,709,711,714,718,721,724,729,733,738,743,748,755,761,768,774,780,786,792,800,800,800,694,696,700,701,703,704,704,707,709,711,713,716,718,721,723,727,731,734,738,743,747,751,756,761,767,774,781,786,790,795,798,802,805,806,698,700,702,706,708,711,713,715,718,720,723,726,729,732,736,740,744,748,752,756,761,765,769,774,779,785,794,800,800,800,804,808,811,812,700,700,707,711,715,718,720,723,726,729,733,736,740,744,748,752,756,761,765,770,774,778,782,785,790,795,800,804,808,811,814,816,819,820,700,706,713,718,722,725,728,731,735,738,742,746,750,755,759,764,769,774,779,783,788,792,794,796,800,800,806,812,817,820,823,826,827,828,710,715,721,725,729,732,736,739,743,747,751,756,761,766,771,776,782,787,793,796,800,803,805,806,808,812,817,822,827,830,833,835,837,838,724,726,729,733,736,740,743,747,751,756,760,765,771,776,782,789,794,797,800,804,807,811,814,817,820,824,828,833,837,841,844,846,847,848,734,736,738,741,744,747,751,755,759,764,769,775,781,787,792,800,802,805,808,813,817,821,824,827,831,835,840,844,848,852,856,857,858,858,743,744,746,748,751,754,758,762,767,772,777,783,790,800,800,804,809,814,818,822,826,830,834,838,842,846,850,855,860,865,869,870,869,869,751,752,753,755,758,761,765,769,774,779,785,792,797,803,808,813,818,823,827,832,836,840,844,848,852,856,861,866,872,878,886,883,881,880,758,759,760,762,764,767,771,775,780,785,792,800,804,810,816,821,827,832,837,842,846,850,854,858,862,867,871,877,882,889,900,894,891,890,764,765,766,768,770,773,777,781,786,791,797,800,809,817,823,830,836,842,847,852,856,860,864,868,872,877,881,887,892,896,900,900,899,899,770,770,771,773,775,778,782,786,791,797,800,807,816,824,832,839,846,853,858,862,866,870,874,878,882,886,891,896,900,902,905,907,907,907,775,775,776,778,780,783,786,790,796,800,805,814,823,831,840,848,857,865,870,873,876,879,883,888,892,896,900,903,906,909,912,914,915,916,779,780,780,782,784,786,790,794,798,800,810,820,829,839,848,858,868,879,884,884,885,887,891,900,900,902,905,910,914,917,920,922,924,924,783,783,784,786,787,790,792,796,800,805,816,826,836,847,856,866,877,890,895,893,894,894,897,900,905,910,914,918,922,926,929,931,933,934,786,787,787,789,790,792,795,797,800,811,822,833,844,854,865,875,883,891,896,898,898,899,900,907,912,917,922,926,931,935,938,941,943,944,789,789,790,791,793,795,797,799,800,815,828,839,851,863,874,884,891,895,897,899,900,903,908,914,920,925,930,935,940,944,948,952,954,955,792,792,793,794,795,797,799,800,810,822,834,846,858,871,885,900,900,899,900,902,906,911,916,922,927,933,938,944,949,954,959,963,966,968,794,794,795,796,797,798,800,807,818,829,841,852,864,878,900,900,900,900,901,906,912,917,923,929,935,941,947,953,958,964,970,976,980,981,795,796,796,797,798,799,804,814,825,836,847,858,869,880,891,897,900,901,900,910,918,924,931,937,943,949,956,962,968,974,981,989,1000,994,797,797,798,799,800,800,811,822,833,843,853,864,873,883,891,897,901,905,908,916,924,931,938,945,951,958,964,971,977,984,991,1000,1000,999,798,798,799,800,800,810,820,830,840,850,860,869,878,886,893,898,904,910,917,924,931,939,946,952,959,966,973,980,987,993,1000,1001,1001,1001,799,799,799,800,807,818,828,838,848,858,867,876,884,891,896,900,908,916,924,931,939,946,953,960,967,974,981,989,1000,1000,1001,1002,1003,1003,799,800,800,805,816,826,836,846,856,866,875,883,890,897,900,905,915,923,931,939,946,954,961,968,975,982,988,995,1000,1001,1003,1005,1006,1006,800,800,805,815,825,835,845,855,864,875,885,891,896,900,907,914,922,931,939,947,954,962,969,976,983,989,994,998,1000,1002,1005,1007,1009,1009,800,800,815,825,835,844,853,863,872,883,900,900,900,906,914,922,930,938,946,954,962,970,978,984,991,1000,1000,1002,1003,1006,1009,1011,1012,1013,812,817,827,836,844,853,861,870,879,889,898,903,908,914,922,930,938,946,954,962,970,979,987,992,997,1001,1004,1006,1009,1011,1013,1015,1017,1017,831,834,840,847,854,862,870,878,886,893,900,907,915,922,930,937,945,953,961,970,978,988,1000,1000,1002,1006,1008,1011,1014,1016,1018,1020,1021,1022,846,848,852,858,864,870,878,885,892,899,906,914,922,930,937,945,953,961,969,977,985,994,1000,1003,1007,1010,1013,1016,1019,1022,1024,1026,1027,1027,859,860,863,867,873,879,885,892,899,906,914,922,929,937,945,952,960,968,976,984,992,998,1000,1007,1011,1015,1019,1022,1025,1027,1030,1031,1033,1033,869,870,873,876,881,887,893,900,905,914,921,929,937,944,952,960,968,975,983,991,1000,1002,1006,1011,1016,1020,1024,1028,1031,1034,1036,1038,1039,1040,878,879,881,884,889,894,900,904,913,921,929,937,944,952,959,967,975,983,990,996,1000,1006,1012,1017,1021,1026,1030,1034,1037,1040,1043,1045,1046,1047,886,887,888,891,895,900,904,913,921,929,937,944,952,959,967,974,982,991,1000,1000,1006,1012,1017,1022,1027,1032,1036,1040,1044,1047,1050,1052,1054,1055,892,893,895,897,900,905,914,922,930,938,945,952,959,966,974,981,988,997,1002,1007,1012,1017,1023,1028,1033,1038,1042,1047,1051,1055,1058,1061,1063,1063,898,900,900,900,908,916,924,931,939,946,953,960,967,974,981,987,994,1000,1006,1012,1018,1023,1029,1034,1039,1044,1049,1054,1058,1063,1067,1070,1072,1073,900,904,910,915,920,927,934,941,948,955,962,968,975,981,987,994,1000,1005,1012,1018,1024,1029,1035,1040,1045,1051,1056,1061,1066,1071,1076,1080,1083,1082,900,914,921,927,932,938,944,951,957,964,970,976,983,989,994,1000,1004,1011,1017,1024,1030,1035,1041,1046,1052,1057,1062,1068,1074,1080,1086,1092,1100,1091,924,928,933,938,944,949,955,960,966,972,979,985,991,996,1000,1004,1010,1017,1023,1030,1036,1042,1047,1053,1058,1064,1069,1075,1081,1088,1100,1100,1098,1096,940,942,946,950,955,960,965,970,975,981,987,993,1000,1000,1006,1011,1017,1024,1030,1036,1042,1048,1054,1059,1065,1070,1076,1081,1087,1093,1100,1100,1099,1098,953,954,957,961,966,970,975,979,984,989,995,1000,1003,1007,1012,1018,1024,1030,1036,1042,1048,1054,1060,1066,1071,1077,1082,1087,1092,1097,1100,1100,1099,1099,964,965,968,972,977,981,985,988,992,997,1000,1003,1008,1013,1019,1024,1030,1036,1043,1049,1055,1061,1067,1073,1078,1084,1089,1094,1097,1099,1100,1100,1099,1099,973,974,977,981,988,993,995,996,998,1001,1005,1009,1014,1019,1025,1030,1036,1043,1049,1055,1062,1068,1074,1080,1086,1090,1096,1100,1100,1100,1100,1100,1100,1099,981,982,985,989,995,1000,1001,1000,1003,1006,1010,1014,1019,1025,1030,1036,1042,1049,1055,1062,1068,1075,1081,1087,1094,1097,1100,1100,1100,1100,1100,1100,1100,1100,987,988,991,994,998,1001,1003,1005,1007,1010,1014,1019,1024,1030,1036,1042,1048,1055,1062,1069,1075,1082,1088,1093,1100,1100,1100,1100,1100,1100,1100,1100,1100,1100,992,993,995,998,1001,1003,1005,1008,1011,1014,1018,1023,1028,1034,1040,1047,1054,1061,1068,1075,1082,1090,1095,1098,1100,1100,1100,1100,1100,1100,1100,1100,1100,1100,996,997,1000,1000,1003,1005,1008,1011,1014,1018,1022,1027,1032,1038,1045,1052,1060,1067,1075,1082,1089,1096,1100,1100,1100,1100,1100,1100,1100,1100,1100,1100,1100,1100,999,1000,1001,1002,1005,1007,1010,1013,1017,1021,1025,1030,1036,1042,1049,1057,1065,1073,1082,1089,1095,1100,1100,1100,1100,1100,1100,1100,1100,1100,1100,1100,1100,1100,1000,1001,1002,1004,1006,1009,1012,1015,1019,1023,1027,1033,1039,1045,1052,1061,1070,1080,1089,1097,1100,1100,1100,1100,1100,1100,1100,1100,1100,1100,1100,1100,1100,1100,1000,1002,1004,1006,1008,1010,1013,1017,1020,1025,1029,1035,1041,1047,1055,1064,1074,1086,1096,1100,1100,1100,1100,1100,1100,1100,1100,1100,1100,1100,1100,1100,1100,1100,1003,1004,1005,1007,1009,1012,1014,1018,1022,1026,1030,1036,1042,1049,1056,1065,1077,1091,1100,1100,1100,1100,1100,1099,1100,1100,1100,1100,1100,1100,1100,1100,1100,1100,1004,1005,1006,1008,1010,1012,1015,1019,1022,1026,1031,1036,1042,1049,1056,1065,1076,1090,1100,1100,1100,1098,1098,1098,1099,1100,1100,1100,1100,1100,1100,1100,1100,1100,1005,1005,1006,1008,1010,1013,1016,1019,1023,1027,1031,1036,1042,1048,1055,1063,1072,1081,1088,1091,1093,1094,1095,1096,1098,1099,1100,1100,1100,1100,1100,1100,1100,1100,1005,1005,1006,1008,1010,1013,1016,1019,1022,1026,1031,1036,1041,1047,1053,1060,1067,1074,1080,1084,1087,1089,1092,1094,1096,1099,1100,1100,1100,1100,1100,1100,1100,1100,1004,1004,1005,1007,1010,1012,1015,1018,1022,1026,1030,1035,1040,1045,1051,1057,1063,1069,1074,1078,1082,1085,1088,1091,1095,1098,1100,1100,1100,1100,1100,1100,1100,1100,1002,1003,1004,1006,1009,1011,1015,1018,1021,1025,1029,1033,1038,1043,1048,1053,1058,1064,1068,1073,1077,1081,1084,1089,1094,1099,1100,1100,1100,1100,1100,1100,1100,1100,1000,1001,1002,1004,1008,1011,1014,1017,1020,1024,1027,1031,1036,1040,1045,1050,1054,1059,1064,1068,1072,1076,1080,1085,1092,1100,1100,1100,1100,1100,1100,1100,1100,1100,1000,1000,1000,1003,1006,1010,1013,1016,1019,1022,1026,1029,1033,1037,1042,1046,1050,1055,1059,1063,1067,1071,1076,1081,1087,1096,1100,1100,1100,1100,1100,1100,1100,1100,1000,1000,1000,1003,1006,1009,1012,1015,1018,1021,1024,1027,1031,1035,1038,1042,1046,1050,1054,1058,1062,1066,1071,1076,1081,1087,1092,1100,1099,1100,1100,1100,1100,1100,1000,1000,1001,1003,1006,1008,1011,1013,1016,1019,1022,1025,1028,1032,1035,1039,1042,1046,1050,1054,1057,1061,1065,1070,1074,1079,1083,1087,1089,1091,1093,1095,1095,1095,1000,1001,1002,1003,1005,1007,1010,1012,1014,1017,1020,1022,1025,1029,1032,1035,1038,1042,1045,1049,1052,1056,1059,1063,1067,1071,1075,1078,1080,1082,1084,1085,1086,1086,1000,1001,1002,1003,1005,1006,1008,1010,1012,1015,1017,1020,1022,1025,1028,1031,1034,1038,1041,1044,1047,1050,1054,1057,1060,1063,1066,1069,1071,1073,1074,1076,1076,1077,1000,1001,1002,1003,1004,1005,1007,1009,1011,1013,1015,1017,1019,1022,1025,1028,1030,1033,1036,1039,1042,1045,1048,1051,1053,1056,1059,1061,1063,1064,1066,1067,1067,1068,1000,1001,1001,1002,1003,1004,1006,1007,1008,1010,1012,1014,1016,1019,1021,1024,1026,1029,1031,1034,1037,1039,1042,1044,1047,1049,1051,1053,1055,1056,1057,1058,1059,1059]}};
+const M_TO_FT = 3.28084;
+// PRISM 1991–2020 normals (800 m) at Prairie, 43.50° N, 115.57° W: precipitation in inches, January to December.
+const PRISM_PPT = [3.12, 2.22, 2.73, 2.11, 1.99, 1.02, 0.31, 0.27, 0.64, 1.50, 2.40, 3.62];
+// ERA5 via Open-Meteo, 1995–2024 averages at the same point: FAO-56 reference evapotranspiration in inches.
+const ERA5_ET0 = [0.83, 1.22, 2.28, 3.38, 4.97, 6.25, 7.86, 6.88, 4.68, 2.70, 1.22, 0.72];
+const GAL_PER_SQFT_IN = 0.623;                       // Lancaster: 1 in on 1 sq ft = 0.623 gal
+const MATURE_FACTOR = 0.8, ROOT_DEPTH = [3, 4];
+// NRCS Web Soil Survey and Soil Data Access: map unit 149, Simonton loam, 2 to 12 percent slopes, Elmore County Area (ID685),
+// version 14 (August 31, 2026). Depths in inches; ksat (how fast saturated soil passes water) in in/hr as [low, typical, high];
+// awc (water roots can use) in inches per inch. The owner reports no rock and about 10 ft of soil to rock.
+const SOIL = {
+  name: 'Simonton loam, 2 to 12 percent slopes', unit: '149', group: 'C', awc60: 9.3, precip: [12, 16], frostFree: [60, 100], ph: 6.2,
+  layers: [
+    { hz: 'A', top: 0, bottom: 4, texture: 'Loam', clay: 15, ksat: [0.57, 1.28, 2.0], awc: 0.17, color: '#C9A77F',
+      note: 'The sponge layer: most of the organic matter (about 1.5%), and it takes water fast. Keep it in basin floors and keep it covered.' },
+    { hz: 'Bt', top: 4, bottom: 42, texture: 'Clay loam', clay: 28, ksat: [0.2, 0.4, 0.6], awc: 0.18, color: '#B5835E',
+      note: 'The bottleneck: it sets how fast basins drain, and it holds most of the root zone\'s water.' },
+    { hz: 'C', top: 42, bottom: 60, texture: 'Sandy loam', clay: 7.5, ksat: [2.0, 4.0, 6.0], awc: 0.10, color: '#DCC69F',
+      note: 'Drains freely: no hardpan or water table, and about 10 ft of soil to rock (owner).' }
+  ]
+};
+const awcTo = depth => SOIL.layers.reduce((sum, layer) => sum + Math.max(0, Math.min(depth, layer.bottom) - layer.top) * layer.awc, 0);
+const SOIL_TANK = ROOT_DEPTH.map(feet => awcTo(feet * 12));
+const COLORS = { Apple:'#D85A30', Pear:'#378ADD', Cherry:'#D4537E', Peach:'#A94739', Apricot:'#A65B21', Plum:'#993556' };
+const PLURAL = { Apple:'apples', Pear:'pears', Cherry:'cherries', Peach:'peaches', Apricot:'apricots', Plum:'plums' };
+const STONE = new Set(['Cherry', 'Peach', 'Apricot', 'Plum']);
+const WATER = '#0F86AE', BERM = '#8B5E34', COLD = '#6C5BA7';
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+/* Derived values */
+const DEG = 180 / Math.PI;
+const pick = (list, months) => months.reduce((total, m) => total + list[m], 0);
+const ANNUAL = pick(PRISM_PPT, [0,1,2,3,4,5,6,7,8,9,10,11]);
+const SEASONS = {
+  novMar: pick(PRISM_PPT, [10,11,0,1,2]), aprJun: pick(PRISM_PPT, [3,4,5]), julSep: pick(PRISM_PPT, [6,7,8]),
+  marJun: pick(PRISM_PPT, [2,3,4,5]), maySep: pick(PRISM_PPT, [4,5,6,7,8])
+};
+const ET_MAY_SEP = pick(ERA5_ET0, [4,5,6,7,8]);
+// Elevation (m) from the USGS-derived grid by bilinear interpolation; x east of the west fence, yN south of the north line.
+function elevation(x, yN) {
+  const { step, nx, ny, base, z } = USGS.grid;
+  const fx = Math.min(Math.max(x / step, 0), nx - 1.001), fy = Math.min(Math.max(yN / step, 0), ny - 1.001);
+  const j = Math.floor(fx), i = Math.floor(fy), tx = fx - j, ty = fy - i, at = (r, c) => z[r * nx + c];
+  return base + (at(i, j) * (1 - tx) * (1 - ty) + at(i, j + 1) * tx * (1 - ty) + at(i + 1, j) * (1 - tx) * ty + at(i + 1, j + 1) * tx * ty) / 100;
+}
+// Downhill direction (radians clockwise from north) and grade (ft per ft), smoothed over ±h ft.
+function fallAt(x, yN, h = 15) {
+  const east = -(elevation(x + h, yN) - elevation(x - h, yN)) / (2 * h) * M_TO_FT;
+  const north = (elevation(x, yN + h) - elevation(x, yN - h)) / (2 * h) * M_TO_FT;
+  return { bearing: Math.atan2(east, north), grade: Math.hypot(east, north) };
+}
+const westOfNorth = bearing => ((-bearing * DEG) % 360 + 360) % 360;
+const quantile = (list, q) => {
+  const s = [...list].sort((a, b) => a - b), i = (s.length - 1) * q, lo = Math.floor(i);
+  return s[lo] + (s[Math.ceil(i)] - s[lo]) * (i - lo);
+};
+const DIAG_DEG = Math.atan2(TREE_SPACING / 2, ROW_SPACING) * DEG, DIAG_FT = Math.hypot(TREE_SPACING / 2, ROW_SPACING);
+const ROWS = ROW_PLAN.length, ROW_SPAN = (ROW_PLAN[0].length - 1) * TREE_SPACING;
+const TREE_AREA = TREE_SPACING * ROW_SPACING, BLOCK_DEPTH = ROWS * ROW_SPACING, BLOCK_AREA = PLOT_WIDTH * BLOCK_DEPTH;
+
+const trees = [], reserved = [], openSpots = [], byPos = new Map();
+ROW_PLAN.forEach((row, ri) => row.forEach((id, ci) => {
+  const r = ri + 1, c = ci + 1;
+  const spot = { r, c, x: ORCHARD_X0 + ci * TREE_SPACING + (r % 2 === 0 ? TREE_SPACING / 2 : 0), y: ri * ROW_SPACING };
+  if (id === 'R') reserved.push(spot);
+  else if (id === null) openSpots.push(spot);
+  else { const tree = { ...spot, id, type: typeOf(id) }; trees.push(tree); byPos.set(`${r}-${c}`, tree); }
+}));
+// The next tree downhill: of the six neighbors, the planted one that is lower and closest in direction to the local fall.
+function downhillNeighbor(tree) {
+  const odd = tree.r % 2 === 1, north = tree.r + 1, south = tree.r - 1;
+  const spots = [[tree.r, tree.c - 1], [tree.r, tree.c + 1], [north, odd ? tree.c - 1 : tree.c], [north, odd ? tree.c : tree.c + 1],
+    [south, odd ? tree.c - 1 : tree.c], [south, odd ? tree.c : tree.c + 1]];
+  let best = null;
+  spots.forEach(([r, c]) => {
+    const next = byPos.get(`${r}-${c}`);
+    if (!next || next.z >= tree.z) return;
+    const dir = Math.atan2(next.x - tree.x, next.y - tree.y);
+    const off = Math.abs(Math.atan2(Math.sin(dir - tree.fall), Math.cos(dir - tree.fall)));
+    if (off < Math.PI / 3 && (!best || off < best.off)) best = { next, off };
+  });
+  return best ? best.next : null;
+}
+const typeTrees = type => trees.filter(tree => tree.type === type);
+const rowsOf = list => [...new Set(list.map(item => item.r))].sort((a, b) => a - b);
+const span = list => list.length > 1 ? `R${list[0]}–R${list[list.length - 1]}` : `R${list[0]}`;
+const STONE_ROWS = rowsOf(trees.filter(tree => STONE.has(tree.type)));
+trees.forEach(tree => {
+  const yN = fieldY(tree.y), { bearing, grade } = fallAt(tree.x, yN);
+  Object.assign(tree, { yN, z: elevation(tree.x, yN), fall: bearing, grade });
+});
+const FALL_W = [0.1, 0.5, 0.9].map(q => quantile(trees.map(tree => westOfNorth(tree.fall)), q));   // degrees west of north
+const GRADES = [0.1, 0.5, 0.9].map(q => quantile(trees.map(tree => tree.grade), q));
+const FALL_MID = FALL_W[1], GRADE_MID = GRADES[1];
+const FALL_BEARING = -FALL_MID / DEG;                          // median downhill bearing, radians clockwise from north
+const TREE_Z = [Math.min(...trees.map(tree => tree.z)), Math.max(...trees.map(tree => tree.z))];
+const HIGH_M = Math.max(...USGS.contours.map(c => c.m)), LOW_M = Math.min(...USGS.contours.map(c => c.m));
+const R15_FROM_NORTH = R1_FROM_NORTH - (ROWS - 1) * ROW_SPACING;
+
+/* Formatting and DOM helpers */
+const fmt = (value, digits = 0) => Number(value).toLocaleString('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits });
+const pct = value => `${fmt(value * 100, 1)}%`;
+const gallons = value => fmt(value < 1000 ? Math.round(value / 10) * 10 : value < 100000 ? Math.round(value / 100) * 100 : Math.round(value / 10000) * 10000);
+const perInch = value => fmt(value < 1000 ? Math.round(value) : value < 10000 ? Math.round(value / 10) * 10 : Math.round(value / 100) * 100);
+const round5 = value => Math.round(value / 5) * 5;
+const SVG_NS = 'http://www.w3.org/2000/svg';
+function svgNode(tag, attrs = {}, text) {
+  const node = document.createElementNS(SVG_NS, tag);
+  Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+function element(tag, text, className) {
+  const node = document.createElement(tag);
+  if (text !== undefined && text !== null) node.textContent = text;
+  if (className) node.className = className;
+  return node;
+}
+function addRow(tbody, cells, numeric = []) {
+  const tr = element('tr');
+  cells.forEach((cell, index) => {
+    const td = element('td');
+    if (cell instanceof Node) td.append(cell); else td.textContent = cell;
+    if (numeric.includes(index)) td.className = 'num';
+    tr.append(td);
+  });
+  tbody.append(tr);
+  return tr;
+}
+function checkbox(label) {
+  const box = element('input', null, 'plant-check');
+  box.type = 'checkbox';
+  box.setAttribute('aria-label', label);
+  return box;
+}
+function arrowMarker(id, color, size) {
+  const marker = svgNode('marker', { id, viewBox: '0 0 10 10', refX: 8, refY: 5, markerWidth: size, markerHeight: size, markerUnits: 'userSpaceOnUse', orient: 'auto-start-reverse' });
+  marker.append(svgNode('path', { d: 'M0,0 L10,5 L0,10 z', fill: color }));
+  return marker;
+}
+function hatch(id, background, stripe) {
+  const pattern = svgNode('pattern', { id, patternUnits: 'userSpaceOnUse', width: 8, height: 8, patternTransform: 'rotate(45)' });
+  pattern.append(svgNode('rect', { width: 8, height: 8, fill: background }), svgNode('line', { x1: 0, y1: 0, x2: 0, y2: 8, stroke: stripe, 'stroke-width': 3 }));
+  return pattern;
+}
+
+/* Overview */
+function renderSpecs() {
+  const host = document.getElementById('specs');
+  [
+    ['Precipitation', `${fmt(ANNUAL)} in/yr`, `PRISM normal; NRCS lists ${SOIL.precip[0]}–${SOIL.precip[1]} in for this soil`],
+    ['Falls Nov–Mar', `${fmt(SEASONS.novMar / ANNUAL * 100)}%`, `${fmt(SEASONS.novMar, 1)} in; about half of the year comes as snow`],
+    ['Falls Jul–Sep', `${fmt(SEASONS.julSep, 1)} in`, 'for the whole summer'],
+    ['May–Sep demand', `${fmt(ET_MAY_SEP, 1)} in`, `reference ET₀, vs ${fmt(SEASONS.maySep, 1)} in of rain`],
+    ['Soil', 'Simonton loam', `loam over clay loam; subsoil passes about ${fmt(SOIL.layers[1].ksat[1], 1)} in/hr`],
+    ['Low point', 'NW corner', `just under ${LOW_M} m, by the road, ${fmt(R15_FROM_NORTH)} ft north of R15`],
+    ['Water flows toward', `N ${fmt(FALL_W[0])}–${fmt(FALL_W[2])}° W`, `across the block; median N ${fmt(FALL_MID)}° W`],
+    ['Typical grade', pct(GRADE_MID), `${pct(GRADES[0])}–${pct(GRADES[2])} across the block (USGS 1 m)`],
+    ["Each tree's 18 × 20 ft", `≈ ${gallons(TREE_AREA * ANNUAL * GAL_PER_SQFT_IN)} gal`, 'of rain and snow water a year, gross'],
+    ['Planted block', `≈ ${gallons(BLOCK_AREA * ANNUAL * GAL_PER_SQFT_IN)} gal`, `a year on ${fmt(BLOCK_AREA / 43560, 1)} acres, gross`]
+  ].forEach(([label, value, hint]) => {
+    const card = element('div', null, 'spec');
+    card.append(element('div', label, 'label'), element('div', value, 'value'), element('div', hint, 'hint'));
+    host.append(card);
+  });
+}
+
+function renderSlopePoints() {
+  const list = document.getElementById('slope-points');
+  const westEnd = elevation(ORCHARD_X0, R1_FROM_NORTH), eastEnd = elevation(ORCHARD_X0 + ROW_SPAN, R1_FROM_NORTH);
+  const northHalf = quantile([60, 140, 220].map(yN => fallAt(150, yN).grade), 0.5);
+  const lowest = trees.reduce((a, b) => (b.z < a.z ? b : a));
+  const median = (list, fn) => quantile(list.map(fn), 0.5);
+  const stoneGrade = median(trees.filter(t => STONE.has(t.type)), t => t.grade);
+  const southFall = median(trees.filter(t => t.r <= 5), t => westOfNorth(t.fall));
+  const northFall = median(trees.filter(t => t.r >= 9), t => westOfNorth(t.fall));
+  [
+    `The USGS 1 m map puts the high point at the homestead pad (about ${HIGH_M} m) and the low point at the northwest corner by the road (just under ${LOW_M} m): about ${fmt((HIGH_M - LOW_M) * M_TO_FT)} ft of fall. The west tilt is about as strong as the north fall.`,
+    `The north part of the strip, the ${fmt(R15_FROM_NORTH)} ft beyond R15, is nearly flat north–south and drains west at about ${pct(northHalf)} toward the west fence and the NW corner. That is where the overflow ends up.`,
+    `The block falls northwest in R1–R5 (about N ${fmt(southFall)}° W) and north-northwest in R9–R12 (about N ${fmt(northFall)}° W), at a typical ${pct(GRADE_MID)} (${pct(GRADES[0])}–${pct(GRADES[2])}). The planted trees span ${fmt((TREE_Z[1] - TREE_Z[0]) * M_TO_FT, 1)} ft of elevation, and R1's east end is ${fmt((eastEnd - westEnd) * M_TO_FT, 1)} ft above its west end, so every row drains west.`,
+    `The rows are offset by ${TREE_SPACING / 2} ft, so each tree's northwest diagonal neighbor sits ${fmt(DIAG_DEG)}° west of north, close to the median fall. On the site plan each basin's overflow goes to whichever neighboring tree is downhill, usually that diagonal; long swales along the rows would just carry water to their west ends.`,
+    `The stone fruit (R${STONE_ROWS[0]}–R${STONE_ROWS[STONE_ROWS.length - 1]}) sits on the steepest band (typical ${pct(stoneGrade)}), where water and cold air keep moving. The lowest planted tree, R${lowest.r}-C${lowest.c} (${lowest.type.toLowerCase()}), is still about ${fmt((lowest.z - LOW_M) * M_TO_FT)} ft above the corner, which is the frost pocket.`,
+    'The USGS flow paths (blue) show where runoff concentrates: shallow paths cross the block from the driveway side toward the northwest and gather in the north part toward the NW corner. Those paths are where basins catch the most.'
+  ].forEach(text => list.append(element('li', text)));
+  document.querySelectorAll('[data-calc="fall-range"]').forEach(node => { node.textContent = `${fmt(FALL_W[0])}–${fmt(FALL_W[2])}`; });
+}
+
+function drawChart() {
+  const W = 720, H = 250, m = { l: 46, r: 12, t: 30, b: 26 };
+  const iw = W - m.l - m.r, ih = H - m.t - m.b, step = iw / 12, maxY = 8;
+  const x = i => m.l + (i + 0.5) * step, y = v => m.t + ih - v / maxY * ih;
+  const svg = svgNode('svg', { viewBox: `0 0 ${W} ${H}`, class: 'diagram chart', role: 'img', 'aria-labelledby': 'chart-title' });
+  svg.append(svgNode('title', { id: 'chart-title' }, `Monthly precipitation at Prairie compared with reference evapotranspiration: ${fmt(SEASONS.novMar, 1)} of ${fmt(ANNUAL, 1)} inches falls November through March, while demand peaks at ${fmt(ERA5_ET0[6], 1)} inches in July against ${fmt(PRISM_PPT[6], 2)} inches of rain.`));
+  [[0, 3], [10, 12]].forEach(([a, b]) => svg.append(svgNode('rect', { x: m.l + a * step, y: m.t, width: (b - a) * step, height: ih, class: 'c-dormant' })));
+  for (let v = 0; v <= maxY; v += 2) {
+    svg.append(svgNode('line', { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), class: v ? 'c-grid' : 'c-axis' }));
+    svg.append(svgNode('text', { x: m.l - 6, y: y(v) + 4, 'text-anchor': 'end', 'font-size': 11, class: 't-note' }, `${v} in`));
+  }
+  PRISM_PPT.forEach((v, i) => {
+    svg.append(svgNode('rect', { x: x(i) - step * 0.28, y: y(v), width: step * 0.56, height: y(0) - y(v), class: 'c-ppt' }));
+    svg.append(svgNode('text', { x: x(i), y: y(v) - 4, 'text-anchor': 'middle', 'font-size': 10, class: 't-water' }, fmt(v, 1)));
+    svg.append(svgNode('text', { x: x(i), y: H - 8, 'text-anchor': 'middle', 'font-size': 11 }, MONTHS[i]));
+  });
+  svg.append(svgNode('path', { d: ERA5_ET0.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' '), class: 'c-et' }));
+  ERA5_ET0.forEach((v, i) => svg.append(svgNode('circle', { cx: x(i), cy: y(v), r: 3.5, class: 'c-et-dot' })));
+  svg.append(svgNode('text', { x: m.l + 6, y: m.t + 14, 'font-size': 10.5, class: 't-note' }, `Nov–Mar: ${fmt(SEASONS.novMar / ANNUAL * 100)}% of the year's precipitation,`));
+  svg.append(svgNode('text', { x: m.l + 6, y: m.t + 27, 'font-size': 10.5, class: 't-note' }, 'mostly snow, while the trees are dormant'));
+  svg.append(svgNode('text', { x: x(7.6), y: y(7.4), 'font-size': 10.5, class: 't-note' }, `July: ${fmt(ERA5_ET0[6], 1)} in of demand vs ${fmt(PRISM_PPT[6], 1)} in of rain`));
+  svg.append(svgNode('rect', { x: W - 330, y: 6, width: 10, height: 10, class: 'c-ppt' }));
+  svg.append(svgNode('text', { x: W - 315, y: 15, 'font-size': 11 }, 'Precipitation (PRISM)'));
+  svg.append(svgNode('line', { x1: W - 180, y1: 11, x2: W - 160, y2: 11, class: 'c-et' }));
+  svg.append(svgNode('circle', { cx: W - 170, cy: 11, r: 3.5, class: 'c-et-dot' }));
+  svg.append(svgNode('text', { x: W - 154, y: 15, 'font-size': 11 }, 'Demand, ET₀ (ERA5)'));
+  document.getElementById('chart-host').append(svg);
+}
+function drawSitePlan() {
+  const S = 2, west = -34, east = EAST_FENCE + 22, topY = -112, bottomY = 362;
+  const X = x => (east - x) * S, Y = y => (y - topY) * S;
+  const svg = svgNode('svg', { viewBox: `0 0 ${(east - west) * S} ${(bottomY - topY) * S}`, class: 'diagram site-plan', role: 'img', 'aria-labelledby': 'site-title' });
+  svg.append(svgNode('title', { id: 'site-title' }, `Water-harvesting site plan to scale, south up and west on the right. The homestead at the top is the high point; its roof and pad water feeds short on-contour spreader berms above R1. Approximate 2-foot contours run east-northeast across the east–west tree rows. Each of the ${trees.length} trees has a crescent berm on its downhill side and an overflow arrow to its northwest diagonal neighbor. Driveway-edge basins line the headland, water bars cross the tractor alley, the walking lane is a sunken mulched path, a snow-drift zone lies east of the hazelnut row, the stone-fruit rows ${span(STONE_ROWS)} are shaded, and a sponge basin sits at the low northwest corner by the road.`));
+  const defs = svgNode('defs');
+  defs.append(arrowMarker('sp-water', WATER, 7), arrowMarker('sp-cold', COLD, 14), hatch('sp-drift', '#EDF3FA', '#C4D6EA'), hatch('sp-stone', '#FBF1E6', '#ECD2B6'));
+  svg.append(defs);
+  const add = node => { svg.append(node); return node; };
+  const box = (x0, x1, y0, y1, attrs = {}) => add(svgNode('rect', { x: X(x1), y: Y(y0), width: (x1 - x0) * S, height: (y1 - y0) * S, ...attrs }));
+  const seg = (x1, y1, x2, y2, attrs = {}) => add(svgNode('line', { x1: X(x1), y1: Y(y1), x2: X(x2), y2: Y(y2), ...attrs }));
+  const path = (points, attrs = {}) => add(svgNode('path', { d: points.map(([x, y], i) => `${i ? 'L' : 'M'}${X(x).toFixed(1)},${Y(y).toFixed(1)}`).join(' '), ...attrs }));
+  const text = (x, y, str, attrs = {}) => add(svgNode('text', { x: X(x).toFixed(1), y: Y(y).toFixed(1), 'font-size': 9, ...attrs }, str));
+  const vtext = (x, y, str, attrs = {}) => {
+    const px = X(x).toFixed(1), py = Y(y).toFixed(1);
+    return add(svgNode('text', { x: px, y: py, 'text-anchor': 'middle', 'dominant-baseline': 'middle', transform: `rotate(-90 ${px} ${py})`, 'font-size': 9, ...attrs }, str));
+  };
+  const fall = [Math.sin(FALL_BEARING), Math.cos(FALL_BEARING)];   // median downhill unit vector (east, north)
+  const SOUTH = -22, NORTH = 294;
+
+  // Ground zones and shading
+  box(0, WINDBREAK_WIDTH, SOUTH, NORTH, { class: 'd-strip' });
+  box(WINDBREAK_WIDTH, PLOT_EAST, SOUTH, NORTH, { class: 'd-plot' });
+  box(DRIVEWAY_WEST, DRIVEWAY_EAST, -84, 346, { class: 'd-driveway' });
+  box(ALLEY.west, ALLEY.east, SOUTH, NORTH, { class: 'd-alley' });
+  const stoneY = [(STONE_ROWS[0] - 1) * ROW_SPACING - 10, (STONE_ROWS[STONE_ROWS.length - 1] - 1) * ROW_SPACING + 10];
+  box(WINDBREAK_WIDTH, PLOT_EAST, stoneY[0], stoneY[1], { fill: 'url(#sp-stone)' });
+  box(ALLEY.west, ORCHARD_X0 + 14, -14, NORTH, { fill: 'url(#sp-drift)', opacity: 0.8 });
+  box(LANE.west + 1, LANE.east - 1, -6, 286, { class: 'w-lane' });
+
+  // USGS 1 m contours and flow paths, moved into plan coordinates (plan y = feet north of R1)
+  const runs = pts => {
+    const out = []; let run = [];
+    pts.forEach(([x, yN]) => {
+      const p = [x, R1_FROM_NORTH - yN];
+      if (p[0] >= -1 && p[0] <= EAST_FENCE + 1 && p[1] >= -60 && p[1] <= 296) run.push(p);
+      else { if (run.length > 1) out.push(run); run = []; }
+    });
+    if (run.length > 1) out.push(run);
+    return out;
+  };
+  USGS.flows.forEach(f => runs(f).forEach(run => path(run, { class: 'w-usgs-flow' })));
+  USGS.contours.forEach(c => runs(c.p).forEach(run => {
+    path(run, { class: 'w-contour' });
+    const [lx, ly] = run.reduce((a, b) => (b[0] < a[0] ? b : a));
+    text(lx <= 4 ? -11 : lx - 8, ly + 1.5, `${c.m} m`, { class: 'w-contour-label halo', 'text-anchor': 'middle' });
+  }));
+
+  // Windbreak rows, lane, alley
+  [[MULBERRY_X, '#5B2A86'], [HAZELNUT_X, '#6E6B2F']].forEach(([x, color]) =>
+    seg(x, -6, x, 286, { stroke: color, 'stroke-width': 3, 'stroke-dasharray': '1 6', 'stroke-linecap': 'round' }));
+  text(WINDBREAK_WIDTH / 2, -54, `${WINDBREAK_WIDTH} ft windbreak`, { 'text-anchor': 'middle', class: 't-title halo' });
+  text(MULBERRY_X, -28, 'mulberry', { 'text-anchor': 'middle', 'font-size': 8, class: 'halo' });
+  text((ALLEY.west + ALLEY.east) / 2, -28, 'alley', { 'text-anchor': 'middle', 'font-size': 8, class: 'halo' });
+  text((LANE.west + LANE.east) / 2, -36, 'lane', { 'text-anchor': 'middle', 'font-size': 8, class: 'halo' });
+  text(HAZELNUT_X, -36, 'hazel', { 'text-anchor': 'middle', 'font-size': 8, class: 'halo' });
+  for (let y = 0; y <= 275; y += 25) if (y < 110 || y > 190) seg(LANE.west + 1, y, LANE.east - 1, y, { class: 'w-check' });
+  vtext((LANE.west + LANE.east) / 2, 150, 'sunken mulched lane', { 'font-size': 8, class: 't-water' });
+  [50, 130, 210].forEach(y => {
+    seg(ALLEY.east, y, ALLEY.west, y + 5, { class: 'w-bar' });
+    seg(ALLEY.west - 0.5, y + 5.2, HAZELNUT_X + 1, y + 6, { class: 'w-flow-strong', 'marker-end': 'url(#sp-water)' });
+  });
+  vtext((ALLEY.west + ALLEY.east) / 2, 90, 'water bars', { 'font-size': 8 });
+  vtext(ORCHARD_X0 + 5, 262, 'snow-drift zone', { 'font-size': 8, class: 't-water' });
+
+  // Driveway-edge basins, rolling dips, elderberry hedge
+  const basinWest = DRIVEWAY_WEST - 6.5, basinEast = DRIVEWAY_WEST - 0.5;
+  for (let k = 0, y0 = -8; y0 + 10 <= 290; k++, y0 += 12) {
+    box(basinWest, basinEast, y0, y0 + 10, { class: 'w-basin', rx: 3 });
+    if ([2, 6, 18, 22].includes(k)) seg(basinWest - 0.5, y0 + 5, PLOT_EAST - 3, y0 + 5, { class: 'w-flow-strong', 'marker-end': 'url(#sp-water)' });
+  }
+  vtext(basinWest - 6, 140, 'driveway-edge basins spill west', { 'font-size': 8.5, class: 't-water' });
+  [30, 110, 190, 270].forEach(y => seg(DRIVEWAY_EAST, y, DRIVEWAY_WEST, y + 6, { class: 'w-dip' }));
+  text((DRIVEWAY_WEST + DRIVEWAY_EAST) / 2, 22, 'rolling dip', { 'text-anchor': 'middle', 'font-size': 8 });
+  vtext((DRIVEWAY_WEST + DRIVEWAY_EAST) / 2, 150, 'DRIVEWAY', { 'font-size': 11, class: 't-title' });
+  for (let y = -6; y <= 290; y += ELDERBERRY_SPACING) add(svgNode('circle', { cx: X(ELDERBERRY_X), cy: Y(y), r: 1.5 * S, fill: '#2E7D5B' }));
+
+  // Fences, then the breaks that separate the schematic homestead and road from the to-scale orchard
+  seg(0, -112, 0, 346, { class: 'd-fence' });
+  seg(EAST_FENCE, -112, EAST_FENCE, 346, { class: 'd-fence' });
+  [-73, 301].forEach(mid => {
+    box(west, east, mid - 3, mid + 3, { fill: '#fff' });
+    [mid - 3, mid + 3].forEach(yb => path(Array.from({ length: 66 }, (_, i) => [west + i * 6, yb + (i % 2 ? 1.2 : -1.2)]), { class: 'w-break' }));
+  });
+
+  // Homestead (the high point) and the spreader that takes its water
+  box(60, 290, -104, -82, { class: 'd-homestead', rx: 6 });
+  text(175, -95, `HOMESTEAD, the high point (about ${HIGH_M} m): red shed about ${round5(SHED_FROM_NORTH - R1_FROM_NORTH)} ft south of R1`, { 'text-anchor': 'middle', class: 't-title' });
+  text(175, -86, 'Roofs and the gravel pad drain north toward the orchard: catch them first', { 'text-anchor': 'middle', 'font-size': 8.5, class: 't-note' });
+  text(318, -101, '▲ SOUTH', { 'text-anchor': 'middle', 'font-size': 11, class: 't-title' });
+  text(318, -92, '(uphill)', { 'text-anchor': 'middle', 'font-size': 9, class: 't-note' });
+  [[110, -44], [175, -38], [240, -46]].forEach(([cx, cy]) => {
+    const f = fallAt(cx, fieldY(cy)).bearing, down = [Math.sin(f), Math.cos(f)], side = [down[1], -down[0]];
+    const a = [cx - 24 * side[0], cy - 24 * side[1]], b = [cx + 24 * side[0], cy + 24 * side[1]];
+    const up = [-2.5 * down[0], -2.5 * down[1]];
+    path([[a[0] + up[0], a[1] + up[1]], [b[0] + up[0], b[1] + up[1]]], { class: 'w-spreader-basin' });
+    path([a, b], { class: 'w-spreader' });
+    seg(cx, -80, cx, cy - 6, { class: 'w-flow-strong', 'marker-end': 'url(#sp-water)' });
+  });
+  text(175, -14, 'Spreader: short on-contour berm ’n basins spread homestead water into R1–R2', { 'text-anchor': 'middle', 'font-size': 8.5, class: 't-water halo' });
+
+  // Trees: overflow chain, crescents, positions
+  const point = (tree, dist) => [tree.x + dist * Math.sin(tree.fall), tree.y + dist * Math.cos(tree.fall)];
+  trees.forEach(tree => {
+    const next = downhillNeighbor(tree);
+    if (!next) { path([point(tree, 5.8), point(tree, 13)], { class: 'w-flow', 'marker-end': 'url(#sp-water)' }); return; }
+    const len = Math.hypot(next.x - tree.x, next.y - tree.y), ux = (next.x - tree.x) / len, uy = (next.y - tree.y) / len;
+    path([[tree.x + 5.8 * ux, tree.y + 5.8 * uy], [next.x - 4.5 * ux, next.y - 4.5 * uy]], { class: 'w-flow', 'marker-end': 'url(#sp-water)' });
+  });
+  trees.forEach(tree => {
+    const small = STONE.has(tree.type), radius = small ? 3.6 : 4.8, pts = [];
+    for (let a = -70; a <= 70; a += 10) {
+      const b = tree.fall + a / DEG;
+      pts.push([tree.x + radius * Math.sin(b), tree.y + radius * Math.cos(b)]);
+    }
+    path(pts, { class: small ? 'w-crescent-small' : 'w-crescent' });
+  });
+  reserved.forEach(spot => add(svgNode('circle', { cx: X(spot.x), cy: Y(spot.y), r: 3 * S, class: 'd-reserved' })));
+  openSpots.forEach(spot => add(svgNode('circle', { cx: X(spot.x), cy: Y(spot.y), r: 2.2 * S, class: 'd-open' })));
+  trees.forEach(tree => {
+    const next = downhillNeighbor(tree);
+    const dot = add(svgNode('circle', { cx: X(tree.x), cy: Y(tree.y), r: 2.8 * S, fill: COLORS[tree.type], stroke: '#fff', 'stroke-width': 1 }));
+    dot.append(svgNode('title', {}, `R${tree.r}-C${tree.c} ${tree.type.toLowerCase()}: ${tree.x} ft from the west fence, ${tree.y} ft north of the R1 line; overflow goes to ${next ? `R${next.r}-C${next.c}` : 'open ground downhill'}`));
+  });
+  for (let r = 1; r <= ROWS; r++) text(PLOT_EAST + 1.5, (r - 1) * ROW_SPACING + 1.5, `R${r}`, { 'text-anchor': 'end', 'font-size': 8, class: 't-note' });
+
+  // Notes on the map
+  text(175, 108, 'apples and pears: full basins, first claim on the water', { 'text-anchor': 'middle', 'font-size': 8.5, class: 't-note halo' });
+  text(222, (STONE_ROWS[0] - 1) * ROW_SPACING + 6, 'stone fruit: small, shallow basins,', { 'text-anchor': 'middle', 'font-size': 8.5, class: 't-stone halo' });
+  text(222, (STONE_ROWS[0] - 1) * ROW_SPACING + 15, 'trees on low mounds', { 'text-anchor': 'middle', 'font-size': 8.5, class: 't-stone halo' });
+  const apricots = typeTrees('Apricot');
+  if (apricots.length) {
+    const xs = apricots.map(t => t.x), ys = apricots.map(t => t.y);
+    const x0 = Math.min(...xs) - 6, x1 = Math.max(...xs) + 6, y0 = Math.min(...ys) - 7, y1 = Math.max(...ys) + 7;
+    box(x0, x1, y0, y1, { class: 'w-apricot', rx: 8 });
+    text((x0 + x1) / 2, y1 + 8, 'apricots: lowest planted trees', { 'text-anchor': 'middle', 'font-size': 8.5, class: 't-stone halo' });
+  }
+  const fs = [226, 236], fe = [fs[0] + 46 * fall[0], fs[1] + 46 * fall[1]];
+  path([fs, fe], { class: 'w-cold', 'marker-end': 'url(#sp-cold)' });
+  text(fe[0] - 6, 268, 'water and cold air', { 'font-size': 8.5, class: 't-note halo' });
+  text(fe[0] - 6, 276, 'drain toward the NW corner', { 'font-size': 8.5, class: 't-note halo' });
+
+  // The low northwest corner and the road (schematic)
+  path([[40, 289], [36, 313]], { class: 'w-flow-strong', 'marker-end': 'url(#sp-water)' });
+  add(svgNode('ellipse', { cx: X(34), cy: Y(324), rx: 30 * S, ry: 9 * S, class: 'w-basin' }));
+  [[16, 322], [26, 327], [36, 320], [46, 326], [54, 321]].forEach(([x, y]) => add(svgNode('circle', { cx: X(x), cy: Y(y), r: 2.2 * S, fill: '#2E7D5B', opacity: 0.85 })));
+  ['Final overflow: shallow sponge basin', 'elderberry and aronia, inside your line', 'and well back from the road'].forEach((line, i) =>
+    text(68, 318 + i * 8, line, { 'text-anchor': 'end', 'font-size': 8.5, class: i ? 't-note' : 't-water' }));
+  text(230, 313, `the low NW corner by the road, about ${R15_FROM_NORTH} ft north of R15 (schematic)`, { 'text-anchor': 'middle', 'font-size': 8.5, class: 't-note' });
+  box(west, east, 346, 358, { fill: '#D9D6CE' });
+  text(170, 354.5, 'ROAD (north line, the low end)', { 'text-anchor': 'middle', class: 't-title' });
+  seg(250, 330, 200, 330, { stroke: '#2C2C2A', 'stroke-width': 3 });
+  [200, 250].forEach(x => seg(x, 327, x, 333, { stroke: '#2C2C2A', 'stroke-width': 1.5 }));
+  text(225, 339, '50 ft', { 'text-anchor': 'middle' });
+  const ax = X(EAST_FENCE + 11), ay = Y(312);
+  add(svgNode('path', { d: `M${ax},${ay + 22} l8,-22 l-8,6 l-8,-6 z`, fill: '#2C2C2A' }));
+  add(svgNode('text', { x: ax, y: ay + 36, 'text-anchor': 'middle', 'font-size': 12, class: 't-title' }, 'N'));
+  vtext(-20, 140, 'WEST FENCE', { 'font-size': 11, class: 't-title' });
+  vtext(EAST_FENCE + 10, 140, 'EAST FENCE · elderberry hedge 5 ft inside · neighbor’s driveway beyond', { class: 't-title' });
+
+  document.getElementById('site-plan-host').append(svg);
+  document.getElementById('site-note').textContent = `Contours (1 m apart, about 3.3 ft) and blue flow paths are traced from the USGS maps, with R1 about ${STRIP_DEPTH - R1_FROM_NORTH} ft inside the south end of the 600 ft strip, as chosen. Each crescent faces the local downhill direction from that data, and each overflow arrow runs to the neighboring tree that is downhill; a short arrow means no planted neighbor is downhill. Crescents are drawn at young-tree size, about 4–5 ft out. The homestead and the road are schematic beyond the breaks. Traced 1 m contours miss small bumps, so confirm the fall at each tree with a level before building.`;
+}
+
+function renderSiteLegend() {
+  const host = document.getElementById('site-legend');
+  const swatch = draw => { const s = svgNode('svg', { viewBox: '0 0 28 14', 'aria-hidden': 'true' }); draw(s); return s; };
+  const arrowHead = (s, x, y, color) => s.append(svgNode('path', { d: `M${x},${y} l-5,-3 l0,6 z`, fill: color }));
+  const hatched = (s, bg, stripe) => {
+    s.append(svgNode('rect', { x: 2, y: 2, width: 24, height: 10, fill: bg }));
+    [6, 12, 18, 24].forEach(x => s.append(svgNode('line', { x1: x, y1: 2, x2: x - 6, y2: 12, stroke: stripe, 'stroke-width': 2 })));
+  };
+  const items = [
+    [s => s.append(svgNode('path', { d: 'M4,3 Q14,15 24,3', class: 'w-crescent' })), 'Crescent berm (full basin)'],
+    [s => s.append(svgNode('path', { d: 'M8,4 Q14,11 20,4', class: 'w-crescent-small' })), 'Small, shallow basin (stone fruit)'],
+    [s => { s.append(svgNode('line', { x1: 3, y1: 7, x2: 21, y2: 7, class: 'w-flow-strong' })); arrowHead(s, 26, 7, WATER); }, 'Overflow to the next tree downhill'],
+    [s => s.append(svgNode('line', { x1: 2, y1: 7, x2: 26, y2: 7, class: 'w-contour' })), 'USGS 1 m contour (label in meters)'],
+    [s => s.append(svgNode('path', { d: 'M2,11 Q10,2 18,7 T26,4', class: 'w-usgs-flow' })), 'USGS flow path'],
+    [s => { s.append(svgNode('line', { x1: 3, y1: 9, x2: 25, y2: 9, class: 'w-spreader-basin' })); s.append(svgNode('line', { x1: 3, y1: 6, x2: 25, y2: 6, class: 'w-spreader' })); }, 'Spreader berm ’n basin (homestead water)'],
+    [s => s.append(svgNode('rect', { x: 3, y: 2, width: 22, height: 10, rx: 3, class: 'w-basin' })), 'Driveway-edge or sponge basin'],
+    [s => s.append(svgNode('line', { x1: 6, y1: 3, x2: 22, y2: 11, class: 'w-bar' })), 'Water bar or check berm'],
+    [s => s.append(svgNode('line', { x1: 2, y1: 4, x2: 26, y2: 10, class: 'w-dip' })), 'Rolling dip across the driveway'],
+    [s => s.append(svgNode('rect', { x: 2, y: 2, width: 24, height: 10, class: 'w-lane' })), 'Sunken, mulched walking lane'],
+    [s => hatched(s, '#EDF3FA', '#C4D6EA'), 'Likely snow-drift zone'],
+    [s => hatched(s, '#FBF1E6', '#ECD2B6'), 'Stone-fruit rows'],
+    [s => { s.append(svgNode('line', { x1: 2, y1: 7, x2: 20, y2: 7, class: 'w-cold' })); arrowHead(s, 27, 7, COLD); }, 'Fall line: water and cold air'],
+    ...Object.entries(COLORS).map(([type, color]) => [s => s.append(svgNode('circle', { cx: 14, cy: 7, r: 5, fill: color })), type]),
+    [s => s.append(svgNode('circle', { cx: 14, cy: 7, r: 5, class: 'd-reserved' })), 'Reserved (grafted apples)'],
+    [s => s.append(svgNode('circle', { cx: 14, cy: 7, r: 4, class: 'd-open' })), 'Open position']
+  ];
+  items.forEach(([draw, label]) => {
+    const item = element('div');
+    item.append(swatch(draw), element('span', label));
+    host.append(item);
+  });
+}
+function drawCrescentPlan() {
+  const W = 460, H = 330, k = 19, cx = 190, cy = 118, B = FALL_BEARING, QUARTER = Math.PI / 2;
+  const E = b => [-Math.sin(b), Math.cos(b)];   // page direction of a compass bearing, south up and west right
+  const at = (...terms) => terms.reduce(([px, py], [b, r]) => [px + r * k * E(b)[0], py + r * k * E(b)[1]], [cx, cy]);
+  const arc = (r, from, to) => Array.from({ length: 25 }, (_, i) => at([B + (from + (to - from) * i / 24) / DEG, r]));
+  const d = pts => pts.map(([px, py], i) => `${i ? 'L' : 'M'}${px.toFixed(1)},${py.toFixed(1)}`).join(' ');
+  const svg = svgNode('svg', { viewBox: `0 0 ${W} ${H}`, class: 'diagram crescent-plan', role: 'img', 'aria-labelledby': 'cp-title' });
+  svg.append(svgNode('title', { id: 'cp-title' }, 'Plan view of one crescent basin: runoff arrives from the uphill south-southeast, a level-floored basin lies on the downhill side of the tree, a berm curves around it with a sod-lined spillway notch in the middle aimed at the next tree downhill, and a dashed outer arc shows where the berm moves as the tree grows.'));
+  const defs = svgNode('defs');
+  defs.append(arrowMarker('cp-water', WATER, 9));
+  svg.append(defs);
+  const add = node => { svg.append(node); return node; };
+  const line = (p, q, attrs) => add(svgNode('line', { x1: p[0].toFixed(1), y1: p[1].toFixed(1), x2: q[0].toFixed(1), y2: q[1].toFixed(1), ...attrs }));
+  const label = (px, py, lines, attrs = {}) => lines.forEach((str, i) => add(svgNode('text', { x: px, y: py + i * 13, 'font-size': 10.5, ...attrs }, str)));
+  const leader = (p, q) => line(p, q, { stroke: '#888780', 'stroke-width': 0.8 });
+
+  line(at([B - QUARTER, 6.8]), at([B + QUARTER, 6.8]), { class: 'w-contour' });
+  add(svgNode('path', { d: `${d([...arc(4.4, -68, 68), ...arc(1.1, 68, -68)])} Z`, fill: '#D3EDF5' }));
+  add(svgNode('circle', { cx, cy, r: 2.8 * k, fill: 'none', stroke: '#B4B2A9', 'stroke-dasharray': '4 3' }));
+  add(svgNode('path', { d: d(arc(7.2, -70, 70)), fill: 'none', stroke: BERM, 'stroke-width': 2, 'stroke-dasharray': '7 5', opacity: 0.7 }));
+  [[-72, -7], [7, 72]].forEach(([a, b]) => add(svgNode('path', { d: d(arc(4.9, a, b)), fill: 'none', stroke: BERM, 'stroke-width': 9, 'stroke-linecap': 'round' })));
+  [-4, 0, 4].forEach(a => { const [px, py] = at([B + a / DEG, 4.9]); add(svgNode('ellipse', { cx: px, cy: py, rx: 3.6, ry: 2.8, fill: '#6A9E3F' })); });
+  [-2.4, 2.4].forEach(off => line(at([B + Math.PI, 5.2], [B + QUARTER, off]), at([B, 1.5], [B + QUARTER, off]), { class: 'w-flow-strong', 'marker-end': 'url(#cp-water)' }));
+  line(at([B, 5.4]), at([B, 8.0]), { class: 'w-flow-strong', 'marker-end': 'url(#cp-water)' });
+  [-35, 0, 35].forEach(a => { const [px, py] = at([B + a / DEG, 2.7]); add(svgNode('circle', { cx: px, cy: py, r: 3.2, fill: WATER })); });
+  add(svgNode('circle', { cx, cy, r: 0.7 * k, fill: '#fff', stroke: '#8F8D85', 'stroke-dasharray': '2 2' }));
+  add(svgNode('circle', { cx, cy, r: 0.25 * k, fill: '#7A5C3E' }));
+
+  label(8, 16, ['Uphill (SSE):', 'runoff and snowmelt arrive'], { class: 't-note' });
+  label(308, 50, ['contour (level)'], { class: 't-note' });
+  label(330, 92, ['later: widen toward', 'the drip line'], { class: 't-note' });
+  leader(at([B - 40 / DEG, 5.2]), [314, 147]);
+  label(318, 150, ['berm: crest level,', '2–3 in above the notch'], {});
+  label(270, 268, ['spillway notch, lined with sod:', 'overflow to the next tree', 'downhill (NW diagonal, ~22 ft)'], { class: 't-water' });
+  leader(at([B + 35 / DEG, 3.0]), [112, 250]);
+  label(8, 262, ['basin: shallow level saucer, water', 'up to 3–4 in deep (stone fruit ≤ 3 in),', 'wood chips 2–3 in'], {});
+  leader([116, 124], [cx - 0.75 * k, cy]);
+  label(8, 128, ['tree on a low mound;', 'bare ring 6–12 in + guard'], { class: 't-note' });
+  leader(at([B, 2.7]), [214, 306]);
+  label(120, 318, ['drip emitters in the basin, moved outward as the tree grows'], { class: 't-water' });
+  label(W - 8, 16, ['south ▲ · west ▶'], { 'text-anchor': 'end', class: 't-note', 'font-size': 9.5 });
+  document.getElementById('crescent-plan-host').append(svg);
+}
+
+function drawCrescentSection() {
+  const W = 680, H = 270, kx = 46, ki = kx / 12, x0 = 96, g0 = 122;
+  const X = dist => x0 + dist * kx;
+  const G = dist => g0 + dist * GRADE_MID * 12 * ki;          // original ground at true scale, falling to the right
+  const MOUND = 3.5, DIG = 1.5, DEPTH = 3.5, FREEBOARD = 2.5, CHIPS = 2.5, LOAM = SOIL.layers[0].bottom;   // inches
+  const floor = G(1.2) + DIG * ki, spill = floor - DEPTH * ki, crest = spill - FREEBOARD * ki, chips = floor - CHIPS * ki;
+  const svg = svgNode('svg', { viewBox: `0 0 ${W} ${H}`, class: 'diagram crescent-section', role: 'img', 'aria-labelledby': 'cs-title' });
+  svg.append(svgNode('title', { id: 'cs-title' }, `Section down the fall line at true scale: the tree sits on a ${MOUND} in mound at the uphill edge; the basin floor is dug only ${DIG} in, staying in the ${LOAM} in loam layer above the clay loam; water stands up to ${DEPTH} in deep to the sod-lined spillway notch over ${CHIPS} in of wood chips; the berm crest is ${FREEBOARD} in above the notch, and overflow continues downhill over ground sloping about ${pct(GRADE_MID)}.`));
+  const defs = svgNode('defs');
+  defs.append(arrowMarker('cs-water', WATER, 9), arrowMarker('cs-dim', '#2C2C2A', 7));
+  svg.append(defs);
+  const add = node => { svg.append(node); return node; };
+  const poly = (pts, attrs) => add(svgNode('path', { d: pts.map(([dist, y], i) => `${i ? 'L' : 'M'}${X(dist).toFixed(1)},${y.toFixed(1)}`).join(' '), ...attrs }));
+  const text = (px, py, str, attrs = {}) => add(svgNode('text', { x: px.toFixed(1), y: py.toFixed(1), 'font-size': 10, ...attrs }, str));
+  const dim = (p, q) => add(svgNode('line', { x1: p[0], y1: p[1], x2: q[0], y2: q[1], stroke: '#2C2C2A', 'stroke-width': 1, 'marker-start': 'url(#cs-dim)', 'marker-end': 'url(#cs-dim)' }));
+  const crossing = (y, pts) => {
+    for (let i = 1; i < pts.length; i++) {
+      const [d0, y0] = pts[i - 1], [d1, y1] = pts[i];
+      if (y0 !== y1 && (y - y0) * (y - y1) <= 0) return d0 + (d1 - d0) * (y - y0) / (y1 - y0);
+    }
+    return pts[pts.length - 1][0];
+  };
+
+  const surface = [[-1.8, G(-1.8)], [-1.1, G(-1.1)], [-0.4, G(-0.4) - MOUND * ki], [0.4, G(0.4) - MOUND * ki], [1.1, G(1.1)], [1.2, G(1.2)],
+    [1.6, floor], [3.6, floor], [4.3, crest], [4.9, crest], [5.8, G(5.8)], [12, G(12)]];
+  poly([...surface, [12, H - 6], [-1.8, H - 6]], { fill: SOIL.layers[0].color, opacity: 0.45 });
+  poly([[-1.8, G(-1.8) + LOAM * ki], [12, G(12) + LOAM * ki], [12, H - 6], [-1.8, H - 6]], { fill: SOIL.layers[1].color, opacity: 0.45 });
+  add(svgNode('line', { x1: X(-1.8), y1: G(-1.8) + LOAM * ki, x2: X(12), y2: G(12) + LOAM * ki, stroke: '#8B5E34', 'stroke-dasharray': '3 3', opacity: 0.7 }));
+  [[0, 125, -1.5, 190], [0.1, 128, 2.6, 205], [0.1, 126, 4.6, 172], [0, 130, 1.0, 232], [-0.1, 127, -0.9, 225]].forEach(([d1, y1, d2, y2]) =>
+    add(svgNode('path', { d: `M${X(d1)},${y1} Q${X((d1 + d2) / 2)},${(y1 + y2) / 2 + 14} ${X(d2)},${y2}`, fill: 'none', stroke: '#7A5C3E', 'stroke-width': 1.4, opacity: 0.5 })));
+  const moundFace = surface.slice(3, 6), bermFace = [[3.6, floor], [4.3, crest]];
+  const wallX = 1.25, wallAt = G(1.2) + (wallX - 1.2) / 0.4 * (floor - G(1.2));
+  const xL = crossing(spill, moundFace), xR = crossing(spill, bermFace), xRc = crossing(chips, bermFace);
+  poly([[wallX, chips], [xRc, chips], [3.6, floor], [1.6, floor], [wallX, wallAt]], { fill: '#C49A66' });
+  poly([[xL, spill], [xR, spill], [xRc, chips], [wallX, chips]], { fill: '#9ED3E6', opacity: 0.85 });
+  poly(surface, { fill: 'none', stroke: '#6B5A45', 'stroke-width': 2 });
+  add(svgNode('line', { x1: X(-1.8), y1: G(-1.8), x2: X(12), y2: G(12), stroke: '#6B5A45', 'stroke-dasharray': '5 4', opacity: 0.6 }));
+  add(svgNode('line', { x1: X(xL), y1: spill, x2: X(6.3), y2: spill, stroke: WATER, 'stroke-dasharray': '4 3' }));
+  add(svgNode('rect', { x: X(4.3), y: spill - 2, width: 0.6 * kx, height: 4, fill: '#6A9E3F' }));
+  add(svgNode('rect', { x: X(0) - 6, y: 18, width: 12, height: G(0) - MOUND * ki - 18, fill: '#7A5C3E' }));
+  add(svgNode('path', { d: `M${X(0) - 10},26 l20,-6 M${X(0) - 10},32 l20,-6`, stroke: '#fff', 'stroke-width': 3 }));
+  add(svgNode('circle', { cx: X(2.5), cy: chips - 3.5, r: 3.5, fill: WATER }));
+  add(svgNode('line', { x1: X(4.95), y1: spill - 2, x2: X(7.3), y2: G(7.3) - 5, class: 'w-flow-strong', 'marker-end': 'url(#cs-water)' }));
+
+  dim([X(0.15), 48], [X(4.3), 48]);
+  text(X(0.3), 40, '3–4 ft to start; widen toward the drip line');
+  dim([X(3.15), spill + 1], [X(3.15), floor - 1]);
+  text(X(2.4), spill - 7, 'max water level = spillway notch', { 'text-anchor': 'middle', class: 't-water' });
+  add(svgNode('line', { x1: X(4.6), y1: 96, x2: X(4.6), y2: crest - 2, stroke: '#888780', 'stroke-width': 0.8 }));
+  text(X(4.6), 92, 'berm: crest level, 2–3 in above the notch', { 'text-anchor': 'middle' });
+  text(X(7.5), G(7.5) - 22, 'overflow to the next tree downhill', { class: 't-water' });
+  ['tree on a', 'low mound;', 'root flare', 'above the', 'spill level'].forEach((str, i) => text(14, 56 + i * 12, str, { 'font-size': 9.5, class: 't-note' }));
+  add(svgNode('line', { x1: 66, y1: 104, x2: X(0) - 7, y2: G(0) - MOUND * ki, stroke: '#888780', 'stroke-width': 0.8 }));
+  text(X(2.75), 178, 'floor dug ≤ 2 in, so it stays in the loam: up to 3–4 in of water (stone fruit ≤ 3 in)', { 'text-anchor': 'middle', class: 'halo' });
+  text(X(2.75), 192, '2–3 in of wood chips; drip emitter in the basin; sod lines the notch', { 'text-anchor': 'middle', class: 'halo' });
+  text(X(9.4), G(9.4) + 2.9 * ki, `loam, about ${LOAM} in`, { 'text-anchor': 'middle', 'font-size': 9, class: 'halo' });
+  text(X(9.4), G(9.4) + 9 * ki, `clay loam to about ${SOIL.layers[1].bottom} in: passes about ${fmt(SOIL.layers[1].ksat[1], 1)} in/hr`, { 'text-anchor': 'middle', 'font-size': 9, class: 'halo' });
+  text(X(9.6), G(9.6) - 8, `original ground, about ${pct(GRADE_MID)} slope`, { 'text-anchor': 'middle', class: 't-note' });
+  text(12, H - 12, 'uphill (SSE)', { class: 't-note' });
+  text(W - 12, H - 12, 'downhill (NNW) →', { 'text-anchor': 'end', class: 't-note' });
+  add(svgNode('line', { x1: X(5), y1: H - 22, x2: X(8), y2: H - 22, stroke: '#2C2C2A', 'stroke-width': 2 }));
+  [5, 6, 7, 8].forEach(dist => add(svgNode('line', { x1: X(dist), y1: H - 26, x2: X(dist), y2: H - 18, stroke: '#2C2C2A', 'stroke-width': 1 })));
+  text(X(6.5), H - 8, '3 ft (true scale)', { 'text-anchor': 'middle', 'font-size': 9.5 });
+  document.getElementById('crescent-section-host').append(svg);
+}
+const LEVEL_COLORS = { 1445: '#1E4FE0', 1446: '#00A9C4', 1447: '#00A85A', 1448: '#3CA800', 1449: '#9AA800', 1450: '#E08A00', 1451: '#D80000' };
+function drawTopo() {
+  const S = 0.75, west = -36, east = EAST_FENCE + 36, top = -34, bottom = 1005;
+  const X = x => (x - west) * S, Y = yN => (yN - top) * S;
+  const svg = svgNode('svg', { viewBox: `0 0 ${((east - west) * S).toFixed(1)} ${((bottom - top) * S).toFixed(1)}`, class: 'diagram topo', role: 'img', 'aria-labelledby': 'topo-title' });
+  svg.append(svgNode('title', { id: 'topo-title' }, `Field topography from USGS 1 m data, north up: the homestead pad near ${HIGH_M} m is the high point, the land falls north and west to the northwest corner just under ${LOW_M} m by the road, and flow paths cross the field toward the northwest. The planted block sits at the south end of the 600 ft orchard strip.`));
+  const add = node => { svg.append(node); return node; };
+  const box = (x0, x1, y0, y1, attrs = {}) => add(svgNode('rect', { x: X(x0), y: Y(y0), width: (x1 - x0) * S, height: (y1 - y0) * S, ...attrs }));
+  const line = (pts, attrs = {}) => add(svgNode('path', { d: pts.map(([x, y], i) => `${i ? 'L' : 'M'}${X(x).toFixed(1)},${Y(y).toFixed(1)}`).join(' '), fill: 'none', ...attrs }));
+  const text = (x, y, str, attrs = {}) => add(svgNode('text', { x: X(x).toFixed(1), y: Y(y).toFixed(1), 'font-size': 8, ...attrs }, str));
+
+  box(west, east, -30, -6, { fill: '#D9D6CE' });
+  text(EAST_FENCE / 2, -14, 'ROAD (north line)', { 'text-anchor': 'middle', class: 't-title', 'font-size': 9 });
+  box(0, WINDBREAK_WIDTH, R15_FROM_NORTH - 6, R1_FROM_NORTH + 6, { class: 'd-strip' });
+  box(WINDBREAK_WIDTH, PLOT_EAST, R15_FROM_NORTH - 10, R1_FROM_NORTH + 10, { fill: '#FBF1E6', stroke: '#B07A3E', 'stroke-width': 1.2 });
+  box(WINDBREAK_WIDTH, PLOT_EAST, 0, STRIP_DEPTH, { class: 'd-plot' });
+  line([[311, -6], [311, 690], [300, 728], [275, 765], [240, 795]], { stroke: '#E2E0D8', 'stroke-width': DRIVEWAY_WIDTH * S, 'stroke-linejoin': 'round' });
+  add(svgNode('rect', { x: X(130), y: Y(840), width: 145 * S, height: 110 * S, rx: 6, fill: '#ECE8DF', stroke: '#A39E92', 'stroke-dasharray': '4 3' }));
+  box(68, 95, SHED_FROM_NORTH - 14, SHED_FROM_NORTH + 14, { fill: '#B5452F' });
+  box(24, 42, 891, 950, { fill: '#5F6B7A' });
+  USGS.flows.forEach(f => line(f, { class: 'w-usgs-flow' }));
+  USGS.divides.forEach(f => line(f, { class: 'w-divide' }));
+  const longest = {};
+  USGS.contours.forEach(c => {
+    line(c.p, { stroke: LEVEL_COLORS[c.m] || '#9C8466', 'stroke-width': 1.6 });
+    const length = c.p.slice(1).reduce((sum, p, i) => sum + Math.hypot(p[0] - c.p[i][0], p[1] - c.p[i][1]), 0);
+    if (!longest[c.m] || length > longest[c.m].length) longest[c.m] = { length, pts: c.p };
+  });
+  Object.entries(longest).forEach(([level, { pts }]) => {
+    const [x, y] = pts[Math.floor(pts.length / 2)];
+    text(x, y + 3, `${level} m`, { 'text-anchor': 'middle', class: 'halo', style: `fill:${LEVEL_COLORS[level]};font-weight:600` });
+  });
+  [0, EAST_FENCE].forEach(x => line([[x, -6], [x, bottom]], { stroke: '#6B5A45', 'stroke-width': 2.5 }));
+  line([[0, 0], [EAST_FENCE, 0]], { stroke: '#6B5A45', 'stroke-width': 2 });
+  add(svgNode('ellipse', { cx: X(32), cy: Y(28), rx: 26 * S, ry: 14 * S, class: 'w-basin' }));
+  line([[110, R1_FROM_NORTH + 30], [250, R1_FROM_NORTH + 40]], { class: 'w-spreader' });
+
+  text(64, 30, `NW corner: lowest (<${LOW_M} m)`, { class: 't-water halo' });
+  text(150, 150, 'flat N–S; drains west', { 'text-anchor': 'middle', class: 't-note halo' });
+  text(150, 205, 'open: overflow, future trees', { 'text-anchor': 'middle', class: 't-note halo' });
+  text(150, (R15_FROM_NORTH + R1_FROM_NORTH) / 2, 'PLANTED BLOCK', { 'text-anchor': 'middle', class: 't-title halo' });
+  text(150, (R15_FROM_NORTH + R1_FROM_NORTH) / 2 + 13, 'R1–R15', { 'text-anchor': 'middle', class: 't-title halo' });
+  text(PLOT_EAST + 3, R15_FROM_NORTH + 3, 'R15', { class: 't-note halo' });
+  text(PLOT_EAST + 3, R1_FROM_NORTH + 3, 'R1', { class: 't-note halo' });
+  text(PLOT_EAST - 4, STRIP_DEPTH - 6, '600 ft line', { 'text-anchor': 'end', class: 't-note halo' });
+  text(180, R1_FROM_NORTH + 52, 'spreader', { 'text-anchor': 'middle', class: 't-water halo' });
+  text(100, SHED_FROM_NORTH + 4, 'red shed', { class: 'halo' });
+  text(202, 900, `house pad: high (${HIGH_M} m)`, { 'text-anchor': 'middle', class: 't-title halo' });
+  text(46, 958, 'container', { class: 'halo' });
+  text(EAST_FENCE / 2, 990, 'south of the pad the lot drains south ↓', { 'text-anchor': 'middle', class: 't-note halo' });
+  const ax = X(EAST_FENCE + 20), ay = Y(70);
+  add(svgNode('path', { d: `M${ax},${ay - 20} l7,18 l-7,-5 l-7,5 z`, fill: '#2C2C2A' }));
+  add(svgNode('text', { x: ax, y: ay + 10, 'text-anchor': 'middle', 'font-size': 10, class: 't-title' }, 'N'));
+  line([[20, 972], [120, 972]], { stroke: '#2C2C2A', 'stroke-width': 2.5 });
+  text(70, 966, '100 ft', { 'text-anchor': 'middle' });
+  document.getElementById('topo-host').append(svg);
+}
+
+function renderTopoLegend() {
+  const host = document.getElementById('topo-legend');
+  const swatch = draw => { const s = svgNode('svg', { viewBox: '0 0 28 14', 'aria-hidden': 'true' }); draw(s); return s; };
+  [
+    [s => [1446, 1448, 1450].forEach((m, i) => s.append(svgNode('line', { x1: 2, y1: 3 + i * 4, x2: 26, y2: 3 + i * 4, stroke: LEVEL_COLORS[m], 'stroke-width': 1.6 }))), '1 m contours (colors as on the USGS map)'],
+    [s => s.append(svgNode('path', { d: 'M2,11 Q10,2 18,7 T26,4', class: 'w-usgs-flow' })), 'USGS flow path'],
+    [s => s.append(svgNode('line', { x1: 2, y1: 7, x2: 26, y2: 7, class: 'w-divide' })), 'Divide (runoff splits)'],
+    [s => s.append(svgNode('rect', { x: 2, y: 2, width: 24, height: 10, fill: '#FBF1E6', stroke: '#B07A3E' })), 'Planted block'],
+    [s => s.append(svgNode('rect', { x: 2, y: 2, width: 24, height: 10, class: 'd-plot' })), '600 ft orchard strip'],
+    [s => s.append(svgNode('ellipse', { cx: 14, cy: 7, rx: 11, ry: 5, class: 'w-basin' })), 'NW sponge basin']
+  ].forEach(([draw, label]) => {
+    const item = element('div');
+    item.append(swatch(draw), element('span', label));
+    host.append(item);
+  });
+}
+function drawSoil() {
+  const W = 330, H = 448, top = 52, k = 6, colL = 74, colR = 170;   // k = px per inch of depth
+  const Y = depth => top + depth * k;
+  const svg = svgNode('svg', { viewBox: `0 0 ${W} ${H}`, class: 'diagram soil', role: 'img', 'aria-labelledby': 'soil-title' });
+  svg.append(svgNode('title', { id: 'soil-title' }, `Simonton loam profile to 60 inches: ${SOIL.layers.map(l => `${l.texture.toLowerCase()} from ${l.top} to ${l.bottom} in, passing about ${fmt(l.ksat[1], 1)} in/hr`).join('; ')}. Roots 3–4 ft deep can use about ${fmt(SOIL_TANK[0], 1)}–${fmt(SOIL_TANK[1], 1)} in of stored water; the owner reports about 10 ft of soil to rock.`));
+  const add = node => { svg.append(node); return node; };
+  const text = (x, y, str, attrs = {}) => add(svgNode('text', { x, y, 'font-size': 10, ...attrs }, str));
+  SOIL.layers.forEach(layer => {
+    add(svgNode('rect', { x: colL, y: Y(layer.top), width: colR - colL, height: (layer.bottom - layer.top) * k, fill: layer.color }));
+    const mid = Y((layer.top + layer.bottom) / 2);
+    text((colL + colR) / 2, mid + 4, `${fmt(layer.ksat[1], 1)} in/hr`, { 'text-anchor': 'middle', 'font-size': 11, class: 't-title halo' });
+    text(colR + 12, mid - 2, `${layer.texture}, ${layer.top}–${layer.bottom} in`, { class: 't-title' });
+    text(colR + 12, mid + 11, `${layer.clay}% clay · holds ${fmt(layer.awc * 12, 1)} in/ft`, { 'font-size': 9, class: 't-note' });
+  });
+  add(svgNode('path', { d: `M${colL + 8},${top} Q${(colL + colR) / 2},${top + 16} ${colR - 8},${top} Z`, fill: '#9ED3E6', stroke: WATER, 'stroke-width': 1.2 }));
+  text((colL + colR) / 2, top - 8, 'basin water', { 'text-anchor': 'middle', class: 't-water' });
+  [0, 12, 24, 36, 48, 60].forEach(depth => {
+    add(svgNode('line', { x1: colL - 8, y1: Y(depth), x2: colL, y2: Y(depth), stroke: '#5F5E5A', 'stroke-width': 1 }));
+    text(colL - 12, Y(depth) + 4, depth ? `${depth / 12} ft` : '0', { 'text-anchor': 'end', 'font-size': 9, class: 't-note' });
+  });
+  const bx = colR + 5;
+  add(svgNode('path', { d: `M${bx - 3},${Y(0)} H${bx} V${Y(48)} H${bx - 3} M${bx - 3},${Y(36)} H${bx}`, fill: 'none', stroke: '#2E7D5B', 'stroke-width': 1.5 }));
+  text(colR + 12, Y(31), `roots 3–4 ft deep:`, { 'font-size': 9.5, style: 'fill:#2E7D5B;font-weight:600' });
+  text(colR + 12, Y(31) + 13, `${fmt(SOIL_TANK[0], 1)}–${fmt(SOIL_TANK[1], 1)} in of usable water`, { 'font-size': 9.5, style: 'fill:#2E7D5B' });
+  const zig = Array.from({ length: 9 }, (_, i) => `${i ? 'L' : 'M'}${colL + i * 12},${Y(60) + 6 + (i % 2 ? 3 : -3)}`).join(' ');
+  add(svgNode('path', { d: zig, fill: 'none', stroke: '#888780', 'stroke-width': 1.2 }));
+  text((colL + colR) / 2, H - 12, 'more sandy loam, about 10 ft of soil to rock (owner)', { 'text-anchor': 'middle', 'font-size': 9, class: 't-note' });
+  document.getElementById('soil-host').append(svg);
+}
+
+function renderSoil() {
+  const [A, Bt, C] = SOIL.layers;
+  const hours = depth => [depth / Bt.ksat[2], depth / Bt.ksat[1], depth / Bt.ksat[0]];
+  const h4 = hours(4), gal = inches => TREE_AREA * inches * GAL_PER_SQFT_IN;
+  const list = document.getElementById('soil-points');
+  [
+    `Fast top, slow middle. The top ${A.bottom} in of loam soaks up water at about ${fmt(A.ksat[1], 1)} in/hr, but the clay loam below passes only about ${fmt(Bt.ksat[1], 1)} in/hr (${fmt(Bt.ksat[0], 1)}–${fmt(Bt.ksat[2], 1)}). A basin wets the topsoil within minutes, then drains at the subsoil's pace: 4 in of water is gone in about ${fmt(h4[1])} hours (${fmt(h4[0])}–${fmt(h4[2])}). That's why basins here hold 3–4 in, not more.`,
+    `Keep basin floors in the loam. NRCS's typical profile has only about ${A.bottom} in of loam over the clay loam (tilling mixes the top several inches; a test hole shows where the stickier layer starts). Bare clay loam crusts and seals, so dig no deeper than about 2 in, put any topsoil back, and get the depth from the berm and a low planting mound.`,
+    `A big soil tank. The top 3–4 ft holds about ${fmt(SOIL_TANK[0], 1)}–${fmt(SOIL_TANK[1], 1)} in of water roots can use (${SOIL.awc60} in in the top 5 ft), about ${gallons(gal(SOIL_TANK[0]))}–${gallons(gal(SOIL_TANK[1]))} gal under each tree's 18 × 20 ft. Filling it from dry takes that much water actually soaking in, a big share of what falls November through June once blowing snow, sublimation, and runoff take their cut. Catching runoff is how you fill it.`,
+    `Hydrologic group ${SOIL.group}. Once it's wet, or frozen in March, this soil sheds a lot of water. That runoff is exactly what the spreader, the crescents, and the driveway basins are for.`,
+    `Deep and rock-free. Below about ${C.top} in, sandy loam drains freely (about ${fmt(C.ksat[1])} in/hr); NRCS finds no hardpan or water table within 80 in, and you have about 10 ft of soil to rock. Roots can go deep and nothing waterlogs them from below, but water that sinks past the roots is lost to the trees, so run the drip in moderate pulses rather than long soaks.`,
+    `Spring is the wet-feet window. Snowmelt can sit on the clay loam for a while before it soaks in, the cold, wet conditions crown rot and canker like. Keep stone-fruit basins at 3 in or less and those trees on mounds; by summer the profile drains well.`,
+    `Friendly chemistry: pH about ${SOIL.ph}, no lime, no salt. Organic matter is low (about 1.5% on top, less below), so chips and cover crops build it and keep the surface open. Bare, worked loam here is also moderately wind-erodible, one more reason to keep it covered.`,
+    `Rain check: NRCS lists ${SOIL.precip[0]}–${SOIL.precip[1]} in a year for this soil's setting, against PRISM's ${fmt(ANNUAL)} in at Prairie. If your lot is nearer the NRCS figure, every gallon on the budget page shrinks by a quarter to almost half, and harvesting matters more, not less. A rain gauge settles it.`
+  ].forEach(text => list.append(element('li', text)));
+  const tbody = document.querySelector('#soil-table tbody');
+  SOIL.layers.forEach(layer => addRow(tbody, [layer.hz, `${layer.top}–${layer.bottom}${layer === C ? '+' : ''} in`, layer.texture, `${layer.clay}%`,
+    `${fmt(layer.ksat[1], 1)} (${fmt(layer.ksat[0], 1)}–${fmt(layer.ksat[2], 1)})`, fmt(layer.awc * 12, 1), layer.note], [3, 4, 5]));
+}
+
+/* Tables */
+const FRUIT_GUIDE = {
+  Apple: ['Moderate', 'Full crescent; spillway 3–4 in above the floor', 'Yes: first claim', `The highest, best-drained trees, first in line for the homestead water. The ${reserved.length} reserved R1 spots get basins when the grafted apples go in.`],
+  Pear: ['Best of your fruit trees (UC IPM)', 'Full crescent; spillway 3–4 in above the floor', 'Yes: can take the most', 'A natural catch for overflow coming down from the apples.'],
+  Cherry: ["Low: can't take saturated soil (UC IPM)", 'Small; spillway 3 in or less; tree on a low mound', 'No: let run-on pass by', 'Bacterial canker is flagged on several; UC IPM says it is worse in low spots and after spring freezes.'],
+  Peach: ["Low: can't take saturated soil (UC IPM)", 'Small; spillway 3 in or less; tree on a low mound', 'No', 'Canker flagged on most; early bloom.'],
+  Apricot: ['Low (stone fruit)', 'Smallest; if the perc test is slow, add a low uphill berm that steers run-on around the tree', 'No', 'The lowest planted trees and the earliest bloom; canker flagged on the apricots.'],
+  Plum: ['Low to moderate', 'Small; spillway 3 in or less', 'Little', 'No canker flags in the inventory.']
+};
+function renderFruitTable() {
+  const tbody = document.querySelector('#fruit-table tbody');
+  ['Apple', 'Pear', 'Cherry', 'Peach', 'Apricot', 'Plum'].forEach(type => {
+    const list = typeTrees(type);
+    if (!list.length) return;
+    const rows = rowsOf(list), cols = list.map(t => t.c);
+    const shared = rows.some(r => trees.some(t => t.r === r && t.type !== type));
+    let where = `${span(rows)}${shared ? `, C${Math.min(...cols)}–C${Math.max(...cols)}` : ''} · ${list.length}`;
+    if (type === 'Apple' && reserved.length) where += ` (+${reserved.length} reserved in R1)`;
+    addRow(tbody, [PLURAL[type][0].toUpperCase() + PLURAL[type].slice(1), where, ...FRUIT_GUIDE[type]]);
+  });
+  addRow(tbody, ['Berries, windbreak, hedge', 'C1 guilds, west strip, east hedge', 'Elderberry and aronia handle wet soil; currants, gooseberries, jostaberry, and honeyberry like moist but drained soil; hazelnut prefers drained soil; mulberry is adaptable', 'Their own crescents; the lane and the NW basin take overflow', 'Yes: the west edge and the NW corner are where overflow ends', 'The C1 guilds sit in the snow-drift zone.']);
+}
+
+function renderTracker() {
+  const tbody = document.querySelector('#tracker tbody');
+  ROW_PLAN.forEach((row, ri) => {
+    const r = ri + 1, rowTrees = trees.filter(t => t.r === r);
+    const open = row.filter(id => id === null).length, held = row.filter(id => id === 'R').length;
+    let what, basin;
+    if (held) { what = `${held} positions reserved for grafted apples`; basin = 'Full, when planted'; }
+    else if (!rowTrees.length) { what = 'Open for future trees'; basin = '—'; }
+    else {
+      const groups = [];
+      rowTrees.forEach(t => { const last = groups[groups.length - 1]; if (last && last.type === t.type) last.n++; else groups.push({ type: t.type, n: 1 }); });
+      what = groups.map(g => `${g.n} ${g.n === 1 ? g.type.toLowerCase() : PLURAL[g.type]}`).join(', ') + (open ? ` (${open} open)` : '');
+      basin = rowTrees.some(t => STONE.has(t.type)) ? 'Small: spillway ≤ 3 in, low mounds' : 'Full: spillway 3–4 in';
+    }
+    const boxes = held || rowTrees.length ? [checkbox(`R${r} crescents shaped`), checkbox(`R${r} chips and guards`), checkbox(`R${r} drip in basins`)] : ['', '', ''];
+    addRow(tbody, [`R${r}`, what, basin, ...boxes, '']);
+  });
+}
+
+function renderBudget() {
+  const tbody = document.querySelector('#budget-table tbody');
+  const g = (area, inches) => area * inches * GAL_PER_SQFT_IN;
+  [
+    [`One tree's space (${TREE_SPACING} × ${ROW_SPACING} ft)`, TREE_AREA],
+    ['One full row of 13 trees', TREE_AREA * 13],
+    [`Planted block (${PLOT_WIDTH} × ${BLOCK_DEPTH} ft)`, BLOCK_AREA],
+    [`Driveway, per 100 ft (${DRIVEWAY_WIDTH} ft wide)`, DRIVEWAY_WIDTH * 100],
+    ['Roof, per 1,000 sq ft', 1000]
+  ].forEach(([name, area]) => addRow(tbody, [name, fmt(area), perInch(g(area, 1)), gallons(g(area, ANNUAL)),
+    gallons(g(area, SEASONS.novMar)), gallons(g(area, SEASONS.aprJun)), gallons(g(area, SEASONS.julSep))], [1, 2, 3, 4, 5, 6]));
+}
+
+const CATCHMENTS = [['Red shed roof', 0.9], ['Container roof', 0.9], ['White building roof', 0.9], ['House roof (future)', 0.9], ['Gravel house pad', 0.5], ['Other', 0.5]];
+function renderCalculator() {
+  const tbody = document.querySelector('#calc-table tbody'), tfoot = document.querySelector('#calc-table tfoot');
+  const rows = CATCHMENTS.map(([name, factor]) => {
+    const label = element('input', null, 'name');
+    label.value = name;
+    label.setAttribute('aria-label', 'Catchment name');
+    const area = element('input');
+    Object.assign(area, { type: 'number', min: '0', step: '10', placeholder: 'sq ft' });
+    area.setAttribute('aria-label', `${name} area in square feet`);
+    const coef = element('input');
+    Object.assign(coef, { type: 'number', min: '0', max: '1', step: '0.05', value: String(factor) });
+    coef.setAttribute('aria-label', `${name} runoff factor`);
+    const cells = [element('span'), element('span'), element('span')];
+    addRow(tbody, [label, area, coef, ...cells], [1, 2, 3, 4, 5]);
+    return { area, coef, cells };
+  });
+  const totals = [element('strong'), element('strong'), element('strong')];
+  addRow(tfoot, [element('strong', 'Total'), '', '', ...totals], [3, 4, 5]);
+  const update = () => {
+    const sums = [0, 0, 0];
+    rows.forEach(({ area, coef, cells }) => {
+      const a = Math.max(0, parseFloat(area.value) || 0), f = Math.min(1, Math.max(0, parseFloat(coef.value) || 0));
+      [1, SEASONS.marJun, ANNUAL].forEach((inches, i) => {
+        const v = a * f * inches * GAL_PER_SQFT_IN;
+        sums[i] += v;
+        cells[i].textContent = a ? (i ? gallons(v) : perInch(v)) : '—';
+      });
+    });
+    sums.forEach((v, i) => { totals[i].textContent = sums[0] ? (i ? gallons(v) : perInch(v)) : '—'; });
+  };
+  tbody.addEventListener('input', update);
+  update();
+}
+
+function renderGap() {
+  const tbody = document.querySelector('#gap-table tbody');
+  const gal = inches => TREE_AREA * inches * GAL_PER_SQFT_IN;
+  const julyUse = ERA5_ET0[6] * MATURE_FACTOR, seasonUse = ET_MAY_SEP * MATURE_FACTOR;
+  const tank = SOIL_TANK;
+  [
+    ['July rain (PRISM)', fmt(PRISM_PPT[6], 2), gallons(gal(PRISM_PPT[6]))],
+    ['July reference demand, ET₀ (ERA5)', fmt(ERA5_ET0[6], 2), gallons(gal(ERA5_ET0[6]))],
+    [`Mature tree in July, about ${MATURE_FACTOR} × ET₀`, fmt(julyUse, 1), `${gallons(gal(julyUse))} (about ${fmt(gal(julyUse) / 31)} a day)`],
+    ['May–September rain', fmt(SEASONS.maySep, 1), gallons(gal(SEASONS.maySep))],
+    [`Mature tree, May–September, about ${MATURE_FACTOR} × ET₀`, fmt(seasonUse, 1), gallons(gal(seasonUse))],
+    [`Soil "tank": ${ROOT_DEPTH[0]}–${ROOT_DEPTH[1]} ft of roots in Simonton loam, full`, `${fmt(tank[0], 1)}–${fmt(tank[1], 1)}`, `${gallons(gal(tank[0]))}–${gallons(gal(tank[1]))}`]
+  ].forEach(row => addRow(tbody, row, [1, 2]));
+  const stressFree = tank.map(inches => gal(inches) / 2 / (gal(julyUse) / 31));
+  document.getElementById('gap-note').textContent = `Summer rain covers only a sliver of a mature tree's use. A full soil tank can carry a mature tree about ${fmt(Math.floor(stressFree[0] / 7))}–${fmt(Math.ceil(stressFree[1] / 7))} weeks into peak summer before it feels stress (the first half of the tank), and the drip covers the rest. Young trees use far less but reach only the soil near the trunk, which is why their basins start small and grow outward.`;
+}
+
+function renderLog() {
+  const tbody = document.querySelector('#log-table tbody');
+  for (let i = 0; i < 14; i++) addRow(tbody, ['', '', '', '', '', '']);
+}
+
+try {
+  if (!USGS) throw new Error('the USGS terrain data is missing');
+  renderSpecs(); renderSlopePoints(); drawChart(); drawTopo(); renderTopoLegend(); drawSoil(); renderSoil(); drawSitePlan(); renderSiteLegend();
+  drawCrescentPlan(); drawCrescentSection(); renderFruitTable(); renderTracker(); renderBudget(); renderCalculator(); renderGap(); renderLog();
+} catch (error) {
+  const box = document.getElementById('render-error');
+  box.hidden = false;
+  box.textContent = `Could not build the page: ${error.message}`;
+  console.error(error);
+}
+</script>
+</body>
+</html>
