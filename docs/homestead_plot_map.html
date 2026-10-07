@@ -66,7 +66,7 @@
     .map svg { max-height: 9.25in; width: auto; max-width: 100%; }
     figure figcaption { font-size: 9pt; margin-bottom: 1mm; }
     .legend { font-size: 7.5pt; gap: 0.6mm 3mm; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    table.detail { font-size: 7.6pt; margin: 1mm 0 1.5mm; } table.detail th, table.detail td { padding: 0.5mm 1.3mm; }
+    table.detail { font-size: 7.6pt; margin: 1mm 0 1.5mm; } table.detail th, table.detail td { padding: 0.3mm 1.3mm; }
     table.detail tr { break-inside: avoid; }
     ul.notes { font-size: 7.6pt; line-height: 1.3; } ul.notes li { margin: 0.5mm 0; }
     .source-note { font-size: 7.4pt; }
@@ -83,7 +83,7 @@
 
 <section aria-labelledby="page-title">
   <h1 id="page-title">Mountain Prairie Acres: Homestead Plot Map</h1>
-  <p class="subtitle">The homestead to scale, north up, as it stood in October 2026: buildings, containers, tank, pump house, pads, and the road-mix drives, on the 50 ft master grid. Planned buildings are dashed.</p>
+  <p class="subtitle">The homestead to scale, north up, as it stood in October 2026: buildings, containers, tank, pump house, pads, the road-mix drives, and the buried water lines and hydrants, on the 50 ft master grid. Planned buildings are dashed.</p>
   <div class="sheet-body">
     <figure class="map"><figcaption>Homestead, 50 ft grid cells (see the <a href="site_master_grid.html">Site Master Grid</a>)</figcaption><div id="map"></div></figure>
     <aside>
@@ -127,6 +127,7 @@ const distToPath = (x, y, pts) => pts.slice(1).reduce((best, [x2, y2], k) => {
 }, Infinity);
 
 const SG = window.SiteGrid, F = id => SG.feature(id);
+const PIPES = SG.features({ kind: 'water_pipe' }), HYDRANTS = SG.features({ kind: 'hydrant' });
 // Map window in lot feet: the content box, plus margins for the grid labels and scale bar.
 const BOX = { x0: -6, x1: 340, y0: 653, y1: 1006 }, VIEW = { west: -20, east: 354, top: 641, bottom: 1032 }, S = 2;
 const X = x => +((x - VIEW.west) * S).toFixed(2), Y = y => +((y - VIEW.top) * S).toFixed(2);
@@ -135,6 +136,14 @@ const COLOR = {
   grid: 'rgba(60,60,60,0.28)', fence: '#6B5A45', ditch: '#2B8FD6', waterLine: '#1B4F9C', planned: '#7A5CA5', shed: '#A9372B', outhouse: '#2F6EB5',
   container: '#F2F2EE', containerEdge: '#77776F', solar: '#2F4A6E', tank: '#1E1E1E', pump: '#5D6D7E', rv: '#FFFFFF'
 };
+// Buried water lines: 2 in PVC solid, 1.5 in PVC dashed (map and legend share these)
+const pipeStyle = size => size >= 2
+  ? { stroke: COLOR.waterLine, 'stroke-width': 2.6, 'stroke-linejoin': 'round' }
+  : { stroke: COLOR.waterLine, 'stroke-width': 1.8, 'stroke-dasharray': '7 2.5', 'stroke-linejoin': 'round' };
+function hydrantMark(parent, cx, cy) {
+  parent.append(svgNode('circle', { cx, cy, r: 4.6, fill: COLOR.waterLine, stroke: '#fff', 'stroke-width': 1.2 }));
+  parent.append(svgNode('text', { x: cx, y: cy + 2, 'text-anchor': 'middle', 'font-size': 5.8, style: 'fill:#fff;font-weight:700' }, 'H'));
+}
 
 // The ten numbered items from the owner's inventory, in his order, with where each number sits on the map.
 const ITEMS = [
@@ -190,7 +199,7 @@ const pathLength = pts => pts.slice(1).reduce((sum, p, i) => sum + Math.hypot(p[
 function makeMap() {
   const W = (VIEW.east - VIEW.west) * S, H = (VIEW.bottom - VIEW.top) * S;
   const svg = svgNode('svg', { viewBox: `0 0 ${W} ${H}`, class: 'diagram', role: 'img', 'aria-labelledby': 'map-title' });
-  svg.append(svgNode('title', { id: 'map-title' }, 'Homestead plot map, north up, on the 50 ft master grid: red shed, outhouse, two shipping containers in an L, irrigation tank and pump house, workshop pad, RV pad, house pad with the planned house and garage, and the road-mix driveway and paths.'));
+  svg.append(svgNode('title', { id: 'map-title' }, 'Homestead plot map, north up, on the 50 ft master grid: red shed, outhouse, two shipping containers in an L, irrigation tank and pump house, workshop pad, RV pad, house pad with the planned house and garage, the road-mix driveway and paths, and the buried water lines and frost-free hydrants.'));
   const defs = svgNode('defs'), clip = svgNode('clipPath', { id: 'hp-clip' });
   clip.append(svgNode('rect', { x: X(BOX.x0), y: Y(BOX.y0), width: (BOX.x1 - BOX.x0) * S, height: (BOX.y1 - BOX.y0) * S }));
   const solar = svgNode('pattern', { id: 'hp-solar', width: 6, height: 7, patternUnits: 'userSpaceOnUse' });
@@ -238,9 +247,9 @@ function makeMap() {
   poly(F('house_pad').pts, { fill: COLOR.pad, stroke: COLOR.padEdge, 'stroke-width': 1.2 });
   ['workshop_pad', 'rv_pad'].forEach(id => box(F(id), { fill: COLOR.pad, stroke: COLOR.padEdge, 'stroke-width': 1.2, 'stroke-dasharray': '5 2.5' }));
 
-  // Old ditch from the lidar, and the buried water line (its covered trench shows in the drone photo)
+  // Old ditch from the lidar, and the buried water lines (owner's map, October 2026)
   line(F('old_ditch').pts, { stroke: COLOR.ditch, 'stroke-width': 2, 'stroke-dasharray': '7 4', opacity: 0.75 });
-  line(F('water_line_west').pts, { stroke: COLOR.waterLine, 'stroke-width': 1.8, 'stroke-dasharray': '10 3 2 3' });
+  PIPES.forEach(f => line(f.pts, pipeStyle(f.size_in)));
 
   // Planned buildings
   ['house', 'garage', 'workshop'].forEach(id => box(F(id), { fill: 'rgba(122,92,165,0.10)', stroke: COLOR.planned, 'stroke-width': 1.6, 'stroke-dasharray': '6 3' }));
@@ -256,6 +265,7 @@ function makeMap() {
   const tank = F('irrigation_tank');
   add(svgNode('circle', { cx: X(tank.cx), cy: Y(tank.cy), r: tank.r * S, fill: COLOR.tank, stroke: '#555', 'stroke-width': 0.8 }), content);
   box(F('rv'), { fill: COLOR.rv, stroke: '#5F5E5A', 'stroke-width': 1, rx: 2 });
+  HYDRANTS.forEach(h => hydrantMark(content, X(h.x), Y(h.y)));
 
   // Fences
   [0, SG.data.lot.fence.width].forEach(x => line([[x, BOX.y0], [x, BOX.y1]], { stroke: COLOR.fence, 'stroke-width': 2.4 }));
@@ -278,11 +288,15 @@ function makeMap() {
   label(203, 790, 'yard (road mix)', 't-note', { 'text-anchor': 'middle', 'font-size': 7.6 });
   label(126, 806, 'loop drive', 't-note', { 'text-anchor': 'middle', 'font-size': 7.2 });
   label(126, 812, 'around island', 't-note', { 'text-anchor': 'middle', 'font-size': 7.2 });
-  label(304, 676, 'driveway from', 't-note', { 'text-anchor': 'end', 'font-size': 7.4 });
-  label(304, 683, 'the north road', 't-note', { 'text-anchor': 'end', 'font-size': 7.4 });
-  const wl = F('water_line_west');
-  const wtx = X(wl.pts[1][0] + 3.2), wty = Y(735);
-  add(svgNode('text', { x: wtx, y: wty, transform: `rotate(-90 ${wtx} ${wty})`, 'text-anchor': 'middle', 'font-size': 7.4, class: 'halo', style: `fill:${COLOR.waterLine};font-weight:600` }, 'buried water line (covered trench)'), content);
+  label(289.5, 676, 'driveway from', 't-note', { 'font-size': 7.4 });
+  label(289.5, 683, 'the north road', 't-note', { 'font-size': 7.4 });
+  // Water-line labels; the rotated ones read bottom to top with the letters just west of (x, y)
+  const wlabel = (x, y, str, extra = {}) => text(x, y, str, { class: 'halo', style: `fill:${COLOR.waterLine};font-weight:600`, 'font-size': 7, ...extra }, content);
+  const vlabel = (x, y, str, size) => wlabel(x, y, str, { 'text-anchor': 'middle', 'font-size': size, transform: `rotate(-90 ${X(x)} ${Y(y)})` });
+  vlabel(F('water_line_west').pts[1][0] + 3.2, 735, '1.5 in water line (buried)', 7.4);
+  vlabel(280.5, 684, '2 in main to the north end', 7.2);
+  wlabel(26, 897.5, '1.5 in');
+  wlabel(196, 831, '2 in water main');
   const wfx = X(-2.6), wfy = Y(990);
   add(svgNode('text', { x: wfx, y: wfy, transform: `rotate(-90 ${wfx} ${wfy})`, 'text-anchor': 'middle', 'font-size': 7.4, class: 't-title halo' }, 'west fence'), content);
   const efx = X(SG.data.lot.fence.width + 3.4), efy = Y(990);
@@ -291,12 +305,12 @@ function makeMap() {
 
   // Contour labels: one per contour piece, on a stretch clear of features and other labels
   const busy = ['shed', 'outhouse', 'container_solar', 'container_storage', 'pump_house', 'irrigation_tank', 'rv_pad', 'workshop_pad', 'house_pad', 'yard']
-    .map(id => SG.bbox(id));
-  const taken = [[103.5, 758, 30], [61, 862, 35], [153, 940, 45], [262, 884, 60], [203, 790, 40], [304, 680, 30], [126, 809, 25]];
+    .map(id => SG.bbox(id)).concat(HYDRANTS.map(h => SG.bbox(h)));
+  const taken = [[103.5, 758, 30], [61, 862, 35], [153, 940, 45], [262, 884, 60], [203, 790, 40], [301, 680, 30], [126, 809, 25], [209, 829, 30], [31, 896, 15]];
   contourSets.forEach(({ ft, lines }) => lines.filter(pts => pathLength(pts) >= 45).forEach(pts => {
     const free = pts.map((p, i) => [p, i]).filter(([[x, y]]) => x > BOX.x0 + 10 && x < BOX.x1 - 12 && y > BOX.y0 + 8 && y < BOX.y1 - 8
       && busy.every(b => x < b.x0 - 6 || x > b.x1 + 6 || y < b.y0 - 5 || y > b.y1 + 5)
-      && ['driveway', 'loop_path', 'water_line_west', 'old_ditch'].every(id => distToPath(x, y, F(id).pts) > (F(id).width || 6) / 2 + 7)
+      && [...['driveway', 'loop_path', 'old_ditch'].map(F), ...PIPES].every(f => distToPath(x, y, f.pts) > (f.width || 6) / 2 + 7)
       && taken.every(([tx, ty, r]) => Math.hypot(x - tx, (y - ty) * 2) > r));
     if (!free.length) return;
     const mid = (pts.length - 1) / 2, [[x, y]] = free.reduce((a, b) => Math.abs(b[1] - mid) < Math.abs(a[1] - mid) ? b : a);
@@ -360,7 +374,9 @@ function renderLegend() {
   row(rect({ fill: COLOR.road, stroke: COLOR.roadEdge }), 'Road mix: drives and paths');
   row(s => s.append(svgNode('line', { x1: 2, y1: 7, x2: 28, y2: 7, stroke: COLOR.fence, 'stroke-width': 2.4 })), 'Fence (lot line)');
   row(s => s.append(svgNode('line', { x1: 2, y1: 7, x2: 28, y2: 7, stroke: COLOR.ditch, 'stroke-width': 2, 'stroke-dasharray': '5 3' })), 'Old ditch line (lidar)');
-  row(s => s.append(svgNode('line', { x1: 2, y1: 7, x2: 28, y2: 7, stroke: COLOR.waterLine, 'stroke-width': 1.8, 'stroke-dasharray': '8 2 2 2' })), 'Buried water line');
+  row(s => s.append(svgNode('line', { x1: 2, y1: 7, x2: 28, y2: 7, ...pipeStyle(2) })), 'Water main and branches, 2 in PVC');
+  row(s => s.append(svgNode('line', { x1: 2, y1: 7, x2: 28, y2: 7, ...pipeStyle(1.5) })), 'Water line, 1.5 in PVC');
+  row(s => hydrantMark(s, 15, 7), 'Frost-free yard hydrant');
   row(s => s.append(svgNode('line', { x1: 2, y1: 7, x2: 28, y2: 7, stroke: COLOR.contour, 'stroke-width': 1 })), '1 ft contour, ground before the pads');
   row(s => { s.append(svgNode('circle', { cx: 15, cy: 7, r: 6, fill: '#2C2C2A' })); s.append(svgNode('text', { x: 15, y: 10, 'text-anchor': 'middle', 'font-size': 8, style: 'fill:#fff;font-weight:700' }, '6')); }, 'Item number (inventory)');
 }
@@ -378,25 +394,34 @@ function renderInventory() {
   const tbody = element('tbody');
   const area = pts => Math.abs(pts.reduce((sum, [x, y], i) => { const [x2, y2] = pts[(i + 1) % pts.length]; return sum + x * y2 - x2 * y; }, 0)) / 2;
   const sizeText = f => {
+    if (f.kind === 'water_pipe') return `${f.size_in} in pipe, ${fmt(Math.round(pathLength(f.pts) / 5) * 5)} long`;
     if (f.shape === 'circle') return `${fmt(2 * f.r)} across`;
     if (f.shape === 'line') return `${fmt(f.width)} wide, ${fmt(Math.round(pathLength(f.pts) / 10) * 10)} long`;
     if (f.shape === 'polygon' && f.group === 'access') return `${fmt(Math.round(area(f.pts) / 100) * 100)} sq ft`;
     const [w, h] = SG.size(f); return `${fmt(w, w % 1 ? 1 : 0)} × ${fmt(h, h % 1 ? 1 : 0)}`;
   };
   const rows = [['1', 'shed'], ['2', 'outhouse'], ['3', 'container_solar'], ['3', 'container_storage'], ['4', 'house_pad'], ['4', 'house'], ['4', 'garage'],
-    ['5', 'irrigation_tank'], ['6', 'pump_house'], ['7', 'workshop_pad'], ['7', 'workshop'], ['8', 'rv_pad'], ['8', 'rv'], ['9', 'driveway'], ['9', 'yard'], ['9', 'loop_path'], ['', 'water_line_west']];
-  rows.forEach(([key, id]) => {
-    const f = F(id), [cx, cy] = SG.center(f), tr = element('tr');
-    if (f.status === 'planned') tr.className = 'planned';
-    const name = id === 'driveway' ? 'Driveway (north road to the pad)' : id === 'water_line_west' ? 'Buried water line (covered trench)' : f.name;
-    const along = id === 'driveway' || id === 'water_line_west';
-    const ends = f.shape === 'line' ? f.pts.filter(([x, y]) => SG.inLot(x, y)).map(([x, y]) => SG.cellOf(x, y)) : [];
-    [[key, 'key'], [name, ''], [sizeText(f), 'num'], [ends.length ? `${ends[0]} → ${ends[ends.length - 1]}` : SG.cellOf(cx, cy), ''],
-      [along ? '—' : `${fmt(cx)}, ${fmt(cy)}`, 'num'],
-      [along ? '—' : fmt(SG.elevationFt(cx, cy), 1), 'num']]
-      .forEach(([v, c]) => { const td = element('td', v); if (c) td.className = c; tr.append(td); });
+    ['5', 'irrigation_tank'], ['6', 'pump_house'], ['7', 'workshop_pad'], ['7', 'workshop'], ['8', 'rv_pad'], ['8', 'rv'], ['9', 'driveway'], ['9', 'yard'], ['9', 'loop_path'],
+    ['', 'water_main']];
+  const addRow = (cells, planned) => {
+    const tr = element('tr');
+    if (planned) tr.className = 'planned';
+    cells.forEach(([v, c]) => { const td = element('td', v); if (c) td.className = c; tr.append(td); });
     tbody.append(tr);
+  };
+  rows.forEach(([key, id]) => {
+    const f = F(id), [cx, cy] = SG.center(f);
+    const name = id === 'driveway' ? 'Driveway (north road to the pad)' : f.name;
+    const along = id === 'driveway' || f.kind === 'water_pipe';
+    const ends = f.shape === 'line' ? f.pts.filter(([x, y]) => SG.inLot(x, y)).map(([x, y]) => SG.cellOf(x, y)) : [];
+    addRow([[key, 'key'], [name, ''], [sizeText(f), 'num'], [ends.length ? `${ends[0]} → ${ends[ends.length - 1]}` : SG.cellOf(cx, cy), ''],
+      [along ? '—' : `${fmt(cx)}, ${fmt(cy)}`, 'num'],
+      [along ? '—' : fmt(SG.elevationFt(cx, cy), 1), 'num']], f.status === 'planned');
   });
+  // One row for the hydrants, cells in reading order; the site master grid lists each one's coordinates
+  const cellOrder = c => +c.slice(1) * 10 + SG.data.grid.columns.indexOf(c[0]);
+  const hydrantCells = HYDRANTS.map(h => SG.cellOf(h.x, h.y)).sort((a, b) => cellOrder(a) - cellOrder(b));
+  addRow([['H', 'key'], [`Frost-free yard hydrants (${HYDRANTS.length})`, ''], ['—', 'num'], [hydrantCells.join(', '), ''], ['—', 'num'], ['—', 'num']]);
   table.append(tbody);
 }
 
@@ -423,7 +448,7 @@ function renderNotes() {
     'Placed from the owner\'s drone photos (October 2026), fitted to USGS aerial imagery and lidar: buildings, containers, tank, and pump house to about 3 ft; pad edges and paths to 5–10 ft.',
     'Planned house (40 × 66), garage (east end, flush with the house\'s south wall, about 30 × 26 placeholder), and workshop (32 × 46, long side east–west) are drawn where the owner described them; move them in data/site_grid.js once their final spots are staked.',
     'Old ditch: the lidar, flown before the pads were graded, shows a shallow ditch with a berm on its north side running west along the north edge of the house pad and past the containers. If any of it remains, grade so runoff passes around the house, containers, and pump house, not against them.',
-    'The covered trench about 20 ft inside the west fence is a buried water line, not a path. Keep fence posts, tree holes, and other digging off it; its ends beyond the photo are not traced yet.',
+    'Water lines and hydrants are traced from the owner\'s hand-drawn map (October 2026), to about 5 ft; the 1.5 in line along the west fence is the covered trench in the drone photo. Keep posts, tree holes, and other digging off them.',
     'The homestead sits near the top of the lot: the house pad is about 1–2 ft below the highest ground (east fence) and roughly 20 ft above the NW corner, so water lines to the orchard run downhill.'
   ].forEach(t => document.getElementById('notes').append(element('li', t)));
   document.getElementById('coords-note').textContent = `Coordinates are feet east of the west fence (x) and feet south of the north fence (y); the driveway entrance on the north road is at ${entrance[0].toFixed(5)}, ${entrance[1].toFixed(5)}. Ground elevations are from USGS lidar flown before the pads were graded.`;

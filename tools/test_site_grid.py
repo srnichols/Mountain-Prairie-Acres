@@ -11,6 +11,24 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from site_grid import SiteGrid, main  # noqa: E402
 
 
+def _dist_to_line(p, pts):
+    """Shortest distance from point p to a polyline."""
+    best = math.inf
+    for (ax, ay), (bx, by) in zip(pts, pts[1:]):
+        dx, dy = bx - ax, by - ay
+        t = max(0.0, min(1.0, ((p[0] - ax) * dx + (p[1] - ay) * dy) / (dx * dx + dy * dy or 1)))
+        best = min(best, math.hypot(p[0] - ax - t * dx, p[1] - ay - t * dy))
+    return best
+
+
+def _lines_cross(a, b):
+    """True when two polylines cross or touch."""
+    def side(p, q, r):
+        return (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])
+    return any(side(p, q, r) * side(p, q, s) <= 0 and side(r, s, p) * side(r, s, q) <= 0
+               for p, q in zip(a, a[1:]) for r, s in zip(b, b[1:]))
+
+
 class SiteGridTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -53,6 +71,30 @@ class SiteGridTest(unittest.TestCase):
             x0, y0, x1, y1 = self.grid.bbox(f)
             self.assertTrue(self.grid.in_lot(x0, y0) and self.grid.in_lot(x1, y1), f["id"])
         self.assertEqual(self.grid.feature("water_line_west")["group"], "utility", "the west trench is a water line, not a path")
+
+    def test_water_lines_and_hydrants(self):
+        g = self.grid
+        pipes = {f["id"]: f for f in g.features("utility") if f.get("kind") == "water_pipe"}
+        hydrants = [f for f in g.features("utility") if f.get("kind") == "hydrant"]
+        self.assertEqual(len(hydrants), 7)
+        self.assertTrue(all(f["shape"] == "line" and f["size_in"] in (1.5, 2) for f in pipes.values()))
+        self.assertEqual({k for k, f in pipes.items() if f["size_in"] == 1.5}, {"water_tee_west", "water_line_west", "water_lateral_north"},
+                         "the line teed west, the line along the west fence, and the north lateral are 1.5 in; the rest is 2 in")
+        main_pts = pipes["water_main"]["pts"]
+        x0, y0, x1, y1 = g.bbox("pump_house")
+        self.assertTrue(x0 - 2 <= main_pts[0][0] <= x1 + 2 and y0 - 2 <= main_pts[0][1] <= y1 + 2, "the 2 in main starts at the pump house")
+        self.assertLess(main_pts[-1][1], 50, "the main runs to the north end of the lot")
+        for fid, f in pipes.items():
+            if fid not in ("water_main", "water_line_west"):
+                self.assertLess(_dist_to_line(f["pts"][0], main_pts), 0.5, f"{fid} comes off the main")
+        self.assertTrue(_lines_cross(pipes["water_line_west"]["pts"], pipes["water_tee_west"]["pts"]), "the 1.5 in line feeds the west fence line")
+        self.assertAlmostEqual(math.dist(*pipes["water_lateral_north"]["pts"]), 10, places=6)
+        ends = [tuple(f["pts"][k]) for f in pipes.values() for k in (0, -1)]
+        for h in hydrants:
+            self.assertLess(min(math.dist((h["x"], h["y"]), e) for e in ends), 0.5, f"{h['id']} sits at the end of a water line")
+        wl = pipes["water_line_west"]["pts"]
+        self.assertTrue(all(15 < x < 25 for x, _ in wl), "the west fence line stays about 20 ft inside the fence")
+        self.assertEqual([g.cell_of(*wl[0]), g.cell_of(*wl[-1])], ["A14", "A20"])
 
     def test_structures_do_not_overlap(self):
         ids = ["shed", "outhouse", "container_solar", "container_storage", "irrigation_tank", "pump_house", "rv"]
@@ -139,7 +181,8 @@ class SiteGridTest(unittest.TestCase):
     def test_cli(self):
         cases = [(["cell", "63", "921"], "B19"), (["where", "b19"], "pump_house"), (["feature", "irrigation_tank"], "3,500 gal"),
                  (["latlon", "0", "0"], "43.475452"), (["fromlatlon", "43.473383", "-115.594507"], "B16"),
-                 (["dist", "irrigation_tank", "house"], "ft"), (["list", "planned"], "garage"), (["tree", "5", "3"], "B11")]
+                 (["dist", "irrigation_tank", "house"], "ft"), (["list", "planned"], "garage"), (["tree", "5", "3"], "B11"),
+                 (["list", "utility"], "hydrant_north"), (["where", "G17"], "hydrant_east")]
         for argv, expected in cases:
             out = io.StringIO()
             with contextlib.redirect_stdout(out):

@@ -463,16 +463,146 @@ window.SITE_GRID = /* BEGIN SITE_GRID JSON */
    "accuracy_ft": 8
   },
   {
-   "id": "water_line_west",
-   "name": "Buried water line",
+   "id": "water_main",
+   "name": "Water main, 2 in PVC",
    "group": "utility",
    "status": "existing",
+   "kind": "water_pipe",
+   "size_in": 2,
    "shape": "line",
    "width": 3,
    "pts": [
     [
-     23,
-     677
+     79.0,
+     916.0
+    ],
+    [
+     80.5,
+     890.0
+    ],
+    [
+     93.4,
+     890.0
+    ],
+    [
+     99.8,
+     874.1
+    ],
+    [
+     104.6,
+     867.1
+    ],
+    [
+     130.9,
+     835.4
+    ],
+    [
+     149.4,
+     816.9
+    ],
+    [
+     152.3,
+     815.5
+    ],
+    [
+     158.1,
+     815.9
+    ],
+    [
+     173.6,
+     819.3
+    ],
+    [
+     179.4,
+     822.2
+    ],
+    [
+     188.8,
+     824.0
+    ],
+    [
+     194.9,
+     824.6
+    ],
+    [
+     224.0,
+     822.3
+    ],
+    [
+     233.3,
+     815.0
+    ],
+    [
+     245.4,
+     799.6
+    ],
+    [
+     252.9,
+     788.9
+    ],
+    [
+     281.2,
+     757.9
+    ],
+    [
+     281.3,
+     720.0
+    ],
+    [
+     287.6,
+     633.6
+    ],
+    [
+     289.1,
+     471.5
+    ],
+    [
+     297.2,
+     355.0
+    ],
+    [
+     301.0,
+     40.0
+    ]
+   ],
+   "notes": "Buried 2 in PVC from the pump house: north to the tee for the 1.5 in west line, east along the south edge of the yard, northeast inside the driveway curve, then north about 13-16 ft west of the driveway centerline to an elbow about 40 ft from the north fence. Traced from the owner's hand-drawn map (October 2026): about 5 ft near the homestead, 10 ft at the north end.",
+   "accuracy_ft": 8
+  },
+  {
+   "id": "water_tee_west",
+   "name": "Water line west to the fence, 1.5 in PVC",
+   "group": "utility",
+   "status": "existing",
+   "kind": "water_pipe",
+   "size_in": 1.5,
+   "shape": "line",
+   "width": 3,
+   "pts": [
+    [
+     80.5,
+     890.0
+    ],
+    [
+     14.0,
+     890.0
+    ]
+   ],
+   "notes": "Tees off the 2 in main north of the pump house and runs west between the workshop pad and the tank, across the west fence line, to the hydrant about 14 ft inside the west fence.",
+   "accuracy_ft": 5
+  },
+  {
+   "id": "water_line_west",
+   "name": "Water line along the west fence, 1.5 in",
+   "group": "utility",
+   "status": "existing",
+   "kind": "water_pipe",
+   "size_in": 1.5,
+   "shape": "line",
+   "width": 3,
+   "pts": [
+    [
+     22.4,
+     697.0
     ],
     [
      19.5,
@@ -491,8 +621,202 @@ window.SITE_GRID = /* BEGIN SITE_GRID JSON */
      998
     ]
    ],
-   "notes": "Covered trench of a buried water line about 20 ft inside the west fence, traced from the drone photo from y 677 to the photo edge near y 1000 (ends not traced). Keep digging, posts, and tree holes off this line.",
+   "notes": "Buried line about 20 ft inside the west fence with a frost-free hydrant at each end, fed by the 1.5 in west line where it crosses at y 890 (size taken to match that line). Its covered trench shows in the drone photo; the owner confirmed it runs south to the hydrant at y 998. Keep digging, posts, and tree holes off this line.",
    "accuracy_ft": 6
+  },
+  {
+   "id": "water_stub_island",
+   "name": "Water stub into the island, 2 in",
+   "group": "utility",
+   "status": "existing",
+   "kind": "water_pipe",
+   "size_in": 2,
+   "shape": "line",
+   "width": 3,
+   "pts": [
+    [
+     130.9,
+     835.4
+    ],
+    [
+     119.3,
+     820.8
+    ]
+   ],
+   "notes": "Short 2 in stub off the main into the planted island; its end is not marked on the owner's map.",
+   "accuracy_ft": 5
+  },
+  {
+   "id": "water_branch_yard_south",
+   "name": "Water branch to the hydrant south of the yard, 2 in",
+   "group": "utility",
+   "status": "existing",
+   "kind": "water_pipe",
+   "size_in": 2,
+   "shape": "line",
+   "width": 3,
+   "pts": [
+    [
+     188.8,
+     824.0
+    ],
+    [
+     189.1,
+     838.7
+    ]
+   ],
+   "notes": "Short 2 in branch south from the main to the hydrant.",
+   "accuracy_ft": 5
+  },
+  {
+   "id": "water_branch_east",
+   "name": "Water branch to the east hydrant, 2 in",
+   "group": "utility",
+   "status": "existing",
+   "kind": "water_pipe",
+   "size_in": 2,
+   "shape": "line",
+   "width": 3,
+   "pts": [
+    [
+     245.4,
+     799.6
+    ],
+    [
+     301.0,
+     846.3
+    ]
+   ],
+   "notes": "2 in branch southeast from the main, under the driveway, to the hydrant about 30 ft inside the east fence.",
+   "accuracy_ft": 5
+  },
+  {
+   "id": "water_branch_yard_north",
+   "name": "Water branch to the hydrant north of the yard, 2 in",
+   "group": "utility",
+   "status": "existing",
+   "kind": "water_pipe",
+   "size_in": 2,
+   "shape": "line",
+   "width": 3,
+   "pts": [
+    [
+     281.3,
+     720.0
+    ],
+    [
+     232.6,
+     719.6
+    ]
+   ],
+   "notes": "2 in branch west from the main, beside the driveway, to the hydrant north of the yard.",
+   "accuracy_ft": 5
+  },
+  {
+   "id": "water_lateral_north",
+   "name": "Water lateral at the north end, 1.5 in",
+   "group": "utility",
+   "status": "existing",
+   "kind": "water_pipe",
+   "size_in": 1.5,
+   "shape": "line",
+   "width": 3,
+   "pts": [
+    [
+     301.0,
+     40.0
+    ],
+    [
+     291.0,
+     40.0
+    ]
+   ],
+   "notes": "10 ft, 1.5 in lateral off the elbow at the north end of the 2 in main, to the hydrant.",
+   "accuracy_ft": 10
+  },
+  {
+   "id": "hydrant_west",
+   "name": "Hydrant, west end of the 1.5 in line",
+   "group": "utility",
+   "status": "existing",
+   "kind": "hydrant",
+   "shape": "point",
+   "x": 14.0,
+   "y": 890.0,
+   "notes": "Frost-free yard hydrant at the end of the 1.5 in line, about 14 ft inside the west fence.",
+   "accuracy_ft": 5
+  },
+  {
+   "id": "hydrant_fence_south",
+   "name": "Hydrant, south end of the west fence line",
+   "group": "utility",
+   "status": "existing",
+   "kind": "hydrant",
+   "shape": "point",
+   "x": 23.0,
+   "y": 998.0,
+   "notes": "Frost-free yard hydrant at the south end of the line along the west fence, southwest of the containers.",
+   "accuracy_ft": 6
+  },
+  {
+   "id": "hydrant_fence_north",
+   "name": "Hydrant, north end of the west fence line",
+   "group": "utility",
+   "status": "existing",
+   "kind": "hydrant",
+   "shape": "point",
+   "x": 22.4,
+   "y": 697.0,
+   "notes": "Frost-free yard hydrant at the north end of the line along the west fence.",
+   "accuracy_ft": 5
+  },
+  {
+   "id": "hydrant_yard_south",
+   "name": "Hydrant, south of the yard",
+   "group": "utility",
+   "status": "existing",
+   "kind": "hydrant",
+   "shape": "point",
+   "x": 189.1,
+   "y": 838.7,
+   "notes": "Frost-free yard hydrant on a short 2 in branch off the main.",
+   "accuracy_ft": 5
+  },
+  {
+   "id": "hydrant_east",
+   "name": "Hydrant, near the east fence",
+   "group": "utility",
+   "status": "existing",
+   "kind": "hydrant",
+   "shape": "point",
+   "x": 301.0,
+   "y": 846.3,
+   "notes": "Frost-free yard hydrant at the end of the 2 in branch that crosses under the driveway.",
+   "accuracy_ft": 5
+  },
+  {
+   "id": "hydrant_yard_north",
+   "name": "Hydrant, north of the yard",
+   "group": "utility",
+   "status": "existing",
+   "kind": "hydrant",
+   "shape": "point",
+   "x": 232.6,
+   "y": 719.6,
+   "notes": "Frost-free yard hydrant at the end of the 2 in branch west of the driveway.",
+   "accuracy_ft": 5
+  },
+  {
+   "id": "hydrant_north",
+   "name": "Hydrant, north end",
+   "group": "utility",
+   "status": "existing",
+   "kind": "hydrant",
+   "shape": "point",
+   "x": 291.0,
+   "y": 40.0,
+   "notes": "Frost-free yard hydrant at the end of the 10 ft lateral, about 40 ft south of the north fence and 25 ft west of the driveway.",
+   "accuracy_ft": 10
   },
   {
    "id": "shed",

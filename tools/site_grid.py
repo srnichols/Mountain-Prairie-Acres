@@ -263,6 +263,7 @@ def main(argv=None):
     tree.add_argument("col", type=int)
     args = parser.parse_args(argv)
     grid = SiteGrid()
+    w = max(len(f["id"]) for f in grid.features())
 
     if args.cmd == "tree":
         x, y = grid.tree_xy(args.row, args.col)
@@ -274,13 +275,13 @@ def main(argv=None):
         x0, y0, x1, y1 = grid.cell_bounds(args.ref)
         print(f"{args.ref.strip().upper()}: x {x0}-{x1}, y {y0}-{y1}, center ({(x0 + x1) / 2:g}, {(y0 + y1) / 2:g})")
         for f in grid.features_in(args.ref):
-            print(f"  {f['id']:18s} {f['name']}")
+            print(f"  {f['id']:{w}s} {f['name']}")
     elif args.cmd == "feature":
         print(_describe(grid, grid.feature(args.id)))
     elif args.cmd == "list":
         for f in grid.features(args.group):
             cx, cy = grid.center(f)
-            print(f"{f['id']:18s} {grid.cell_of(cx, cy) or 'off grid':8s} ({cx:6.1f}, {cy:7.1f})  {f['name']}")
+            print(f"{f['id']:{w}s} {grid.cell_of(cx, cy) or 'off grid':8s} ({cx:6.1f}, {cy:7.1f})  {f['name']}")
     elif args.cmd == "elev":
         print(f"{grid.elevation_ft(args.x, args.y):,.1f} ft ({grid.elevation_m(args.x, args.y):.2f} m) at {grid.ref(args.x, args.y)}")
     elif args.cmd == "latlon":
