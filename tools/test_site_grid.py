@@ -76,7 +76,7 @@ class SiteGridTest(unittest.TestCase):
         g = self.grid
         pipes = {f["id"]: f for f in g.features("utility") if f.get("kind") == "water_pipe"}
         hydrants = [f for f in g.features("utility") if f.get("kind") == "hydrant"]
-        self.assertEqual(len(hydrants), 7)
+        self.assertEqual(len(hydrants), 8)
         self.assertTrue(all(f["shape"] == "line" and f["size_in"] in (1.5, 2) for f in pipes.values()))
         self.assertEqual({k for k, f in pipes.items() if f["size_in"] == 1.5}, {"water_tee_west", "water_line_west", "water_lateral_north"},
                          "the line teed west, the line along the west fence, and the north lateral are 1.5 in; the rest is 2 in")
@@ -92,6 +92,15 @@ class SiteGridTest(unittest.TestCase):
         ends = [tuple(f["pts"][k]) for f in pipes.values() for k in (0, -1)]
         for h in hydrants:
             self.assertLess(min(math.dist((h["x"], h["y"]), e) for e in ends), 0.5, f"{h['id']} sits at the end of a water line")
+
+        # Every line ends at a hydrant, runs into another line, or starts at the pump house
+        def closed(p, fid):
+            return (min(math.dist(p, (h["x"], h["y"])) for h in hydrants) < 0.5
+                    or any(_dist_to_line(p, q["pts"]) < 0.5 for k, q in pipes.items() if k != fid)
+                    or (x0 - 2 <= p[0] <= x1 + 2 and y0 - 2 <= p[1] <= y1 + 2))
+        for fid, f in pipes.items():
+            for end in (f["pts"][0], f["pts"][-1]):
+                self.assertTrue(closed(end, fid), f"{fid} has an open end at {end}")
         wl = pipes["water_line_west"]["pts"]
         self.assertTrue(all(15 < x < 25 for x, _ in wl), "the west fence line stays about 20 ft inside the fence")
         self.assertEqual([g.cell_of(*wl[0]), g.cell_of(*wl[-1])], ["A14", "A20"])

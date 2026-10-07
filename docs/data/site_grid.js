@@ -625,8 +625,8 @@ window.SITE_GRID = /* BEGIN SITE_GRID JSON */
    "accuracy_ft": 6
   },
   {
-   "id": "water_stub_island",
-   "name": "Water stub into the island, 2 in",
+   "id": "water_branch_island",
+   "name": "Water branch to the island hydrant, 2 in",
    "group": "utility",
    "status": "existing",
    "kind": "water_pipe",
@@ -643,7 +643,7 @@ window.SITE_GRID = /* BEGIN SITE_GRID JSON */
      820.8
     ]
    ],
-   "notes": "Short 2 in stub off the main into the planted island; its end is not marked on the owner's map.",
+   "notes": "Short 2 in branch northwest from the main into the planted island, to the hydrant.",
    "accuracy_ft": 5
   },
   {
@@ -768,6 +768,18 @@ window.SITE_GRID = /* BEGIN SITE_GRID JSON */
    "x": 22.4,
    "y": 697.0,
    "notes": "Frost-free yard hydrant at the north end of the line along the west fence.",
+   "accuracy_ft": 5
+  },
+  {
+   "id": "hydrant_island",
+   "name": "Hydrant, in the island",
+   "group": "utility",
+   "status": "existing",
+   "kind": "hydrant",
+   "shape": "point",
+   "x": 119.3,
+   "y": 820.8,
+   "notes": "Frost-free yard hydrant at the end of the short 2 in branch into the planted island inside the loop drive.",
    "accuracy_ft": 5
   },
   {
