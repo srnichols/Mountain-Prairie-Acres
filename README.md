@@ -14,7 +14,7 @@ Orchard and ranch projects for our property in Prairie, Idaho: plans, field chec
 | Rain and snowmelt harvesting | Planned | [Water-harvesting plan](https://srnichols.github.io/Mountain-Prairie-Acres/orchard_water_harvesting_plan.html) ([PDF](docs/downloads/orchard_water_harvesting_plan.pdf)) | Perc tests in three spots before freeze-up; shape crescent basins as trees go in; set up a rain gauge; gutters, spreader, and driveway basins in 2027 | 2026-10-06 |
 | Whole-site terrain and water maps | Reference | [Site terrain and water maps](https://srnichols.github.io/Mountain-Prairie-Acres/site_terrain_water_map.html) ([PDF](docs/downloads/site_terrain_water_map.pdf)) | Use to site future projects (tank, pond, basins, outbuildings); check key spots with a level | 2026-10-06 |
 | Homestead plot map | Reference | [Homestead plot map](https://srnichols.github.io/Mountain-Prairie-Acres/homestead_plot_map.html) ([PDF](docs/downloads/homestead_plot_map.pdf)) | Stake the planned house, garage, and workshop; check the hydrant spots on the ground | 2026-10-07 |
-| Site master grid and code helpers | Reference | [Site master grid](https://srnichols.github.io/Mountain-Prairie-Acres/site_master_grid.html) ([PDF](docs/downloads/site_master_grid.pdf)) · [`docs/data/`](docs/data/) · [`tools/site_grid.py`](tools/site_grid.py) | Add new features to the grid data as projects start | 2026-10-07 |
+| Site master grid and code helpers | Reference | [Site master grid](https://srnichols.github.io/Mountain-Prairie-Acres/site_master_grid.html) ([PDF](docs/downloads/site_master_grid.pdf)) · [`docs/data/`](docs/data/) · [`tools/site_grid.py`](tools/site_grid.py) | Use SiteRef codes for individual planting locations; add new features to the grid data as projects start | 2026-10-11 |
 | Soil and site data | Reference | [NRCS Web Soil Survey report](docs/soil/WebSoilSurvey_PrairieID.pdf) · [SSURGO metadata](docs/soil/) · USGS lidar terrain ([`site_terrain.js`](docs/data/site_terrain.js)) | Add perc-test and rain-gauge results as they come in | 2026-10-06 |
 | Plant inventory and purchase records | Ongoing | [Inventory_PrairiePlants.xlsx](docs/Inventory_PrairiePlants.xlsx) · [Trees.xlsx](docs/Trees.xlsx) | Keep the inventory current as trees are planted, moved, or lost | 2026-10-04 |
 
@@ -22,6 +22,7 @@ Status key: **In progress** (work under way), **Planned** (designed, not started
 
 ## Project log
 
+- **2026-10-11**: Adopted compact SiteRef location codes (`CELL-Eoffset-Soffset`) in the master-grid guide, orchard planting checklist, and tree inventory. The M-111 at R6-C3 is `B10-E33-S35`; outside-orchard locations not yet supplied remain `PENDING`. Added shared JavaScript and Python formatting/decoding helpers and tests, and refreshed the three related printable PDFs. Metal tags, plant IDs, planting positions, and inventory workbooks are unchanged.
 - **2026-10-11**: Left R4-C9 (AL-UrbGrn), R5-C9 (AL-UrbR), and R5-C10 (AL-UrbGld) open for new trees in 2027. These three living Urban apples will be planted outside the orchard; grid locations are pending. Recorded an M-111 apple rootstock from inventory row 56 as planted at R6-C3, leaving 11 of the original 12 M-111 rootstocks available. The orchard now holds 110 living fruit trees plus 1 planted rootstock; the dead pear and outside-orchard trees are not pollen partners.
 - **2026-10-11**: Marked the Pineapple pear (PR-Pineap, inventory row 108) at R8-C3 as dead. The spot stays open for now, with a new pear planned for 2027 (variety not yet chosen). Updated the planting grid, checklist, and printable copies; other tree positions are unchanged, and the dead tree is excluded from living-tree counts and pollination partners.
 - **2026-10-07**: Added the hydrant at the end of the 2 in branch into the island, for eight hydrants in all.
@@ -41,7 +42,8 @@ Mountain-Prairie-Acres/
 ├── README.md                              Project tracker and log (this file)
 ├── tools/
 │   ├── site_grid.py                       Master-grid helper and command line (reads docs/data)
-│   └── test_site_grid.py                  Tests for the helper and the grid data
+│   ├── test_site_grid.py                  Tests for the Python helper and the grid data
+│   └── test_site_grid.js                  Tests for the JavaScript SiteRef helpers
 └── docs/                                  Website root for GitHub Pages
     ├── index.html                         Home page: links to every project
     ├── orchard_pollination_grid.html      Planting map, pollination pairings, windbreak
@@ -63,12 +65,27 @@ Mountain-Prairie-Acres/
 
 Every map and helper uses the same lot coordinates, in feet: **x** is east of the west fence and **y** is south of the north fence, with (0, 0) at the northwest fence corner. The fences run true north–south and east–west, 331 × 1,292 ft (9.83 acres). For quick reference the lot is split into 50 ft cells, column letters A–G west to east and row numbers 1–26 north to south, so the irrigation tank at x 63, y 921 is in **B19**.
 
+### Compact SiteRef codes
+
+Use **`CELL-Eoffset-Soffset`** in a single printed location column. Both offsets are feet from **that master cell's northwest corner**: east first, south second. For example, **`C17-E12-S18`** is x 112, y 818; **`B10-E33-S35`** is the M-111 rootstock's orchard spot R6-C3 at x 83, y 485 in the current layout. Decimals are feet (`E12.5` means 12.5 ft, not 12 ft 5 in).
+
+- Keep cell and offsets as underlying planting-location values; generate SiteRef rather than editing a second copy. Track each plant individually when tags or inventory quantity rows cover several trees.
+- SiteRef identifies a **spot**, not a permanent plant identity. Keep metal tags and Plant IDs separately. A replacement tree may reuse a location code; a dead tree and a vacant spot are different records.
+- Use **`PENDING`** for a location not yet supplied. The Urban apples planned outside the orchard remain unlocated; their vacated orchard spots have known codes, not the trees' new locations.
+- Generated codes round to 0.01 ft. Offsets must be nonnegative, less than 50 ft, and resolve inside the fenced lot. East and south are compass directions, regardless of the orchard map's south-up view. Code precision does not make the roughly 10 ft GPS tie survey-grade; use measured offsets for precise planting.
+- GPS coordinates correlate to the same grid: `SiteGrid.siteRef(...SiteGrid.fromLatLon(latitude, longitude))` or Python `grid.site_ref(*grid.from_latlon(latitude, longitude))`. The shared georeference calculates each cell's corner latitude/longitude; it is not a second manually maintained coordinate table. Supply latitude first and negative longitude for Idaho. Phone GPS error adds to the map's approximate 10 ft accuracy, especially near cell boundaries.
+
+### Using the shared helpers
+
 - The data lives in [`docs/data/site_grid.js`](docs/data/site_grid.js) (grid, features, and the latitude/longitude tie) and [`docs/data/site_terrain.js`](docs/data/site_terrain.js) (lidar elevations). Each holds strict JSON between `BEGIN` and `END` markers, so pages load it with a `<script>` tag and Python reads the same block.
 - In a page, load both files and call `SiteGrid`: `SiteGrid.cellOf(63, 921)` gives `"B19"`, `SiteGrid.center('pump_house')`, `SiteGrid.elevationFt(x, y)`, `SiteGrid.toLatLon(x, y)`, and `SiteGrid.fromLatLon(lat, lon)`.
 - From the command line: `python tools/site_grid.py feature pump_house`, `python tools/site_grid.py cell 63 921`, `python tools/site_grid.py tree 5 3` (orchard tree R5-C3), `python tools/site_grid.py fromlatlon 43.473383 -115.594507`, or `python tools/site_grid.py list homestead`.
+- Format a SiteRef with `SiteGrid.siteRef(112, 818)` or Python `grid.site_ref(112, 818)`; decode one with `SiteGrid.fromSiteRef('C17-E12-S18')`, `grid.from_site_ref('C17-E12-S18')`, or `python tools/site_grid.py site-ref C17-E12-S18`. Decoding `PENDING` returns `null` in JavaScript and `None` in Python, not invented coordinates.
 - To add or move a feature, edit the JSON in `site_grid.js` (shapes: `rect`, `circle`, `polygon`, `line`, `point`), then run `python -m unittest discover -s tools`. Water lines are `line` features with `"kind": "water_pipe"` and `"size_in"`, and hydrants are `point` features with `"kind": "hydrant"`; the maps draw whatever the data holds.
 
 Latitude and longitude come from fitting the fence lines on USGS NAIP imagery and are good to about 10 ft: fine for maps and directions, not for boundary questions.
+
+Run helper tests with `python -m unittest discover -s tools` and `node --test tools/test_site_grid.js`.
 
 ## Adding or updating a project
 

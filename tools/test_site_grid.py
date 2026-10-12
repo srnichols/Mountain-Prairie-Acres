@@ -55,6 +55,58 @@ class SiteGridTest(unittest.TestCase):
             for y in (0, fence["depth"] / 2, fence["depth"] - 0.01):
                 self.assertIsNotNone(self.grid.cell_of(x, y))
 
+    def test_site_ref_format(self):
+        cases = [
+            ((112, 818), "C17-E12-S18"),
+            ((112.5, 818.25), "C17-E12.5-S18.25"),
+            (self.grid.tree_xy(6, 3), "B10-E33-S35"),
+            ((0, 0), "A1-E0-S0"),
+            ((50, 800), "B17-E0-S0"),
+            ((49.999, 799.999), "B17-E0-S0"),
+            ((331.3, 1291.9), "G26-E31.3-S41.9"),
+        ]
+        for point, expected in cases:
+            with self.subTest(point=point):
+                self.assertEqual(self.grid.site_ref(*point), expected)
+
+    def test_site_ref_parse(self):
+        cases = [
+            ("C17-E12-S18", (112, 818)),
+            ("C17-E12.5-S18.25", (112.5, 818.25)),
+            (" b19-e03.5-s07 ", (53.5, 907)),
+            ("B10-E33-S35", self.grid.tree_xy(6, 3)),
+            ("G26-E31.3-S41.9", (331.3, 1291.9)),
+            ("PENDING", None),
+            (" pending ", None),
+        ]
+        for code, expected in cases:
+            with self.subTest(code=code):
+                self.assertEqual(self.grid.from_site_ref(code), expected)
+
+    def test_site_ref_invalid_input(self):
+        points = [(-1, 1), (340, 1200), (100, 1300), (math.nan, 1), (1, math.inf),
+                  (None, None), ("83", 485), (True, 485)]
+        for point in points:
+            with self.subTest(point=point), self.assertRaises(ValueError):
+                self.grid.site_ref(*point)
+        codes = ["", "H1-E1-S1", "A0-E0-S0", "A27-E0-S0", "C17-E50-S18", "C17-E12-S50",
+                 "C17-E-1-S18", "C17-E12-N18", "C17-E12.123-S18", "G26-E40-S40",
+                 "G26-E31.3-S42", "C17-E1e1-S18", "PENDING-E0-S0", None, 123]
+        for code in codes:
+            with self.subTest(code=code), self.assertRaises(ValueError):
+                self.grid.from_site_ref(code)
+
+    def test_site_ref_round_trip(self):
+        points = [(0.004, 0.004), (49.999, 799.999), (112.345, 818.765), (331.3, 1291.9)]
+        points += [self.grid.tree_xy(r, c) for r in range(1, 16) for c in range(1, 14)]
+        for x, y in points:
+            with self.subTest(point=(x, y)):
+                code = self.grid.site_ref(x, y)
+                px, py = self.grid.from_site_ref(code)
+                self.assertLessEqual(abs(px - x), 0.005 + 1e-9)
+                self.assertLessEqual(abs(py - y), 0.005 + 1e-9)
+                self.assertEqual(self.grid.site_ref(px, py), code)
+
     def test_features_are_well_formed(self):
         ids = [f["id"] for f in self.grid.data["features"]]
         self.assertEqual(len(ids), len(set(ids)), "feature ids must be unique")
@@ -191,7 +243,10 @@ class SiteGridTest(unittest.TestCase):
         cases = [(["cell", "63", "921"], "B19"), (["where", "b19"], "pump_house"), (["feature", "irrigation_tank"], "3,500 gal"),
                  (["latlon", "0", "0"], "43.475452"), (["fromlatlon", "43.473383", "-115.594507"], "B16"),
                  (["dist", "irrigation_tank", "house"], "ft"), (["list", "planned"], "garage"), (["tree", "5", "3"], "B11"),
-                 (["list", "utility"], "hydrant_north"), (["where", "G17"], "hydrant_east")]
+                 (["list", "utility"], "hydrant_north"), (["where", "G17"], "hydrant_east"),
+                 (["site-ref", "C17-E12-S18"], "x 112, y 818"),
+                 (["site-ref", "B10-E33-S35"], "x 83, y 485"),
+                 (["site-ref", "PENDING"], "location not yet known")]
         for argv, expected in cases:
             out = io.StringIO()
             with contextlib.redirect_stdout(out):

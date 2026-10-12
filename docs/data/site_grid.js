@@ -1161,6 +1161,25 @@ window.SITE_GRID = /* BEGIN SITE_GRID JSON */
   function ref(x, y) { return (cellOf(x, y) || 'off grid') + ' (x ' + Math.round(x) + ', y ' + Math.round(y) + ')'; }
   function inLot(x, y) { return x >= 0 && y >= 0 && x <= G.lot.fence.width && y <= G.lot.fence.depth; }
 
+  function siteRef(x, y) {
+    if (!Number.isFinite(x) || !Number.isFinite(y)) throw new Error('SiteRef coordinates must be finite numbers');
+    if (!inLot(x, y)) throw new Error('SiteRef coordinates are outside the fenced lot');
+    var x100 = Math.round(x * 100), y100 = Math.round(y * 100);
+    var cell = cellOf(x100 / 100, y100 / 100), b = cellBounds(cell);
+    return cell + '-E' + (x100 - b.x0 * 100) / 100 + '-S' + (y100 - b.y0 * 100) / 100;
+  }
+  function fromSiteRef(code) {
+    if (typeof code !== 'string') throw new Error('Not a SiteRef: ' + code);
+    if (code.trim().toUpperCase() === 'PENDING') return null;
+    var m = /^\s*([A-Za-z]\d{1,2})-E(\d+(?:\.\d{1,2})?)-S(\d+(?:\.\d{1,2})?)\s*$/i.exec(code);
+    if (!m) throw new Error('Not a SiteRef: ' + code);
+    var b = cellBounds(m[1]), east = Number(m[2]), south = Number(m[3]);
+    if (east >= CELL || south >= CELL) throw new Error('SiteRef offsets must be less than ' + CELL + ' ft');
+    var x = b.x0 + east, y = b.y0 + south;
+    if (!inLot(x, y)) throw new Error('SiteRef is outside the fenced lot: ' + code);
+    return [x, y];
+  }
+
   function feature(id) {
     if (!byId[id]) throw new Error('Unknown feature: ' + id);
     return byId[id];
@@ -1283,6 +1302,7 @@ window.SITE_GRID = /* BEGIN SITE_GRID JSON */
 
   root.SiteGrid = {
     data: G, cell: CELL, cellOf: cellOf, cellBounds: cellBounds, cellCenter: cellCenter, ref: ref, inLot: inLot,
+    siteRef: siteRef, fromSiteRef: fromSiteRef,
     feature: feature, features: features, bbox: bbox, center: center, size: size, cellsOf: cellsOf, treeXY: treeXY,
     toLatLon: toLatLon, fromLatLon: fromLatLon, toUTM: toUTM, fromUTM: fromUTM, mapsLink: mapsLink,
     elevationM: elevationM, elevationFt: elevationFt

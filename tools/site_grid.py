@@ -5,6 +5,8 @@ Reads the same data the web pages use: docs/data/site_grid.js (grid, features, g
 and docs/data/site_terrain.js (lidar elevation grid). Coordinates are lot feet: x = feet east of
 the west fence, y = feet south of the north fence. Grid cells are 50 ft: columns A-G west to east,
 rows 1-26 north to south (B19 = x 50-100, y 900-950).
+SiteRef codes pack a cell and east/south offsets in feet from its northwest corner:
+C17-E12-S18 = x 112, y 818. Generated codes round to 0.01 ft; PENDING has no known location.
 
 Usage:
   python tools/site_grid.py cell X Y              grid cell for a point, e.g. B19
@@ -16,11 +18,14 @@ Usage:
   python tools/site_grid.py fromlatlon LAT LON    latitude, longitude to lot feet and cell
   python tools/site_grid.py dist A B              distance between two features or points ("x,y")
   python tools/site_grid.py tree ROW COL          orchard position, e.g. tree 5 3 for R5-C3
+  python tools/site_grid.py site-ref CODE         decode a SiteRef, e.g. C17-E12-S18 or PENDING
 
 In code:
   from site_grid import SiteGrid
   grid = SiteGrid()
   grid.cell_of(63, 921)            # 'B19'
+  grid.site_ref(112, 818)          # 'C17-E12-S18'
+  grid.from_site_ref("C17-E12-S18") # (112, 818)
   grid.center("pump_house")        # (73.25, 913.25)
   grid.elevation_ft(63, 921)       # about 4,759 ft
 """
@@ -79,6 +84,34 @@ class SiteGrid:
     def in_lot(self, x, y):
         fence = self.data["lot"]["fence"]
         return 0 <= x <= fence["width"] and 0 <= y <= fence["depth"]
+
+    def site_ref(self, x, y):
+        if any(not isinstance(v, (int, float)) or isinstance(v, bool) or not math.isfinite(v) for v in (x, y)):
+            raise ValueError("SiteRef coordinates must be finite numbers")
+        if not self.in_lot(x, y):
+            raise ValueError("SiteRef coordinates are outside the fenced lot")
+        x100, y100 = math.floor(x * 100 + 0.5), math.floor(y * 100 + 0.5)
+        cell = self.cell_of(x100 / 100, y100 / 100)
+        x0, y0, _, _ = self.cell_bounds(cell)
+        east, south = (x100 - x0 * 100) / 100, (y100 - y0 * 100) / 100
+        return f"{cell}-E{east:g}-S{south:g}"
+
+    def from_site_ref(self, code):
+        if not isinstance(code, str):
+            raise ValueError(f"not a SiteRef: {code!r}")
+        if code.strip().upper() == "PENDING":
+            return None
+        match = re.fullmatch(r"\s*([A-Za-z]\d{1,2})-E(\d+(?:\.\d{1,2})?)-S(\d+(?:\.\d{1,2})?)\s*", code, re.I)
+        if not match:
+            raise ValueError(f"not a SiteRef: {code!r}")
+        x0, y0, _, _ = self.cell_bounds(match.group(1))
+        east, south = float(match.group(2)), float(match.group(3))
+        if east >= self.cell or south >= self.cell:
+            raise ValueError(f"SiteRef offsets must be less than {self.cell} ft")
+        x, y = x0 + east, y0 + south
+        if not self.in_lot(x, y):
+            raise ValueError(f"SiteRef is outside the fenced lot: {code!r}")
+        return (x, y)
 
     # Features
     def feature(self, fid):
@@ -253,7 +286,8 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     sub = parser.add_subparsers(dest="cmd", required=True)
     for name, args in [("cell", ["x", "y"]), ("elev", ["x", "y"]), ("latlon", ["x", "y"]),
-                       ("fromlatlon", ["lat", "lon"]), ("where", ["ref"]), ("feature", ["id"]), ("dist", ["a", "b"])]:
+                       ("fromlatlon", ["lat", "lon"]), ("where", ["ref"]), ("feature", ["id"]), ("dist", ["a", "b"]),
+                       ("site-ref", ["ref"])]:
         p = sub.add_parser(name)
         for a in args:
             p.add_argument(a, type=str if a in ("ref", "id", "a", "b") else float)
@@ -271,6 +305,13 @@ def main(argv=None):
         print(f"R{args.row}-C{args.col}: x {x:g}, y {y:g}  cell {grid.cell_of(x, y)}  ground {grid.elevation_ft(x, y):,.1f} ft  {lat:.6f}, {lon:.6f}")
     elif args.cmd == "cell":
         print(grid.cell_of(args.x, args.y) or "off grid")
+    elif args.cmd == "site-ref":
+        point = grid.from_site_ref(args.ref)
+        if point is None:
+            print("PENDING: location not yet known")
+        else:
+            x, y = point
+            print(f"{grid.site_ref(x, y)}: x {x:g}, y {y:g}  cell {grid.cell_of(x, y)}")
     elif args.cmd == "where":
         x0, y0, x1, y1 = grid.cell_bounds(args.ref)
         print(f"{args.ref.strip().upper()}: x {x0}-{x1}, y {y0}-{y1}, center ({(x0 + x1) / 2:g}, {(y0 + y1) / 2:g})")

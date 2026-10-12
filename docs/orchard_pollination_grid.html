@@ -101,15 +101,17 @@
   .planting-checklist { margin-top: 8px; }
   .planting-checklist col:nth-child(1) { width: 42px; }
   .planting-checklist col:nth-child(2) { width: 76px; }
-  .planting-checklist col:nth-child(3) { width: 170px; }
-  .planting-checklist col:nth-child(4) { width: 80px; }
-  .planting-checklist col:nth-child(6) { width: 100px; }
+  .planting-checklist col:nth-child(3) { width: 132px; }
+  .planting-checklist col:nth-child(4) { width: 170px; }
+  .planting-checklist col:nth-child(5) { width: 60px; }
+  .planting-checklist col:nth-child(7) { width: 100px; }
   .planting-checklist .row-start td { border-top: 3px solid var(--text2); }
   .plant-check {
     width: 18px; height: 18px; vertical-align: middle; accent-color: #3B6D11;
   }
   .metal-tag { font-size: 13px; font-weight: 700; letter-spacing: 0.2px; white-space: nowrap; }
   .duplicate-tag { display: block; font-size: 10px; color: var(--text2); font-weight: 400; white-space: normal; }
+  .site-ref { font-family: Consolas, "SF Mono", Menlo, monospace; font-size: 11px; white-space: nowrap; }
 
   .specs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 12px 0; }
   .spec { background: var(--bg2); border-radius: 8px; padding: 10px 12px; }
@@ -223,24 +225,27 @@
     .planting-form { break-before: page; }
     .planting-checklist { font-size: 9pt; }
     .planting-checklist col:nth-child(1) { width: 5%; }
-    .planting-checklist col:nth-child(2) { width: 9%; }
-    .planting-checklist col:nth-child(3) { width: 22%; }
-    .planting-checklist col:nth-child(4) { width: 8%; }
-    .planting-checklist col:nth-child(5) { width: 42%; }
-    .planting-checklist col:nth-child(6) { width: 14%; }
+    .planting-checklist col:nth-child(2) { width: 7%; }
+    .planting-checklist col:nth-child(3) { width: 12%; }
+    .planting-checklist col:nth-child(4) { width: 20%; }
+    .planting-checklist col:nth-child(5) { width: 6%; }
+    .planting-checklist col:nth-child(6) { width: 39%; }
+    .planting-checklist col:nth-child(7) { width: 11%; }
     .planting-checklist .row-start td { border-top-width: 0.7mm; }
     .plant-check { width: 4mm; height: 4mm; }
     .metal-tag { font-size: 10pt; }
     .duplicate-tag { font-size: 7.5pt; }
+    .site-ref { font-size: 8pt; }
     .inventory-detail col:nth-child(1) { width: 6%; }
-    .inventory-detail col:nth-child(2) { width: 4%; }
-    .inventory-detail col:nth-child(3) { width: 14%; }
-    .inventory-detail col:nth-child(4) { width: 6%; }
-    .inventory-detail col:nth-child(5) { width: 7%; }
-    .inventory-detail col:nth-child(6) { width: 7%; }
-    .inventory-detail col:nth-child(7) { width: 9%; }
-    .inventory-detail col:nth-child(8) { width: 40%; }
-    .inventory-detail col:nth-child(9) { width: 7%; }
+    .inventory-detail col:nth-child(2) { width: 10%; }
+    .inventory-detail col:nth-child(3) { width: 4%; }
+    .inventory-detail col:nth-child(4) { width: 13%; }
+    .inventory-detail col:nth-child(5) { width: 5%; }
+    .inventory-detail col:nth-child(6) { width: 6%; }
+    .inventory-detail col:nth-child(7) { width: 6%; }
+    .inventory-detail col:nth-child(8) { width: 8%; }
+    .inventory-detail col:nth-child(9) { width: 35%; }
+    .inventory-detail col:nth-child(10) { width: 7%; }
     .pairings-detail col:nth-child(1) { width: 18%; }
     .pairings-detail col:nth-child(2) { width: 7%; }
     .pairings-detail col:nth-child(3) { width: 33%; }
@@ -276,10 +281,11 @@
     .diff-detail col:nth-child(4) { width: 8%; }
     .diff-detail col:nth-child(5) { width: 8%; }
     .diff-detail col:nth-child(6) { width: 40%; }
-    .separate-detail col:nth-child(1) { width: 10%; }
-    .separate-detail col:nth-child(2) { width: 32%; }
+    .separate-detail col:nth-child(1) { width: 8%; }
+    .separate-detail col:nth-child(2) { width: 26%; }
     .separate-detail col:nth-child(3) { width: 5%; }
-    .separate-detail col:nth-child(4) { width: 53%; }
+    .separate-detail col:nth-child(4) { width: 12%; }
+    .separate-detail col:nth-child(5) { width: 49%; }
     .separate-detail .source-note { display: inline; }
     .separate-detail .source-note::before { content: " · "; }
     .partner-list > div, .partner-list .source-note { display: inline; }
@@ -370,10 +376,11 @@
 <form class="planting-form" aria-labelledby="planting-checklist-heading">
 <h2 id="planting-checklist-heading">Metal Tag to Orchard Position — Planting Checklist</h2>
 <p class="source-note">Start at the south end of the orchard with R1 and work north. Within each row, start at C1 on the west/windbreak side and work east toward C13. Match the exact metal <strong>Tag ID</strong> first; the tree name and inventory row are cross-checks. When several trees share one Tag ID, the sequence identifies each otherwise identical inventory instance.</p>
+<p class="source-note"><strong>Spot SiteRef:</strong> <code>CELL-Eoffset-Soffset</code> locates the listed orchard spot. Both offsets are feet from the master cell's northwest corner; <code>B10-E33-S35</code> is the M-111 at R6-C3. E and S are compass directions, not page directions on this south-up map. Codes stay with vacant spots for 2027 replacements; the Urban apples' new outside-orchard locations remain <code>PENDING</code>. See the <a href="site_master_grid.html">master-grid guide</a>.</p>
 <div class="table-scroll">
 <table class="detail planting-checklist">
-<colgroup><col><col><col><col><col><col></colgroup>
-<thead><tr><th>Planted</th><th>Grid position</th><th>Metal Tag ID</th><th>Code</th><th>Tree</th><th>Inventory row</th></tr></thead>
+<colgroup><col><col><col><col><col><col><col></colgroup>
+<thead><tr><th>Planted</th><th>Grid position</th><th>Spot SiteRef</th><th>Metal Tag ID</th><th>Code</th><th>Tree</th><th>Inventory row</th></tr></thead>
 <tbody id="planting-checklist"></tbody>
 </table>
 </div>
@@ -445,20 +452,22 @@
 
 <h2 class="page-break">Full Tree Inventory by Row</h2>
 <p class="source-note">Living orchard trees and records of vacated planting positions, south (R1) to north and west (C1) to east. Dead and outside-orchard trees retain their original planned slots as history; those slots are open, not their current locations. They are excluded from orchard counts and pollen partners. The planted M-111 rootstock occupies R6-C3 but is not counted as a fruit tree or pollen partner without a recorded scion cultivar. Original workbook fertility values are retained.</p>
+<p class="source-note">Spot SiteRef identifies the listed planned or vacated orchard position, not an outside-orchard tree's current location. It is generated from the shared grid coordinates and is separate from the metal tag and individual Plant ID.</p>
 <div class="table-scroll">
 <table class="detail inventory-detail">
-<colgroup><col><col><col><col><col><col><col><col><col></colgroup>
-<thead><tr><th>Position</th><th>Code</th><th>Variety and tag</th><th>Fruit type</th><th>Rootstock</th><th>Bloom / FG</th><th>Fertility (workbook)</th><th>Planning notes / nearest candidates</th><th>Inventory row (Fruit row)</th></tr></thead>
+<colgroup><col><col><col><col><col><col><col><col><col><col></colgroup>
+<thead><tr><th>Position</th><th>Spot SiteRef</th><th>Code</th><th>Variety and tag</th><th>Fruit type</th><th>Rootstock</th><th>Bloom / FG</th><th>Fertility (workbook)</th><th>Planning notes / nearest candidates</th><th>Inventory row (Fruit row)</th></tr></thead>
 <tbody id="detail-table"></tbody>
 </table>
 </div>
 
 <h2>Not in the Main Orchard</h2>
 <p class="source-note">Nut trees are kept out of the main orchard. Rootstock quantities below are the remaining stock, excluding the M-111 already planted at R6-C3. The three Urban apples are living trees planned for planting outside the orchard; their new grid locations have not been supplied. The Boise trees were not moved to Prairie. Windbreak, east-hedge, and berry guild plants are covered in the windbreak section and the site plan notes.</p>
+<p class="source-note">A SiteRef of <code>PENDING</code> means no individual location has been supplied; it does not assign one coordinate to an inventory quantity group.</p>
 <div class="table-scroll">
 <table class="detail separate-detail">
-<colgroup><col><col><col><col></colgroup>
-<thead><tr><th>Inventory row</th><th>Item</th><th>Qty</th><th>Status and notes</th></tr></thead>
+<colgroup><col><col><col><col><col></colgroup>
+<thead><tr><th>Inventory row</th><th>Item</th><th>Qty</th><th>SiteRef</th><th>Status and notes</th></tr></thead>
 <tbody id="separate-table"></tbody>
 </table>
 </div>
@@ -469,6 +478,7 @@
 <ol class="source-list" id="sources"></ol>
 
 <div class="footer" id="footer"></div>
+<script src="data/site_grid.js"></script>
 <script>
 window.addEventListener('error', event => {
   const notice = document.getElementById('data-error');
@@ -1583,7 +1593,8 @@ function addPlantingChecklistRow(tree) {
   if (tree.rootstockOnly) treeName.append(element('div', 'Already planted; scion cultivar not yet recorded.', 'source-note'));
 
   const tr = addTableRow('planting-checklist', [
-    planted, element('strong', position(tree)), tag, element('strong', tree.code), treeName, tree.invRow
+    planted, element('strong', position(tree)), element('code', spotSiteRef(tree.r, tree.c), 'site-ref'),
+    tag, element('strong', tree.code), treeName, tree.invRow
   ]);
   if (tree.c === 1) tr.classList.add('row-start');
   if (tree.orchardUpdate) tr.classList.add(tree.orchardUpdate.status === 'dead' ? 'loss-row' : 'deferred-row');
@@ -1597,6 +1608,10 @@ function noteParagraph(title, text) {
 
 function position(tree) {
   return `R${tree.r}-C${tree.c}`;
+}
+
+function spotSiteRef(r, c) {
+  return SiteGrid.siteRef(...SiteGrid.treeXY(r, c));
 }
 
 function updateAt(r, c) {
@@ -1785,6 +1800,9 @@ rows.forEach(row => {
         `R${row.r}-C${index + 1} — open ${row.type.toLowerCase()} position; fill from the east later`;
       cell.append(element('span', '—', 'code'), element('span', 'Open', 'fg'));
     }
+    cell.dataset.siteRef = spotSiteRef(row.r, index + 1);
+    cell.title += `\nSpot SiteRef: ${cell.dataset.siteRef}`;
+    cell.setAttribute('aria-label', cell.title);
     rowDiv.append(cell);
   });
   wrap.append(rowDiv, element('div', `R${row.r}`, 'row-label'));
@@ -2396,7 +2414,7 @@ plantingRecords.forEach(tree => {
     const status = tree.orchardUpdate ? (tree.orchardUpdate.status === 'dead' ? 'DEAD' : 'NOT IN ORCHARD') : 'PLANTED ROOTSTOCK';
     name.append(element('strong', `${tree.name} - ${status}`), element('div', `Tag ${tree.tag}`, 'source-note'));
     const tr = addTableRow('detail-table', [
-      position(tree), element('strong', tree.code), name, tree.type, tree.rootstock || 'Not recorded',
+      position(tree), element('code', spotSiteRef(tree.r, tree.c), 'site-ref'), element('strong', tree.code), name, tree.type, tree.rootstock || 'Not recorded',
       bloomLabel(tree), tree.fertility || 'Not recorded', tree.orchardUpdate ? updateNote(tree) : planningNote(tree),
       `${tree.invRow}${tree.fruitRows.length ? ` (${tree.fruitRows.join(', ')})` : ''}`
     ]);
@@ -2421,7 +2439,7 @@ plantingRecords.forEach(tree => {
   const name = element('div');
   name.append(element('strong', tree.name), element('div', `Tag ${tree.tag || 'none'}; inventory name: ${tree.invVariety}`, 'source-note'));
   const tr = addTableRow('detail-table', [
-    position(tree), element('strong', tree.code), name, tree.type, tree.rootstock || 'Not recorded',
+    position(tree), element('code', spotSiteRef(tree.r, tree.c), 'site-ref'), element('strong', tree.code), name, tree.type, tree.rootstock || 'Not recorded',
     bloomLabel(tree), tree.fertility || 'Not recorded', notes,
     `${tree.invRow}${tree.fruitRows.length ? ` (${tree.fruitRows.join(', ')})` : ''}`
   ]);
@@ -2443,13 +2461,13 @@ INVENTORY.filter(line => ['nut', 'rootstock', 'elsewhere'].includes(placementOf(
   const note = match.note || '';
   const planted = plantedRootstocks.filter(tree => tree.invRow === invRow);
   const allocation = planted.length ? ` ${planted.length} of the original ${qty} already planted at ${planted.map(position).join(', ')}; the quantity here is the remaining stock.` : '';
-  addTableRow('separate-table', [invRow, item, placement === 'rootstock' ? rootstockRemaining(invRow) : qty,
+  addTableRow('separate-table', [invRow, item, placement === 'rootstock' ? rootstockRemaining(invRow) : qty, element('code', 'PENDING', 'site-ref'),
     (note.startsWith(status.replace(/\.$/, '')) ? note : [status, note].filter(Boolean).join(' ')) + allocation]);
 });
 outsideTrees.forEach(tree => {
   const item = element('div');
   item.append(element('strong', tree.name), element('div', `Tag ${tree.tag}`, 'source-note'));
-  addTableRow('separate-table', [tree.invRow, item, 1, updateNote(tree)]);
+  addTableRow('separate-table', [tree.invRow, item, 1, element('code', 'PENDING', 'site-ref'), updateNote(tree)]);
 });
 const appleRows = typeRows('Apple').filter(row => !row.reserved);
 const appleOpen = appleRows.reduce((sum, row) => sum + row.trees.filter((tree, index) => !tree && !updateAt(row.r, index + 1)).length, 0);

@@ -74,8 +74,9 @@
     figure figcaption { font-size: 9pt; margin-bottom: 1mm; }
     .fact { padding: 1.2mm 1.8mm; } .fact .value { font-size: 9.5pt; } .fact .label { font-size: 6.5pt; } .fact .hint { font-size: 7pt; }
     .howto svg { width: 1.25in; }
-    table.detail { font-size: 6.8pt; margin: 1mm 0 1.5mm; } table.detail th, table.detail td { padding: 0.2mm 1.1mm; line-height: 1.25; }
+    table.detail { font-size: 6.8pt; margin: 1mm 0 1.5mm; } table.detail th, table.detail td { padding: 0.1mm 1.1mm; line-height: 1.25; }
     table.detail code { font-size: 6.1pt; color: #6F6D66; }
+    table.detail .site-ref { white-space: nowrap; }
     table.detail tr { break-inside: avoid; }
     code, pre { font-size: 7pt; } pre { padding: 1mm 1.5mm; margin: 0.8mm 0 1.5mm; break-inside: avoid; }
     #code-title { break-before: page; margin-top: 0; }
@@ -103,13 +104,19 @@
         <div>
           <p><strong>Lot feet:</strong> <em>x</em> is feet east of the west fence, <em>y</em> is feet south of the north fence. The origin (0, 0) is the northwest fence corner, and the fences run true north–south and east–west.</p>
           <p><strong>Cells:</strong> a column letter (A–G, west to east) plus a row number (1–26, north to south). Each cell is 50 × 50 ft, so <em>B19</em> is x 50–100, y 900–950. Write a spot as <em>B19 (x 63, y 921)</em>.</p>
+          <p><strong>SiteRef:</strong> <code>B19-E13-S21</code> means 13 ft east and 21 ft south of B19's northwest corner. See the <a href="#code-title">SiteRef guide and examples</a> on the second printed page.</p>
         </div>
       </div>
       <h3>Lot and location</h3>
       <div class="facts" id="facts"></div>
-      <h3>Feature coordinates</h3>
+      <h3>Feature coordinates and SiteRefs</h3>
+      <p class="source-note">SiteRefs below identify feature centers, not the full extent of a building or water line. Generated codes round to 0.01 ft; this does not improve the map's roughly 10 ft GPS accuracy.</p>
       <table class="detail" id="features"></table>
-      <h3 id="code-title">Using the grid in code</h3>
+      <h3 id="code-title">SiteRef Location Codes and Shared Helpers</h3>
+      <p><strong>Format:</strong> <code>CELL-Eoffset-Soffset</code> fits a precise location in one printed column. <code>C17-E12-S18</code> means 12 ft east and 18 ft south of <strong>C17's northwest corner</strong>: x 112, y 818. Decimals are feet, not inches; <code>C17-E12.5-S18</code> is valid.</p>
+      <p><strong>Planted example:</strong> the M-111 rootstock at orchard R6-C3 is <code>B10-E33-S35</code> (x 83, y 485) in the current layout. SiteRef locates the spot, not the plant: keep the metal tag and individual Plant ID separately. A replacement plant can reuse the spot's code.</p>
+      <p><strong>Unknown locations:</strong> record <code>PENDING</code>, never guessed offsets. The three Urban apples' outside-orchard locations are pending. Keep cell and offsets as underlying values and generate SiteRef for printing; do not maintain a second editable copy.</p>
+      <p><strong>GPS input:</strong> the shared metadata stores one latitude/longitude tie for the lot. Each cell's northwest-corner GPS coordinates are calculated from its x0, y0 values, not stored as a second table. Convert a GPS point with <code>SiteGrid.fromLatLon(latitude, longitude)</code>, then generate its SiteRef. Latitude comes first; Idaho longitudes are negative. Near cell boundaries, phone GPS error plus the roughly 10 ft map accuracy can put a point in the neighboring cell; verify measured offsets.</p>
       <p>Web pages load <code>data/site_grid.js</code> (grid, features, latitude/longitude tie) and <code>data/site_terrain.js</code> (lidar elevations), then call <code>SiteGrid</code>:</p>
       <pre id="code-js"></pre>
       <p>Scripts and the command line use <code>tools/site_grid.py</code>, which reads the same files:</p>
@@ -297,7 +304,7 @@ function cellRange(f) {
 
 function renderFeatures() {
   const table = document.getElementById('features'), head = element('tr');
-  [['Feature (id)', ''], ['Cells', ''], ['Center x, y', 'num'], ['Size, ft', 'num'], ['Ground, ft', 'num'], ['Lat, long', 'num']]
+  [['Feature (id)', ''], ['Cells', ''], ['SiteRef (center)', ''], ['Size, ft', 'num'], ['Ground, ft', 'num'], ['Lat, long', 'num']]
     .forEach(([h, c]) => { const th = element('th', h); if (c) th.className = c; head.append(th); });
   const thead = element('thead'); thead.append(head); table.append(thead);
   const tbody = element('tbody');
@@ -316,7 +323,11 @@ function renderFeatures() {
       const inside = SG.inLot(cx, cy) && f.id !== 'fence';
       const ll = SG.toLatLon(cx, cy);
       tr.append(name);
-      [[cellRange(f), ''], [`${fmt(cx)}, ${fmt(cy)}`, 'num'], [size, 'num'], [inside ? fmt(SG.elevationFt(cx, cy), 1) : '—', 'num'], [`${ll[0].toFixed(5)}, ${ll[1].toFixed(5)}`, 'num']]
+      const site = element('td');
+      site.append(element('code', SG.inLot(cx, cy) ? SG.siteRef(cx, cy) : 'OUTSIDE LOT', 'site-ref'));
+      site.title = `Center: x ${fmt(cx, 2)}, y ${fmt(cy, 2)} ft from the northwest fence corner`;
+      tr.append(element('td', cellRange(f)), site);
+      [[size, 'num'], [inside ? fmt(SG.elevationFt(cx, cy), 1) : '—', 'num'], [`${ll[0].toFixed(5)}, ${ll[1].toFixed(5)}`, 'num']]
         .forEach(([v, c]) => { const td = element('td', v); if (c) td.className = c; tr.append(td); });
       tbody.append(tr);
     });
@@ -329,6 +340,10 @@ function renderCode() {
   const js = [
     ['SiteGrid.cellOf(63, 921)', `'${SG.cellOf(63, 921)}'`],
     ["SiteGrid.cellBounds('B19')", `{ x0: ${b.x0}, y0: ${b.y0}, x1: ${b.x1}, y1: ${b.y1} }`],
+    ['SiteGrid.siteRef(112, 818)', `'${SG.siteRef(112, 818)}'`],
+    ["SiteGrid.fromSiteRef('C17-E12-S18')", `[${SG.fromSiteRef('C17-E12-S18').join(', ')}]`],
+    ["SiteGrid.fromSiteRef('PENDING')", 'null (no location)'],
+    ['SiteGrid.siteRef(...SiteGrid.fromLatLon(43.473208398831, -115.594410245142))', `'${SG.siteRef(...SG.fromLatLon(43.473208398831, -115.594410245142))}' (GPS to SiteRef)`],
     ["SiteGrid.center('pump_house')", `[${c[0]}, ${c[1]}]`],
     ["SiteGrid.cellsOf('house_pad')", `['${SG.cellsOf('house_pad').join("', '")}']`],
     ['SiteGrid.elevationFt(63, 921)', `${SG.elevationFt(63, 921).toFixed(1)} (feet above sea level)`],
@@ -344,14 +359,22 @@ function renderCode() {
     'python tools/site_grid.py feature pump_house      # center, size, cells, ground, lat/long',
     'python tools/site_grid.py dist pump_house house   # gap and ground change',
     'python tools/site_grid.py tree 5 3                # orchard tree R5-C3: x, y, cell, ground',
+    'python tools/site_grid.py site-ref C17-E12-S18     # x 112, y 818, cell C17',
+    'python tools/site_grid.py site-ref PENDING        # location not yet known',
     'python tools/site_grid.py fromlatlon 43.473383 -115.594507',
-    'from site_grid import SiteGrid; grid = SiteGrid(); grid.cell_of(63, 921); grid.elevation_ft(63, 921)'
+    'from site_grid import SiteGrid; grid = SiteGrid()',
+    'grid.site_ref(83, 485)                            # B10-E33-S35 (R6-C3 M-111)',
+    'grid.from_site_ref("C17-E12-S18")                  # (112, 818)',
+    'grid.from_site_ref("PENDING")                     # None',
+    'grid.site_ref(*grid.from_latlon(43.473208398831, -115.594410245142))  # C17-E12-S18'
   ].join('\n');
 }
 
 function renderConventions() {
   [
     'Feet throughout. Elevations are above sea level (NAVD88) from USGS 3DEP lidar flown before the homestead pads were graded.',
+    'SiteRef uses the master cell, then east and south offsets from that cell\'s northwest corner. Offsets are nonnegative, less than 50 ft, and must stay inside the fence, including the partial edge cells. Generated codes use up to two decimal places. E and S are compass directions, even on the orchard map drawn south up.',
+    'Planting records should identify each individual plant, not assign one coordinate to a quantity group. SiteRef is calculated from its location; it is not a metal tag or a permanent Plant ID. Keep unlocated plants PENDING and vacant spots separate from dead or moved plants.',
     'Status is existing or planned; planned buildings move once their spots are staked. To add or move something, edit the JSON between the BEGIN and END markers in docs/data/site_grid.js (rect x0/y0/x1/y1, circle cx/cy/r, polygon or line pts, point x/y), then run python -m unittest discover -s tools.',
     'Latitude and longitude come from the fitted lot frame, good to about 10 ft: fine for maps and directions, not for boundary questions. For precise layout, measure from the fences.',
     `Buried water lines (2 in PVC solid, 1.5 in dashed) and the ${HYDRANTS.length} frost-free hydrants (blue dots) are traced from the owner's hand-drawn map (October 2026): good to about 5 ft around the homestead and 10 ft at the north end, so dig by hand near them.`

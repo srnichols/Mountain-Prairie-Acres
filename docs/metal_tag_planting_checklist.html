@@ -83,6 +83,13 @@
   col:nth-child(4) { width: 10%; }
   col:nth-child(5) { width: 34%; }
   col:nth-child(6) { width: 10%; }
+  .with-site-refs col:nth-child(1) { width: 6%; }
+  .with-site-refs col:nth-child(2) { width: 10%; }
+  .with-site-refs col:nth-child(3) { width: 17%; }
+  .with-site-refs col:nth-child(4) { width: 22%; }
+  .with-site-refs col:nth-child(5) { width: 7%; }
+  .with-site-refs col:nth-child(6) { width: 31%; }
+  .with-site-refs col:nth-child(7) { width: 7%; }
   th, td {
     padding: 0.055in 0.065in;
     border: 1px solid var(--border);
@@ -126,6 +133,11 @@
     font-size: 7.5pt;
     line-height: 1.15;
   }
+  .site-ref {
+    font-family: Consolas, "SF Mono", Menlo, monospace;
+    font-size: 8.5pt;
+    white-space: nowrap;
+  }
   @page {
     size: 8.5in 11in;
     margin: 0.38in;
@@ -146,6 +158,7 @@
     th, td { padding: 0.035in 0.05in; }
     .metal-tag { font-size: 9pt; }
     .duplicate-tag, .source-note { font-size: 7pt; }
+    .site-ref { font-size: 7.5pt; }
   }
 </style>
 </head>
@@ -159,12 +172,15 @@
   <p><strong>Rows:</strong> Start at the south end with R1 and work north toward R15.</p>
   <p><strong>Columns:</strong> Within each row, start at C1 on the west/windbreak side and work east toward C13.</p>
   <p><strong>Match:</strong> Use the exact metal <strong>Tag ID</strong> first. Tree name, code, and inventory row are cross-checks. When one Tag ID covers several trees, use the printed sequence for those otherwise identical trees.</p>
+  <p><strong>Spot SiteRef:</strong> <code>CELL-Eoffset-Soffset</code> locates the listed orchard spot. Offsets are feet east and south from that master cell's northwest corner; <code>B10-E33-S35</code> is R6-C3. Codes stay with open spots for replacements, not with trees moved outside the orchard. See the <a href="site_master_grid.html">master-grid guide</a>.</p>
   <p><strong>Leave open:</strong> R8-C3 Pineapple (PR-Pineap) was reported dead October 11, 2026. Skip this spot for now; plant a new pear here in 2027 (variety not yet chosen).</p>
   <p><strong>Urban apples:</strong> AL-UrbGrn at R4-C9, AL-UrbR at R5-C9, and AL-UrbGld at R5-C10 were not planted in the orchard. Leave those spots open for new trees in 2027. The Urban apples are living trees planned outside the orchard; new grid locations are pending.</p>
   <p><strong>Already planted:</strong> R6-C3 is an M-111 apple rootstock (inventory row 56, tag AL-Rstk M111). Its checkbox is checked; a scion cultivar has not yet been recorded.</p>
 </section>
 
 <p class="status">111 living orchard trees: 110 fruit trees and 1 planted M-111 rootstock. Four vacated spots remain open for 2027 replacements.</p>
+<p id="site-ref-error" class="error" role="alert" hidden></p>
+<noscript><p class="error">JavaScript is required to generate the Spot SiteRef column. The original metal-tag checklist remains available without it.</p></noscript>
 <main id="checklist">
 <table aria-label="Metal tag to orchard position planting checklist">
 <colgroup><col><col><col><col><col><col></colgroup>
@@ -288,5 +304,35 @@
 </tbody>
 </table>
 </main>
+<script>
+window.addEventListener('error', event => {
+  const notice = document.getElementById('site-ref-error');
+  notice.textContent = `Spot SiteRef codes could not be completed: ${event.message}`;
+  notice.hidden = false;
+});
+</script>
+<script src="data/site_grid.js"></script>
+<script>
+const table = document.querySelector('#checklist table');
+const refs = Array.from(table.tBodies[0].rows, row => {
+  const position = row.cells[1].textContent.trim();
+  const match = /^R(\d+)-C(\d+)$/.exec(position);
+  if (!match) throw new Error(`Invalid orchard position in checklist: ${position}`);
+  const siteRef = SiteGrid.siteRef(...SiteGrid.treeXY(Number(match[1]), Number(match[2])));
+  const cell = document.createElement('td');
+  const code = document.createElement('code');
+  code.className = 'site-ref';
+  code.textContent = siteRef;
+  cell.append(code);
+  return { row, cell };
+});
+const columns = table.querySelector('colgroup');
+columns.insertBefore(document.createElement('col'), columns.children[2]);
+const header = document.createElement('th');
+header.textContent = 'Spot SiteRef';
+table.tHead.rows[0].insertBefore(header, table.tHead.rows[0].cells[2]);
+refs.forEach(({ row, cell }) => row.insertBefore(cell, row.cells[2]));
+table.classList.add('with-site-refs');
+</script>
 </body>
 </html>
