@@ -1,0 +1,27 @@
+name: Property data validation
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check canonical records and committed generated data
+        run: python tools/property_data.py check
+      - name: Run Python database, CLI, and grid tests
+        run: python -m unittest discover -s tools
+      - name: Run JavaScript model and SiteRef tests
+        run: node --test tools/test_site_grid.js tools/test_property_data.js

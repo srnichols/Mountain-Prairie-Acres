@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "owner-2026-10-11-i64-1",
+      "plant_id": "i64-1",
+      "event_type": "outside_orchard_planned",
+      "recorded_on": "2026-10-11",
+      "occurred_on": null,
+      "notes": "Owner update; exact event date not supplied."
+    },
+    {
+      "id": "owner-2026-10-11-i65-1",
+      "plant_id": "i65-1",
+      "event_type": "outside_orchard_planned",
+      "recorded_on": "2026-10-11",
+      "occurred_on": null,
+      "notes": "Owner update; exact event date not supplied."
+    },
+    {
+      "id": "owner-2026-10-11-i63-1",
+      "plant_id": "i63-1",
+      "event_type": "outside_orchard_planned",
+      "recorded_on": "2026-10-11",
+      "occurred_on": null,
+      "notes": "Owner update; exact event date not supplied."
+    },
+    {
+      "id": "owner-2026-10-11-i56-1",
+      "plant_id": "i56-1",
+      "event_type": "planting_reported",
+      "recorded_on": "2026-10-11",
+      "occurred_on": null,
+      "notes": "Owner update; exact event date not supplied."
+    },
+    {
+      "id": "owner-2026-10-11-i108-1",
+      "plant_id": "i108-1",
+      "event_type": "death_reported",
+      "recorded_on": "2026-10-11",
+      "occurred_on": null,
+      "notes": "Owner update; exact event date not supplied."
+    },
+    {
+      "id": "white-pine-loss-1",
+      "plant_id": "i24-1",
+      "event_type": "death_reported",
+      "recorded_on": null,
+      "occurred_on": null,
+      "notes": "owner reports both died"
+    },
+    {
+      "id": "white-pine-loss-2",
+      "plant_id": "i24-2",
+      "event_type": "death_reported",
+      "recorded_on": null,
+      "occurred_on": null,
+      "notes": "owner reports both died"
+    }
+  ]
+}

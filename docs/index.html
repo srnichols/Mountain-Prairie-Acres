@@ -79,6 +79,14 @@
 <div class="cards">
 
   <article class="card">
+    <div class="meta"><span class="badge s-ongoing">Ongoing</span><span>Updated Oct 12, 2026</span></div>
+    <h3><a href="property_data.html">Property Records and SQLite Queries</a></h3>
+    <p class="what">Git-tracked JSON for individual plants, locations, purchases, mapped features, full terrain, climate/soil, and water harvesting. A validated build creates local SQLite and the browser data used by these maps.</p>
+    <p class="next"><strong>Next:</strong> edit JSON, build and validate, then query locally or publish; add measured locations and water observations when available.</p>
+    <div class="actions"><a class="btn primary" href="property_data.html">Editing and query guide</a></div>
+  </article>
+
+  <article class="card">
     <div class="meta"><span class="badge s-progress">In progress</span><span>Updated Oct 11, 2026</span></div>
     <h3><a href="orchard_pollination_grid.html">Orchard Pollination Grid and West Windbreak</a></h3>
     <p class="what">The planting map for 111 living orchard trees in 15 rows (110 fruit trees and the M-111 rootstock planted at R6-C3): pollination partners, bloom groups, the windbreak, berry guilds, and elderberry hedge, all to scale.</p>
@@ -137,7 +145,7 @@
     <div class="meta"><span class="badge s-reference">Reference</span><span>Updated Oct 11, 2026</span></div>
     <h3><a href="site_master_grid.html">Site Master Grid</a></h3>
     <p class="what">One coordinate system for every project: 50 ft cells, compact SiteRef codes such as B10-E33-S35, latitude and longitude, mapped features, and shared JavaScript and Python helpers. The guide explains cell offsets, individual planting records, and pending locations.</p>
-    <p class="next"><strong>Next:</strong> add new projects to data/site_grid.js as they start, so every map picks them up.</p>
+    <p class="next"><strong>Next:</strong> edit canonical data/site.json and rebuild the generated browser data as new projects start.</p>
     <div class="actions">
       <a class="btn primary" href="site_master_grid.html">Open page</a>
       <a class="btn secondary" href="downloads/site_master_grid.pdf" download>Download PDF <span class="size">(0.8 MB, Tabloid)</span></a>
@@ -156,9 +164,9 @@
   </article>
 
   <article class="card">
-    <div class="meta"><span class="badge s-ongoing">Ongoing</span><span>Updated Oct 4, 2026</span></div>
+    <div class="meta"><span class="badge s-ongoing">Ongoing</span><span>Updated Oct 12, 2026</span></div>
     <h3>Plant Inventory and Purchase Records</h3>
-    <p class="what">What's on the property, by tag, with health notes, plus the purchase list with rootstocks, fertility, and bloom groups that the pollination grid is built from.</p>
+    <p class="what">Canonical JSON now tracks individual plants, assignments, and history. These original workbooks remain the inventory and purchase-list source records, with rootstocks, fertility, and bloom research.</p>
     <p class="next"><strong>Next:</strong> keep the inventory current as trees are planted, moved, or lost.</p>
     <div class="actions">
       <a class="btn secondary" href="Inventory_PrairiePlants.xlsx" download>Inventory (Excel)</a>
@@ -179,6 +187,7 @@
     <tr><td>Site master grid and code helpers</td><td><span class="badge s-reference">Reference</span></td><td>Add new features to the grid data as projects start.</td><td>2026-10-07</td></tr>
     <tr><td>Soil and site data</td><td><span class="badge s-reference">Reference</span></td><td>Add perc-test and rain-gauge results.</td><td>2026-10-06</td></tr>
     <tr><td>Plant inventory and purchase records</td><td><span class="badge s-ongoing">Ongoing</span></td><td>Keep current as trees go in.</td><td>2026-10-04</td></tr>
+    <tr><td>Canonical property data and SQLite</td><td><span class="badge s-ongoing">Ongoing</span></td><td>Edit canonical JSON, rebuild and validate, query locally; add measured locations and water observations.</td><td>2026-10-12</td></tr>
   </tbody>
 </table>
 
@@ -198,6 +207,7 @@
 
 <h2 id="log">Project Log</h2>
 <ul class="log">
+  <li><strong>Oct 12, 2026:</strong> Added canonical JSON and a validated SQLite/query workflow for property records, full lidar terrain, and water harvesting. The checklists share one model and the water plan now uses current orchard occupants; unmeasured locations and dates remain unknown.</li>
   <li><strong>Oct 7, 2026:</strong> Added the hydrant at the end of the 2 in branch into the island, for eight hydrants in all.</li>
   <li><strong>Oct 6, 2026:</strong> Added the buried water lines and seven frost-free hydrants from our hand-drawn map to the site master grid and the homestead plot map: a 2 in PVC main from the pump house through the yard and north beside the driveway, and 1.5 in lines west to the fence and along it.</li>
   <li><strong>Oct 6, 2026:</strong> Added the homestead plot map and the site master grid (50 ft cells, latitude and longitude, and code helpers). The whole-site maps and the water plan now use USGS lidar, and the water plan shows the pump house and tank.</li>

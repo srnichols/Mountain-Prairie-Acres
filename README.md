@@ -4,6 +4,8 @@ Orchard and ranch projects for our property in Prairie, Idaho: plans, field chec
 
 **Website:** <https://srnichols.github.io/Mountain-Prairie-Acres/>, published with GitHub Pages from the [`docs`](docs/) folder.
 
+**Property records:** Git-tracked JSON in [`data/`](data/) is the source of truth. The [data guide](data/README.md), [SQLite schema and queries](database/README.md), and [website guide](https://srnichols.github.io/Mountain-Prairie-Acres/property_data.html) cover editing, rebuilding, and querying.
+
 **Location:** the driveway leaves the north road at 43.47550, −115.59364 ([map and directions](https://www.google.com/maps/search/?api=1&query=43.475504,-115.593643)).
 
 ## Project tracker
@@ -15,13 +17,15 @@ Orchard and ranch projects for our property in Prairie, Idaho: plans, field chec
 | Whole-site terrain and water maps | Reference | [Site terrain and water maps](https://srnichols.github.io/Mountain-Prairie-Acres/site_terrain_water_map.html) ([PDF](docs/downloads/site_terrain_water_map.pdf)) | Use to site future projects (tank, pond, basins, outbuildings); check key spots with a level | 2026-10-06 |
 | Homestead plot map | Reference | [Homestead plot map](https://srnichols.github.io/Mountain-Prairie-Acres/homestead_plot_map.html) ([PDF](docs/downloads/homestead_plot_map.pdf)) | Stake the planned house, garage, and workshop; check the hydrant spots on the ground | 2026-10-07 |
 | Site master grid and code helpers | Reference | [Site master grid](https://srnichols.github.io/Mountain-Prairie-Acres/site_master_grid.html) ([PDF](docs/downloads/site_master_grid.pdf)) · [`docs/data/`](docs/data/) · [`tools/site_grid.py`](tools/site_grid.py) | Use SiteRef codes for individual planting locations; add new features to the grid data as projects start | 2026-10-11 |
+| Canonical property data and SQLite | Ongoing | [Data and query guide](https://srnichols.github.io/Mountain-Prairie-Acres/property_data.html) · [`data/`](data/) · [`database/`](database/) · [`tools/property_data.py`](tools/property_data.py) | Edit JSON, rebuild and validate, query locally; add measured outside locations and water observations when supplied | 2026-10-12 |
 | Soil and site data | Reference | [NRCS Web Soil Survey report](docs/soil/WebSoilSurvey_PrairieID.pdf) · [SSURGO metadata](docs/soil/) · USGS lidar terrain ([`site_terrain.js`](docs/data/site_terrain.js)) | Add perc-test and rain-gauge results as they come in | 2026-10-06 |
-| Plant inventory and purchase records | Ongoing | [Inventory_PrairiePlants.xlsx](docs/Inventory_PrairiePlants.xlsx) · [Trees.xlsx](docs/Trees.xlsx) | Keep the inventory current as trees are planted, moved, or lost | 2026-10-04 |
+| Plant inventory and purchase records | Ongoing | [`data/`](data/) · original [Inventory_PrairiePlants.xlsx](docs/Inventory_PrairiePlants.xlsx) and [Trees.xlsx](docs/Trees.xlsx) | Keep canonical JSON current as plants are assigned, planted, moved, or lost; original workbooks remain provenance | 2026-10-12 |
 
 Status key: **In progress** (work under way), **Planned** (designed, not started), **Ongoing** (kept up to date), **Reference** (source data), **Archived** (kept for history).
 
 ## Project log
 
+- **2026-10-12**: Created canonical JSON collections and a validated SQLite build/query workflow for plants, locations/history, purchase and cultivar records, mapped site features, full lidar terrain, climate/soil, and water harvesting. Both planting checklists now share one generated model; the water plan uses current orchard occupants rather than its old snapshot. Unknown outside locations, dates, and roof areas remain unknown. Added source-fidelity, integrity, freshness, CLI, and browser-model tests plus GitHub Actions validation; refreshed the four affected PDFs.
 - **2026-10-11**: Adopted compact SiteRef location codes (`CELL-Eoffset-Soffset`) in the master-grid guide, orchard planting checklist, and tree inventory. The M-111 at R6-C3 is `B10-E33-S35`; outside-orchard locations not yet supplied remain `PENDING`. Added shared JavaScript and Python formatting/decoding helpers and tests, and refreshed the three related printable PDFs. Metal tags, plant IDs, planting positions, and inventory workbooks are unchanged.
 - **2026-10-11**: Left R4-C9 (AL-UrbGrn), R5-C9 (AL-UrbR), and R5-C10 (AL-UrbGld) open for new trees in 2027. These three living Urban apples will be planted outside the orchard; grid locations are pending. Recorded an M-111 apple rootstock from inventory row 56 as planted at R6-C3, leaving 11 of the original 12 M-111 rootstocks available. The orchard now holds 110 living fruit trees plus 1 planted rootstock; the dead pear and outside-orchard trees are not pollen partners.
 - **2026-10-11**: Marked the Pineapple pear (PR-Pineap, inventory row 108) at R8-C3 as dead. The spot stays open for now, with a new pear planned for 2027 (variety not yet chosen). Updated the planting grid, checklist, and printable copies; other tree positions are unchanged, and the dead tree is excluded from living-tree counts and pollination partners.
@@ -40,12 +44,33 @@ Status key: **In progress** (work under way), **Planned** (designed, not started
 ```text
 Mountain-Prairie-Acres/
 ├── README.md                              Project tracker and log (this file)
+├── data/                                  Canonical, editable JSON records and editing guide
+│   ├── site.json                          Lot/grid/GPS, features, water pipes, and hydrants
+│   ├── terrain.json                       Complete lidar mesh, contours, flow paths, drainage
+│   ├── inventory.json                     Original quantity groups and source metadata
+│   ├── catalog.json                       Cultivar and structured purchase-workbook records
+│   ├── plants.json                        Stable IDs for individual plants/items
+│   ├── locations.json                     Orchard spots and other measured locations
+│   ├── plantings.json                     Planned/planted/vacated assignments
+│   ├── plant_events.json                  Owner reports and history
+│   ├── orchard.json                       Pollination and windbreak/guild design rules
+│   └── water_harvesting.json              Climate, soil, techniques, catchments, observations
+├── database/
+│   ├── schema.sql                         Typed SQLite tables, relationships, and query views
+│   └── queries/                           Reusable orchard, terrain, and water SQL
+├── build/                                 Ignored, regenerable property.sqlite
+├── web/                                   Authored browser helpers/model/checklist renderer
 ├── tools/
-│   ├── site_grid.py                       Master-grid helper and command line (reads docs/data)
+│   ├── property_data.py                   Validate/build/check/read-only query command
+│   ├── site_grid.py                       Master-grid helper and command line (reads data/)
+│   ├── test_property_data.py              Data, database, integrity, freshness tests
+│   ├── test_property_cli.py               Isolated end-to-end command-line workflows
+│   ├── test_property_data.js              Generated browser-model parity tests
 │   ├── test_site_grid.py                  Tests for the Python helper and the grid data
 │   └── test_site_grid.js                  Tests for the JavaScript SiteRef helpers
 └── docs/                                  Website root for GitHub Pages
     ├── index.html                         Home page: links to every project
+    ├── property_data.html                 Public editing/build/query guide
     ├── orchard_pollination_grid.html      Planting map, pollination pairings, windbreak
     ├── metal_tag_planting_checklist.html  Field sheet: metal tag to grid position
     ├── orchard_water_harvesting_plan.html Rain and snowmelt harvesting plan
@@ -53,10 +78,14 @@ Mountain-Prairie-Acres/
     ├── homestead_plot_map.html            Homestead buildings, pads, and drives to scale
     ├── site_master_grid.html              The master grid, feature coordinates, code usage
     ├── data/
-    │   ├── site_grid.js                   Grid, features, lat/long tie, and SiteGrid helpers
-    │   └── site_terrain.js                Lidar elevation grid, contours, flow paths, divides
-    ├── Inventory_PrairiePlants.xlsx       What is on the property (linked from the grid)
-    ├── Trees.xlsx                         Purchase list and fruit data (linked from the grid)
+    │   ├── site_grid.js                   Generated grid and coordinate helpers
+    │   ├── site_terrain.js                Generated full terrain layer
+    │   ├── orchard_model.js               Generated records and shared orchard model
+    │   ├── planting_checklist.js          Generated shared field-sheet renderer
+    │   ├── water_harvesting.js            Generated climate, soil, techniques, catchments
+    │   └── manifest.json                 Source fingerprint and generated record counts
+    ├── Inventory_PrairiePlants.xlsx       Original inventory source workbook
+    ├── Trees.xlsx                         Original purchase/cultivar source workbook
     ├── downloads/                         Printable PDF versions of the pages
     └── soil/                              NRCS Web Soil Survey report and SSURGO metadata
 ```
@@ -77,15 +106,31 @@ Use **`CELL-Eoffset-Soffset`** in a single printed location column. Both offsets
 
 ### Using the shared helpers
 
-- The data lives in [`docs/data/site_grid.js`](docs/data/site_grid.js) (grid, features, and the latitude/longitude tie) and [`docs/data/site_terrain.js`](docs/data/site_terrain.js) (lidar elevations). Each holds strict JSON between `BEGIN` and `END` markers, so pages load it with a `<script>` tag and Python reads the same block.
+- Canonical data lives in [`data/site.json`](data/site.json) and [`data/terrain.json`](data/terrain.json). The builder generates [`docs/data/site_grid.js`](docs/data/site_grid.js) and [`docs/data/site_terrain.js`](docs/data/site_terrain.js) for synchronous/offline-compatible browser use. Python reads the canonical JSON directly; generated marker blocks remain compatible with existing consumers.
 - In a page, load both files and call `SiteGrid`: `SiteGrid.cellOf(63, 921)` gives `"B19"`, `SiteGrid.center('pump_house')`, `SiteGrid.elevationFt(x, y)`, `SiteGrid.toLatLon(x, y)`, and `SiteGrid.fromLatLon(lat, lon)`.
 - From the command line: `python tools/site_grid.py feature pump_house`, `python tools/site_grid.py cell 63 921`, `python tools/site_grid.py tree 5 3` (orchard tree R5-C3), `python tools/site_grid.py fromlatlon 43.473383 -115.594507`, or `python tools/site_grid.py list homestead`.
 - Format a SiteRef with `SiteGrid.siteRef(112, 818)` or Python `grid.site_ref(112, 818)`; decode one with `SiteGrid.fromSiteRef('C17-E12-S18')`, `grid.from_site_ref('C17-E12-S18')`, or `python tools/site_grid.py site-ref C17-E12-S18`. Decoding `PENDING` returns `null` in JavaScript and `None` in Python, not invented coordinates.
-- To add or move a feature, edit the JSON in `site_grid.js` (shapes: `rect`, `circle`, `polygon`, `line`, `point`), then run `python -m unittest discover -s tools`. Water lines are `line` features with `"kind": "water_pipe"` and `"size_in"`, and hydrants are `point` features with `"kind": "hydrant"`; the maps draw whatever the data holds.
+- To add or move a feature, edit [`data/site.json`](data/site.json) (shapes: `rect`, `circle`, `polygon`, `line`, `point`), run `python tools/property_data.py build`, and test. Water lines are `line` features with `"kind": "water_pipe"` and `"size_in"`, and hydrants are `point` features with `"kind": "hydrant"`; maps read the generated data.
 
 Latitude and longitude come from fitting the fence lines on USGS NAIP imagery and are good to about 10 ft: fine for maps and directions, not for boundary questions.
 
-Run helper tests with `python -m unittest discover -s tools` and `node --test tools/test_site_grid.js`.
+Run tests with `python -m unittest discover -s tools` and `node --test tools/test_site_grid.js tools/test_property_data.js`.
+
+## JSON to SQLite and website workflow
+
+```powershell
+python tools\property_data.py build
+python tools\property_data.py check
+python tools\property_data.py query "SELECT metal_tag, site_ref, status FROM current_plantings WHERE cell = 'C17'"
+python tools\property_data.py query --file database\queries\terrain_by_cell.sql
+python tools\property_data.py query --file database\queries\water_budget.sql
+```
+
+The local database is [`build/property.sqlite`](build/property.sqlite), ignored by Git and rebuilt atomically from validated records. Queries automatically rebuild stale data, stay read-only, and do not publish the website. For an external SQLite viewer, run `build` first. Source/schema/compiler fingerprints detect changes rather than trusting timestamps.
+
+`current_plantings` and `orchard_spots` distinguish a planned assignment, a confirmed planting, a dead plant, and an open spot. A reporting date is not an invented planting date. Unknown outside locations and catchment areas remain `PENDING`/`NULL`. Full source JSON, structured workbook cells, terrain geometry, units, and provenance remain queryable. See the [editing guide](data/README.md) and [table/view guide](database/README.md).
+
+Publish JSON and generated browser files together, refresh affected PDFs, and run `check` before committing. [GitHub Actions](.github/workflows/property-data.yml) verifies data freshness and tests; GitHub Pages remains a static site without database writes.
 
 ## Adding or updating a project
 

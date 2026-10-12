@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Property Data and SQLite Queries — Mountain Prairie Acres</title>
+<style>
+  * { box-sizing: border-box; }
+  body { max-width: 1050px; margin: 0 auto; padding: 24px; font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #2c2c2a; }
+  h1 { font-size: 25px; } h2 { font-size: 19px; margin-top: 26px; border-bottom: 1px solid #d3d1c7; }
+  a { color: #185fa5; }
+  code, pre { font-family: Consolas, "SF Mono", Menlo, monospace; }
+  pre { background: #f5f4f0; padding: 12px; overflow-x: auto; white-space: pre-wrap; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { border: 1px solid #d3d1c7; text-align: left; padding: 7px 10px; vertical-align: top; }
+  th { background: #eae8e1; }
+  .notice { padding: 12px; background: #f5f4f0; border-left: 4px solid #ba7517; }
+  .muted { color: #5f5e5a; }
+</style>
+</head>
+<body>
+<p><a href="index.html">Project home</a> · <a href="site_master_grid.html">Site master grid</a> · <a href="orchard_pollination_grid.html">Planting map</a></p>
+<h1>Property Records: JSON and SQLite</h1>
+<p class="muted">Updated October 12, 2026. Plants, locations, purchases, mapped features, terrain, and water-harvesting records share one source.</p>
+<p class="notice"><strong>Edit JSON, not the database.</strong> The repository's <code>data/</code> collections are authoritative. A validated build generates local SQLite and the browser data used by these pages. The original workbooks are retained as source records, not a live spreadsheet connection.</p>
+
+<h2>What Is Included</h2>
+<table>
+<thead><tr><th>Information</th><th>Coverage</th></tr></thead>
+<tbody>
+<tr><td>Plants and inventory</td><td>432 individual inventory items from 119 quantity groups, tags, disease flags, owner events, cultivar and purchase-list information.</td></tr>
+<tr><td>Locations and planting history</td><td>195 orchard spots; individual assignments, reservations, four 2027 replacement sites, and genuinely pending outside-orchard locations.</td></tr>
+<tr><td>Site and GPS</td><td>Buildings, paths, water pipes, eight hydrants, lot coordinates, SiteRef codes, and calculated cell-corner latitude/longitude.</td></tr>
+<tr><td>Terrain</td><td>All 18,009 lidar mesh points, contours, runoff paths, drainage split, ridge/ditch, high/low points, and drainage areas.</td></tr>
+<tr><td>Water harvesting</td><td>Twelve precipitation/ET0 months, three soil horizons, techniques, seasonal calendar, catchment assumptions and future observations. Unmeasured roof areas are unknown, not guessed.</td></tr>
+</tbody>
+</table>
+<p>The water-harvesting map now uses the current orchard records: the dead pear and three Urban apples are not shown occupying their vacated spots, and the planted M-111 rootstock is included for watering.</p>
+
+<h2>Build and Query Locally</h2>
+<p>From the repository root, with Python 3.11+ and SQLite 3.37+ with JSON support:</p>
+<pre>python tools\property_data.py build
+python tools\property_data.py check
+python tools\property_data.py query "SELECT plant_id, metal_tag, site_ref, status FROM current_plantings WHERE cell = 'C17'"
+python tools\property_data.py query --file database\queries\terrain_by_cell.sql
+python tools\property_data.py query --file database\queries\water_budget.sql</pre>
+<p>The generated database is <code>build\property.sqlite</code>. Open it with a local SQLite viewer, or use the query command. Querying automatically rebuilds a stale database without publishing the website. Read-only SQL cannot modify records, attach another database, or load extensions.</p>
+
+<h2>Record a Location Without Duplicating It</h2>
+<p><code>i56-1</code> identifies one M-111 rootstock. <code>orchard-r6-c3</code> identifies its spot at x 83, y 485, producing <strong>B10-E33-S35</strong>. A replacement plant can reuse the spot without reusing the dead plant's identity.</p>
+<p>SiteRef, master-cell offsets, and GPS coordinates are calculated from lot feet. For an input code, use <code>python tools\site_grid.py site-ref C17-E12-S18</code> to get x 112, y 818. See the <a href="site_master_grid.html#code-title">grid guide</a> for GPS conversion and its accuracy limits.</p>
+<p>Most orchard entries are still <strong>planned</strong> assignments, not confirmation of planting. R6-C3 is confirmed planted; its exact planting date was not supplied. Outside-orchard locations display <strong>PENDING</strong> until assigned. An old vacated spot is not the tree's new location.</p>
+
+<h2>Updating and Publishing</h2>
+<ol>
+<li>Edit the appropriate JSON collection. Retain individual IDs and history; use <code>null</code> for unknown dates or measurements.</li>
+<li>Run <code>build</code>, tests, and <code>check</code>. Invalid references, duplicate assignments, bad coordinates, and inconsistent mesh/climate inputs fail explicitly.</li>
+<li>Refresh affected printable PDFs and commit the JSON, generated browser data, and documentation.</li>
+<li>Push the changes. GitHub Pages publishes the static website; GitHub Actions validates the data and tests.</li>
+</ol>
+<p class="notice">This is a public repository. Do not add private notes, credentials, or sensitive records. GitHub Pages cannot save database edits; the calculator's browser inputs are temporary what-if values, not persistent measurements.</p>
+<p>Detailed collection/editing rules: <a href="https://github.com/srnichols/Mountain-Prairie-Acres/tree/main/data">canonical data guide</a>. Schema, views, and example queries: <a href="https://github.com/srnichols/Mountain-Prairie-Acres/tree/main/database">database guide</a>.</p>
+</body>
+</html>

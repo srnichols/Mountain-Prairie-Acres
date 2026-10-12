@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Master-grid helper for Mountain Prairie Acres (lot feet).
 
-Reads the same data the web pages use: docs/data/site_grid.js (grid, features, georeference)
-and docs/data/site_terrain.js (lidar elevation grid). Coordinates are lot feet: x = feet east of
+Reads canonical data/site.json (grid, features, georeference) and data/terrain.json (lidar).
+The web pages use generated copies of these records. Coordinates are lot feet: x = feet east of
 the west fence, y = feet south of the north fence. Grid cells are 50 ft: columns A-G west to east,
 rows 1-26 north to south (B19 = x 50-100, y 900-950).
 SiteRef codes pack a cell and east/south offsets in feet from its northwest corner:
@@ -36,7 +36,7 @@ import pathlib
 import re
 import sys
 
-DATA_DIR = pathlib.Path(__file__).resolve().parents[1] / "docs" / "data"
+DATA_DIR = pathlib.Path(__file__).resolve().parents[1] / "data"
 M_TO_FT = 3.28084
 
 
@@ -50,11 +50,18 @@ def read_block(path, name):
 
 
 class SiteGrid:
-    def __init__(self, data_dir=DATA_DIR):
+    def __init__(self, data_dir=DATA_DIR, *, data=None, terrain=None):
         data_dir = pathlib.Path(data_dir)
-        self.data = read_block(data_dir / "site_grid.js", "SITE_GRID")
-        terrain = data_dir / "site_terrain.js"
-        self.terrain = read_block(terrain, "SITE_TERRAIN") if terrain.exists() else None
+        if data is not None:
+            self.data, self.terrain = data, terrain
+        elif (data_dir / "site.json").exists():
+            self.data = json.loads((data_dir / "site.json").read_text(encoding="utf-8"))
+            terrain_path = data_dir / "terrain.json"
+            self.terrain = json.loads(terrain_path.read_text(encoding="utf-8")) if terrain_path.exists() else None
+        else:
+            self.data = read_block(data_dir / "site_grid.js", "SITE_GRID")
+            terrain_path = data_dir / "site_terrain.js"
+            self.terrain = read_block(terrain_path, "SITE_TERRAIN") if terrain_path.exists() else None
         grid = self.data["grid"]
         self.cell, self.columns, self.rows = grid["cell"], grid["columns"], grid["rows"]
         self.by_id = {f["id"]: f for f in self.data["features"]}
@@ -237,7 +244,7 @@ class SiteGrid:
     # Terrain
     def elevation_m(self, x, y):
         if not self.terrain:
-            raise RuntimeError("docs/data/site_terrain.js is missing")
+            raise RuntimeError("The terrain data is missing")
         g = self.terrain["grid"]
         fx = min(max((x - g["x0"]) / g["step"], 0), g["nx"] - 1.001)
         fy = min(max((y - g["y0"]) / g["step"], 0), g["ny"] - 1.001)

@@ -1,4 +1,4 @@
-"""Tests for tools/site_grid.py and the shared data in docs/data. Run: python -m unittest discover -s tools"""
+"""Tests for tools/site_grid.py and canonical data/. Run: python -m unittest discover -s tools"""
 import contextlib
 import io
 import itertools

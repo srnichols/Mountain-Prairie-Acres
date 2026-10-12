@@ -1,0 +1,3029 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "i2-1",
+      "inventory_row": 2,
+      "instance": 1,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i2-2",
+      "inventory_row": 2,
+      "instance": 2,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i2-3",
+      "inventory_row": 2,
+      "instance": 3,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i3-1",
+      "inventory_row": 3,
+      "instance": 1,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i3-2",
+      "inventory_row": 3,
+      "instance": 2,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i3-3",
+      "inventory_row": 3,
+      "instance": 3,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i3-4",
+      "inventory_row": 3,
+      "instance": 4,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i3-5",
+      "inventory_row": 3,
+      "instance": 5,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i3-6",
+      "inventory_row": 3,
+      "instance": 6,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i3-7",
+      "inventory_row": 3,
+      "instance": 7,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i4-1",
+      "inventory_row": 4,
+      "instance": 1,
+      "group": "east-hedge",
+      "health_status": "living"
+    },
+    {
+      "id": "i4-2",
+      "inventory_row": 4,
+      "instance": 2,
+      "group": "east-hedge",
+      "health_status": "living"
+    },
+    {
+      "id": "i4-3",
+      "inventory_row": 4,
+      "instance": 3,
+      "group": "east-hedge",
+      "health_status": "living"
+    },
+    {
+      "id": "i4-4",
+      "inventory_row": 4,
+      "instance": 4,
+      "group": "east-hedge",
+      "health_status": "living"
+    },
+    {
+      "id": "i4-5",
+      "inventory_row": 4,
+      "instance": 5,
+      "group": "east-hedge",
+      "health_status": "living"
+    },
+    {
+      "id": "i4-6",
+      "inventory_row": 4,
+      "instance": 6,
+      "group": "east-hedge",
+      "health_status": "living"
+    },
+    {
+      "id": "i4-7",
+      "inventory_row": 4,
+      "instance": 7,
+      "group": "east-hedge",
+      "health_status": "living"
+    },
+    {
+      "id": "i4-8",
+      "inventory_row": 4,
+      "instance": 8,
+      "group": "east-hedge",
+      "health_status": "living"
+    },
+    {
+      "id": "i4-9",
+      "inventory_row": 4,
+      "instance": 9,
+      "group": "east-hedge",
+      "health_status": "living"
+    },
+    {
+      "id": "i4-10",
+      "inventory_row": 4,
+      "instance": 10,
+      "group": "east-hedge",
+      "health_status": "living"
+    },
+    {
+      "id": "i4-11",
+      "inventory_row": 4,
+      "instance": 11,
+      "group": "east-hedge",
+      "health_status": "living"
+    },
+    {
+      "id": "i4-12",
+      "inventory_row": 4,
+      "instance": 12,
+      "group": "east-hedge",
+      "health_status": "living"
+    },
+    {
+      "id": "i4-13",
+      "inventory_row": 4,
+      "instance": 13,
+      "group": "east-hedge",
+      "health_status": "living"
+    },
+    {
+      "id": "i4-14",
+      "inventory_row": 4,
+      "instance": 14,
+      "group": "east-hedge",
+      "health_status": "living"
+    },
+    {
+      "id": "i4-15",
+      "inventory_row": 4,
+      "instance": 15,
+      "group": "east-hedge",
+      "health_status": "living"
+    },
+    {
+      "id": "i4-16",
+      "inventory_row": 4,
+      "instance": 16,
+      "group": "east-hedge",
+      "health_status": "living"
+    },
+    {
+      "id": "i4-17",
+      "inventory_row": 4,
+      "instance": 17,
+      "group": "east-hedge",
+      "health_status": "living"
+    },
+    {
+      "id": "i4-18",
+      "inventory_row": 4,
+      "instance": 18,
+      "group": "east-hedge",
+      "health_status": "living"
+    },
+    {
+      "id": "i4-19",
+      "inventory_row": 4,
+      "instance": 19,
+      "group": "east-hedge",
+      "health_status": "living"
+    },
+    {
+      "id": "i5-1",
+      "inventory_row": 5,
+      "instance": 1,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i5-2",
+      "inventory_row": 5,
+      "instance": 2,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i5-3",
+      "inventory_row": 5,
+      "instance": 3,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i6-1",
+      "inventory_row": 6,
+      "instance": 1,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i6-2",
+      "inventory_row": 6,
+      "instance": 2,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i6-3",
+      "inventory_row": 6,
+      "instance": 3,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i6-4",
+      "inventory_row": 6,
+      "instance": 4,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i7-1",
+      "inventory_row": 7,
+      "instance": 1,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i7-2",
+      "inventory_row": 7,
+      "instance": 2,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i7-3",
+      "inventory_row": 7,
+      "instance": 3,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i7-4",
+      "inventory_row": 7,
+      "instance": 4,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i7-5",
+      "inventory_row": 7,
+      "instance": 5,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i7-6",
+      "inventory_row": 7,
+      "instance": 6,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i7-7",
+      "inventory_row": 7,
+      "instance": 7,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i7-8",
+      "inventory_row": 7,
+      "instance": 8,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i7-9",
+      "inventory_row": 7,
+      "instance": 9,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i7-10",
+      "inventory_row": 7,
+      "instance": 10,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i7-11",
+      "inventory_row": 7,
+      "instance": 11,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i8-1",
+      "inventory_row": 8,
+      "instance": 1,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i8-2",
+      "inventory_row": 8,
+      "instance": 2,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i8-3",
+      "inventory_row": 8,
+      "instance": 3,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i8-4",
+      "inventory_row": 8,
+      "instance": 4,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i9-1",
+      "inventory_row": 9,
+      "instance": 1,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i9-2",
+      "inventory_row": 9,
+      "instance": 2,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i9-3",
+      "inventory_row": 9,
+      "instance": 3,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i9-4",
+      "inventory_row": 9,
+      "instance": 4,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i9-5",
+      "inventory_row": 9,
+      "instance": 5,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i9-6",
+      "inventory_row": 9,
+      "instance": 6,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i9-7",
+      "inventory_row": 9,
+      "instance": 7,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i9-8",
+      "inventory_row": 9,
+      "instance": 8,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i9-9",
+      "inventory_row": 9,
+      "instance": 9,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i9-10",
+      "inventory_row": 9,
+      "instance": 10,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i10-1",
+      "inventory_row": 10,
+      "instance": 1,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i10-2",
+      "inventory_row": 10,
+      "instance": 2,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i10-3",
+      "inventory_row": 10,
+      "instance": 3,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i10-4",
+      "inventory_row": 10,
+      "instance": 4,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-1",
+      "inventory_row": 11,
+      "instance": 1,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-2",
+      "inventory_row": 11,
+      "instance": 2,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-3",
+      "inventory_row": 11,
+      "instance": 3,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-4",
+      "inventory_row": 11,
+      "instance": 4,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-5",
+      "inventory_row": 11,
+      "instance": 5,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-6",
+      "inventory_row": 11,
+      "instance": 6,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-7",
+      "inventory_row": 11,
+      "instance": 7,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-8",
+      "inventory_row": 11,
+      "instance": 8,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-9",
+      "inventory_row": 11,
+      "instance": 9,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-10",
+      "inventory_row": 11,
+      "instance": 10,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-11",
+      "inventory_row": 11,
+      "instance": 11,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-12",
+      "inventory_row": 11,
+      "instance": 12,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-13",
+      "inventory_row": 11,
+      "instance": 13,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-14",
+      "inventory_row": 11,
+      "instance": 14,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-15",
+      "inventory_row": 11,
+      "instance": 15,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-16",
+      "inventory_row": 11,
+      "instance": 16,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-17",
+      "inventory_row": 11,
+      "instance": 17,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-18",
+      "inventory_row": 11,
+      "instance": 18,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-19",
+      "inventory_row": 11,
+      "instance": 19,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-20",
+      "inventory_row": 11,
+      "instance": 20,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-21",
+      "inventory_row": 11,
+      "instance": 21,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-22",
+      "inventory_row": 11,
+      "instance": 22,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-23",
+      "inventory_row": 11,
+      "instance": 23,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-24",
+      "inventory_row": 11,
+      "instance": 24,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i11-25",
+      "inventory_row": 11,
+      "instance": 25,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i12-1",
+      "inventory_row": 12,
+      "instance": 1,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i12-2",
+      "inventory_row": 12,
+      "instance": 2,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i12-3",
+      "inventory_row": 12,
+      "instance": 3,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i12-4",
+      "inventory_row": 12,
+      "instance": 4,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i12-5",
+      "inventory_row": 12,
+      "instance": 5,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i12-6",
+      "inventory_row": 12,
+      "instance": 6,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i12-7",
+      "inventory_row": 12,
+      "instance": 7,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i12-8",
+      "inventory_row": 12,
+      "instance": 8,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i12-9",
+      "inventory_row": 12,
+      "instance": 9,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i12-10",
+      "inventory_row": 12,
+      "instance": 10,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i12-11",
+      "inventory_row": 12,
+      "instance": 11,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i13-1",
+      "inventory_row": 13,
+      "instance": 1,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i13-2",
+      "inventory_row": 13,
+      "instance": 2,
+      "group": "guild",
+      "health_status": "living"
+    },
+    {
+      "id": "i14-1",
+      "inventory_row": 14,
+      "instance": 1,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-1",
+      "inventory_row": 15,
+      "instance": 1,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-2",
+      "inventory_row": 15,
+      "instance": 2,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-3",
+      "inventory_row": 15,
+      "instance": 3,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-4",
+      "inventory_row": 15,
+      "instance": 4,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-5",
+      "inventory_row": 15,
+      "instance": 5,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-6",
+      "inventory_row": 15,
+      "instance": 6,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-7",
+      "inventory_row": 15,
+      "instance": 7,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-8",
+      "inventory_row": 15,
+      "instance": 8,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-9",
+      "inventory_row": 15,
+      "instance": 9,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-10",
+      "inventory_row": 15,
+      "instance": 10,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-11",
+      "inventory_row": 15,
+      "instance": 11,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-12",
+      "inventory_row": 15,
+      "instance": 12,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-13",
+      "inventory_row": 15,
+      "instance": 13,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-14",
+      "inventory_row": 15,
+      "instance": 14,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-15",
+      "inventory_row": 15,
+      "instance": 15,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-16",
+      "inventory_row": 15,
+      "instance": 16,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-17",
+      "inventory_row": 15,
+      "instance": 17,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-18",
+      "inventory_row": 15,
+      "instance": 18,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-19",
+      "inventory_row": 15,
+      "instance": 19,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-20",
+      "inventory_row": 15,
+      "instance": 20,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-21",
+      "inventory_row": 15,
+      "instance": 21,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-22",
+      "inventory_row": 15,
+      "instance": 22,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-23",
+      "inventory_row": 15,
+      "instance": 23,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-24",
+      "inventory_row": 15,
+      "instance": 24,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-25",
+      "inventory_row": 15,
+      "instance": 25,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-26",
+      "inventory_row": 15,
+      "instance": 26,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-27",
+      "inventory_row": 15,
+      "instance": 27,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-28",
+      "inventory_row": 15,
+      "instance": 28,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-29",
+      "inventory_row": 15,
+      "instance": 29,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-30",
+      "inventory_row": 15,
+      "instance": 30,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-31",
+      "inventory_row": 15,
+      "instance": 31,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-32",
+      "inventory_row": 15,
+      "instance": 32,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-33",
+      "inventory_row": 15,
+      "instance": 33,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i15-34",
+      "inventory_row": 15,
+      "instance": 34,
+      "group": "windbreak",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-1",
+      "inventory_row": 16,
+      "instance": 1,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-2",
+      "inventory_row": 16,
+      "instance": 2,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-3",
+      "inventory_row": 16,
+      "instance": 3,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-4",
+      "inventory_row": 16,
+      "instance": 4,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-5",
+      "inventory_row": 16,
+      "instance": 5,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-6",
+      "inventory_row": 16,
+      "instance": 6,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-7",
+      "inventory_row": 16,
+      "instance": 7,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-8",
+      "inventory_row": 16,
+      "instance": 8,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-9",
+      "inventory_row": 16,
+      "instance": 9,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-10",
+      "inventory_row": 16,
+      "instance": 10,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-11",
+      "inventory_row": 16,
+      "instance": 11,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-12",
+      "inventory_row": 16,
+      "instance": 12,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-13",
+      "inventory_row": 16,
+      "instance": 13,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-14",
+      "inventory_row": 16,
+      "instance": 14,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-15",
+      "inventory_row": 16,
+      "instance": 15,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-16",
+      "inventory_row": 16,
+      "instance": 16,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-17",
+      "inventory_row": 16,
+      "instance": 17,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-18",
+      "inventory_row": 16,
+      "instance": 18,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-19",
+      "inventory_row": 16,
+      "instance": 19,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-20",
+      "inventory_row": 16,
+      "instance": 20,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-21",
+      "inventory_row": 16,
+      "instance": 21,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-22",
+      "inventory_row": 16,
+      "instance": 22,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-23",
+      "inventory_row": 16,
+      "instance": 23,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-24",
+      "inventory_row": 16,
+      "instance": 24,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i16-25",
+      "inventory_row": 16,
+      "instance": 25,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i17-1",
+      "inventory_row": 17,
+      "instance": 1,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i17-2",
+      "inventory_row": 17,
+      "instance": 2,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i17-3",
+      "inventory_row": 17,
+      "instance": 3,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i17-4",
+      "inventory_row": 17,
+      "instance": 4,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i17-5",
+      "inventory_row": 17,
+      "instance": 5,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i17-6",
+      "inventory_row": 17,
+      "instance": 6,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i17-7",
+      "inventory_row": 17,
+      "instance": 7,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i17-8",
+      "inventory_row": 17,
+      "instance": 8,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i17-9",
+      "inventory_row": 17,
+      "instance": 9,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i17-10",
+      "inventory_row": 17,
+      "instance": 10,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i17-11",
+      "inventory_row": 17,
+      "instance": 11,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i17-12",
+      "inventory_row": 17,
+      "instance": 12,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i17-13",
+      "inventory_row": 17,
+      "instance": 13,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i17-14",
+      "inventory_row": 17,
+      "instance": 14,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i17-15",
+      "inventory_row": 17,
+      "instance": 15,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i17-16",
+      "inventory_row": 17,
+      "instance": 16,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i17-17",
+      "inventory_row": 17,
+      "instance": 17,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i17-18",
+      "inventory_row": 17,
+      "instance": 18,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i18-1",
+      "inventory_row": 18,
+      "instance": 1,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i18-2",
+      "inventory_row": 18,
+      "instance": 2,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i18-3",
+      "inventory_row": 18,
+      "instance": 3,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i18-4",
+      "inventory_row": 18,
+      "instance": 4,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i18-5",
+      "inventory_row": 18,
+      "instance": 5,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i18-6",
+      "inventory_row": 18,
+      "instance": 6,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i18-7",
+      "inventory_row": 18,
+      "instance": 7,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i18-8",
+      "inventory_row": 18,
+      "instance": 8,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i18-9",
+      "inventory_row": 18,
+      "instance": 9,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i18-10",
+      "inventory_row": 18,
+      "instance": 10,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i18-11",
+      "inventory_row": 18,
+      "instance": 11,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i18-12",
+      "inventory_row": 18,
+      "instance": 12,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i18-13",
+      "inventory_row": 18,
+      "instance": 13,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i18-14",
+      "inventory_row": 18,
+      "instance": 14,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i18-15",
+      "inventory_row": 18,
+      "instance": 15,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i19-1",
+      "inventory_row": 19,
+      "instance": 1,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i19-2",
+      "inventory_row": 19,
+      "instance": 2,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i20-1",
+      "inventory_row": 20,
+      "instance": 1,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i20-2",
+      "inventory_row": 20,
+      "instance": 2,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i20-3",
+      "inventory_row": 20,
+      "instance": 3,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i20-4",
+      "inventory_row": 20,
+      "instance": 4,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i20-5",
+      "inventory_row": 20,
+      "instance": 5,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i20-6",
+      "inventory_row": 20,
+      "instance": 6,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i20-7",
+      "inventory_row": 20,
+      "instance": 7,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i21-1",
+      "inventory_row": 21,
+      "instance": 1,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i21-2",
+      "inventory_row": 21,
+      "instance": 2,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i21-3",
+      "inventory_row": 21,
+      "instance": 3,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i21-4",
+      "inventory_row": 21,
+      "instance": 4,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i21-5",
+      "inventory_row": 21,
+      "instance": 5,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i21-6",
+      "inventory_row": 21,
+      "instance": 6,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i21-7",
+      "inventory_row": 21,
+      "instance": 7,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i21-8",
+      "inventory_row": 21,
+      "instance": 8,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i22-1",
+      "inventory_row": 22,
+      "instance": 1,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i22-2",
+      "inventory_row": 22,
+      "instance": 2,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i22-3",
+      "inventory_row": 22,
+      "instance": 3,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i22-4",
+      "inventory_row": 22,
+      "instance": 4,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i22-5",
+      "inventory_row": 22,
+      "instance": 5,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i22-6",
+      "inventory_row": 22,
+      "instance": 6,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i22-7",
+      "inventory_row": 22,
+      "instance": 7,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i23-1",
+      "inventory_row": 23,
+      "instance": 1,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i23-2",
+      "inventory_row": 23,
+      "instance": 2,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i23-3",
+      "inventory_row": 23,
+      "instance": 3,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i23-4",
+      "inventory_row": 23,
+      "instance": 4,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i23-5",
+      "inventory_row": 23,
+      "instance": 5,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i23-6",
+      "inventory_row": 23,
+      "instance": 6,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i23-7",
+      "inventory_row": 23,
+      "instance": 7,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i23-8",
+      "inventory_row": 23,
+      "instance": 8,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i23-9",
+      "inventory_row": 23,
+      "instance": 9,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i23-10",
+      "inventory_row": 23,
+      "instance": 10,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i23-11",
+      "inventory_row": 23,
+      "instance": 11,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i23-12",
+      "inventory_row": 23,
+      "instance": 12,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i23-13",
+      "inventory_row": 23,
+      "instance": 13,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i23-14",
+      "inventory_row": 23,
+      "instance": 14,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i23-15",
+      "inventory_row": 23,
+      "instance": 15,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i23-16",
+      "inventory_row": 23,
+      "instance": 16,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i23-17",
+      "inventory_row": 23,
+      "instance": 17,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i23-18",
+      "inventory_row": 23,
+      "instance": 18,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i24-1",
+      "inventory_row": 24,
+      "instance": 1,
+      "group": "other",
+      "health_status": "dead"
+    },
+    {
+      "id": "i24-2",
+      "inventory_row": 24,
+      "instance": 2,
+      "group": "other",
+      "health_status": "dead"
+    },
+    {
+      "id": "i25-1",
+      "inventory_row": 25,
+      "instance": 1,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i25-2",
+      "inventory_row": 25,
+      "instance": 2,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i25-3",
+      "inventory_row": 25,
+      "instance": 3,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i25-4",
+      "inventory_row": 25,
+      "instance": 4,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i26-1",
+      "inventory_row": 26,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i27-1",
+      "inventory_row": 27,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i28-1",
+      "inventory_row": 28,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i29-1",
+      "inventory_row": 29,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i29-2",
+      "inventory_row": 29,
+      "instance": 2,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i29-3",
+      "inventory_row": 29,
+      "instance": 3,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i30-1",
+      "inventory_row": 30,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i30-2",
+      "inventory_row": 30,
+      "instance": 2,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i31-1",
+      "inventory_row": 31,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i32-1",
+      "inventory_row": 32,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i32-2",
+      "inventory_row": 32,
+      "instance": 2,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i32-3",
+      "inventory_row": 32,
+      "instance": 3,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i33-1",
+      "inventory_row": 33,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i34-1",
+      "inventory_row": 34,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i35-1",
+      "inventory_row": 35,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i36-1",
+      "inventory_row": 36,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i37-1",
+      "inventory_row": 37,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i38-1",
+      "inventory_row": 38,
+      "instance": 1,
+      "group": "rootstock",
+      "health_status": "living"
+    },
+    {
+      "id": "i38-2",
+      "inventory_row": 38,
+      "instance": 2,
+      "group": "rootstock",
+      "health_status": "living"
+    },
+    {
+      "id": "i39-1",
+      "inventory_row": 39,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i40-1",
+      "inventory_row": 40,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i41-1",
+      "inventory_row": 41,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i42-1",
+      "inventory_row": 42,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i43-1",
+      "inventory_row": 43,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i43-2",
+      "inventory_row": 43,
+      "instance": 2,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i44-1",
+      "inventory_row": 44,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i45-1",
+      "inventory_row": 45,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i46-1",
+      "inventory_row": 46,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i47-1",
+      "inventory_row": 47,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i48-1",
+      "inventory_row": 48,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i48-2",
+      "inventory_row": 48,
+      "instance": 2,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i49-1",
+      "inventory_row": 49,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i49-2",
+      "inventory_row": 49,
+      "instance": 2,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i50-1",
+      "inventory_row": 50,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i51-1",
+      "inventory_row": 51,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i52-1",
+      "inventory_row": 52,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i53-1",
+      "inventory_row": 53,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i53-2",
+      "inventory_row": 53,
+      "instance": 2,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i54-1",
+      "inventory_row": 54,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i55-1",
+      "inventory_row": 55,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i56-1",
+      "inventory_row": 56,
+      "instance": 1,
+      "group": "rootstock",
+      "health_status": "living"
+    },
+    {
+      "id": "i56-2",
+      "inventory_row": 56,
+      "instance": 2,
+      "group": "rootstock",
+      "health_status": "living"
+    },
+    {
+      "id": "i56-3",
+      "inventory_row": 56,
+      "instance": 3,
+      "group": "rootstock",
+      "health_status": "living"
+    },
+    {
+      "id": "i56-4",
+      "inventory_row": 56,
+      "instance": 4,
+      "group": "rootstock",
+      "health_status": "living"
+    },
+    {
+      "id": "i56-5",
+      "inventory_row": 56,
+      "instance": 5,
+      "group": "rootstock",
+      "health_status": "living"
+    },
+    {
+      "id": "i56-6",
+      "inventory_row": 56,
+      "instance": 6,
+      "group": "rootstock",
+      "health_status": "living"
+    },
+    {
+      "id": "i56-7",
+      "inventory_row": 56,
+      "instance": 7,
+      "group": "rootstock",
+      "health_status": "living"
+    },
+    {
+      "id": "i56-8",
+      "inventory_row": 56,
+      "instance": 8,
+      "group": "rootstock",
+      "health_status": "living"
+    },
+    {
+      "id": "i56-9",
+      "inventory_row": 56,
+      "instance": 9,
+      "group": "rootstock",
+      "health_status": "living"
+    },
+    {
+      "id": "i56-10",
+      "inventory_row": 56,
+      "instance": 10,
+      "group": "rootstock",
+      "health_status": "living"
+    },
+    {
+      "id": "i56-11",
+      "inventory_row": 56,
+      "instance": 11,
+      "group": "rootstock",
+      "health_status": "living"
+    },
+    {
+      "id": "i56-12",
+      "inventory_row": 56,
+      "instance": 12,
+      "group": "rootstock",
+      "health_status": "living"
+    },
+    {
+      "id": "i57-1",
+      "inventory_row": 57,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i58-1",
+      "inventory_row": 58,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i59-1",
+      "inventory_row": 59,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i59-2",
+      "inventory_row": 59,
+      "instance": 2,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i60-1",
+      "inventory_row": 60,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i61-1",
+      "inventory_row": 61,
+      "instance": 1,
+      "group": "rootstock",
+      "health_status": "living"
+    },
+    {
+      "id": "i62-1",
+      "inventory_row": 62,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i62-2",
+      "inventory_row": 62,
+      "instance": 2,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i62-3",
+      "inventory_row": 62,
+      "instance": 3,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i62-4",
+      "inventory_row": 62,
+      "instance": 4,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i62-5",
+      "inventory_row": 62,
+      "instance": 5,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i62-6",
+      "inventory_row": 62,
+      "instance": 6,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i63-1",
+      "inventory_row": 63,
+      "instance": 1,
+      "group": "outside-orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i64-1",
+      "inventory_row": 64,
+      "instance": 1,
+      "group": "outside-orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i65-1",
+      "inventory_row": 65,
+      "instance": 1,
+      "group": "outside-orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i66-1",
+      "inventory_row": 66,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i66-2",
+      "inventory_row": 66,
+      "instance": 2,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i67-1",
+      "inventory_row": 67,
+      "instance": 1,
+      "group": "elsewhere",
+      "health_status": "living"
+    },
+    {
+      "id": "i68-1",
+      "inventory_row": 68,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i69-1",
+      "inventory_row": 69,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i70-1",
+      "inventory_row": 70,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i70-2",
+      "inventory_row": 70,
+      "instance": 2,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i71-1",
+      "inventory_row": 71,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i72-1",
+      "inventory_row": 72,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i72-2",
+      "inventory_row": 72,
+      "instance": 2,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i73-1",
+      "inventory_row": 73,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i73-2",
+      "inventory_row": 73,
+      "instance": 2,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i74-1",
+      "inventory_row": 74,
+      "instance": 1,
+      "group": "elsewhere",
+      "health_status": "living"
+    },
+    {
+      "id": "i75-1",
+      "inventory_row": 75,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i76-1",
+      "inventory_row": 76,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i77-1",
+      "inventory_row": 77,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i77-2",
+      "inventory_row": 77,
+      "instance": 2,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i78-1",
+      "inventory_row": 78,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i78-2",
+      "inventory_row": 78,
+      "instance": 2,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i79-1",
+      "inventory_row": 79,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i80-1",
+      "inventory_row": 80,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i81-1",
+      "inventory_row": 81,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i81-2",
+      "inventory_row": 81,
+      "instance": 2,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i81-3",
+      "inventory_row": 81,
+      "instance": 3,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i82-1",
+      "inventory_row": 82,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i83-1",
+      "inventory_row": 83,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i84-1",
+      "inventory_row": 84,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i85-1",
+      "inventory_row": 85,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i86-1",
+      "inventory_row": 86,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i87-1",
+      "inventory_row": 87,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i88-1",
+      "inventory_row": 88,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i89-1",
+      "inventory_row": 89,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i90-1",
+      "inventory_row": 90,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i90-2",
+      "inventory_row": 90,
+      "instance": 2,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i91-1",
+      "inventory_row": 91,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i91-2",
+      "inventory_row": 91,
+      "instance": 2,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i92-1",
+      "inventory_row": 92,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i93-1",
+      "inventory_row": 93,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i94-1",
+      "inventory_row": 94,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i95-1",
+      "inventory_row": 95,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i96-1",
+      "inventory_row": 96,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i97-1",
+      "inventory_row": 97,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i97-2",
+      "inventory_row": 97,
+      "instance": 2,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i98-1",
+      "inventory_row": 98,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i99-1",
+      "inventory_row": 99,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i100-1",
+      "inventory_row": 100,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i100-2",
+      "inventory_row": 100,
+      "instance": 2,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i100-3",
+      "inventory_row": 100,
+      "instance": 3,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i101-1",
+      "inventory_row": 101,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i101-2",
+      "inventory_row": 101,
+      "instance": 2,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i102-1",
+      "inventory_row": 102,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i103-1",
+      "inventory_row": 103,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i103-2",
+      "inventory_row": 103,
+      "instance": 2,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i104-1",
+      "inventory_row": 104,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i105-1",
+      "inventory_row": 105,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i106-1",
+      "inventory_row": 106,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i107-1",
+      "inventory_row": 107,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i108-1",
+      "inventory_row": 108,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "dead"
+    },
+    {
+      "id": "i109-1",
+      "inventory_row": 109,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i109-2",
+      "inventory_row": 109,
+      "instance": 2,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i110-1",
+      "inventory_row": 110,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i111-1",
+      "inventory_row": 111,
+      "instance": 1,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i111-2",
+      "inventory_row": 111,
+      "instance": 2,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i111-3",
+      "inventory_row": 111,
+      "instance": 3,
+      "group": "orchard",
+      "health_status": "living"
+    },
+    {
+      "id": "i112-1",
+      "inventory_row": 112,
+      "instance": 1,
+      "group": "nut",
+      "health_status": "living"
+    },
+    {
+      "id": "i112-2",
+      "inventory_row": 112,
+      "instance": 2,
+      "group": "nut",
+      "health_status": "living"
+    },
+    {
+      "id": "i112-3",
+      "inventory_row": 112,
+      "instance": 3,
+      "group": "nut",
+      "health_status": "living"
+    },
+    {
+      "id": "i112-4",
+      "inventory_row": 112,
+      "instance": 4,
+      "group": "nut",
+      "health_status": "living"
+    },
+    {
+      "id": "i112-5",
+      "inventory_row": 112,
+      "instance": 5,
+      "group": "nut",
+      "health_status": "living"
+    },
+    {
+      "id": "i112-6",
+      "inventory_row": 112,
+      "instance": 6,
+      "group": "nut",
+      "health_status": "living"
+    },
+    {
+      "id": "i112-7",
+      "inventory_row": 112,
+      "instance": 7,
+      "group": "nut",
+      "health_status": "living"
+    },
+    {
+      "id": "i112-8",
+      "inventory_row": 112,
+      "instance": 8,
+      "group": "nut",
+      "health_status": "living"
+    },
+    {
+      "id": "i112-9",
+      "inventory_row": 112,
+      "instance": 9,
+      "group": "nut",
+      "health_status": "living"
+    },
+    {
+      "id": "i112-10",
+      "inventory_row": 112,
+      "instance": 10,
+      "group": "nut",
+      "health_status": "living"
+    },
+    {
+      "id": "i113-1",
+      "inventory_row": 113,
+      "instance": 1,
+      "group": "nut",
+      "health_status": "living"
+    },
+    {
+      "id": "i113-2",
+      "inventory_row": 113,
+      "instance": 2,
+      "group": "nut",
+      "health_status": "living"
+    },
+    {
+      "id": "i113-3",
+      "inventory_row": 113,
+      "instance": 3,
+      "group": "nut",
+      "health_status": "living"
+    },
+    {
+      "id": "i113-4",
+      "inventory_row": 113,
+      "instance": 4,
+      "group": "nut",
+      "health_status": "living"
+    },
+    {
+      "id": "i114-1",
+      "inventory_row": 114,
+      "instance": 1,
+      "group": "nut",
+      "health_status": "living"
+    },
+    {
+      "id": "i114-2",
+      "inventory_row": 114,
+      "instance": 2,
+      "group": "nut",
+      "health_status": "living"
+    },
+    {
+      "id": "i114-3",
+      "inventory_row": 114,
+      "instance": 3,
+      "group": "nut",
+      "health_status": "living"
+    },
+    {
+      "id": "i114-4",
+      "inventory_row": 114,
+      "instance": 4,
+      "group": "nut",
+      "health_status": "living"
+    },
+    {
+      "id": "i115-1",
+      "inventory_row": 115,
+      "instance": 1,
+      "group": "nut",
+      "health_status": "living"
+    },
+    {
+      "id": "i115-2",
+      "inventory_row": 115,
+      "instance": 2,
+      "group": "nut",
+      "health_status": "living"
+    },
+    {
+      "id": "i116-1",
+      "inventory_row": 116,
+      "instance": 1,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i116-2",
+      "inventory_row": 116,
+      "instance": 2,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i116-3",
+      "inventory_row": 116,
+      "instance": 3,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i117-1",
+      "inventory_row": 117,
+      "instance": 1,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i117-2",
+      "inventory_row": 117,
+      "instance": 2,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i117-3",
+      "inventory_row": 117,
+      "instance": 3,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i117-4",
+      "inventory_row": 117,
+      "instance": 4,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i117-5",
+      "inventory_row": 117,
+      "instance": 5,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i117-6",
+      "inventory_row": 117,
+      "instance": 6,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i117-7",
+      "inventory_row": 117,
+      "instance": 7,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i117-8",
+      "inventory_row": 117,
+      "instance": 8,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i117-9",
+      "inventory_row": 117,
+      "instance": 9,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i117-10",
+      "inventory_row": 117,
+      "instance": 10,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i117-11",
+      "inventory_row": 117,
+      "instance": 11,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i117-12",
+      "inventory_row": 117,
+      "instance": 12,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i117-13",
+      "inventory_row": 117,
+      "instance": 13,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i117-14",
+      "inventory_row": 117,
+      "instance": 14,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i117-15",
+      "inventory_row": 117,
+      "instance": 15,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i118-1",
+      "inventory_row": 118,
+      "instance": 1,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i118-2",
+      "inventory_row": 118,
+      "instance": 2,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i118-3",
+      "inventory_row": 118,
+      "instance": 3,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i118-4",
+      "inventory_row": 118,
+      "instance": 4,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i118-5",
+      "inventory_row": 118,
+      "instance": 5,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i118-6",
+      "inventory_row": 118,
+      "instance": 6,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i118-7",
+      "inventory_row": 118,
+      "instance": 7,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i118-8",
+      "inventory_row": 118,
+      "instance": 8,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i118-9",
+      "inventory_row": 118,
+      "instance": 9,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i118-10",
+      "inventory_row": 118,
+      "instance": 10,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i119-1",
+      "inventory_row": 119,
+      "instance": 1,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i120-1",
+      "inventory_row": 120,
+      "instance": 1,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i120-2",
+      "inventory_row": 120,
+      "instance": 2,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i120-3",
+      "inventory_row": 120,
+      "instance": 3,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i120-4",
+      "inventory_row": 120,
+      "instance": 4,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i120-5",
+      "inventory_row": 120,
+      "instance": 5,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i120-6",
+      "inventory_row": 120,
+      "instance": 6,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i120-7",
+      "inventory_row": 120,
+      "instance": 7,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i120-8",
+      "inventory_row": 120,
+      "instance": 8,
+      "group": "other",
+      "health_status": "living"
+    }
+  ]
+}

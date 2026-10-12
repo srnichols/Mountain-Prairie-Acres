@@ -4,3 +4,7 @@
 *.docx binary
 *.png binary
 *.jpg binary
+
+# Deterministic generated browser data on Windows and Linux
+docs/data/*.js text eol=lf
+docs/data/*.json text eol=lf

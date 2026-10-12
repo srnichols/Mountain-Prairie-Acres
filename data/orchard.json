@@ -1,0 +1,1014 @@
+{
+  "schema_version": 1,
+  "rules": {
+    "PLAN_DATE": "October 4, 2026",
+    "STATUS_DATE": "October 11, 2026",
+    "INVENTORY_MATCH": {
+      "3": {
+        "rows": [],
+        "berry": "Berry rows 4\u20137: 5 currants (1 red, 3 black, 1 white)",
+        "note": "7 currants listed as red at Prairie vs. 5 purchased (1 red, 3 black, 1 white). Self-fertile per the Berry sheet."
+      },
+      "4": {
+        "rows": [
+          115
+        ],
+        "note": "Planted as a hedge along the east fence by the driveway. The purchase list also has 9 named elderberries on the Berry sheet (American, Bob Gordon \u00d72, Marge \u00d72, Perl, Ranch, Wyldewood, York). The 19 at Prairie are not identified by cultivar."
+      },
+      "5": {
+        "rows": [],
+        "berry": "Berry rows 16\u201320: 5 gooseberries (Captivator, Hinnonmaki Red \u00d72, Invicta, Pixwell)",
+        "note": "3 at Prairie, 2 fewer than purchased. Self-fertile per the Berry sheet."
+      },
+      "7": {
+        "rows": [],
+        "berry": "Berry rows 26\u201331: 12 honeyberries (Blue Diamond \u00d73, Blue Palm \u00d73, Indigo Treat \u00d72, Cinderella \u00d72, Maxine, Sunrise)",
+        "note": "11 at Prairie, 1 fewer than purchased. The Berry sheet says they need another honeyberry, so plant them as one group and mix the varieties."
+      },
+      "8": {
+        "rows": [],
+        "berry": "Berry rows 32\u201334: 7 jostaberries (6 black, 1 red)",
+        "note": "18 jostaberries at Prairie on lines 8\u201310, 11 more than purchased. Self-fertile per the Berry sheet."
+      },
+      "9": {
+        "rows": [],
+        "berry": "Berry rows 32\u201334: 7 jostaberries (6 black, 1 red)",
+        "note": "18 jostaberries at Prairie on lines 8\u201310, 11 more than purchased. Self-fertile per the Berry sheet."
+      },
+      "10": {
+        "rows": [],
+        "berry": "Berry rows 32\u201334: 7 jostaberries (6 black, 1 red)",
+        "note": "18 jostaberries at Prairie on lines 8\u201310, 11 more than purchased. Self-fertile per the Berry sheet."
+      },
+      "11": {
+        "rows": [
+          116
+        ]
+      },
+      "13": {
+        "rows": [],
+        "berry": "Berry rows 2\u20133: 2 Viking aronia (chokeberry)",
+        "note": "Matches the purchase list. Self-fertile per the Berry sheet."
+      },
+      "15": {
+        "rows": [
+          70,
+          71,
+          76,
+          118
+        ],
+        "note": "Listed as Jefferson Filbert, but the purchase list has 75 Forestag hybrid seedlings, 1 Jefferson, and 1 Theta. Most are probably hybrids; if the Jefferson and Theta can be identified, plant them side by side (Theta pollinizes Jefferson)."
+      },
+      "26": {
+        "rows": [
+          2
+        ]
+      },
+      "27": {
+        "rows": [
+          8,
+          7
+        ],
+        "rootstock": "Not recorded (tag says Dwarf)",
+        "note": "1 of 2 purchased Braeburns found. The tag says Dwarf, so it is matched to the Lowes tree with no recorded rootstock (row 8) rather than the M-111 tree (row 7)."
+      },
+      "28": {
+        "rows": [
+          9
+        ]
+      },
+      "29": {
+        "rows": [
+          10
+        ],
+        "note": "3 of 5 purchased found."
+      },
+      "30": {
+        "rows": [
+          11
+        ]
+      },
+      "31": {
+        "rows": [
+          13
+        ],
+        "note": "1 of 2 purchased found."
+      },
+      "32": {
+        "rows": [
+          33
+        ],
+        "note": "3 found, but 2 were purchased. All are seed-grown, so each may bloom differently."
+      },
+      "33": {
+        "rows": [
+          44
+        ]
+      },
+      "34": {
+        "rows": [
+          12
+        ]
+      },
+      "35": {
+        "rows": [
+          37
+        ]
+      },
+      "36": {
+        "rows": [
+          21
+        ]
+      },
+      "37": {
+        "rows": [
+          40
+        ]
+      },
+      "38": {
+        "rows": [],
+        "note": "Ungrafted EMLA 7 rootstock, for grafting."
+      },
+      "39": {
+        "rows": [
+          15
+        ]
+      },
+      "40": {
+        "rows": [
+          16
+        ]
+      },
+      "41": {
+        "rows": [
+          17
+        ]
+      },
+      "42": {
+        "rows": [
+          18
+        ],
+        "note": "Same tag text (AL-Fuji) as the Early Fuji; check the variety label when planting."
+      },
+      "43": {
+        "rows": [
+          4,
+          5
+        ],
+        "rootstock": "Semi Dwarf or Dwarf",
+        "note": "2 of 3 purchased found (row 4: 1 semi-dwarf; row 5: 2 dwarf); the inventory does not say which."
+      },
+      "44": {
+        "rows": [
+          3
+        ],
+        "note": "Same tag text (AL-Fuji) as the Fuji; check the variety label when planting."
+      },
+      "45": {
+        "rows": [
+          19,
+          20
+        ],
+        "note": "1 of 2 purchased found."
+      },
+      "46": {
+        "rows": [
+          24
+        ]
+      },
+      "47": {
+        "rows": [
+          25
+        ]
+      },
+      "48": {
+        "rows": [
+          26,
+          27
+        ],
+        "rootstock": "M-111 or Semi Dwarf",
+        "note": "The workbook lists one Harrison (row 26, M-111) and one Harrison Cider (row 27, semi-dwarf), the same cultivar. The tags do not say which is which, so both use the row 26 cultivar data."
+      },
+      "49": {
+        "rows": [
+          28
+        ],
+        "note": "2 of 3 purchased found."
+      },
+      "50": {
+        "rows": [
+          29
+        ]
+      },
+      "51": {
+        "rows": [
+          30
+        ]
+      },
+      "52": {
+        "rows": [
+          31
+        ]
+      },
+      "53": {
+        "rows": [
+          32
+        ]
+      },
+      "54": {
+        "rows": [
+          34
+        ],
+        "note": "Tag AL-G Orch-7 (Grandpa's Orchard, M-7) matches the workbook."
+      },
+      "55": {
+        "rows": [
+          35
+        ]
+      },
+      "56": {
+        "rows": [],
+        "note": "Ungrafted M-111 rootstock, for grafting."
+      },
+      "57": {
+        "rows": [
+          36
+        ]
+      },
+      "58": {
+        "rows": [
+          38
+        ],
+        "note": "Tag AL-G Orch-111 (Grandpa's Orchard, M-111) matches the workbook."
+      },
+      "59": {
+        "rows": [
+          39
+        ]
+      },
+      "60": {
+        "rows": [
+          41
+        ],
+        "note": "1 of 2 purchased found."
+      },
+      "61": {
+        "rows": [],
+        "note": "Rootstock of unknown type, for grafting."
+      },
+      "62": {
+        "rows": [],
+        "name": "Unidentified apple",
+        "note": "Tag AL-UnKn. Purchased apples not otherwise found at Prairie: Braeburn 1, Cortland 2, Dolgo 1, Empire 1, Aztec Fuji 1, Gala 1, Golden Russet 1, Honeycrisp 1, Sweet Sixteen 1, Zestar 1. Some of these 6 may be those trees; identify them at bloom or harvest."
+      },
+      "63": {
+        "rows": [
+          6
+        ],
+        "note": "Urban Gold is matched to Blushing Delight, the yellow Urban apple that was purchased (row 6). The workbook's Golden Treat Urban (row 23) has QTY 0; confirm the label."
+      },
+      "64": {
+        "rows": [
+          42
+        ]
+      },
+      "65": {
+        "rows": [
+          43
+        ]
+      },
+      "66": {
+        "rows": [
+          45
+        ],
+        "note": "2 of 3 purchased found."
+      },
+      "67": {
+        "rows": [
+          46
+        ],
+        "note": "Still in Boise (girdled, mulched); not planned for Prairie."
+      },
+      "68": {
+        "rows": [
+          47
+        ]
+      },
+      "69": {
+        "rows": [
+          48
+        ]
+      },
+      "70": {
+        "rows": [
+          49
+        ],
+        "note": "2 found, but 1 Moorpark was purchased. Patterson (row 50) was not found; one of these may be Patterson."
+      },
+      "71": {
+        "rows": [],
+        "name": "Unidentified apricot",
+        "note": "Tag AT-Unk. The purchased Patterson (row 50) was not otherwise found."
+      },
+      "72": {
+        "rows": [
+          53,
+          54
+        ]
+      },
+      "73": {
+        "rows": [
+          55,
+          56
+        ],
+        "note": "2 of 4 purchased found."
+      },
+      "74": {
+        "rows": [
+          57
+        ],
+        "note": "Still in Boise (girdled, mulched); not planned for Prairie."
+      },
+      "75": {
+        "rows": [
+          58
+        ]
+      },
+      "76": {
+        "rows": [
+          59
+        ]
+      },
+      "77": {
+        "rows": [
+          60
+        ]
+      },
+      "78": {
+        "rows": [
+          61
+        ],
+        "note": "Nanking 'Ian' (2) and 'Jules' (1) together match the 3 purchased Nanking bushes."
+      },
+      "79": {
+        "rows": [
+          61
+        ],
+        "note": "Nanking 'Ian' (2) and 'Jules' (1) together match the 3 purchased Nanking bushes."
+      },
+      "80": {
+        "rows": [
+          63
+        ]
+      },
+      "81": {
+        "rows": [],
+        "name": "Unidentified sweet cherry",
+        "note": "Tag CR-Sweet. Purchased sweet cherries not otherwise found at Prairie: Black Tartarian 2, Regina 1, Sam 1."
+      },
+      "82": {
+        "rows": [
+          65
+        ]
+      },
+      "83": {
+        "rows": [
+          77
+        ]
+      },
+      "84": {
+        "rows": [
+          78
+        ]
+      },
+      "85": {
+        "rows": [
+          79
+        ],
+        "note": "1 of 2 purchased found."
+      },
+      "86": {
+        "rows": [
+          80
+        ],
+        "note": "1 of 2 purchased found."
+      },
+      "87": {
+        "rows": [
+          81
+        ]
+      },
+      "88": {
+        "rows": [
+          83
+        ]
+      },
+      "89": {
+        "rows": [
+          84
+        ]
+      },
+      "90": {
+        "rows": [
+          85,
+          86,
+          87
+        ],
+        "note": "2 of 3 purchased found."
+      },
+      "91": {
+        "rows": [],
+        "name": "Unidentified peach",
+        "note": "Tag PC-Unk. Purchased peaches not otherwise found at Prairie: Contender 1, Elberta 1, Reliance 1, Veteran 1."
+      },
+      "92": {
+        "rows": [
+          89
+        ],
+        "note": "Inventory rows 92 (Anjou) and 101 (D'Anjou) together hold 3 Anjou, but 2 were purchased."
+      },
+      "93": {
+        "rows": [
+          96
+        ]
+      },
+      "94": {
+        "rows": [
+          105
+        ]
+      },
+      "95": {
+        "rows": [
+          103
+        ]
+      },
+      "96": {
+        "rows": [
+          90
+        ]
+      },
+      "97": {
+        "rows": [
+          91,
+          92
+        ]
+      },
+      "98": {
+        "rows": [
+          102
+        ]
+      },
+      "99": {
+        "rows": [
+          93
+        ]
+      },
+      "100": {
+        "rows": [
+          94
+        ]
+      },
+      "101": {
+        "rows": [
+          89
+        ],
+        "note": "Inventory rows 92 (Anjou) and 101 (D'Anjou) together hold 3 Anjou, but 2 were purchased."
+      },
+      "102": {
+        "rows": [
+          104
+        ]
+      },
+      "103": {
+        "rows": [
+          95
+        ],
+        "note": "2 found, but 1 was purchased. Thorn (row 107) was not found; one of these may be Thorn."
+      },
+      "104": {
+        "rows": [
+          97
+        ]
+      },
+      "105": {
+        "rows": [
+          98
+        ]
+      },
+      "106": {
+        "rows": [
+          99
+        ]
+      },
+      "107": {
+        "rows": [
+          100
+        ]
+      },
+      "108": {
+        "rows": [
+          101
+        ]
+      },
+      "109": {
+        "rows": [
+          106
+        ]
+      },
+      "110": {
+        "rows": [
+          108
+        ]
+      },
+      "111": {
+        "rows": [
+          109,
+          110
+        ],
+        "note": "3 of 4 found (2 named Italian plums, row 109; 2 Italian seedlings, row 110). Lovell is a peach rootstock, which suggests grafted trees; confirm whether any are seedlings."
+      },
+      "112": {
+        "rows": [
+          69
+        ]
+      },
+      "113": {
+        "rows": [
+          74
+        ],
+        "note": "4 of 10 purchased found."
+      },
+      "114": {
+        "rows": [],
+        "note": "Not on the Fruit sheet. The inventory notes 3 are already planted."
+      },
+      "115": {
+        "rows": [
+          68
+        ]
+      }
+    },
+    "TYPE_ORDER": [
+      "Apple",
+      "Pear",
+      "Cherry",
+      "Peach",
+      "Apricot",
+      "Plum"
+    ],
+    "BLOCK_ROWS": {
+      "Cherry": 2
+    },
+    "SHARED_ROWS": [
+      {
+        "blocks": [
+          {
+            "type": "Apricot",
+            "align": "west",
+            "perRow": [
+              3,
+              2
+            ]
+          },
+          {
+            "type": "Plum",
+            "align": "center",
+            "perRow": [
+              1,
+              2
+            ]
+          },
+          {
+            "type": "Peach",
+            "align": "east",
+            "perRow": [
+              6,
+              5
+            ]
+          }
+        ]
+      }
+    ],
+    "RESERVED_ROWS": {
+      "Apple": {
+        "count": 13,
+        "label": "Grafted rootstock apples"
+      }
+    },
+    "ORCHARD_ROWS": 15,
+    "GRID_COLUMNS": 13,
+    "PLOT_WIDTH": 237,
+    "EAST_SIDE": {
+      "originalPlotWidth": 232,
+      "groundToDriveway": 33,
+      "driveway": 22,
+      "drivewayToFence": 10
+    },
+    "PLOT_DEPTH": 600,
+    "TREE_SPACING": 18,
+    "ROW_SPACING": 20,
+    "LOCAL_RADIUS": 50,
+    "ORCHARD_WEST_SETBACK": 3,
+    "JUNIPER_DISTANCE": 200,
+    "WINDBREAK": {
+      "width": 35,
+      "minAlley": 6,
+      "orchardLimbAllowance": 6,
+      "endMargin": 6,
+      "shadeGap": 15,
+      "rows": [
+        {
+          "key": "mulberry",
+          "invRows": [
+            11
+          ],
+          "name": "Red mulberry",
+          "latin": "Morus rubra",
+          "layer": "Tall layer on the west fence",
+          "offset": 5,
+          "managedWidth": 20,
+          "height": "35\u201350 ft",
+          "spread": "35\u201340 ft wide naturally; keep about 20 ft",
+          "color": "#5B2A86",
+          "profile": {
+            "trunk": 10,
+            "crownMid": 28,
+            "crownHalfHeight": 14,
+            "label": "Red mulberry",
+            "size": "35\u201350 ft"
+          }
+        },
+        {
+          "key": "hazelnut",
+          "invRows": [
+            15
+          ],
+          "name": "Hazelnut",
+          "latin": "Corylus hybrids",
+          "layer": "Shrub layer beside the alley",
+          "offset": 20,
+          "managedWidth": 10,
+          "fullWidth": 12,
+          "height": "Up to about 12 ft",
+          "spread": "nearly as wide as tall; keep about 10 ft",
+          "color": "#6E6B2F",
+          "profile": {
+            "trunk": 2,
+            "crownMid": 6.2,
+            "crownHalfHeight": 5.4,
+            "label": "Hazelnut",
+            "size": "up to ~12 ft"
+          }
+        }
+      ]
+    },
+    "C1_GUILDS": {
+      "even": {
+        "radius": 7,
+        "bearings": [135, 180, 225, 270, 315]
+      },
+      "odd": {
+        "radius": 6,
+        "bearings": [155, 205]
+      },
+      "bushWidth": 5,
+      "color": "#7CC242",
+      "groups": [
+        {"name": "honeyberry", "code": "HB", "invRows": [7]},
+        {"name": "red currant", "code": "CU", "invRows": [3]},
+        {"name": "gooseberry", "code": "GB", "invRows": [5]},
+        {"name": "Viking aronia", "code": "AR", "invRows": [13]},
+        {"name": "jostaberry", "code": "JO", "invRows": [8, 9, 10]}
+      ]
+    },
+    "EAST_HEDGE": {
+      "key": "elderberry",
+      "invRows": [
+        4
+      ],
+      "name": "American elderberry",
+      "latin": "Sambucus canadensis",
+      "fromFence": 5,
+      "spacing": 8,
+      "managedWidth": 6,
+      "height": "6\u201312 ft",
+      "spread": "6\u20138 ft or wider; keep about 6 ft",
+      "color": "#2E7D5B"
+    },
+    "OWNER_NOTES": {
+      "24": "owner reports both died"
+    },
+    "ROOTSTOCK_LABELS": {
+      "38": "EMLA 7",
+      "56": "M-111",
+      "61": "unknown"
+    },
+    "GENERATED_CODES": {
+      "28": "CAM",
+      "31": "DLG",
+      "32": "KER",
+      "39": "FOX",
+      "41": "FRQ",
+      "62": "UNK",
+      "71": "UNK",
+      "77": "MNT",
+      "78": "NKI",
+      "79": "NKJ",
+      "81": "SWT",
+      "91": "UNK",
+      "96": "BNT",
+      "99": "BUT",
+      "103": "HHC",
+      "107": "PKR",
+      "109": "SMC",
+      "110": "YHC",
+      "111": "IPL"
+    },
+    "FAMILY_OVERRIDES": {
+      "2": "arkansasblack",
+      "3": "fuji",
+      "4": "fuji",
+      "5": "fuji",
+      "18": "fuji",
+      "27": "harrison",
+      "29": "honeycrisp",
+      "36": "mcintosh",
+      "38": "newtownpippin",
+      "39": "pinklady",
+      "99": "asiangiant",
+      "102": "bartlett",
+      "105": "asiangiant"
+    },
+    "APPLE_ALIASES": {
+      "cox": "coxsorangepippin",
+      "cripps": "pinklady",
+      "granny": "grannysmith",
+      "ganny": "grannysmith",
+      "grany": "grannysmith",
+      "honeycrist": "honeycrisp",
+      "honsycrist": "honeycrisp",
+      "honrycrisp": "honeycrisp",
+      "hudsongolden": "hudsonsgoldengem",
+      "hudsongold": "hudsonsgoldengem",
+      "hudsongoldengem": "hudsonsgoldengem",
+      "newtownpippen": "newtownpippin",
+      "wickson": "wicksoncrab",
+      "wicksoncrag": "wicksoncrab",
+      "franklin": "franklincider",
+      "macintosh": "mcintosh"
+    },
+    "HARRISON_BLOOM_RESEARCH": {
+      "fg": 3,
+      "sourceDependent": true,
+      "note": "Orange Pippin assigns Harrison to group 3, matching the existing Harrison workbook entry. The same assignment is used for Harrison Cider Apple, not a different pollen partner. Raintree instead lists group 4 (mid-late); retain this source difference and verify local bloom.",
+      "sources": [
+        [
+          "Orange Pippin: Harrison (FG 3)",
+          "https://www.orangepippintrees.com/trees/cider-apple-trees/harrison"
+        ],
+        [
+          "Raintree: Harrison (bloom group 4)",
+          "https://raintreenursery.com/products/harrison-cider-apple-semi-dwarf"
+        ]
+      ]
+    },
+    "APPLE_BLOOM_RESEARCH": {
+      "6": {
+        "fg": null,
+        "period": "Midseason",
+        "note": "Raintree describes the Urban Apple series as midseason bloomers and recommends different Urban cultivars for one another. No numbered flowering group was verified for Blushing Delight.",
+        "sources": [
+          [
+            "Raintree: Blushing Delight",
+            "https://raintreenursery.com/products/blushing-delight%E2%84%A2-urban%E2%84%A2-columnar-apple-semi-dwarf"
+          ]
+        ]
+      },
+      "9": {
+        "fg": 3,
+        "note": "Orange Pippin explicitly assigns Campfield to flowering group 3. Raintree independently lists bloom group 3 (midseason). Both refer to flowering, not harvest season.",
+        "sources": [
+          [
+            "Orange Pippin: Campfield (FG 3)",
+            "https://www.orangepippintrees.com/trees/cider-apple-trees/campfield"
+          ],
+          [
+            "Raintree: Campfield (bloom group 3)",
+            "https://raintreenursery.com/products/campfield-cider-apple-semi-dwarf"
+          ]
+        ]
+      },
+      "13": {
+        "fg": 2,
+        "note": "Orange Pippin explicitly assigns the named Dolgo cultivar to flowering group 2 and describes early blossom. This assignment assumes these are the named cultivar, not unnamed seedlings.",
+        "sources": [
+          [
+            "Orange Pippin: Dolgo",
+            "https://www.orangepippintrees.com/trees/crab-apple-trees/malus-pink-glow-dolgo"
+          ]
+        ]
+      },
+      "15": {
+        "fg": 3,
+        "note": "The workbook records RainTree as the vendor for this tree, supporting the owner-selected Raintree group 3 (midseason). Raintree identifies its stock as Sonoma/Geneva Foxwhelp (Fauxwhelp), not authenticated English Foxwhelp. Other sources describe different Foxwhelp material (Orange Pippin group 5; RV Roger group B); those classifications are not substituted for the recorded supplier. Confirm local bloom.",
+        "sources": [
+          [
+            "Raintree: Fauxwhelp stock (bloom group 3)",
+            "https://raintreenursery.com/products/foxwhelp-cider-apple-semi-dwarf"
+          ],
+          [
+            "Orange Pippin: generic Foxwhelp entry (group 5; identity caveat)",
+            "https://www.orangepippin.com/varieties/apples/foxwhelp"
+          ],
+          [
+            "RV Roger: Foxwhelp (lettered group B)",
+            "https://rvroger.co.uk/apple-foxwhelp/"
+          ]
+        ]
+      },
+      "17": {
+        "fg": 4,
+        "sourceDependent": true,
+        "note": "Orange Pippin assigns Frequin Rouge to group 4, corroborated by Raintree (mid-late). Cummins instead lists group 5 in its five-group system and warns that the precise Frequin Rouge variant in North America is uncertain. Use 4 as the source-attributed planning value, not proof of local bloom or a reason to substitute another Frequin cultivar.",
+        "sources": [
+          [
+            "Orange Pippin: Frequin Rouge (FG 4)",
+            "https://www.orangepippintrees.com/trees/cider-apple-trees/frequin-rouge"
+          ],
+          [
+            "Raintree: Frequin Rouge (bloom group 4)",
+            "https://raintreenursery.com/products/frequin-rouge-cider-apple-semi-dwarf"
+          ],
+          [
+            "Cummins: Frequin Rouge (group 5; variant uncertainty)",
+            "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=tree&id=23273"
+          ],
+          [
+            "Cummins: five-group bloom scheme",
+            "https://www.cumminsnursery.com/learn-trees/choosing-trees/pollination/fruit-tree-bloom-dates"
+          ]
+        ]
+      },
+      "26": {
+        "fg": 3,
+        "sourceDependent": true,
+        "note": "Orange Pippin assigns Harrison to group 3, matching the existing Harrison workbook entry. The same assignment is used for Harrison Cider Apple, not a different pollen partner. Raintree instead lists group 4 (mid-late); retain this source difference and verify local bloom.",
+        "sources": [
+          [
+            "Orange Pippin: Harrison (FG 3)",
+            "https://www.orangepippintrees.com/trees/cider-apple-trees/harrison"
+          ],
+          [
+            "Raintree: Harrison (bloom group 4)",
+            "https://raintreenursery.com/products/harrison-cider-apple-semi-dwarf"
+          ]
+        ]
+      },
+      "33": {
+        "fg": 2,
+        "provisional": true,
+        "note": "BEST GUESS: group 2 is an owner-approved planning estimate based on the published group for the named Kerr cultivar. The owner confirmed the Kerr trees were grown from seed (3 are at Prairie), so they are genetically different from that cultivar and may bloom at different times, including from each other. This is not a verified assignment. Record each seedling's first, full, and final bloom alongside known cultivars and revise the group if needed.",
+        "sources": [
+          [
+            "Orange Pippin: named Kerr cultivar (FG 2 only for the cultivar)",
+            "https://www.orangepippintrees.com/trees/crab-apple-trees/kerr"
+          ],
+          [
+            "Iowa State Extension: apple seedlings do not come true to type",
+            "https://yardandgarden.extension.iastate.edu/faq/can-i-grow-apple-tree-seed"
+          ]
+        ]
+      },
+      "42": {
+        "fg": null,
+        "period": "Midseason",
+        "note": "The workbook spelling \"Tandgy green\" is treated as Tangy Green Urban Apple (AK-98); confirm the nursery label. Raintree gives midseason bloom guidance for the series and recommends other Urban cultivars. No numbered flowering group was verified.",
+        "sources": [
+          [
+            "Raintree: Tangy Green",
+            "https://raintreenursery.com/products/tangy-green%E2%84%A2-urban%E2%84%A2-columnar-apple-semi-dwarf"
+          ]
+        ]
+      },
+      "43": {
+        "fg": null,
+        "period": "Midseason",
+        "note": "Raintree explicitly describes Urban Apple varieties as midseason bloomers and recommends them for one another. No numbered flowering group was verified for Tasty Red.",
+        "sources": [
+          [
+            "Raintree: Tasty Red",
+            "https://raintreenursery.com/products/tasty-red%E2%84%A2-urban%E2%84%A2-columnar-apple-semi-dwarf"
+          ]
+        ]
+      }
+    },
+    "URBAN_APPLE_ROWS": [
+      6,
+      42,
+      43
+    ],
+    "PEAR_BLOOM": {
+      "89": [
+        "Early\u2013mid",
+        "early",
+        "mid"
+      ],
+      "91": [
+        "Early\u2013mid",
+        "early",
+        "mid"
+      ],
+      "92": [
+        "Early\u2013mid",
+        "early",
+        "mid"
+      ],
+      "93": [
+        "Late (perry chart)",
+        "late"
+      ],
+      "94": [
+        "Mid\u2013late",
+        "mid",
+        "late"
+      ],
+      "95": [
+        "Early (perry chart)",
+        "early"
+      ],
+      "96": [
+        "Early",
+        "early"
+      ],
+      "97": [
+        "Late",
+        "late"
+      ],
+      "98": [
+        "Early\u2013mid",
+        "early",
+        "mid"
+      ],
+      "101": [
+        "Early",
+        "early"
+      ],
+      "102": [
+        "Early\u2013mid",
+        "early",
+        "mid"
+      ],
+      "104": [
+        "Early\u2013mid",
+        "early",
+        "mid"
+      ],
+      "105": [
+        "Early",
+        "early"
+      ],
+      "107": [
+        "Mid (perry chart)",
+        "mid"
+      ]
+    },
+    "CHERRY_CHART": {
+      "53": {
+        "group": "III",
+        "bloom": 3
+      },
+      "54": {
+        "group": "III",
+        "bloom": 3
+      },
+      "55": {
+        "group": "I",
+        "bloom": 1
+      },
+      "56": {
+        "group": "I",
+        "bloom": 1
+      },
+      "59": {
+        "group": null,
+        "bloom": 2
+      },
+      "62": {
+        "group": "II",
+        "bloom": 5
+      },
+      "63": {
+        "group": "XIII",
+        "bloom": 3
+      },
+      "64": {
+        "group": "XIII",
+        "bloom": 5
+      },
+      "65": {
+        "group": null,
+        "bloom": 3
+      }
+    }
+  }
+}

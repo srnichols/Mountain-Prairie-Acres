@@ -8,3 +8,9 @@ desktop.ini
 # Python caches from running tools/
 __pycache__/
 *.pyc
+
+# Rebuildable local database and SQLite sidecars
+build/
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite-journal
