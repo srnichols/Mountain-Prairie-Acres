@@ -3176,6 +3176,53 @@
       "reviewed_on": "2026-10-17"
     },
     {
+      "id": "pear-thorn-perry",
+      "group": "Pear",
+      "type": "Perry pear",
+      "kind": "cultivar",
+      "name": "Thorn (perry pear)",
+      "aliases": [
+        "Thorn European Perry Pear",
+        "Thorn perry"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [
+        107
+      ],
+      "tagline": "Mid; small yellow, some russet; medium-acid perry",
+      "summary": "Old Gloucestershire perry pear with small yellow, lightly russeted fruit on a small upright tree. Pressed for a perry that is medium in acid and low in tannin, rated average to good.",
+      "appearance": "Small yellow pears, faintly flushed orange and patchily russeted. The pages read do not describe fruit shape or flesh color.",
+      "flavor_use": "Grown for perry: Raintree rates the juice average to good (medium acid, low tannin), and the National Perry Pear Centre calls it good quality and also culinary and dessert. Needs a pollinizer pear.",
+      "uses": [
+        "perry",
+        "cooking"
+      ],
+      "ripening": "Mid",
+      "ripening_note": "September per Raintree; mid to late Sept (early mid-season) at the UK National Perry Pear Centre",
+      "id_cues": "Best check against Hendre Huffcap is timing: Raintree lists Thorn for September with mid-season bloom, and Hendre Huffcap for October with an early-blooming pollinizer. Both trees are called upright, so shape is a weak cue. Thorn fruit: small, yellow, faint orange flush, some russet.",
+      "habit": "Small tree with an upright habit, about 15 ft tall on the semi-dwarf OHxF87 rootstock Raintree lists; bears abundant crops.",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "Zones 5 to 9 (Raintree)",
+      "sources": [
+        [
+          "Raintree Nursery: Thorn European Perry Pear",
+          "https://raintreenursery.com/products/thorn-e-perry-pear-semi-dwarf"
+        ],
+        [
+          "National Perry Pear Centre: Thorn",
+          "https://www.nationalperrypearcentre.org.uk/pear/thorn/"
+        ],
+        [
+          "Raintree Nursery: Hendre Huffcapp European Perry Pear",
+          "https://raintreenursery.com/products/hendre-huffcapp-e-pear-semi-dwarf"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Pages cover fruit, perry and timing but give no leaf or bark traits. One of the 2 trees tagged Hendre Huffcap may be this Thorn, so compare harvest month and fruit.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
       "id": "cherry-bing",
       "group": "Cherry",
       "type": "Cherry",
@@ -3663,6 +3710,101 @@
       "reviewed_on": "2026-10-17"
     },
     {
+      "id": "cherry-regina",
+      "group": "Cherry",
+      "type": "Cherry",
+      "kind": "cultivar",
+      "name": "Regina",
+      "aliases": [
+        "Regina sweet cherry",
+        "RA"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [
+        62
+      ],
+      "tagline": "Late; very large, dark, very firm; crack resistant",
+      "summary": "German sweet cherry from the Jork research station that ripens late. Very large, dark, crunchy fruit with a sweet, mild flavor and strong resistance to rain cracking. Needs a different sweet cherry nearby for pollination.",
+      "appearance": "Very large heart-shaped cherries with squared shoulders; skin dark red to nearly black, flesh slightly paler than the skin, very firm and crunchy. Stark Bro's says the stone clings to the flesh (clingstone).",
+      "flavor_use": "Sweet and mild with balanced acid (WSU gives 19-22% sugar); Stark Bro's finds it sweet-tart when red and sweeter when deep purple. Fresh eating; reported to store up to five weeks. Stark says any other sweet cherry except Van will pollinate it.",
+      "uses": [
+        "fresh"
+      ],
+      "ripening": "Late",
+      "ripening_note": "14-17 days after Bing (WSU), 10-12 days (Dave Wilson); Stark Bro's gives only late June.",
+      "id_cues": "Late: ripens about 2 weeks after Bing and blooms 7-9 days after it (WSU), so an early-blooming or early-fruiting tree is not Regina. Fruit is very large, very firm, crunchy, clingstone. Owner's notes call Black Tartarian early and soft, and Sam mid-season.",
+      "habit": "Vigorous, about 15-18 ft tall and wide (Stark Bro's); wide branch angles and strong central-leader habit make it easy to train (Dave Wilson). Productivity problems are reported; several late pollenizers and extra bees help.",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "Zones 5-8 (Stark Bro's); Dave Wilson: very winter hardy",
+      "sources": [
+        [
+          "Washington State Univ. Tree Fruit: Regina cherry variety profile",
+          "https://treefruit.wsu.edu/variety/regina/"
+        ],
+        [
+          "Dave Wilson Nursery: Regina cherry (variety finder)",
+          "https://www.wheretobuy.davewilson.com/product-information-commercial/product/regina-cherry"
+        ],
+        [
+          "Stark Bro's: Regina sweet cherry tree",
+          "https://www.starkbros.com/products/fruit-trees/cherry-trees/regina-sweet-cherry"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Sources differ on timing (WSU 14-17 days after Bing, Dave Wilson 10-12), acidity (low-acid vs sweet-tart) and origin year (WSU 1981, Stark 1998). Stark lists Sam Sweet Cherry as a pollination partner.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "cherry-sam-sweet",
+      "group": "Cherry",
+      "type": "Cherry",
+      "kind": "cultivar",
+      "name": "Sam Sweet",
+      "aliases": [
+        "Sam",
+        "Sam cherry",
+        "SS"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [
+        64
+      ],
+      "tagline": "Early; large mahogany, firm; late bloom, hardy",
+      "summary": "Hardy sweet cherry from Summerland, British Columbia (1953), named for the station and breeder Arthur Mann; Stark Bro's sells it as Sam Sweet. Large, dark, firm fruit; blooms late; needs a second sweet cherry.",
+      "appearance": "Large, conic to heart-shaped cherries (Stark Bro's says medium to large) with dark mahogany to nearly black skin and firm flesh. The fruit hangs in fairly tight clusters.",
+      "flavor_use": "Sweet but fairly low in sugar and acid; tastes poor if picked before it is fully dark. Eaten fresh or canned (syrup as dark as Bing's but milder); Stark adds freezing. Resists rain cracking; tight clusters favor brown rot. Needs another sweet cherry as pollinizer.",
+      "uses": [
+        "fresh",
+        "canning",
+        "pollinizer"
+      ],
+      "ripening": "Early",
+      "ripening_note": "About 1 week before Bing (UC Davis); June per Stark Bro's.",
+      "id_cues": "Blooms in the latest pollination period, same as Regina, while Black Tartarian blooms in the earliest (OSU): bloom separates it from Black Tartarian, not Regina, so compare ripening against Bing too (Sam is about a week ahead). Large, firm, mahogany fruit in tight clusters; poor flavor if picked early.",
+      "habit": "Hardy, vigorous, upright-spreading tree with a good branch framework, hardier than Bing; it ranked just behind Van in a 1955 Washington freeze. Blooms later than most sweet cherries, which can help it miss late frosts.",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "Zones 5-9 (Stark Bro's, UC Davis)",
+      "sources": [
+        [
+          "UC Davis Foundation Plant Services: Sam cherry",
+          "https://fps.ucdavis.edu/treedetails.cfm?v=1336"
+        ],
+        [
+          "Stark Bro's: Sam Sweet cherry tree",
+          "https://www.starkbros.com/products/fruit-trees/cherry-trees/sam-sweet-cherry"
+        ],
+        [
+          "Oregon State Univ. Extension: EM 9484 sweet cherry compatibility and bloom timing chart",
+          "https://extension.oregonstate.edu/catalog/em-9484-sweet-cherry-compatibility-bloom-timing-chart-commercial-growers"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Almost certainly Sam: Stark titles its cherries '[Name] Sweet Cherry' and its text says Sam. Sheet says partly self-fertile; sources say a pollinizer is needed. OSU lists Sam and Royalton in the same group (S2S4): cross-incompatible.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
       "id": "peach-blazing-star",
       "group": "Peach",
       "type": "Peach",
@@ -4070,6 +4212,54 @@
       "reviewed_on": "2026-10-17"
     },
     {
+      "id": "peach-veteran",
+      "group": "Peach",
+      "type": "Peach",
+      "kind": "cultivar",
+      "name": "Veteran",
+      "aliases": [
+        "Veteran peach",
+        "VT"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [
+        88
+      ],
+      "tagline": "Mid; yellow-orange, red-splashed; hardy, late bloom",
+      "summary": "Hardy yellow freestone peach from Vineland Station, Ontario (1928), a Vaughn x Early Elberta cross. Medium to large, soft, richly flavored fruit on a vigorous, self-fertile tree that blooms late.",
+      "appearance": "Medium to large, round-oblate (flattened round) fruit with yellow to yellow-orange skin splashed or blushed red. Flesh is yellow, soft and melting, a little coarse, and the stone comes free when fully ripe.",
+      "flavor_use": "Richly flavored, good quality when fully ripe; the flesh peels easily and suits fresh eating, canning, drying and freezing. Self-fertile; needs 900 to 1000 chill hours. Raintree says Pacific Northwest growers spray for peach leaf curl.",
+      "uses": [
+        "fresh",
+        "canning",
+        "drying"
+      ],
+      "ripening": "Mid",
+      "ripening_note": "About 1 week before Elberta (UC Davis), which Maine lists as late Sept; Raintree calls it mid-season.",
+      "id_cues": "Maine's table: Reliance mid Aug (small fruit), Contender mid Sept (medium), Elberta late Sept (large). Veteran runs a week ahead of Elberta (UC Davis), likely between Contender and Elberta. Size only rules out small Reliance; look for soft flesh, red-splashed yellow-orange skin, small pale pink late blossoms.",
+      "habit": "Vigorous, highly productive, about 14 ft tall (Raintree). Hardy through winter and late to bloom, so it is among the more dependable peaches for cold climates; blossoms are small and not showy (UC Davis).",
+      "bark": null,
+      "leaf": "Leaf glands are kidney-shaped (reniform); no other leaf details found.",
+      "hardiness": "Zones 5-9 (Raintree, its hardiest peach); UC Davis: winter hardy",
+      "sources": [
+        [
+          "UC Davis Foundation Plant Services: Veteran peach",
+          "https://fps.ucdavis.edu/treedetails.cfm?v=3423"
+        ],
+        [
+          "Raintree Nursery: Veteran peach",
+          "https://raintreenursery.com/products/veteran-peach-semi-dwarf"
+        ],
+        [
+          "Univ. of Maine Extension (Highmoor Farm): peach varieties table",
+          "https://extension.umaine.edu/highmoor/wp-content/uploads/sites/48/2025/07/PeachVarieties.pdf"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "UC Davis says 900 chill hours, Raintree 900-1000. Maine's table does not list Veteran; it is used only for the comparison peaches. Nothing in the listed pages mentions J.H. Hale, so the owner's note about it is not repeated.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
       "id": "apricot-chinese-mormon",
       "group": "Apricot",
       "type": "Apricot",
@@ -4282,6 +4472,54 @@
       "reviewed_on": "2026-10-17"
     },
     {
+      "id": "apricot-patterson",
+      "group": "Apricot",
+      "type": "Apricot",
+      "kind": "cultivar",
+      "name": "Patterson",
+      "aliases": [
+        "Patterson apricot",
+        "PN"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [
+        50
+      ],
+      "tagline": "Early; firm, red-streaked yellow; self-fertile; canning",
+      "summary": "California canning apricot (Le Grand, 1968) with firm, bright orange, freestone fruit and a mild flavor; self-fertile and a heavy bearer. Dave Wilson rates it zones 6-9, so zones 4-5 are a gamble.",
+      "appearance": "Fairly round freestone fruit, called large by UC Davis but medium-sized by Dave Wilson. Yellow skin streaked with red; flesh is bright orange and very firm.",
+      "flavor_use": "Mild flavor rated fair to good, with little juice. Used for canning, freezing, drying and fresh eating; UC Davis rates its canning qualities very high. Self-fertile, so one tree fruits alone. Needs about 600 chill hours.",
+      "uses": [
+        "fresh",
+        "canning",
+        "drying"
+      ],
+      "ripening": "Early",
+      "ripening_note": "About 1 week after Blenheim and 1 week before Moorpark (UC Davis); June 20-30 in California (Dave Wilson).",
+      "id_cues": "Vs Moorpark: Patterson ripens about a week earlier, is firm with little juice, and has yellow skin streaked with red. Moorpark is juicy and rich, with an orange-red blush and brownish-red speckles. UC Davis calls both large, so size is a weak cue.",
+      "habit": "Heavy, consistent bearer that holds its fruit even under a big crop; self-fertile. The sources used give no mature size or shape.",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "Zones 6-9 (Dave Wilson Nursery)",
+      "sources": [
+        [
+          "UC Davis Foundation Plant Services: Patterson apricot",
+          "https://fps.ucdavis.edu/treedetails.cfm?v=1144"
+        ],
+        [
+          "UC Davis Foundation Plant Services: Moorpark apricot",
+          "https://fps.ucdavis.edu/treedetails.cfm?v=997"
+        ],
+        [
+          "Dave Wilson Nursery: Patterson apricot",
+          "https://www.davewilson.com/nurseries/products/fruit-trees/apricot/patterson/"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Dave Wilson rates it zones 6-9, not the 4-9 on the purchase sheet; none of the listed pages give frost or winter data for zones 4-5. It ripens before Moorpark, so season length matters less than cold.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
       "id": "plum-italian",
       "group": "Plum",
       "type": "Plum",
@@ -4463,6 +4701,9 @@
       ],
       "purchase_rows": [
         115
+      ],
+      "seed_rows": [
+        29
       ],
       "tagline": "Late; dark purple clusters; cook before eating",
       "summary": "Large suckering shrub with flat white flower heads in early summer and drooping clusters of dark purple berries in late summer. The berries must be cooked and go into jelly, syrup, juice and wine.",
@@ -4731,6 +4972,9 @@
       ],
       "purchase_rows": [
         116
+      ],
+      "seed_rows": [
+        27
       ],
       "tagline": "Mid; tall tree; sweet purple blackberry-like fruit",
       "summary": "Large native eastern tree with sweet, juicy blackberry-like fruit that darkens to purple in summer. Trees are usually male or female, and birds, mammals and people eat the fruit.",
@@ -5051,6 +5295,9 @@
         114
       ],
       "purchase_rows": [],
+      "seed_rows": [
+        23
+      ],
       "tagline": "Mid; thin shell, mild nuts; use hardy Carpathian types",
       "summary": "Common (Persian) walnut: a large, spreading tree with thin-shelled, mild nuts. Utah guidance favors hardy Carpathian-type strains for most sites; other English walnuts suit only warmer places.",
       "appearance": "Nuts ripen inside a smooth green hull that darkens and dries by harvest; the shell itself is thin and wrinkled. Tree reaches 40 to 60 ft tall and as wide, with a rounded crown.",
@@ -5148,6 +5395,55 @@
       "reviewed_on": "2026-10-17"
     },
     {
+      "id": "hickory-shellbark",
+      "group": "Nut",
+      "type": "Hickory",
+      "kind": "species",
+      "name": "Shellbark hickory",
+      "aliases": [
+        "Shellbark Hickory",
+        "Carya laciniosa",
+        "HS"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [
+        75
+      ],
+      "tagline": "Mid; large nuts, thick husk; slow, deep taproot",
+      "summary": "Native hickory of moist river bottoms with sweet nuts bigger than any other hickory has. Slow-growing and deep-taprooted, it wants deep moist soil and takes many years to bear.",
+      "appearance": "Fruit is tan to brown, about 1.8 to 2.4 in long, in a husk 1/4 to 1/2 in thick that splits to the base in four parts. The cream-colored nut is 4-angled with a thick shell; about 25 to 35 cleaned nuts weigh a pound.",
+      "flavor_use": "Sweet, buttery kernel in a thick shell; many rate it below shagbark. Hickories are mostly self-fertile but crop better with cross-pollination (Willis lists a pollinator as needed), so plant several. Pecan weevil and hickory shuckworm can cut yields.",
+      "uses": [
+        "nuts",
+        "wildlife",
+        "timber"
+      ],
+      "ripening": "Mid",
+      "ripening_note": "September to October per USDA NRCS, some fruit hanging to December; Willis lists September to November",
+      "id_cues": "Versus shagbark: usually 7 to 9 leaflets (shagbark 5) with no hair tufts on the leaf-tooth tips, heavier branches, and much bigger nuts. Bark plates are straighter, but both are shaggy, so bark is a weak cue. Hybrids with shagbark and pecan occur.",
+      "habit": "Large, slow-growing, long-lived tree, roughly 65 to 100 ft tall, with an open round-to-oblong crown. The seedling puts down a long taproot fast while the shoot grows slowly, so it transplants poorly; it resprouts after cutting. Leafs out late, in late May to June.",
+      "bark": "Smooth light gray with shallow ridges when young, later long broad plates that peel up from the trunk for a shaggy look. Twigs are thick, orange-brown and rusty-hairy when young, with a large, elongated terminal bud.",
+      "leaf": "Alternate, compound, roughly 1 to 3 ft long, usually with 7 to 9 leaflets 3.5 to 8 in long. Leaflets are coarsely toothed, shiny dark green above, paler and soft-hairy below, with no hair tufts on the teeth.",
+      "hardiness": "Zones 5-9 (Willis); -15 F average minimum in northern native range (USDA)",
+      "sources": [
+        [
+          "USDA NRCS: Plant Guide, Shellbark hickory (Carya laciniosa)",
+          "https://plants.usda.gov/DocumentLibrary/plantguide/pdf/pg_cala21.pdf"
+        ],
+        [
+          "USDA Forest Service: Silvics of North America, Shellbark Hickory",
+          "https://dendro.cnre.vt.edu/dendrology/USDAFSSilvics/450.pdf"
+        ],
+        [
+          "Willis Orchard Company: Shellbark Hickory Tree",
+          "https://www.willisorchards.com/product/shellbark-hickory-tree"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Native to deep moist bottomland with 150-210 frost-free days; only occasionally on dry sandy soil (USDA). A short-season, dry, windy site is likely a poor fit; no page I read rates wind. Bearing: 10-20 yrs (Willis) vs 40-yr minimum (USDA).",
+      "reviewed_on": "2026-10-17"
+    },
+    {
       "id": "douglas-fir",
       "group": "Evergreen",
       "type": "Douglas-fir",
@@ -5209,6 +5505,9 @@
         20
       ],
       "purchase_rows": [],
+      "seed_rows": [
+        12
+      ],
       "tagline": "Hardy evergreen; shreddy bark; cedar-apple rust host",
       "summary": "A juniper often called a cedar (botanically it is a juniper, not one of the true cedars). Hardy, drought-tolerant evergreen for windbreaks and hedges, with shreddy bark and blue berries. Carries cedar-apple rust.",
       "appearance": "Mid-sized evergreen about 30-45 ft tall and 15-30 ft wide, on a short trunk. Compact pyramid in youth that loosens and sags a little with age. Blue-green in summer, red-brown to purplish in winter; female trees bear dusty blue berries.",
@@ -5288,7 +5587,7 @@
         ]
       ],
       "basis": "sourced",
-      "note": "Inventory says only 'Variety'; the workbook lists Rocky Mountain juniper, so that is described. Cultivars vary widely in shape and color. Workbook says 20-30 ft; NDSU gives 20-40 ft.",
+      "note": "Inventory says only 'Variety'; the workbook lists Rocky Mountain juniper, so that is described. Cultivars vary widely in shape and color. Workbook says 20-30 ft; NDSU gives 20-40 ft. The Rocky Mountain juniper species profile describes that species in full.",
       "reviewed_on": "2026-10-17"
     },
     {
@@ -5305,6 +5604,9 @@
         22
       ],
       "purchase_rows": [],
+      "seed_rows": [
+        22
+      ],
       "tagline": "Dense young pine; 2 stiff needles; silvery buds",
       "summary": "European pine widely planted in the West as a hardy windbreak and screen. Stiff needles in pairs and silvery buds tell it from ponderosa pine.",
       "appearance": "Mid-sized to large pine, about 50 ft tall and 30 ft wide. Densely conical for its first 20 years or so, then it loses lower branches and turns irregular and flat-topped. Yellow-green to blue-green foliage all year.",
@@ -5352,6 +5654,9 @@
         23
       ],
       "purchase_rows": [],
+      "seed_rows": [
+        15
+      ],
       "tagline": "Tall native pine; orange plated bark; long needles",
       "summary": "Tall native pine; the interior (Rocky Mountain) form has shorter needles and smaller cones than the coastal form. Older trees have orange plated bark; used for windbreak and timber.",
       "appearance": "Large pine that can reach 60-125 ft tall and 25-30 ft wide. Narrow pyramid when young; old trees have an irregular, open crown and a trunk bare of branches for over half its height. Long-lived, up to about 600 years. Green year-round.",
@@ -5402,6 +5707,9 @@
         24
       ],
       "purchase_rows": [],
+      "seed_rows": [
+        19
+      ],
       "tagline": "Idaho state tree; 5 soft needles; long hanging cones",
       "summary": "Idaho's state tree, a tall timber pine of the northern Rockies with soft needles in bundles of five. Rarely planted in yards and prone to blister rust.",
       "appearance": "Tall, fairly narrow pine with slender drooping branches and a long clean trunk; crown can be symmetrical or one-sided. About 60-100 ft in cultivation and up to around 175 ft in northern Idaho forests, growing fast on deep, moist soil.",
@@ -5450,6 +5758,9 @@
         25
       ],
       "purchase_rows": [],
+      "seed_rows": [
+        26
+      ],
       "tagline": "Dense pyramid; sharp square needles; hanging cones",
       "summary": "Dense, pyramidal Rocky Mountain spruce with sharp four-sided needles. Foliage is silvery blue or plain green; used as a windbreak, screen or specimen.",
       "appearance": "Broad, dense pyramid with stiff branches held level and reaching the ground; about 30-65 ft tall and 15-25 ft wide, eventually quite large. Foliage runs from dull green through blue-green to silvery blue; in the wild it is about as often green as blue.",
@@ -5485,6 +5796,244 @@
       "reviewed_on": "2026-10-17"
     },
     {
+      "id": "hinoki-cypress",
+      "group": "Evergreen",
+      "type": "Cypress",
+      "kind": "species",
+      "name": "Hinoki cypress",
+      "aliases": [
+        "Hinoki Cypress",
+        "Chamaecyparis obtusa"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "seed_rows": [
+        4
+      ],
+      "tagline": "Large cypress; flat scale-leaf fans; red shreddy bark",
+      "summary": "Hinoki cypress (Chamaecyparis obtusa) is a Japanese evergreen with flat, fan-like sprays of scale leaves. Grown from seed it becomes a full-size tree, so here it is an ornamental needing shelter.",
+      "appearance": "Cone-shaped, broad or narrow, with horizontal spreading branches whose tips droop. About 50-75 ft tall and 10-25 ft wide in gardens; up to 120 ft in native forest. Dark green, with no fall color, and it can turn brown in winter.",
+      "flavor_use": "Ornamental specimen; seedlings grow into the full-size tree, not the dwarf garden forms. Wants wind shelter and moist, well-drained soil, and does poorly in alkaline soil. Transplants badly. Juniper blight, bagworms and root rot are listed problems.",
+      "uses": [
+        "ornamental"
+      ],
+      "ripening": null,
+      "ripening_note": "",
+      "id_cues": "Flat, fan-shaped sprays of scale leaves, with white X or Y marks underneath and blunt tips; two scale sizes. Shreddy reddish bark. Small round orange-brown cones, about 1/3 to 1/2 in wide, with 8-10 scales.",
+      "habit": "Medium growth rate. Cone-shaped crown with branchlets held in flat horizontal layers and drooping branch tips. Resents transplanting, so plant small and leave it. Suckering is not described.",
+      "bark": "Red-brown, fibrous bark that splits and peels away in thin strips. Sources do not describe young-trunk bark, twig color or buds.",
+      "leaf": "Tiny scale leaves pressed flat to the twig in two sizes (larger pair boat-shaped, smaller pair triangular), dark green above with white X or Y marks below, tips blunt. Seedlings start with awl-shaped leaves.",
+      "hardiness": "Zone 5 (UConn); zone 6 (Gymnosperm Database)",
+      "sources": [
+        [
+          "NC State Extension: Chamaecyparis obtusa (Hinoki cypress), Plant Toolbox",
+          "https://plants.ces.ncsu.edu/plants/chamaecyparis-obtusa/"
+        ],
+        [
+          "UConn Plant Database: Chamaecyparis obtusa, Hinoki Falsecypress",
+          "https://plantdatabase.uconn.edu/detail.php?pid=106"
+        ],
+        [
+          "Gymnosperm Database: Chamaecyparis obtusa",
+          "https://www.conifers.org/cu/Chamaecyparis_obtusa.php"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Sheet says zones 4 to 8, but sources give zone 5 or 6, so zone 4 is marginal. NC State says it needs wind protection; UConn says it browns in winter and does poorly in alkaline soil.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "cedar-of-lebanon",
+      "group": "Evergreen",
+      "type": "Cedar",
+      "kind": "species",
+      "name": "Cedar of Lebanon",
+      "aliases": [
+        "Cedrus libani"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "seed_rows": [
+        6
+      ],
+      "tagline": "Slow big cedar; needle tufts, barrel cones; zone 5+",
+      "summary": "Cedar of Lebanon (Cedrus libani) is a slow-growing evergreen native from Turkey to Lebanon and Cyprus. It forms a large, flat-topped specimen tree, but cold hardiness is the limit at this site.",
+      "appearance": "Pyramidal when young; with age the crown thickens and flattens on top, branches spread level and the lowest ones touch the ground. Typically 40-60 ft tall and 30-50 ft wide; 120 ft has been recorded. Foliage stays green to blue-green all year.",
+      "flavor_use": "Specimen, screen or shade tree for a large open lot. Needs full sun and good drainage; tolerates dry soil and a range of soil pH, but not shade or air pollution. Slow and hard to transplant. Highly flammable, so keep it away from buildings.",
+      "uses": [
+        "ornamental",
+        "shade"
+      ],
+      "ripening": null,
+      "ripening_note": "Cones mature in fall, about every other year; seeds drop from ripening until spring",
+      "id_cues": "Stiff needles in tufts of about 30-40 (single on new growth), three- to four-sided in section, dark green with silver-blue stripes. Barrel-shaped woody cones stand upright on branches. Other true cedars share the needle pattern; Taurus-type sizes reportedly sit between Lebanon and Atlas cedar, so size is a weak cue.",
+      "habit": "Slow, especially for the first 20 years. Left alone it can form several leaders, so train one if wanted. The Taurus (stenocoma) form is more columnar, with slightly nodding branch tips. Suckering is not described.",
+      "bark": "Dark gray, fissured and fragrant on older trunks. Sources do not describe young bark, twig color or buds.",
+      "leaf": "Short, stiff, prickly needles about 3/4 to 1.5 in long, dark green to blue-green with silver-blue stripes and fragrant, in tufts (single on new shoots). Evergreen.",
+      "hardiness": "5a-7b (NC State); stenocoma strain zone 5; older stock zone 7 south (Purdue)",
+      "sources": [
+        [
+          "NC State Extension: Cedrus libani (Cedar of Lebanon), Plant Toolbox",
+          "https://plants.ces.ncsu.edu/plants/cedrus-libani/"
+        ],
+        [
+          "Oregon State Univ. Landscape Plants: Cedrus libani 'Stenocoma'",
+          "https://landscapeplants.oregonstate.edu/plants/cedrus-libani-stenocoma"
+        ],
+        [
+          "Purdue Arboretum: Cedrus libani ssp. stenocoma 'Purdue Hardy'",
+          "https://www.arboretum.purdue.edu/explorer/plants/128/"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Sheet says 5b to 9. Sources: zones 5a-7b; hardier Taurus (stenocoma) strains are documented to zone 5 only, never zone 4. Purdue: most saplings from one Middle East seed collection died in zone 5a winters, so seed source matters.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "juniper-rocky-mountain",
+      "group": "Evergreen",
+      "type": "Juniper",
+      "kind": "species",
+      "name": "Rocky Mountain juniper",
+      "aliases": [
+        "Rocky Mountain Juniper",
+        "Juniperus scopulorum"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "seed_rows": [
+        13
+      ],
+      "tagline": "Slow native juniper; scale leaves, blue berries; apple-rust host",
+      "summary": "Rocky Mountain juniper (Juniperus scopulorum) is a slow-growing native evergreen with tiny scale leaves and waxy blue berry-like cones. It suits dry sites and windbreaks but hosts cedar-apple rust.",
+      "appearance": "Usually one trunk, sometimes forked low, under a conical to irregular crown; up to about 45 ft in the wild. Foliage runs light to dark green and often looks silvery-blue from a waxy coat.",
+      "flavor_use": "Windbreak, wildlife cover and bird food on dry sites; prefers somewhat alkaline soil. Hosts cedar-apple rust, which spots apple leaves and fruit: keep it away from the orchard and cut out galls in early spring. Winter wind can burn the foliage.",
+      "uses": [
+        "windbreak",
+        "wildlife",
+        "ornamental"
+      ],
+      "ripening": null,
+      "ripening_note": "Berry-like cones need two seasons; ripe by Nov-Dec of the second year, then stay on until spring",
+      "id_cues": "Tiny scale leaves lie close to the twig; waxy blue cones (1/4 to 1/3 in) ripen in the second year. Eastern redcedar is very similar and hybridizes: its fruit ripens the first autumn and its bark peels as thin narrow scales, while this one splits into flat ridges with shreddy scales.",
+      "habit": "Slow: wild trees average about 1 ft at 8 years, 13-14 ft at 40 and 18 ft at 80. Sexes are mostly on separate trees, so only females bear berries. It does not resprout after top-kill. Dense branches suit windbreaks.",
+      "bark": "Brown and thin, peeling in narrow strips. Small branchlets are smooth; larger ones shed bark in plates. Trunk bark splits into narrow flat ridges that break into shreddy scales. Buds are not described.",
+      "leaf": "Scale leaves 1-3 mm long in opposite pairs, tight to the twig or slightly spreading; light to dark green, from plain green to silvery-blue between trees. Young plants have longer whip leaves, 3-6 mm.",
+      "hardiness": "Zone 3 (Gymnosperm Database); tolerates about -35 F (FEIS)",
+      "sources": [
+        [
+          "USDA Forest Service: Fire Effects Information System, Juniperus scopulorum",
+          "https://www.fs.usda.gov/database/feis/plants/tree/junsco/all.html"
+        ],
+        [
+          "Gymnosperm Database: Juniperus scopulorum (Rocky Mountain juniper)",
+          "https://www.conifers.org/cu/Juniperus_scopulorum.php"
+        ],
+        [
+          "Montana State Univ. Extension: Cedar-apple rust",
+          "https://www.montana.edu/extension/Full_HTML_Pubs/a-guide-to-pests-problems-and-identification-of-ornamental-shrubs-and-trees-in-montana/diseases/cedar-apple-rust.html"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Wild trees grow slower than the sheet's 12 in/yr: FEIS gives about 13-14 ft at age 40. The inventory line 'Juniper (variety)' is not confirmed to be this species.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "fir-grand",
+      "group": "Evergreen",
+      "type": "Fir",
+      "kind": "species",
+      "name": "Grand fir",
+      "aliases": [
+        "Grand Fir",
+        "Abies grandis"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "seed_rows": [
+        16
+      ],
+      "tagline": "Fast tall fir; flat notched needles, orange scent",
+      "summary": "Grand fir (Abies grandis) is a very tall, fast-growing fir native to northern and central Idaho. Its flat needles give off an orange scent when crushed. It likes moister ground than a dry site offers.",
+      "appearance": "Conical, with slightly drooping branches and a long, narrow crown of dense foliage that can turn rounded or flat-topped with age. Often 130-165 ft inland and 140-200 ft on the coast, with a trunk 3-4 ft thick.",
+      "flavor_use": "Grown for Christmas trees and as an ornamental; a timber tree in the wild. Does best on moist, deep soils and is only moderately drought tolerant, so a dry site likely needs watering. Prone to heart and root rot fungi, budworm, tussock moth and bark beetles.",
+      "uses": [
+        "ornamental",
+        "timber"
+      ],
+      "ripening": null,
+      "ripening_note": "Cones fall apart on the tree as the seeds ripen",
+      "id_cues": "Flat needles in two ranks, of alternating lengths, tips notched, orange-scented when crushed. Upright cones break apart on the tree. Young bark is gray-green with resin blisters; buds are large and pitchy. Look-alikes include subalpine, Pacific silver and noble firs.",
+      "habit": "Fast for a fir: seedlings have added up to 3 ft a year, and 140 ft in about 50 years is reported on coastal sites. Crown width varies from narrow to wide. Deep taproot plus wide-spreading roots; grows from seed only, with no sprouting.",
+      "bark": "Young bark gray-green with resin blisters. Older bark is 2-3 in thick, mottled brown-gray and grooved into flat ridges; the layer beneath is purple-red. Twigs are stiff and olive to red-brown; buds are big, rounded and coated in pitch, usually in groups of 3 or more at the tip.",
+      "leaf": "Needles are flat, 3/4 to 2 in long, set in two flat rows with long and short ones alternating; glossy dark yellow-green on top with two white bands underneath; tips notched or blunt. Crushed needles smell of citrus.",
+      "hardiness": "Zone 4 (Oregon State)",
+      "sources": [
+        [
+          "Oregon State Univ. Landscape Plants: Abies grandis (Grand Fir)",
+          "https://landscapeplants.oregonstate.edu/plants/abies-grandis"
+        ],
+        [
+          "Virginia Tech Dendrology: grand fir (Abies grandis)",
+          "https://dendro.cnre.vt.edu/dendrology/syllabus/factsheet.cfm?ID=183"
+        ],
+        [
+          "USDA Forest Service: Fire Effects Information System, Abies grandis",
+          "https://www.fs.usda.gov/database/feis/plants/tree/abigra/all.html"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Sheet says zone 6; Oregon State says zone 4. FEIS: inland it is most common where rainfall is 25+ in a year and does best on moist valley bottoms, so a dry site likely needs irrigation. No page I read covers wind.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "fir-fraser",
+      "group": "Evergreen",
+      "type": "Fir",
+      "kind": "species",
+      "name": "Fraser fir",
+      "aliases": [
+        "Fraser Fir",
+        "Abies fraseri"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "seed_rows": [
+        17
+      ],
+      "tagline": "Christmas-tree fir; cool, moist, acid soil; heat-shy",
+      "summary": "Fraser fir (Abies fraseri) is a narrow-crowned fir from high southern Appalachian peaks, grown as a Christmas tree. It wants cool, wet mountain conditions, so a dry inland site is a poor match.",
+      "appearance": "Narrow cone to spire-shaped crown with branches at right angles to the trunk. About 30-55 ft tall in garden references and 50-60 ft in the wild; an 87 ft tree is on record. Evergreen.",
+      "flavor_use": "Christmas tree and ornamental. Sources call for cool, damp but well-drained acidic loam; heat is a problem, the roots are very shallow and windthrow is a known risk. Balsam woolly adelgid seriously threatens wild stands; root rots occur. Hot, dry, windy ground is a poor fit.",
+      "uses": [
+        "ornamental"
+      ],
+      "ripening": null,
+      "ripening_note": "Good cone crops come about every other year, starting near age 15",
+      "id_cues": "Flat, flexible needles with a notched or rounded tip, shiny dark green above. Dark purple cones whose long bracts curl down over the scales; balsam fir, the look-alike, has short bracts that stay tucked under the scales. Smooth gray bark with resin blisters.",
+      "habit": "Very shallow rooted and prone to windthrow. Shade tolerant, but does best with full sun: about 8 ft after 11 years in the open, only 2-3 ft in 20 years under dense shade. Seeds are wind-dispersed; layering from low branches is minor.",
+      "bark": "Thin gray bark, smooth when young apart from resin blisters; old trunks grow small reddish scales that later turn gray. Twigs pale yellow-brown with reddish fuzz; buds small, conical, light brown and resinous.",
+      "leaf": "Flat, flexible needles about 1/2 to 1 in long, in two ranks on lower branches and spiraled elsewhere. Tip slightly notched or rounded; shiny dark green above, stomatal rows beneath; strong turpentine-like scent.",
+      "hardiness": "Zone 4 (Gymnosperm Database)",
+      "sources": [
+        [
+          "NC State Extension: Abies fraseri (Fraser fir), Plant Toolbox",
+          "https://plants.ces.ncsu.edu/plants/abies-fraseri/"
+        ],
+        [
+          "USDA Forest Service: Fire Effects Information System, Abies fraseri",
+          "https://www.fs.usda.gov/database/feis/plants/tree/abifra/all.html"
+        ],
+        [
+          "Gymnosperm Database: Abies fraseri",
+          "https://www.conifers.org/pi/Abies_fraseri.php"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Sheet says zones 4 to 7; Gymnosperm Database agrees (zone 4). Wild stands get about 33-100 in of rain a year in cool, foggy, acid-soil mountains and NC State says heat is not tolerated, so a hot, dry site is a poor fit.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
       "id": "ash",
       "group": "Shade tree",
       "type": "Ash",
@@ -5499,6 +6048,9 @@
         116
       ],
       "purchase_rows": [],
+      "seed_rows": [
+        7
+      ],
       "tagline": "Tough shade tree; paired compound leaves; diamond bark",
       "summary": "Large shade and windbreak tree from eastern and central North America, with paired compound leaves and diamond-patterned bark. Tough on dry, high-pH ground, but emerald ash borer makes new plantings a gamble.",
       "appearance": "Mature size is 50 to 70 ft high with a 35 to 50 ft spread. Pyramidal when young, becoming a rounded, irregular crown with age. Leaflets are bright green and go yellow in autumn.",
@@ -5549,6 +6101,9 @@
         117
       ],
       "purchase_rows": [],
+      "seed_rows": [
+        18
+      ],
       "tagline": "White bark; quaking leaves; suckers; short-lived stems",
       "summary": "Native mountain tree with pale bark and round leaves that tremble in light wind. It spreads by root suckers into groves and suits cool, moist, sunny sites.",
       "appearance": "About 50 ft tall with a spread near 30 ft; pyramidal when young, narrowing to a rounded crown. Whitish trunk, yellow-green summer leaves and yellow-to-orange autumn color.",
@@ -5679,7 +6234,7 @@
         ]
       ],
       "basis": "sourced",
-      "note": "Species not recorded. Japanese and trident maple are rated zone 5 and warmer, sugar maple zone 4 and warmer. Norway maple's milky leaf-stalk sap can fade late in summer.",
+      "note": "Species not recorded. Japanese and trident maple are rated zone 5 and warmer, sugar maple zone 4 and warmer. Norway maple's milky leaf-stalk sap can fade late in summer. Species profiles for sugar, Japanese, and trident maple describe each in full.",
       "reviewed_on": "2026-10-17"
     },
     {
@@ -5729,7 +6284,595 @@
         ]
       ],
       "basis": "sourced",
-      "note": "Owner's sheet lists northern red oak at zones 3-8; the listed pages give no zone for it. Utah State rates bur oak a good fit for most of Utah (high pH, drought, cold, wind); no Idaho-specific page was checked.",
+      "note": "Owner's sheet lists northern red oak at zones 3-8; the listed pages give no zone for it. Utah State rates bur oak a good fit for most of Utah (high pH, drought, cold, wind); no Idaho-specific page was checked. Species profiles for northern red oak and white oak describe each in full.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "dawn-redwood",
+      "group": "Shade tree",
+      "type": "Deciduous conifer",
+      "kind": "species",
+      "name": "Dawn redwood",
+      "aliases": [
+        "Dawn Redwood",
+        "Metasequoia glyptostroboides"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "seed_rows": [
+        5
+      ],
+      "tagline": "Deciduous conifer; red fluted bark; wants moist soil",
+      "summary": "Fast, cone-shaped deciduous conifer from China with feathery needles that turn bronze and drop in fall. A big specimen or shade tree for moist ground; a poor match for dry, alkaline soil.",
+      "appearance": "Conical, uniform crown about 70 to 100 ft tall and 25 ft wide, and old trees can pass 100 ft. Foliage is light green in spring, darker in summer, then russet to pinkish bronze in fall; the tree is leafless in winter.",
+      "flavor_use": "Specimen or lawn shade tree for big spaces; transplants easily. UConn warns it struggles in dry soil or soil with a high pH, and spider mites show up when it is dry, so it needs steady moisture. Early fall frosts hurt late growth, so avoid frost pockets. Japanese beetles feed on the leaves.",
+      "uses": [
+        "shade",
+        "ornamental"
+      ],
+      "ripening": null,
+      "ripening_note": "Foliage turns russet to bronze and drops, twiglets and all, in fall; cones mature late fall",
+      "id_cues": "Flat needles in opposite pairs on feathery twiglets that drop whole in fall; buds are opposite on the persistent twigs; trunk is buttressed and fluted with shredded red-brown bark. Baldcypress looks similar, but UConn says the opposite buds tell them apart.",
+      "habit": "Very fast, with a straight single trunk and a narrow cone-shaped crown; branches spread out horizontally. Wants full sun and moist, well-drained soil on the acid side. It grows late into fall, so early frosts can injure new growth.",
+      "bark": "Reddish brown and stringy, shedding in long rope-like strips and forming an irregular fluted pattern; the trunk base flares into buttresses and looks braided. Persistent twigs are thin and pale reddish brown with small paired buds.",
+      "leaf": "Flat, linear needles about 1/2 to 1 in long, opposite and in two ranks along branchlets that look like small feathery compound leaves. Light to bright green; branchlets and needles fall together in autumn.",
+      "hardiness": "Zone 4 (UConn Plant Database)",
+      "sources": [
+        [
+          "University of Connecticut: Plant Database - Metasequoia glyptostroboides (Dawn Redwood)",
+          "https://plantdatabase.uconn.edu/detail.php?pid=289"
+        ],
+        [
+          "Virginia Tech Dendrology: dawn redwood (Metasequoia glyptostroboides)",
+          "https://dendro.cnre.vt.edu/dendrology/syllabus/factsheet.cfm?ID=98"
+        ],
+        [
+          "The Morton Arboretum: Dawn redwood",
+          "https://mortonarb.org/plant-and-protect/trees-and-plants/dawn-redwood/"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Sheet says zones 4b to 8; UConn gives zone 4 only. UConn and Morton both favor moist, slightly acid soil, and UConn warns it struggles on dry or alkaline ground, which describes this site.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "larch-western",
+      "group": "Shade tree",
+      "type": "Larch (deciduous conifer)",
+      "kind": "species",
+      "name": "Western larch",
+      "aliases": [
+        "Western Larch",
+        "Larix occidentalis"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "seed_rows": [
+        14
+      ],
+      "tagline": "Deciduous conifer; needle tufts; gold fall; plated bark",
+      "summary": "Native Inland Northwest conifer that turns gold and drops its soft needles in fall, with very thick bark on old trunks. It comes from cool, moist mountain sites, so a dry, alkaline site is a stretch.",
+      "appearance": "Typically 100 to 180 ft tall, some over 200 ft, on a very straight trunk often bare of branches for much of its length, topped by a short, airy, pyramid-shaped crown. Golden in fall, then bare. Spread is not given in the sources (sheet: 25 to 30 ft).",
+      "flavor_use": "Large tree for deep soil in full sun; Oregon State says it soon outgrows a typical garden. Roots anchor well against wind, but branches are brittle. Low rainfall limits its native range at the low end, so on a dry site plan to irrigate (inference). No salt tolerance.",
+      "uses": [
+        "shade",
+        "ornamental"
+      ],
+      "ripening": null,
+      "ripening_note": "Needles open yellow-green in spring, turn gold by autumn, then drop",
+      "id_cues": "A conifer that drops its needles: soft needles in tufts of 15 to 30 on short spur shoots, golden in fall; thick, plated, reddish bark with age; cone bracts stick out past the scales. Virginia Tech lists tamarack, subalpine larch and Dunkeld larch as look-alikes, so tufts alone are a weak cue.",
+      "habit": "Fast-growing and long-lived, and very shade-intolerant, so it needs open sun. Roots are deep and spreading. In a stand the lower third to half of the trunk is bare; open-grown trees keep branches low. Limbs are thick yet brittle.",
+      "bark": "Young trees have thin, scaly, gray-brown bark; old trunks develop very thick bark with deep furrows and big flaky plates, coloring from yellowish to red-brown. Twigs are yellow-brown and crowded with short spur shoots; buds are tiny, rounded and smooth.",
+      "leaf": "Soft, slender needles about 1 to 2 in long, flat to triangular in cross-section, borne alone on the current year's growth but bundled 15 to 30 together on the short spur shoots of older wood. Light yellow-green in spring, glossy pale green in summer, gold by autumn.",
+      "hardiness": "Zone 4 (Oregon State Landscape Plants)",
+      "sources": [
+        [
+          "Virginia Tech Dendrology: western larch (Larix occidentalis)",
+          "https://dendro.cnre.vt.edu/dendrology/syllabus/factsheet.cfm?ID=214"
+        ],
+        [
+          "Oregon State University Landscape Plants: Larix occidentalis",
+          "https://landscapeplants.oregonstate.edu/plants/larix-occidentalis"
+        ],
+        [
+          "USDA Forest Service: Fire Effects Information System, Larix occidentalis",
+          "https://www.fs.usda.gov/database/feis/plants/tree/larocc/all.html"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Sheet says medium growth (12 in/yr); FEIS and Oregon State call it fast. FEIS: low rainfall limits its range and soil pH 6 to 7 suits it, so dry alkaline ground is uncertain (inference).",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "planetree-monumental",
+      "group": "Shade tree",
+      "type": "Planetree",
+      "kind": "species",
+      "name": "Monumental planetree (London planetree)",
+      "aliases": [
+        "Monumental Planetree",
+        "Platanus x acerifolia",
+        "MP"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "seed_rows": [
+        25
+      ],
+      "tagline": "Pyramidal planetree; peeling bark; maple-like leaves",
+      "summary": "Monumental looks like a trade name for the London planetree 'Morton Naper': a broad pyramidal shade tree with peeling cream-white bark and big maple-like leaves. Listed hardy to zone 4; takes high pH and some drought.",
+      "appearance": "Listed at about 50 to 70 ft tall and 33 to 49 ft wide (NVK gives metres), with a strong central leader and dense, broad pyramidal crown. The plain species reaches 70 to 100 ft and is more open and wide-spreading. Leaves are green in summer and turn yellow in fall.",
+      "flavor_use": "Shade or specimen tree for a large yard; NVK names the peeling bark as its main feature. Morton says the species tolerates drought and high pH but needs watering in its first years, and young trees can frost-crack. Messy: drops leaves, twigs and seed balls. Canker stain and anthracnose can occur.",
+      "uses": [
+        "shade",
+        "ornamental"
+      ],
+      "ripening": null,
+      "ripening_note": "Flowers open in early spring as the leaves emerge; leaves turn yellow in fall; seed balls break up over winter",
+      "id_cues": "Alternate, maple-like leaves with 3 to 5 lobes; bark flakes off in patches to show cream, green and gray; round seed balls hang in pairs or threes, while American sycamore holds them singly. Leaf shape alone is a weak cue, since it mimics a maple's.",
+      "habit": "Strong central leader with a dense, broad pyramidal crown; listed as fast growing. The plain species develops a looser, uneven crown that spreads wide with age. Male and female flowers are separate balls on the same tree.",
+      "bark": "Gray-brown to tan outer bark flakes off in scales, leaving blotches of cream, white, gray and green beneath; the upper trunk looks nearly white, and NVK lists white winter bark.",
+      "leaf": "Simple, alternate and leathery, with 3 to 5 maple-like lobes and a width of 6 to 7 in; edges are nearly smooth. Bright green above, paler below. NVK calls the leaves coarse and deeply lobed. They turn yellow to yellow-brown in fall.",
+      "hardiness": "Zone 4 for this selection (NVK); species 5-8 (Illinois Extension)",
+      "sources": [
+        [
+          "NVK Nurseries: Platanus x acerifolia 'Monumental' (Morton Naper)",
+          "https://www.nvknurseries.com/plant/Platanus-x%20acerifolia-Monumental-Morton-Naper"
+        ],
+        [
+          "The Morton Arboretum: London planetree (Platanus x acerifolia)",
+          "https://mortonarb.org/plant-and-protect/trees-and-plants/london-planetree/"
+        ],
+        [
+          "University of Illinois Extension: Selecting Trees - London Planetree",
+          "https://web.extension.illinois.edu/treeselector/detail_plant.cfm?PlantID=247"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "NVK lists Monumental with 'Morton Naper' in brackets, matching the sheet note, so it looks like a trade name for that selection. Morton's page names 'Morton Circle' and 'Morton Euclid' but not Naper, so the breeder is unconfirmed.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "kentucky-coffeetree",
+      "group": "Shade tree",
+      "type": "Coffeetree",
+      "kind": "species",
+      "name": "Kentucky coffeetree",
+      "aliases": [
+        "Kentucky Coffee Tree",
+        "Gymnocladus dioicus"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "seed_rows": [
+        21
+      ],
+      "tagline": "Late-leafing shade tree; very large compound leaves; toxic",
+      "summary": "Large native shade tree with very large twice-compound leaves, stout twigs and flat pods on female trees. Tolerates drought and high pH, but the foliage, seeds and pulp are toxic to people, pets and livestock.",
+      "appearance": "Reaches roughly 60 to 80 ft in height and 40 to 55 ft across; the crown is oval and open, sometimes irregular. Leaves come out late in spring, pinkish bronze at first, then blue-green, and turn yellow in fall. The bare winter tree looks coarse, and female trees keep dark pods into winter.",
+      "flavor_use": "Shade tree for large lawns and parks that tolerates drought, pollution and occasional flooding. NC State rates the leaves, seeds and pulp as toxic to livestock, people and pets, so keep animals and children away from pods and fallen leaves. Male trees are seedless, which avoids pod litter.",
+      "uses": [
+        "shade",
+        "ornamental"
+      ],
+      "ripening": null,
+      "ripening_note": "Leaf-out comes in late spring and leaf drop by early fall; pods are showing by fall and stay on female trees through winter",
+      "id_cues": "Very large twice-compound leaves up to 3 ft long, appearing late; very stout zigzag twigs with no terminal bud and sunken side buds; deeply furrowed bark with scaly ridges; flat leathery pods on female trees. Compound leaves alone are not unique, so use twigs and pods too.",
+      "habit": "Male and female flowers grow on separate trees, and only females make pods. Fast when young, then moderate to slow. Needs full sun (shade intolerant); tolerates many soils but prefers deep, moist ones.",
+      "bark": "Dull gray-brown, split by deep furrows into scaly ridges; older trunks show curved scales, young branches are smoother and brown to gray. Twigs are very thick, brown and zigzag, with a broad salmon-pink pith and sunken buds.",
+      "leaf": "Alternate and twice-compound, to about 3 ft by 2 ft, with 5-9 leaflet pairs; each oval leaflet is untoothed, blue-green and about 1.5 in long. Emerges pinkish bronze in late spring and turns a mild yellow in fall.",
+      "hardiness": "Zones 3-8 (Utah State TreeBrowser)",
+      "sources": [
+        [
+          "NC State Extension Plant Toolbox: Gymnocladus dioicus",
+          "https://plants.ces.ncsu.edu/plants/gymnocladus-dioicus/"
+        ],
+        [
+          "Utah State University Extension: Kentucky Coffeetree (TreeBrowser)",
+          "https://extension.usu.edu/treebrowser/catalog/coffeetree-kentucky"
+        ],
+        [
+          "The Morton Arboretum: Kentucky coffeetree",
+          "https://mortonarb.org/plant-and-protect/trees-and-plants/kentucky-coffeetree/"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "NC State flags leaves, seeds and pulp as toxic to livestock, people and pets; Morton names leaves and seeds. Roasted-seed coffee is mentioned, but treat every part as unsafe to eat. Sheet growth is 12-24 in/yr; NC State: fast when young.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "beech-american",
+      "group": "Shade tree",
+      "type": "Beech",
+      "kind": "species",
+      "name": "American beech",
+      "aliases": [
+        "American Beech",
+        "Fagus grandifolia"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "seed_rows": [
+        8
+      ],
+      "tagline": "Smooth gray bark; slim sharp buds; holds winter leaves",
+      "summary": "Large eastern shade tree with smooth gray bark, sharply toothed leaves that cling in winter, and edible nuts. It wants moist, acid, well-drained soil, so dry alkaline ground is a stretch.",
+      "appearance": "Large, low-branched tree, often 50 to 80 ft tall and 40 to 80 ft wide, with a dense, rounded to oval crown of wide-spreading limbs. Summer foliage is dark green and fall color is golden bronze.",
+      "flavor_use": "Shade or woodland tree; wildlife eat the nuts, and people can eat small amounts (NC State: large servings may upset the stomach). Wants moist, acid, well-drained soil; Utah State rates drought and alkaline tolerance only medium. Beech bark disease (scale plus fungus) has killed millions of beeches in New England.",
+      "uses": [
+        "shade",
+        "nuts",
+        "wildlife"
+      ],
+      "ripening": null,
+      "ripening_note": "Flowers open with the leaves in spring; nuts ripen in fall; leaves turn golden bronze and many hang on into winter.",
+      "id_cues": "Smooth gray trunk, slim sharp brown buds 3/4 to 1 in long, sharply toothed leaves with 11 to 15 pairs of straight parallel veins, and dead leaves clinging all winter. Nuts sit in prickly husks. European beech has smaller leaves with fewer veins.",
+      "habit": "Slow to moderately slow growth, faster when young. Dense, low-branched, shade-tolerant crown. Sends up root suckers from its surface roots, so a whole grove can grow from one tree. Can be hard to transplant; fails in wet or compacted soil.",
+      "bark": "Thin, smooth, silvery to pale blue-gray bark that darkens and may mottle with age but stays smooth. Twigs are slender, shiny and slightly zigzag; buds are brown, narrow, sharp-pointed and 3/4 to 1 in long.",
+      "leaf": "Simple, alternate, egg-shaped to elongated, 2 to 5 in long, coarsely and sharply toothed with a tapering tip. Dark green and shiny above, paler below, turning golden bronze in fall; some dead leaves hang on over winter.",
+      "hardiness": "Zones 3-9 (Utah State and NC State)",
+      "sources": [
+        [
+          "Utah State University Extension: American Beech (TreeBrowser)",
+          "https://extension.usu.edu/treebrowser/catalog/beech-american"
+        ],
+        [
+          "NC State Extension Plant Toolbox: Fagus grandifolia",
+          "https://plants.ces.ncsu.edu/plants/fagus-grandifolia/"
+        ],
+        [
+          "UMass Extension: Beech Bark Disease (landscape fact sheet)",
+          "https://www.umass.edu/agriculture-food-environment/landscape/fact-sheets/beech-bark-disease"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Sheet says zones 4-9 and 12-24 in per year; sources say zones 3-9 and slow to moderately slow growth. The beech bark disease source covers New England; Idaho status was not checked.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "yellow-poplar",
+      "group": "Shade tree",
+      "type": "Tulip tree",
+      "kind": "species",
+      "name": "Yellow poplar (tulip tree)",
+      "aliases": [
+        "Yellow Poplar",
+        "Tulip poplar",
+        "Tuliptree",
+        "Liriodendron tulipifera",
+        "YP"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "seed_rows": [
+        9
+      ],
+      "tagline": "Very tall fast tree; 4-lobed leaves; needs steady moisture",
+      "summary": "Very tall native tree of the magnolia family despite the poplar name, with four-lobed leaves, tulip-like flowers and cone-like seed heads. Needs room and deep, moist soil.",
+      "appearance": "Very large, straight-trunked tree listed at 80 to 120 ft tall and 30 to 60 ft wide (NC State), or about 90 by 50 ft (Virginia Extension), with a pyramidal to oval crown. Leaves turn golden yellow in fall.",
+      "flavor_use": "Shade or specimen tree for large open sites; flowers attract hummingbirds and butterflies. Sensitive to heat and drought, shallow-rooted, and weak-wooded in wind or ice, so a poor fit for dry, windy ground unless it gets steady water. Aphids, scale and Verticillium wilt can occur.",
+      "uses": [
+        "shade",
+        "ornamental",
+        "wildlife"
+      ],
+      "ripening": null,
+      "ripening_note": "Flowers open in late spring; seed clusters turn brown by October and last through winter; leaves turn golden yellow in fall.",
+      "id_cues": "Four-lobed leaves with a flat-cut tip, like a tulip outline; duck-bill-shaped buds; twigs that smell spicy when broken; bark with pale furrows in a diamond pattern; upright, cone-like seed heads that last into winter.",
+      "habit": "Fast once established, with a straight trunk that may stay limb-free to 80 ft up. Shallow roots, weak wood, and hard to transplant (move small balled plants in spring). Can be coppiced; rabbits chew young buds and bark.",
+      "bark": "Smooth, light gray-green on young trees; older bark is gray-brown with flat-topped ridges and pale furrows in a diamond pattern. Twigs are green to reddish-brown with ring-like stipule scars; buds are flattened, duck-bill shaped, up to 1/2 in.",
+      "leaf": "Alternate, simple, 3 to 8 in across, with four main lobes, smooth edges and a broad, flat-cut tip; leaf stalk 2 to 4 in. Glossy green above, paler below, golden yellow in fall; may yellow and drop early in drought.",
+      "hardiness": "Zones 4-9 (NC State); Virginia Extension says 5-9",
+      "sources": [
+        [
+          "NC State Extension Plant Toolbox: Liriodendron tulipifera",
+          "https://plants.ces.ncsu.edu/plants/liriodendron-tulipifera/"
+        ],
+        [
+          "Morton Arboretum: Tuliptree (Liriodendron tulipifera)",
+          "https://mortonarb.org/plant-and-protect/trees-and-plants/tuliptree/"
+        ],
+        [
+          "Virginia Cooperative Extension: Tuliptree (Liriodendron tulipifera)",
+          "https://www.pubs.ext.vt.edu/2901/2901-1074/2901-1074.html"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Sheet says zones 4-9 and a 30-50 year life; the pages I opened give no lifespan. Sources differ on alkaline soil: Morton says it tolerates some, Virginia Extension lists soil pH 3.7 to 6.8.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "elm-american",
+      "group": "Shade tree",
+      "type": "Elm",
+      "kind": "species",
+      "name": "American elm",
+      "aliases": [
+        "American Elm",
+        "Ulmus americana"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "seed_rows": [
+        10
+      ],
+      "tagline": "Vase-shaped shade tree; lopsided leaves; Dutch elm risk",
+      "summary": "Large, fast-growing native shade tree with a vase shape, doubly toothed leaves and ridged bark. Copes with dry, windy, alkaline ground, but Dutch elm disease makes ordinary seedlings a gamble.",
+      "appearance": "Large vase- or urn-shaped tree, 60 to 80 ft tall and 30 to 60 ft wide, with arching limbs. In the open the trunk often forks low; in a dense stand the crown is narrow on a long clear trunk. Fall color is soft yellow.",
+      "flavor_use": "Dense-shade tree for large sites, with food and nesting value for wildlife; Utah State rates drought and alkaline tolerance high, and Morton says it copes with heat and wind. Dutch elm disease is fatal with no cure; elm yellows and Verticillium wilt also occur.",
+      "uses": [
+        "shade",
+        "wildlife"
+      ],
+      "ripening": null,
+      "ripening_note": "Small flowers open before the leaves in late winter to early spring; winged seeds ripen in spring; leaves turn yellow in fall.",
+      "id_cues": "Doubly toothed leaves with a lopsided base on zigzag twigs with no end bud; vase-shaped crown; dark gray bark with flat braided ridges, and broken bark shows light and dark layers. Hybrid elms can look alike, so no single cue is certain.",
+      "habit": "Rapid growth into a vase shape, but short-lived in practice because of disease (Utah State rates longevity low). Fibrous roots transplant easily. Roots of nearby elms can graft together and pass Dutch elm disease between trees.",
+      "bark": "Ash-gray to dark gray, mixed with black on old trees, with flat braided ridges and diamond-shaped furrows; very old bark can turn rough and patternless. Twigs are slender, smooth, brown and zigzag; buds are oval, chestnut-brown, about 1/4 in.",
+      "leaf": "Alternate, simple, oval to elliptic, 4 to 6 in long and 1 to 3 in wide, with doubly toothed edges, a pointed tip and an uneven base. Dark green and slightly rough above, paler and sometimes hairy below; soft yellow in fall.",
+      "hardiness": "Zones 2-9 (Utah State); NC State lists 3-9",
+      "sources": [
+        [
+          "Utah State University Extension: American or White Elm (TreeBrowser)",
+          "https://extension.usu.edu/treebrowser/catalog/elm-american-white"
+        ],
+        [
+          "NC State Extension Plant Toolbox: Ulmus americana",
+          "https://plants.ces.ncsu.edu/plants/ulmus-americana/"
+        ],
+        [
+          "Morton Arboretum: American elm (Ulmus americana)",
+          "https://mortonarb.org/plant-and-protect/trees-and-plants/american-elm/"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Sheet says zones 4-9; sources say 2-9 or 3-9. Plain seedlings are not named cultivars, so assume Dutch elm risk. Morton rates Valley Forge and New Harmony strongly resistant, Princeton good; Utah State doubts long-term proof.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "hackberry-common",
+      "group": "Shade tree",
+      "type": "Hackberry",
+      "kind": "species",
+      "name": "Common hackberry",
+      "aliases": [
+        "Common Hackberry",
+        "Celtis occidentalis"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "seed_rows": [
+        11
+      ],
+      "tagline": "Tough shade tree; warty corky bark; 3-vein uneven leaves",
+      "summary": "Tough, long-lived shade tree with warty, corky bark and leaves with an uneven base. Utah State rates it high for drought and alkaline soil and notes it is often used in windbreaks.",
+      "appearance": "Medium to large tree, usually 40 to 60 ft tall and wide (NC State says up to 130 ft in ideal conditions), with a straight trunk, arching branches and a broad, spreading crown. Fall color is a plain yellow.",
+      "flavor_use": "Shade, street and windbreak tree for dry, windy, high-pH ground; birds eat the dark fruit and people can eat the thin, sweet flesh. Witches' broom and leaf nipple galls look untidy but do little harm. NC State lists it as immune to Dutch elm disease.",
+      "uses": [
+        "shade",
+        "windbreak",
+        "wildlife",
+        "fresh"
+      ],
+      "ripening": null,
+      "ripening_note": "Fruit ripens in September to October and may hang on into winter; fall color is a plain yellow.",
+      "id_cues": "Gray bark with corky warts and ridges; leaves with three distinct veins from an uneven base and coarse teeth from mid-leaf to the tip; zigzag twigs with no end bud; round purple fruit; nipple galls. Look-alikes are sugarberry and elms.",
+      "habit": "Medium-fast to rapid growth, long-lived. Straight central trunk, arching branches, wide crown. Transplants easily and takes many soils and wind, but not maritime exposure. Wood is heavy but soft and weak, and decays quickly when wet.",
+      "bark": "Smooth gray-brown when young, soon forming corky warts that grow into rough corky ridges; smooth limbs can resemble beech. Twigs slender, zigzag, green to reddish-brown with pale dots (lenticels); side buds small and pressed to the twig.",
+      "leaf": "Alternate, simple, egg- to lance-shaped, 2 to 5 in long, with a long pointed tip, coarse teeth from mid-leaf to tip, an uneven base and three main veins from the base. Green, sometimes rough above; plain yellow in fall; may carry nipple galls.",
+      "hardiness": "Zones 2-9 (Utah State); NC State lists 3-9",
+      "sources": [
+        [
+          "Utah State University Extension: Common Hackberry (TreeBrowser)",
+          "https://extension.usu.edu/treebrowser/catalog/hackberry-common"
+        ],
+        [
+          "NC State Extension Plant Toolbox: Celtis occidentalis",
+          "https://plants.ces.ncsu.edu/plants/celtis-occidentalis/"
+        ],
+        [
+          "Virginia Tech Dendrology: Hackberry (Celtis occidentalis) fact sheet",
+          "https://dendro.cnre.vt.edu/dendrology/syllabus/factsheet.cfm?ID=26"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Sheet says zones 3-9; Utah State says 2-9, NC State 3-9. Growth is medium-fast (Utah State) to rapid (NC State). NC State mentions Asian woolly hackberry aphid and frequent mix-ups with sugarberry.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "maple-japanese",
+      "group": "Shade tree",
+      "type": "Maple",
+      "kind": "species",
+      "name": "Japanese maple",
+      "aliases": [
+        "Acer Japanese Maple",
+        "Acer palmatum"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "seed_rows": [
+        2
+      ],
+      "tagline": "Small maple; 5-9 cut lobes; zone 5+, needs shelter",
+      "summary": "Small Asian maple with deeply lobed opposite leaves, grown for its form and fall color. Rated zone 5 and warmer, so on this site it wants wind shelter and afternoon shade.",
+      "appearance": "Usually 15 to 25 ft tall and often multi-stemmed, with a compact, rounded, layered crown of spreading branches. Leaves are green to red or purple in summer depending on the cultivar, then turn yellow, orange, bronze, purple or scarlet in fall.",
+      "flavor_use": "Ornamental or specimen tree, also used for bonsai. Wants afternoon shade, shelter from drying wind and even moisture; young leaves are frost-tender, and too much sun, wind or dry weather can scorch them. Seeds itself freely and is rated invasive in Virginia and D.C.; only mildly deer resistant.",
+      "uses": [
+        "ornamental"
+      ],
+      "ripening": null,
+      "ripening_note": "Fall color runs yellow to red; winged seeds are ripe by early fall",
+      "id_cues": "Opposite leaves cut into 5 to 9 pointed, toothed lobes; thin hairless twigs, green to red and often with a pale bloom; tiny buds tucked under the leaf-stalk base, often paired at the tip; winged seeds curve inward. Leaf color varies by cultivar, so color is a weak cue.",
+      "habit": "Small multi-stemmed tree or large shrub, slow to moderate growth, form very variable. Named forms are mostly grafted and plain seedlings differ from them, so seed-grown trees vary and do not reliably match a cultivar.",
+      "bark": "Young bark is green to reddish-purple, turning gray with age. Twigs are thin, hairless and green to bright red, often with a pale bloom. Buds are small, green or red, and hidden beneath the leaf-stalk base.",
+      "leaf": "Opposite, simple, 2 to 5 in long, cut into 5 to 9 pointed lobes (usually 5 to 7) with double-toothed edges and some hairs in the vein angles beneath. Green in the typical form, red or purple in some cultivars; fall color yellow, orange, scarlet or bronze.",
+      "hardiness": "Zones 5-8 (Utah State); Oregon State says hardy to zone 5",
+      "sources": [
+        [
+          "Utah State University Extension: Japanese Maple (TreeBrowser)",
+          "https://extension.usu.edu/treebrowser/catalog/maple-japanese"
+        ],
+        [
+          "NC State Extension Plant Toolbox: Acer palmatum",
+          "https://plants.ces.ncsu.edu/plants/acer-palmatum/"
+        ],
+        [
+          "Oregon State University Landscape Plants: Acer palmatum",
+          "https://landscapeplants.oregonstate.edu/plants/acer-palmatum"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Rated zone 5 and up by USU and OSU, so zone 4 is outside the range. NC State says not drought tolerant; OSU, quoting Sunset, says plain seedlings take more sun, wind and drought than named forms. No page covers alkaline soil.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "maple-trident",
+      "group": "Shade tree",
+      "type": "Maple",
+      "kind": "species",
+      "name": "Trident maple",
+      "aliases": [
+        "Trident Maple",
+        "Acer buergerianum"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "seed_rows": [
+        3
+      ],
+      "tagline": "Small maple; 3 forward lobes; flaking orange bark",
+      "summary": "Small East Asian maple with three-lobed leaves and flaking gray, orange and brown bark, much used for bonsai. Reported hardy to zone 5 and drought resistant, but sources favor acid soil.",
+      "appearance": "Roughly 20 to 35 ft tall and somewhat narrower, with an oval to rounded crown; often multi-stemmed and low-branched unless pruned to one trunk. Fall color varies from yellow to red and orange and arrives late in the season.",
+      "flavor_use": "Small street, shade or bonsai tree. Tolerates drought, wind and salt but wants full sun and well-drained acid soil; no page states how it handles alkaline soil. Watch for verticillium wilt and limb breakage under snow or ice.",
+      "uses": [
+        "shade",
+        "ornamental"
+      ],
+      "ripening": null,
+      "ripening_note": "Fall color comes very late; winged seeds mature in fall",
+      "id_cues": "Opposite leaves with three forward-pointing triangular lobes and 3 main veins, glossy above; gray, orange and brown flaking bark on older stems; rich brown, pyramid-shaped, 4-angled buds; winged seeds with parallel wings. Flaking takes some years, so young trees lack it.",
+      "habit": "Grows at a slow to medium pace into a rounded tree that is often multi-stemmed and low-branched; it can be trained to a single trunk. Transplants easily. Shade intolerant, so it needs full sun.",
+      "bark": "Within several years it turns gray, orange and brown and flakes into scales, showing orange-brown inner bark. Twigs are thin; new growth is gray-brown and hairy, turning darker and smooth in the second year. Buds are deep brown, four-angled and pyramid-shaped.",
+      "leaf": "Opposite, simple, 3-lobed with forward-pointing lobes and 3 main veins; about 1.5 to 3.5 in wide, edges entire or slightly toothed. Glossy dark green above. Fall tones run from yellow through orange to red, mostly red and orange.",
+      "hardiness": "Zones 5-9 (Utah State); Oregon State says hardy to zone 5",
+      "sources": [
+        [
+          "Utah State University Extension: Trident Maple (TreeBrowser)",
+          "https://extension.usu.edu/treebrowser/catalog/maple-trident"
+        ],
+        [
+          "NC State Extension Plant Toolbox: Acer buergerianum",
+          "https://plants.ces.ncsu.edu/plants/acer-buergerianum/"
+        ],
+        [
+          "Oregon State University Landscape Plants: Acer buergerianum",
+          "https://landscapeplants.oregonstate.edu/plants/acer-buergerianum"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "USU rates zones 5-9 and OSU hardy to zone 5, so zone 4 is a risk. NC State and OSU both call for well-drained, acid soil. Drought and wind tolerance are reported, but none of the pages covers an alkaline, windy inland site.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "oak-northern-red",
+      "group": "Shade tree",
+      "type": "Oak",
+      "kind": "species",
+      "name": "Northern red oak",
+      "aliases": [
+        "Northern Red Oak",
+        "Quercus rubra",
+        "RO"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "seed_rows": [
+        20
+      ],
+      "tagline": "Large oak; bristle-tipped lobes; acorns take 2 years",
+      "summary": "Large eastern shade oak with pointed, bristle-tipped leaves and red fall color. Moderate to fast growing and rated to zone 4, but iron chlorosis is a risk in high-pH soil.",
+      "appearance": "Typically 50 to 75 ft tall and about as wide, though it can reach 90 ft in height, with a rounded, broad crown that branches low in the open. Leaves are green above, paler below, and turn reddish-brown to deep red in fall.",
+      "flavor_use": "Shade and specimen tree; acorns feed birds, deer and squirrels, and the wood is used for flooring and furniture. Prefers well-drained, fertile, acidic soil and has higher water needs than bur oak. Oak wilt is a risk and gypsy moth is its worst insect pest. Acorn drop is a nuisance.",
+      "uses": [
+        "shade",
+        "wildlife",
+        "timber"
+      ],
+      "ripening": null,
+      "ripening_note": "Acorns take two seasons to ripen; leaves turn reddish-brown to deep red in fall",
+      "id_cues": "Leaves have 7 to 11 pointed, bristle-tipped lobes cut a third to half way to the midvein; acorns sit in a flat, shallow, beret-like cap and take two seasons; older bark has wide, flat-topped ridges with pale streaks. Black, scarlet and Shumard oaks look similar, so check acorns and bark too.",
+      "habit": "Moderate to fast growing for an oak, with a rounded crown carrying low branches in the open. Transplants easily. First acorns come at about 20 to 25 years and heavy crops at 40 to 50. Shade tolerance is intermediate.",
+      "bark": "Young trunks are smooth; older ones develop broad, flat-topped ridges with shallow grooves between, brown to almost black, with light gray lengthwise lines giving a ski-track look. Twigs are stout and red-brown; buds are clustered, pointed, red-brown and about 1/4 in long.",
+      "leaf": "Alternate, simple, large (5 to 8 in long per USU and VT; NC State says 8 to 12), with 7 to 11 pointed, bristle-tipped lobes. Dull to dark green above, paler or grayish beneath with small hair tufts where veins meet. Fall color reddish-brown to deep red.",
+      "hardiness": "Zones 4-8 (Utah State Extension)",
+      "sources": [
+        [
+          "Utah State University Extension: Northern Red Oak (TreeBrowser)",
+          "https://extension.usu.edu/treebrowser/catalog/oak-northern-red"
+        ],
+        [
+          "NC State Extension Plant Toolbox: Quercus rubra",
+          "https://plants.ces.ncsu.edu/plants/quercus-rubra/"
+        ],
+        [
+          "Virginia Tech Dendrology: Northern red oak (Quercus rubra)",
+          "https://dendro.cnre.vt.edu/dendrology/syllabus/factsheet.cfm?ID=38"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Sheet says zones 3-8 and fast growth; USU says zones 4-8 and medium growth. USU and NC State both flag chlorosis in high-pH soil. USU puts its water needs above bur oak's; NC State calls it drought tolerant once established.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "oak-white",
+      "group": "Shade tree",
+      "type": "Oak",
+      "kind": "species",
+      "name": "White oak",
+      "aliases": [
+        "White oak",
+        "Quercus alba",
+        "WO"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "seed_rows": [
+        24
+      ],
+      "tagline": "Slow big oak; rounded lobes; light scaly bark",
+      "summary": "Large, long-lived eastern oak with rounded, bristle-free lobes and pale scaly bark, planted for shade and wildlife. Rated zones 3-9 and handles some drought, but grows slowly.",
+      "appearance": "Can reach 135 ft with an 80 ft spread but usually stops at 80 to 100 ft. Pyramidal when young, becoming a broad, rounded crown with age. Leaves are green in summer, then turn brown to dark red in fall.",
+      "flavor_use": "Long-lived shade and wildlife tree; wood goes to lumber, furniture, floors and barrels. Acorns are edible to people only once the tannins are washed out, and NC State lists the tree as toxic to horses. Avoid wet or compacted ground and sites near paving; it is hard to transplant.",
+      "uses": [
+        "shade",
+        "wildlife",
+        "timber",
+        "nuts"
+      ],
+      "ripening": null,
+      "ripening_note": "Acorns ripen within one season, in fall; autumn leaves are brown to dark red",
+      "id_cues": "Leaves have 7 to 9 rounded, finger-like lobes with no bristles; bark is light ash-gray, chunky blocks on younger trees and scaly plates on old; acorn cap is warty and covers about a quarter of the nut; twigs lack corky ridges. Bur oak leaves can look similar, but its acorn cap is fringed and covers half or more.",
+      "habit": "Slow growing per NC State (USU says medium) and long-lived; pyramidal when young, broad and rounded with age. Its taproot goes deep, so it is hard to move; it dislikes soil compaction and can suffer wind damage.",
+      "bark": "Light ash-gray. Young and middle-aged trees have chunky, upright blocks; old trees have scaly plates fixed along one edge. Twigs are purple-gray to reddish-green and lack corky ridges; buds are small, round to oval, red-brown and clustered at the tip.",
+      "leaf": "Alternate, simple, 5 to 9 in long and 2 to 4 in wide, with 7 to 9 rounded, finger-like lobes and no bristles. Bright green above, paler and waxy beneath. Autumn color brown to dark red.",
+      "hardiness": "Zones 3-9 (Utah State Extension)",
+      "sources": [
+        [
+          "Utah State University Extension: White Oak (TreeBrowser)",
+          "https://extension.usu.edu/treebrowser/catalog/oak-white"
+        ],
+        [
+          "NC State Extension Plant Toolbox: Quercus alba",
+          "https://plants.ces.ncsu.edu/plants/quercus-alba/"
+        ],
+        [
+          "Utah State University Extension: Bur Oak (TreeBrowser)",
+          "https://extension.usu.edu/treebrowser/catalog/oak-bur"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "USU: zones 3-9, medium growth, tolerates moderately high pH. NC State: slow growth, usually 80-100 ft (sheet: 50-80), chlorosis if pH too high. USU rates bur oak hardier (zone 2) and suited to high pH, drought, wind.",
       "reviewed_on": "2026-10-17"
     },
     {
@@ -5924,6 +7067,111 @@
       ],
       "basis": "sourced",
       "note": "Entered as 'Rasberry?' and not confirmed. Check the fruit (hollow cap or core inside), cane color and leaflets when it fruits; it could be a blackberry, hybrid berry, black raspberry or wild Rubus.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "serviceberry-eastern",
+      "group": "Berry",
+      "type": "Serviceberry",
+      "kind": "species",
+      "name": "Eastern serviceberry (Amelanchier canadensis)",
+      "aliases": [
+        "Amelanchier canadensis",
+        "Shadbush",
+        "Juneberry"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [
+        117
+      ],
+      "tagline": "Early; multi-stem shrub; sweet purple-black berries",
+      "summary": "Eastern native multi-stem shrub or small tree with showy white spring bloom and sweet, blueberry-like purple-black berries. It suckers, likes moist sites, and is often confused with other serviceberries.",
+      "appearance": "Berry-like pomes under 1 in across that turn from green to red to deep purple-black. Showy white flowers open before the leaves. The plant is a multi-stem shrub or small tree.",
+      "flavor_use": "Sweet and blueberry-like, eaten fresh or in jams, jellies and pies; birds often get there first. In full sun it wants moister soil, and NC State says the genus does not tolerate wind and yellows in alkaline soil, so a dry windy site is a stretch.",
+      "uses": [
+        "fresh",
+        "cooking",
+        "jelly",
+        "ornamental",
+        "wildlife"
+      ],
+      "ripening": "Early",
+      "ripening_note": "May to June in North Carolina (NC State); expect later at a cold, high site",
+      "id_cues": "Multi-stem, suckering clump or thicket that blooms a bit later than downy serviceberry (A. arborea), the usual nursery mix-up. One main trunk points to arborea; 2-3 trunks and bronzed purple new leaves point to laevis. Leaves oblong, finely toothed, 1-3 in long; compare with the Saskatoon entry.",
+      "habit": "Large multi-stem shrub or small tree that suckers into clumps and thickets; 15 to 25 ft tall and 15 to 20 ft wide per NC State, 5 to 15 ft per JC Raulston. Wild plants grow in bogs, swamps and wet lowlands. Medium growth rate.",
+      "bark": "Smooth when young, developing long rough ridges and furrows with age. Twigs are hairy at first, reddish-brown in winter, with long, pointed reddish-purple buds.",
+      "leaf": "Alternate, oblong, finely toothed, 1 to 3 in long and under 1 in wide, rounded at base and tip with a small sharp point. Hairy when young, turning orange-red in fall.",
+      "hardiness": "Zones 3a to 8a (NC State Plant Toolbox)",
+      "sources": [
+        [
+          "NC State Extension: Amelanchier canadensis (Plant Toolbox)",
+          "https://plants.ces.ncsu.edu/plants/amelanchier-canadensis/"
+        ],
+        [
+          "JC Raulston Arboretum: Amelanchier (serviceberry) plant profile",
+          "https://jcra.ncsu.edu/horticulture/plant-profiles/details.php?ID=35"
+        ],
+        [
+          "NC State Extension: Amelanchier (serviceberry) genus",
+          "https://plants.ces.ncsu.edu/plants/amelanchier/"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Much nursery stock sold as canadensis is really A. arborea (JC Raulston), and hybrids blur the names, so the 25 plants may be mixed. Sources give different heights (5-15 vs 15-25 ft).",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "serviceberry-western",
+      "group": "Berry",
+      "type": "Serviceberry",
+      "kind": "species",
+      "name": "Western serviceberry (Saskatoon)",
+      "aliases": [
+        "Western Serviceberry",
+        "Amelanchier alnifolia",
+        "Saskatoon",
+        "WS"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "seed_rows": [
+        30
+      ],
+      "tagline": "Mid; sweet purple-black berries; suckering thickets",
+      "summary": "Saskatoon, the native western serviceberry: a suckering shrub or small tree with early white bloom and sweet purple-black berries in July and August, eaten fresh or cooked.",
+      "appearance": "Berry-like pomes 6 to 11 mm long, purple-black with a faint blue-gray waxy bloom, sweet and fleshy with 4 to 10 small seeds, in terminal clusters. Shrub or small tree 3 to 26 ft tall, rounded when grown alone.",
+      "flavor_use": "Sweet berries eaten fresh or dried, or cooked into pies, jam, jelly, syrup and wine. Self-fruitful, and irrigation raises yield (USU). Wild stands may give a good crop only every 3 to 5 years (drought, spring frost, juniper rust).",
+      "uses": [
+        "fresh",
+        "cooking",
+        "jelly",
+        "drying",
+        "windbreak",
+        "wildlife"
+      ],
+      "ripening": "Mid",
+      "ripening_note": "July to August across its range (NRCS); July 10 to Aug 19 in Montana east of the Divide (USFS)",
+      "id_cues": "Rounded to oval leaves with coarse teeth, short upright clusters of white flowers, purple-black berries with a blue-gray bloom, and rhizome sprouting into thickets. Native from the Pacific coast to the Rockies and northern plains. Compare leaf shape with the A. canadensis entry.",
+      "habit": "Often forms thickets, mats or clumps by sprouting from the root crown and rhizomes; a lone plant is rounded. Cultivars sucker from minimal (Honeywood) to many (Northline). Seedlings may need up to 5 years to bear. Relatively short-lived: sampled Montana plants averaged about 18 years old.",
+      "bark": "Thin, light brown tinged with red, smooth or shallowly fissured.",
+      "leaf": "Simple, alternate, deciduous, ovate to nearly round, coarsely toothed to below the middle (sometimes nearly entire), with 8 to 13 pairs of parallel side veins.",
+      "hardiness": "Cold hardy to zone 3 (Utah State Extension)",
+      "sources": [
+        [
+          "USDA NRCS: Plant Guide, Saskatoon (Amelanchier alnifolia)",
+          "https://plants.usda.gov/DocumentLibrary/plantguide/pdf/pg_amal2.pdf"
+        ],
+        [
+          "USDA Forest Service FEIS: Amelanchier alnifolia",
+          "https://www.fs.usda.gov/database/feis/plants/shrub/amealn/all.html"
+        ],
+        [
+          "Utah State Univ. Extension: How to Grow Serviceberries in Your Garden",
+          "https://extension.usu.edu/yardandgarden/research/serviceberry-in-the-garden"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Drought: USU says established plants survive on little water, but USFS says it does not tolerate prolonged drought (absent below 14 in/yr in Montana). NRCS warns that cultivars sold as alnifolia may be hybrids.",
       "reviewed_on": "2026-10-17"
     },
     {

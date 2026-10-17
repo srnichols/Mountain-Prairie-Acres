@@ -116,12 +116,49 @@ test('Unidentified apple possibilities reconcile with purchases and planned spot
   assert.deepEqual(plain(apples.candidates.filter(candidate => candidate.longShot).map(candidate => candidate.name)), ['Dolgo crabapple']);
 });
 
+test('Unidentified stone fruit possibilities reconcile with purchases and planned spots', () => {
+  const plain = value => JSON.parse(JSON.stringify(value));
+  const { info, lines } = model.unidentifiedStoneFruit();
+  assert.ok(typeof info.assumption === 'string' && info.assumption.length > 40, 'The unconfirmed arrival assumption is stated on the sheet');
+  assert.deepEqual(plain(lines.map(line => [line.type, line.tag, line.trees.length])), [['Cherry', 'CR-Sweet', 3], ['Peach', 'PC-Unk', 2], ['Apricot', 'AT-Unk', 1]]);
+  assert.deepEqual(plain(lines.map(line => line.trees.map(tree => tree.label))), [['Sweet-1', 'Sweet-2', 'Sweet-3'], ['PcUnk-1', 'PcUnk-2'], ['AtUnk-1']]);
+  assert.deepEqual(plain(lines.map(line => line.pool)), [
+    { main:4, longShot:0, trees:3, lostMin:1, lostMax:1 },
+    { main:4, longShot:0, trees:2, lostMin:2, lostMax:2 },
+    { main:1, longShot:0, trees:1, lostMin:0, lostMax:0 }
+  ]);
+  const spots = lines.flatMap(line => line.trees.map(tree => tree.spot));
+  assert.equal(new Set(spots).size, 6);
+  for (const line of lines) {
+    assert.ok(line.trees.every(tree => tree.status === 'planned' && /^R\d+-C\d+$/.test(tree.spot) && tree.siteRef), line.type);
+    for (const candidate of line.candidates) {
+      const purchased = candidate.rows.reduce((total, row) => total + model.fruitRecord(row).quantity, 0);
+      assert.equal(candidate.slots, purchased - candidate.taggedQty, candidate.name);
+      assert.ok(candidate.profile.sources.length && candidate.profile.sources.every(([, link]) => link.startsWith('https://')), candidate.name);
+      assert.ok(candidate.profile.purchase_rows.every(row => candidate.rows.includes(row)), candidate.name);
+    }
+  }
+  const patterson = lines[2].candidates[0];
+  assert.equal(patterson.name, 'Patterson');
+  assert.deepEqual(plain(patterson.tagged), []);
+  assert.deepEqual(plain(patterson.compareWith), [{ invRow:70, tag:'AT-moorpark', qty:2 }]);
+  assert.deepEqual(plain(lines[0].candidates.filter(candidate => candidate.slots > 1).map(candidate => candidate.name)), ['Black Tartarian']);
+  assert.deepEqual(plain(lines.flatMap(line => line.candidates.filter(candidate => !candidate.taggedQty).map(candidate => candidate.name))), ['Sam Sweet', 'Regina', 'Veteran', 'Patterson']);
+});
+
 test('Cultivar library covers every inventory line and its links resolve', () => {
   const library = context.window.CultivarLibrary;
   const unprofiled = new Set(Object.keys(context.window.CULTIVAR_LIBRARY.unprofiled).map(Number));
   for (const line of context.window.ORCHARD_DATA.INVENTORY) {
     assert.ok(library.forInventoryRow(line[0]) || unprofiled.has(line[0]), `inventory row ${line[0]} has no profile`);
   }
+  for (const row of model.FRUIT_BY_ROW.keys()) assert.ok(library.forPurchaseRow(row), `purchase row ${row} has no profile`);
+  const seedRows = Object.keys(context.window.ORCHARD_DATA.SEED_LIST).map(Number);
+  assert.equal(seedRows.length, 28);
+  for (const row of seedRows) assert.ok(library.forSeedRow(row), `seed-list row ${row} has no profile`);
+  assert.equal(library.forSeedRow(13).id, 'juniper-rocky-mountain');
+  assert.equal(library.forSeedRow(12), library.forInventoryRow(20), 'Eastern red cedar is both on hand and on the seed list');
+  assert.equal(library.forInventoryRow(21).id, 'juniper', 'The unconfirmed juniper line stays at genus level');
   assert.equal(library.forInventoryRow(29).name, 'Cortland');
   assert.equal(library.forPurchaseRow(10).id, 'apple-cortland');
   assert.equal(library.forInventoryRow(62), null);
@@ -129,7 +166,7 @@ test('Cultivar library covers every inventory line and its links resolve', () =>
   assert.equal(library.byId('apple-cortland').inventory_rows[0], 29);
   assert.ok(library.tooltip(library.byId('apple-cortland')).startsWith('Cortland: '));
   assert.equal(library.guideHref(library.byId('apple-cortland')), 'cultivar_guide.html#apple-cortland');
-  assert.equal(library.profiles.length, 112);
+  assert.equal(library.profiles.length, 137);
   assert.equal(library.GROUPS.length, 11);
   assert.ok(library.profiles.every(profile => library.GROUPS.includes(profile.group)));
 });

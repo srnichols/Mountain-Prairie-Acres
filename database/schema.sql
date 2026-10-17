@@ -71,7 +71,7 @@ CREATE TABLE cultivar_profiles (
 ) STRICT;
 CREATE TABLE cultivar_profile_links (
     profile_id TEXT NOT NULL REFERENCES cultivar_profiles(id),
-    link_type TEXT NOT NULL CHECK (link_type IN ('inventory', 'purchase')),
+    link_type TEXT NOT NULL CHECK (link_type IN ('inventory', 'purchase', 'seed')),
     source_row INTEGER NOT NULL, PRIMARY KEY (link_type, source_row)
 ) STRICT;
 CREATE TABLE cultivar_profile_aliases (
@@ -191,6 +191,16 @@ SELECT p.id AS plant_id, b.metal_tag, b.type, b.variety AS inventory_name, p.pla
 FROM plants p JOIN inventory_batches b ON b.source_row = p.inventory_row
 LEFT JOIN cultivar_profile_links k ON k.link_type = 'inventory' AND k.source_row = p.inventory_row
 LEFT JOIN cultivar_profiles c ON c.id = k.profile_id;
+
+CREATE VIEW seed_list AS
+SELECT w.source_row, trim(json_extract(w.values_json, '$.B')) AS species, json_extract(w.values_json, '$.C') AS code,
+       json_extract(w.values_json, '$.D') AS zones, json_extract(w.values_json, '$.E') AS growth_per_year,
+       json_extract(w.values_json, '$.F') AS size_ft, json_extract(w.values_json, '$.I') AS sowing,
+       c.id AS profile_id, c.name AS profile_name, c.plant_group, c.tagline
+FROM workbook_rows w
+LEFT JOIN cultivar_profile_links k ON k.link_type = 'seed' AND k.source_row = w.source_row
+LEFT JOIN cultivar_profiles c ON c.id = k.profile_id
+WHERE w.sheet = 'Trees' AND w.source_row > 1 AND trim(coalesce(json_extract(w.values_json, '$.B'), '')) <> '';
 
 CREATE VIEW water_budget AS
 SELECT c.*, c.area_sqft * c.runoff_factor *

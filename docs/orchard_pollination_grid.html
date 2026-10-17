@@ -347,7 +347,7 @@
 <p class="legend-note">▲ Dashed border = <strong>triploid</strong>, excluded as a pollen donor and placed near two different diploid cultivars. ★ Gold glow = <strong>good pollen donor in the workbook</strong>, not a guarantee of compatibility with every nearby tree.</p>
 <p class="legend-note">◥ Yellow corner = <strong>Pseudomonas (bacterial canker) positive, untreated</strong> in the inventory. When one tag covers several trees and only some tested positive, the inventory does not say which, so all of them are flagged.</p>
 <p class="legend-note" id="planted-note"></p>
-<p class="legend-note"><strong>S</strong> = self-fertile according to the planning notes; <strong>?</strong> = information missing or needing confirmation; <strong>UNK</strong> / <strong>SWT</strong> = unidentified tree (not counted as a pollen donor until identified; for the unidentified apples see the <a href="unidentified_apple_id_sheet.html">possibility list</a>). Hover over a tree for its cultivar profile, or click or tap it to jump to its row in the inventory table, which links to the <a href="cultivar_guide.html">cultivar guide</a>. Different trees of the same cultivar, including color sports, are not counted as different pollen partners.</p>
+<p class="legend-note"><strong>S</strong> = self-fertile according to the planning notes; <strong>?</strong> = information missing or needing confirmation; <strong>UNK</strong> / <strong>SWT</strong> = unidentified tree (not counted as a pollen donor until identified; see the possibility lists for the <a href="unidentified_apple_id_sheet.html">apples</a> and for the <a href="unidentified_stone_fruit_id_sheet.html">cherries, peaches, and apricot</a>). Hover over a tree for its cultivar profile, or click or tap it to jump to its row in the inventory table, which links to the <a href="cultivar_guide.html">cultivar guide</a>. Different trees of the same cultivar, including color sports, are not counted as different pollen partners.</p>
 <p class="legend-note">Apple <strong>FG</strong> means flowering group, not harvest season. <strong>*</strong> after a group number means sources differ; the planning value follows Orange Pippin. <strong>FG 2?</strong> marks a provisional estimate. <strong>Midseason; FG ?</strong> records nursery bloom guidance without inventing a numbered group.</p>
 </section>
 
@@ -1517,6 +1517,11 @@ plantingRecords.forEach(tree => {
   if (tree.unknown && tree.type === 'Apple') {
     const possibilities = element('a', 'Unidentified apple possibility list');
     possibilities.href = 'unidentified_apple_id_sheet.html';
+    notes.append(possibilities);
+  }
+  if (tree.unknown && window.OrchardModel.UNIDENTIFIED_STONE_FRUIT.lines.some(line => line.type === tree.type)) {
+    const possibilities = element('a', `Unidentified ${tree.type === 'Cherry' ? 'sweet cherry' : tree.type.toLowerCase()} possibility list`);
+    possibilities.href = `unidentified_stone_fruit_id_sheet.html#${tree.type.toLowerCase()}`;
     notes.append(possibilities);
   }
   if (psmLabel(tree)) notes.append(element('p', `${psmLabel(tree)}.`, 'source-note'));

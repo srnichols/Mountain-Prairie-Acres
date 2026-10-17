@@ -143,13 +143,31 @@ def _validate_sources(sources, label):
             raise ValueError(f"{label}: source links must use https")
 
 
-def _validate_cultivar_library(data, inventory, fruit):
+# Columns of the owner's seed list (the Trees sheet), which names species the owner is starting from seed.
+SEED_COLUMNS = {"B": "name", "C": "code", "D": "zones", "E": "growth", "F": "size", "G": "type", "H": "germination",
+                "I": "sowing", "J": "notes"}
+
+
+def _seed_list(workbook_records):
+    seeds = {}
+    for record in workbook_records:
+        if record["sheet"] != "Trees" or record["source_row"] == 1:
+            continue
+        values = record["values"]
+        entry = {label: str(values[column]).strip() for column, label in SEED_COLUMNS.items() if str(values.get(column, "")).strip()}
+        if "name" in entry:
+            seeds[record["source_row"]] = entry
+    return seeds
+
+
+def _validate_cultivar_library(data, inventory, fruit, workbook):
     library = data["cultivar_library"]
     _require(library, ("unprofiled", "records", "group_notes"), "cultivar library")
     matches = data["orchard"]["rules"]["INVENTORY_MATCH"]
     profiles = _index(library["records"], "cultivar profile")
     in_scope = set(inventory)
-    inventory_links, purchase_links = {}, {}
+    seeds = _seed_list(workbook.values())
+    inventory_links, purchase_links, seed_links = {}, {}, {}
     for profile in profiles.values():
         label = profile["id"]
         _require(profile, ("group", "type", "kind", "name", "aliases", "inventory_rows", "purchase_rows", *LIBRARY_TEXT,
@@ -168,18 +186,20 @@ def _validate_cultivar_library(data, inventory, fruit):
             _text(alias, f"{label} alias", False)
         if len(set(profile["aliases"])) != len(profile["aliases"]):
             raise ValueError(f"{label}: aliases must be distinct")
-        for key, links, valid in (("inventory_rows", inventory_links, in_scope), ("purchase_rows", purchase_links, fruit)):
-            if not isinstance(profile[key], list):
+        for key, links, valid in (("inventory_rows", inventory_links, in_scope), ("purchase_rows", purchase_links, fruit),
+                                  ("seed_rows", seed_links, seeds)):
+            rows = profile.get(key, []) if key == "seed_rows" else profile[key]
+            if not isinstance(rows, list):
                 raise ValueError(f"{label}: {key} must be a list")
-            for source in profile[key]:
+            for source in rows:
                 _integer(source, f"{label} {key}", 1)
                 if source not in valid:
                     raise ValueError(f"{label}: {key} references missing or out-of-scope row {source}")
                 if source in links:
                     raise ValueError(f"{key} row {source} is linked to both {links[source]} and {label}")
                 links[source] = label
-        if not profile["inventory_rows"] and not profile["purchase_rows"]:
-            raise ValueError(f"{label}: needs at least one inventory or purchase row")
+        if not (profile["inventory_rows"] or profile["purchase_rows"] or profile.get("seed_rows")):
+            raise ValueError(f"{label}: needs at least one inventory, purchase, or seed-list row")
         for row in profile["inventory_rows"]:
             if not set(matches.get(str(row), {}).get("rows", [])) <= set(profile["purchase_rows"]):
                 raise ValueError(f"{label}: purchase rows must include the purchase match of inventory row {row}")
@@ -217,6 +237,9 @@ def _validate_cultivar_library(data, inventory, fruit):
     missing = sorted(in_scope - set(inventory_links) - {int(key) for key in unprofiled})
     if missing:
         raise ValueError(f"Inventory lines without a cultivar profile: {missing}")
+    unlinked = sorted(set(seeds) - set(seed_links))
+    if unlinked:
+        raise ValueError(f"Seed-list species without a cultivar profile: {unlinked}")
     notes = library["group_notes"]
     if not isinstance(notes, list):
         raise ValueError("Group notes must be a list")
@@ -241,18 +264,51 @@ def _validate_cultivar_library(data, inventory, fruit):
     return {source: profiles[label] for source, label in purchase_links.items()}
 
 
+STONE_FRUIT_TYPES = ("Apricot", "Cherry", "Peach", "Plum")
+
+
 def _validate_unidentified_apples(rules, inventory, fruit, workbook, profile_by_purchase_row):
     info = rules["UNIDENTIFIED_APPLES"]
     _require(info, ("inventory_row", "stated_on", "owner_statement", "candidates"), "unidentified apples")
-    row, matches = info["inventory_row"], rules["INVENTORY_MATCH"]
-    if row not in inventory or inventory[row]["type"] != "Apple" or matches[str(row)]["rows"]:
-        raise ValueError("Unidentified apples must reference an apple inventory row with no purchase match")
     _date(info["stated_on"], "unidentified apples stated_on")
     if info["stated_on"] is None:
         raise ValueError("Unidentified apples need a stated_on date")
     _text(info["owner_statement"], "unidentified apples owner_statement", False)
+    _validate_unidentified_line(info, "Apple", rules, inventory, fruit, workbook, profile_by_purchase_row)
+
+
+def _validate_unidentified_stone_fruit(rules, inventory, fruit, workbook, profile_by_purchase_row):
+    info = rules["UNIDENTIFIED_STONE_FRUIT"]
+    _require(info, ("assumption", "lines"), "unidentified stone fruit")
+    _text(info["assumption"], "unidentified stone fruit assumption", False)
+    if not isinstance(info["lines"], list) or not info["lines"]:
+        raise ValueError("Unidentified stone fruit needs at least one inventory line")
+    listed = set()
+    labels = {rules["UNIDENTIFIED_APPLES"].get("label", "UnKn")}
+    for line in info["lines"]:
+        _require(line, ("inventory_row", "type", "label", "candidates"), "unidentified stone fruit line")
+        if line["type"] not in STONE_FRUIT_TYPES:
+            raise ValueError(f"Unidentified stone fruit type must be one of {STONE_FRUIT_TYPES}")
+        if line["inventory_row"] in listed:
+            raise ValueError(f"Unidentified inventory row {line['inventory_row']} is listed twice")
+        listed.add(line["inventory_row"])
+        _validate_unidentified_line(line, line["type"], rules, inventory, fruit, workbook, profile_by_purchase_row)
+        # Labels are the number tags written on the trees, so no two unidentified lines may share one.
+        if line["label"] in labels:
+            raise ValueError(f"Unidentified tree label {line['label']} is used by more than one line")
+        labels.add(line["label"])
+
+
+def _validate_unidentified_line(info, fruit_type, rules, inventory, fruit, workbook, profile_by_purchase_row):
+    """One unidentified inventory line: its candidates must be the purchases that no tagged tree accounts for."""
+    noun = fruit_type.lower()
+    row, matches = info["inventory_row"], rules["INVENTORY_MATCH"]
+    if row not in inventory or inventory[row]["type"] != fruit_type or matches[str(row)]["rows"]:
+        raise ValueError(f"Unidentified {noun} lines must reference a {noun} inventory row with no purchase match")
+    if "label" in info and not re.fullmatch(r"[A-Za-z][A-Za-z0-9]{1,9}", str(info["label"])):
+        raise ValueError(f"Unidentified {noun} label must be 2 to 10 letters or digits, starting with a letter")
     # Purchase rows that share a tagged inventory line form one group; what the group bought minus what is tagged is unmatched.
-    parent = {source: source for source, record in fruit.items() if record["type"] == "Apple"}
+    parent = {source: source for source, record in fruit.items() if record["type"] == fruit_type}
 
     def find(source):
         while parent[source] != source:
@@ -268,30 +324,32 @@ def _validate_unidentified_apples(rules, inventory, fruit, workbook, profile_by_
     for source in parent:
         members.setdefault(find(source), []).append(source)
     tagged = dict.fromkeys(members, 0)
+    tagged_lines = {group: set() for group in members}
     for line, match in matches.items():
         linked = [source for source in match["rows"] if source in parent]
         if linked and int(line) != row:
             tagged[find(linked[0])] += inventory[int(line)]["quantity"]
+            tagged_lines[find(linked[0])].add(int(line))
     unmatched = {group: sum(fruit[source]["quantity"] for source in rows) - tagged[group] for group, rows in members.items()}
     unmatched = {group: count for group, count in unmatched.items() if count > 0}
     candidates = info["candidates"]
     if not isinstance(candidates, list) or not candidates:
-        raise ValueError("Unidentified apples need a candidate list")
+        raise ValueError(f"Unidentified {noun}s need a candidate list")
     listed = set()
     for candidate in candidates:
-        _require(candidate, ("rows", "slots", "vendors"), "unidentified apple candidate")
+        _require(candidate, ("rows", "slots", "vendors"), f"unidentified {noun} candidate")
         rows = candidate["rows"]
         if not isinstance(rows, list) or not rows or any(source not in parent for source in rows):
-            raise ValueError("Unidentified apple candidate rows must be apple purchase rows")
+            raise ValueError(f"Unidentified {noun} candidate rows must be {noun} purchase rows")
         group = find(rows[0])
         if sorted(rows) != sorted(members[group]):
-            raise ValueError(f"Unidentified apple candidate rows {rows} must list the whole purchase group {sorted(members[group])}")
+            raise ValueError(f"Unidentified {noun} candidate rows {rows} must list the whole purchase group {sorted(members[group])}")
         if group in listed:
-            raise ValueError(f"Duplicate unidentified apple candidate for purchase rows {rows}")
+            raise ValueError(f"Duplicate unidentified {noun} candidate for purchase rows {rows}")
         listed.add(group)
-        _integer(candidate["slots"], "unidentified apple candidate slots", 1)
+        _integer(candidate["slots"], f"unidentified {noun} candidate slots", 1)
         if candidate["slots"] != unmatched.get(group, 0):
-            raise ValueError(f"Unidentified apple candidate slots disagree with purchases minus tagged trees for rows {rows}")
+            raise ValueError(f"Unidentified {noun} candidate slots disagree with purchases minus tagged trees for rows {rows}")
         sellers = set()
         for source in rows:
             purchase = workbook.get(f"Trees:Fruit:{source}")
@@ -300,19 +358,29 @@ def _validate_unidentified_apples(rules, inventory, fruit, workbook, profile_by_
             sellers.add(purchase["values"].get("A"))
         vendors = candidate["vendors"]
         if not isinstance(vendors, list) or not vendors or not set(vendors) <= sellers:
-            raise ValueError(f"Unidentified apple candidate vendors must be vendors of purchase rows {rows}")
+            raise ValueError(f"Unidentified {noun} candidate vendors must be vendors of purchase rows {rows}")
         for key in ("note", "long_shot"):
             if key in candidate:
-                _text(candidate[key], "unidentified apple " + key, False)
+                _text(candidate[key], f"unidentified {noun} " + key, False)
+        # Tagged lines worth comparing besides the ones matched to this purchase (for example a tag that may be wrong).
+        compare = candidate.get("compare_with", [])
+        if not isinstance(compare, list) or len(set(map(str, compare))) != len(compare):
+            raise ValueError(f"Unidentified {noun} candidate compare_with must be a list of distinct inventory rows")
+        for source in compare:
+            _integer(source, f"unidentified {noun} compare_with row", 1)
+            if source == row or source not in inventory or inventory[source]["type"] != fruit_type:
+                raise ValueError(f"Unidentified {noun} candidate compare_with must be other {noun} inventory rows")
+            if source in tagged_lines[group]:
+                raise ValueError(f"Unidentified {noun} candidate compare_with repeats row {source}, which is already tagged for rows {rows}")
         profile = profile_by_purchase_row.get(rows[0])
         if profile is None or sorted(profile["purchase_rows"]) != sorted(rows):
-            raise ValueError(f"Unidentified apple candidate rows {rows} need a cultivar profile for exactly those purchase rows")
+            raise ValueError(f"Unidentified {noun} candidate rows {rows} need a cultivar profile for exactly those purchase rows")
     omitted = set(unmatched) - listed
     if omitted:
-        raise ValueError("Unidentified apple candidates omit unmatched purchases: " +
+        raise ValueError(f"Unidentified {noun} candidates omit unmatched purchases: " +
                          ", ".join(str(sorted(members[group])) for group in omitted))
     if sum(candidate["slots"] for candidate in candidates) < inventory[row]["quantity"]:
-        raise ValueError("Unidentified apple candidates cannot cover every unidentified tree")
+        raise ValueError(f"Unidentified {noun} candidates cannot cover every unidentified tree")
 
 
 def validate_data(data):
@@ -393,7 +461,8 @@ def validate_data(data):
             raise ValueError("Workbook values must be a cell object")
     rules = data["orchard"]["rules"]
     for key in ("ORCHARD_ROWS", "GRID_COLUMNS", "INVENTORY_MATCH", "WINDBREAK", "C1_GUILDS", "EAST_HEDGE",
-                "ROOTSTOCK_LABELS", "GENERATED_CODES", "APPLE_BLOOM_RESEARCH", "PEAR_BLOOM", "CHERRY_CHART", "UNIDENTIFIED_APPLES"):
+                "ROOTSTOCK_LABELS", "GENERATED_CODES", "APPLE_BLOOM_RESEARCH", "PEAR_BLOOM", "CHERRY_CHART", "UNIDENTIFIED_APPLES",
+                "UNIDENTIFIED_STONE_FRUIT"):
         if key not in rules:
             raise ValueError(f"Orchard rules missing {key}")
     if rules["ORCHARD_ROWS"] != site["orchard"]["rows"] or rules["GRID_COLUMNS"] != site["orchard"]["columns"]:
@@ -409,8 +478,9 @@ def validate_data(data):
             raise ValueError(f"Inventory match references missing row {row}")
         if any(source not in fruit for source in match["rows"]):
             raise ValueError(f"Inventory match {row} references a missing cultivar")
-    profile_by_purchase_row = _validate_cultivar_library(data, inventory, fruit)
+    profile_by_purchase_row = _validate_cultivar_library(data, inventory, fruit, workbook)
     _validate_unidentified_apples(rules, inventory, fruit, workbook, profile_by_purchase_row)
+    _validate_unidentified_stone_fruit(rules, inventory, fruit, workbook, profile_by_purchase_row)
     for source_row, research in rules["APPLE_BLOOM_RESEARCH"].items():
         record = fruit.get(int(source_row))
         if record is None or record["type"] != "Apple" or research["fg"] != record["flowering_group"]:
@@ -660,7 +730,8 @@ def _populate(connection, data, digest):
              for p in profiles])
     _insert(connection, "cultivar_profile_links", ("profile_id", "link_type", "source_row"),
             [(p["id"], "inventory", row) for p in profiles for row in p["inventory_rows"]] +
-            [(p["id"], "purchase", row) for p in profiles for row in p["purchase_rows"]])
+            [(p["id"], "purchase", row) for p in profiles for row in p["purchase_rows"]] +
+            [(p["id"], "seed", row) for p in profiles for row in p.get("seed_rows", [])])
     _insert(connection, "cultivar_profile_aliases", ("profile_id", "alias"), [(p["id"], a) for p in profiles for a in p["aliases"]])
     _insert(connection, "cultivar_profile_uses", ("profile_id", "use"), [(p["id"], u) for p in profiles for u in p["uses"]])
     _insert(connection, "cultivar_profile_sources", ("profile_id", "position", "label", "url"),
@@ -757,7 +828,8 @@ def orchard_constants(data):
         if planting["status"] == "planted" and "rootstock" in inventory[plant["inventory_row"]]["variety"].lower():
             rootstocks.append({"invRow": plant["inventory_row"], "instance": plant["instance"], "r": r, "c": c})
     rules.update(ROW_PLAN=row_plan, ORCHARD_UPDATES=updates, PLANTED_ROOTSTOCKS=rootstocks, PLANT_LOCATIONS=current,
-                 DEAD_PLANTS=[plant["id"] for plant in data["plants"]["records"] if plant["health_status"] == "dead"])
+                 DEAD_PLANTS=[plant["id"] for plant in data["plants"]["records"] if plant["health_status"] == "dead"],
+                 SEED_LIST=_seed_list(data["catalog"]["workbook_records"]))
     return rules
 
 

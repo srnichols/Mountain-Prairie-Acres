@@ -1013,6 +1013,116 @@
         }
       ]
     },
+    "UNIDENTIFIED_STONE_FRUIT": {
+      "assumption": "On Oct 16, 2026 every purchased apple was confirmed to have arrived, so an apple purchase with no tagged tree was presumed to have died in Boise, unrecorded. These lists apply the same reasoning to the cherries, peaches, and apricot; that has not been confirmed for them yet.",
+      "lines": [
+        {
+          "inventory_row": 81,
+          "type": "Cherry",
+          "label": "Sweet",
+          "candidates": [
+            {
+              "rows": [
+                55,
+                56
+              ],
+              "slots": 2,
+              "vendors": [
+                "Lowes",
+                "Willis"
+              ],
+              "note": "The two tagged Black Tartarians could be any two of the four purchases (3 from Lowes, 1 from Willis)."
+            },
+            {
+              "rows": [
+                64
+              ],
+              "slots": 1,
+              "vendors": [
+                "StarkBro"
+              ]
+            },
+            {
+              "rows": [
+                62
+              ],
+              "slots": 1,
+              "vendors": [
+                "Grandpa"
+              ]
+            }
+          ]
+        },
+        {
+          "inventory_row": 91,
+          "type": "Peach",
+          "label": "PcUnk",
+          "candidates": [
+            {
+              "rows": [
+                85,
+                86,
+                87
+              ],
+              "slots": 1,
+              "vendors": [
+                "Grandpa",
+                "Lowes",
+                "Willis"
+              ],
+              "note": "The two tagged Reliances could be any two of the three purchases (Grandpa, Lowes, Willis)."
+            },
+            {
+              "rows": [
+                88
+              ],
+              "slots": 1,
+              "vendors": [
+                "Lowes"
+              ]
+            },
+            {
+              "rows": [
+                79
+              ],
+              "slots": 1,
+              "vendors": [
+                "StarkBro"
+              ]
+            },
+            {
+              "rows": [
+                80
+              ],
+              "slots": 1,
+              "vendors": [
+                "Lowes"
+              ]
+            }
+          ]
+        },
+        {
+          "inventory_row": 71,
+          "type": "Apricot",
+          "label": "AtUnk",
+          "candidates": [
+            {
+              "rows": [
+                50
+              ],
+              "slots": 1,
+              "vendors": [
+                "Lowes"
+              ],
+              "compare_with": [
+                70
+              ],
+              "note": "Two trees are tagged Moorpark but only one Moorpark was bought (Willis), so one tagged Moorpark may really be the Patterson and this tree the Moorpark. Compare all three trees."
+            }
+          ]
+        }
+      ]
+    },
     "PEAR_BLOOM": {
       "89": [
         "Early\u2013mid",

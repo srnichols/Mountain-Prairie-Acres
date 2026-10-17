@@ -1,7 +1,7 @@
 (function (root) {
   'use strict';
 const { C1_GUILDS } = root.ORCHARD_DATA;
-const { PLAN_DATE, STATUS_DATE, FRUIT_SHEET, INVENTORY, INVENTORY_MATCH, TYPE_ORDER, BLOCK_ROWS, SHARED_ROWS, RESERVED_ROWS, ORCHARD_ROWS, ROW_PLAN, GRID_COLUMNS, PLOT_WIDTH, EAST_SIDE, PLOT_DEPTH, TREE_SPACING, ROW_SPACING, LOCAL_RADIUS, ORCHARD_WEST_SETBACK, JUNIPER_DISTANCE, WINDBREAK, EAST_HEDGE, OWNER_NOTES, ORCHARD_UPDATES, PLANTED_ROOTSTOCKS, ROOTSTOCK_LABELS, GENERATED_CODES, FAMILY_OVERRIDES, APPLE_ALIASES, HARRISON_BLOOM_RESEARCH, APPLE_BLOOM_RESEARCH, URBAN_APPLE_ROWS, PEAR_BLOOM, CHERRY_CHART, PLANT_LOCATIONS, UNIDENTIFIED_APPLES } = root.ORCHARD_DATA;
+const { PLAN_DATE, STATUS_DATE, FRUIT_SHEET, INVENTORY, INVENTORY_MATCH, TYPE_ORDER, BLOCK_ROWS, SHARED_ROWS, RESERVED_ROWS, ORCHARD_ROWS, ROW_PLAN, GRID_COLUMNS, PLOT_WIDTH, EAST_SIDE, PLOT_DEPTH, TREE_SPACING, ROW_SPACING, LOCAL_RADIUS, ORCHARD_WEST_SETBACK, JUNIPER_DISTANCE, WINDBREAK, EAST_HEDGE, OWNER_NOTES, ORCHARD_UPDATES, PLANTED_ROOTSTOCKS, ROOTSTOCK_LABELS, GENERATED_CODES, FAMILY_OVERRIDES, APPLE_ALIASES, HARRISON_BLOOM_RESEARCH, APPLE_BLOOM_RESEARCH, URBAN_APPLE_ROWS, PEAR_BLOOM, CHERRY_CHART, PLANT_LOCATIONS, UNIDENTIFIED_APPLES, UNIDENTIFIED_STONE_FRUIT } = root.ORCHARD_DATA;
 const FRUIT_BY_ROW = new Map(FRUIT_SHEET.map(([sourceRow, quantity, fruit, name, code, rootstock, fertility, pollenQuality, ploidy, fg, pollenizers]) =>
   [sourceRow, { sourceRow, quantity, fruit, name, code, rootstock, fertility, pollenQuality, ploidy, fg, pollenizers }]));
 const INVENTORY_BY_ROW = new Map(INVENTORY.map(line => [line[0], line]));
@@ -402,42 +402,51 @@ function plan() {
   records.sort((a, b) => a.r - b.r || a.c - b.c);
   return { records, rows };
 }
-// The untagged apples and the purchased apples they could still be, with the tagged trees to compare each against.
-function unidentifiedApples() {
+// The untagged trees of one inventory line and the purchases they could still be, with the tagged trees to compare each against.
+function unidentifiedLine(info) {
   const library = root.CultivarLibrary;
-  if (!library) throw new Error('Load data/cultivar_library.js before calling unidentifiedApples()');
-  const unknownLine = inventoryLine(UNIDENTIFIED_APPLES.inventory_row);
+  if (!library) throw new Error('Load data/cultivar_library.js before listing unidentified trees');
+  const unknownLine = inventoryLine(info.inventory_row);
+  const prefix = info.label || 'UnKn';
   const trees = Array.from({ length:unknownLine[1] }, (_, index) => {
     const id = `i${unknownLine[0]}-${index + 1}`;
     const location = PLANT_LOCATIONS[id];
     const spot = location && /^orchard-r(\d+)-c(\d+)$/.exec(location.location_id);
     return {
-      id, number:index + 1, label:`UnKn-${index + 1}`, tag:unknownLine[6], status:location ? location.status : null,
+      id, number:index + 1, label:`${prefix}-${index + 1}`, tag:unknownLine[6], status:location ? location.status : null,
       spot:spot ? `R${spot[1]}-C${spot[2]}` : location ? location.location_id : null,
       siteRef:location ? location.site_ref : null
     };
   });
-  const candidates = UNIDENTIFIED_APPLES.candidates.map(candidate => {
+  const taggedLine = line => ({ invRow:line[0], tag:line[6], qty:line[1] });
+  const candidates = info.candidates.map(candidate => {
     const records = candidate.rows.map(fruitRecord);
     const profile = library.forPurchaseRow(candidate.rows[0]);
     const tagged = INVENTORY.filter(line => line[0] !== unknownLine[0] &&
-      ((INVENTORY_MATCH[line[0]] || {}).rows || []).some(row => candidate.rows.includes(row)))
-      .map(line => ({ invRow:line[0], tag:line[6], qty:line[1] }));
+      ((INVENTORY_MATCH[line[0]] || {}).rows || []).some(row => candidate.rows.includes(row))).map(taggedLine);
     return {
       ...candidate,
       name:profile.name, profile,
       fg:records[0].fg, ploidy:records[0].ploidy, fertility:records[0].fertility,
       rootstock:[...new Set(records.map(record => record.rootstock).filter(Boolean))].join(' / '),
-      tagged, taggedQty:tagged.reduce((total, line) => total + line.qty, 0), longShot:Boolean(candidate.long_shot)
+      tagged, taggedQty:tagged.reduce((total, line) => total + line.qty, 0), longShot:Boolean(candidate.long_shot),
+      compareWith:(candidate.compare_with || []).map(row => taggedLine(inventoryLine(row)))
     };
   });
   const slots = list => list.reduce((total, candidate) => total + candidate.slots, 0);
   const main = slots(candidates.filter(candidate => !candidate.longShot));
   const longShot = slots(candidates.filter(candidate => candidate.longShot));
   return {
-    info:UNIDENTIFIED_APPLES, tag:unknownLine[6], trees, candidates,
+    info, type:unknownLine[4], tag:unknownLine[6], trees, candidates,
     pool:{ main, longShot, trees:trees.length, lostMin:Math.max(0, main - trees.length), lostMax:Math.max(0, main + longShot - trees.length) }
   };
 }
-root.OrchardModel = { PLAN_DATE, STATUS_DATE, FRUIT_SHEET, INVENTORY, INVENTORY_MATCH, TYPE_ORDER, BLOCK_ROWS, SHARED_ROWS, RESERVED_ROWS, ORCHARD_ROWS, ROW_PLAN, GRID_COLUMNS, PLOT_WIDTH, EAST_SIDE, PLOT_DEPTH, TREE_SPACING, ROW_SPACING, LOCAL_RADIUS, ORCHARD_WEST_SETBACK, JUNIPER_DISTANCE, WINDBREAK, C1_GUILDS, EAST_HEDGE, OWNER_NOTES, ORCHARD_UPDATES, PLANTED_ROOTSTOCKS, ROOTSTOCK_LABELS, GENERATED_CODES, FAMILY_OVERRIDES, APPLE_ALIASES, HARRISON_BLOOM_RESEARCH, APPLE_BLOOM_RESEARCH, URBAN_APPLE_ROWS, PEAR_BLOOM, CHERRY_CHART, FRUIT_BY_ROW, INVENTORY_BY_ROW, ORCHARD_X0, RESERVED, fruitRecord, inventoryLine, rootstockRemaining, normalizeName, placementOf, buildOrchardTrees, balancedRows, blockShape, sharedGroupOf, blockColumns, rowTemplate, layoutRows, lineCount, layoutPlantRow, windbreakLayout, eastHedgeLayout, alleyGeometry, laneGeometry, guildLayout, treeDistance, needsTwoDonors, compatiblePair, nearestPartners, PLANT_LOCATIONS, plan, UNIDENTIFIED_APPLES, unidentifiedApples };
+function unidentifiedApples() {
+  return unidentifiedLine(UNIDENTIFIED_APPLES);
+}
+// The cherries, peaches, and apricot that lost their labels; one entry per inventory line.
+function unidentifiedStoneFruit() {
+  return { info:UNIDENTIFIED_STONE_FRUIT, lines:UNIDENTIFIED_STONE_FRUIT.lines.map(unidentifiedLine) };
+}
+root.OrchardModel = { PLAN_DATE, STATUS_DATE, FRUIT_SHEET, INVENTORY, INVENTORY_MATCH, TYPE_ORDER, BLOCK_ROWS, SHARED_ROWS, RESERVED_ROWS, ORCHARD_ROWS, ROW_PLAN, GRID_COLUMNS, PLOT_WIDTH, EAST_SIDE, PLOT_DEPTH, TREE_SPACING, ROW_SPACING, LOCAL_RADIUS, ORCHARD_WEST_SETBACK, JUNIPER_DISTANCE, WINDBREAK, C1_GUILDS, EAST_HEDGE, OWNER_NOTES, ORCHARD_UPDATES, PLANTED_ROOTSTOCKS, ROOTSTOCK_LABELS, GENERATED_CODES, FAMILY_OVERRIDES, APPLE_ALIASES, HARRISON_BLOOM_RESEARCH, APPLE_BLOOM_RESEARCH, URBAN_APPLE_ROWS, PEAR_BLOOM, CHERRY_CHART, FRUIT_BY_ROW, INVENTORY_BY_ROW, ORCHARD_X0, RESERVED, fruitRecord, inventoryLine, rootstockRemaining, normalizeName, placementOf, buildOrchardTrees, balancedRows, blockShape, sharedGroupOf, blockColumns, rowTemplate, layoutRows, lineCount, layoutPlantRow, windbreakLayout, eastHedgeLayout, alleyGeometry, laneGeometry, guildLayout, treeDistance, needsTwoDonors, compatiblePair, nearestPartners, PLANT_LOCATIONS, plan, UNIDENTIFIED_APPLES, unidentifiedApples, UNIDENTIFIED_STONE_FRUIT, unidentifiedStoneFruit };
 })(typeof window !== 'undefined' ? window : globalThis);

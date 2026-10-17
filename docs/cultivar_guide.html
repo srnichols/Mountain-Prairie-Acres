@@ -146,7 +146,7 @@
 <noscript><p class="error">JavaScript is required to load the cultivar library.</p></noscript>
 
 <section class="how" aria-label="How to read this guide">
-  <p><strong>What this is:</strong> short, plain-language profiles of the plants in the inventory and purchase list: fruit, nut, and berry plants, windbreak and shade trees, perennials, and the ungrafted apple rootstocks. Tap a tree anywhere on this site to land on its profile, or search by name, alias, or metal tag.</p>
+  <p><strong>What this is:</strong> short, plain-language profiles of the plants in the inventory, the purchase list, and your seed list: fruit, nut, and berry plants, windbreak and shade trees, perennials, and the ungrafted apple rootstocks. Tap a tree anywhere on this site to land on its profile, or search by name, alias, or metal tag.</p>
   <p><strong>Ripening</strong> is relative to each fruit type's own harvest window (Early, Mid, Late, Very late), with the actual timing noted. <strong>Basis</strong> says whether every claim is backed by the listed sources or partly comes from general knowledge. Bloom group, ploidy, and fertility come from your purchase sheet, not from these sources.</p>
   <p><strong>Habit, bark, and leaves</strong> appear only where a source describes that specific cultivar or species. The box at the top of each fruit group describes the type in general. Where a profile has nothing of its own, compare your tree with the tagged trees of the same type and write down what you see (see the ID log sheet and the data guide).</p>
 </section>
@@ -186,9 +186,17 @@ const NON_FOOD = new Set(['Evergreen', 'Shade tree', 'Perennial']);
 const KIND_LABELS = { cultivar: '', species: ' (described at species level)', genus: ' (described at genus level; species not recorded)', rootstock: ' (ungrafted rootstock)' };
 const USE_LABELS = { fresh: 'Fresh eating', cooking: 'Cooking and baking', cider: 'Cider', perry: 'Perry', juice: 'Juice', jelly: 'Jelly', canning: 'Canning', drying: 'Drying', storage: 'Long keeper', pollinizer: 'Pollinizer', ornamental: 'Ornamental', nuts: 'Nuts', windbreak: 'Windbreak', wildlife: 'Wildlife', shade: 'Shade', timber: 'Timber', syrup: 'Syrup', herb: 'Herb and tea', mulch: 'Mulch and compost', rootstock: 'Rootstock for grafting' };
 const USES = Object.keys(USE_LABELS);
-const candidates = data.UNIDENTIFIED_APPLES.candidates;
 
 const inventoryLine = row => OrchardModel.inventoryLine(row);
+// Candidates for the identity of an unlabeled tree link to the sheet that lists the possibilities.
+const possibleIdentity = new Map();
+const addPossible = (list, tag, href) => list.forEach(candidate => {
+  const profile = CultivarLibrary.forPurchaseRow(candidate.rows[0]);
+  if (profile && !possibleIdentity.has(profile)) possibleIdentity.set(profile, { tag, href });
+});
+addPossible(data.UNIDENTIFIED_APPLES.candidates, inventoryLine(data.UNIDENTIFIED_APPLES.inventory_row)[6], 'unidentified_apple_id_sheet.html');
+data.UNIDENTIFIED_STONE_FRUIT.lines.forEach(line =>
+  addPossible(line.candidates, inventoryLine(line.inventory_row)[6], `unidentified_stone_fruit_id_sheet.html#${line.type.toLowerCase()}`));
 const deadPlants = new Set(data.DEAD_PLANTS);
 const plantsOf = profile => profile.inventory_rows.flatMap(row => {
   const line = inventoryLine(row);
@@ -213,13 +221,24 @@ const fact = (list, label, value) => {
   list.append(detail);
 };
 
+const seedText = row => {
+  const seed = data.SEED_LIST[row];
+  const traits = [seed.zones && `zones ${seed.zones}`, seed.growth && `growth ${seed.growth}`, seed.size && `size ${seed.size}`, seed.type,
+    seed.germination && `germination ${seed.germination}`].filter(Boolean);
+  return [`${seed.name} (Trees sheet row ${row})`, traits.join(', '), seed.sowing && `sowing: ${seed.sowing}`,
+    seed.notes && `your note: ${seed.notes}`].filter(Boolean).join('; ');
+};
+
 const total = profiles.length;
-const onHandCount = profiles.filter(profile => plantsOf(profile).some(plant => !plant.dead)).length;
-const untaggedCount = profiles.filter(profile => !profile.inventory_rows.length).length;
-const deadCount = total - onHandCount - untaggedCount;
+const hasLivingPlants = profile => plantsOf(profile).some(plant => !plant.dead);
+const onHandCount = profiles.filter(hasLivingPlants).length;
+const deadCount = profiles.filter(profile => profile.inventory_rows.length && !hasLivingPlants(profile)).length;
+const purchasedCount = profiles.filter(profile => !profile.inventory_rows.length && profile.purchase_rows.length).length;
+const seedOnlyCount = profiles.filter(profile => !profile.inventory_rows.length && !profile.purchase_rows.length).length;
 const subtitleParts = [`${onHandCount} for plants on hand`];
-if (untaggedCount) subtitleParts.push(`${untaggedCount} for purchased plants that are not tagged yet`);
+if (purchasedCount) subtitleParts.push(`${purchasedCount} for purchased plants that are not tagged yet`);
 if (deadCount) subtitleParts.push(`${deadCount} for plants reported dead`);
+if (seedOnlyCount) subtitleParts.push(`${seedOnlyCount} for species on your seed list only`);
 document.getElementById('subtitle').textContent =
   `${total} profiles: ${subtitleParts.join(', ')}. Reviewed ${profiles[0].reviewed_on}.`;
 
@@ -255,7 +274,7 @@ GROUPS.forEach(group => {
     const plants = plantsOf(profile);
     const living = plants.filter(plant => !plant.dead);
     const tags = [...new Set(profile.inventory_rows.map(row => inventoryLine(row)[6]).filter(Boolean))];
-    const possible = candidates.some(candidate => CultivarLibrary.forPurchaseRow(candidate.rows[0]) === profile);
+    const possible = possibleIdentity.get(profile);
     const card = element('article', undefined, 'profile');
     card.id = profile.id;
     card.dataset.group = group;
@@ -273,8 +292,8 @@ GROUPS.forEach(group => {
     head.append(title, element('span', `${profile.type}${KIND_LABELS[profile.kind]}`, 'kind'));
     if (profile.ripening) head.append(element('span', profile.ripening, 'badge'));
     if (possible) {
-      const link = element('a', 'Possible AL-UnKn identity', 'badge possible');
-      link.href = 'unidentified_apple_id_sheet.html';
+      const link = element('a', `Possible ${possible.tag} identity`, 'badge possible');
+      link.href = possible.href;
       head.append(link);
     }
     const quick = element('p', undefined, 'quick');
@@ -313,8 +332,10 @@ GROUPS.forEach(group => {
       const spots = living.map(spotLabel).filter(Boolean);
       if (spots.length) where.append(element('div', `Planned spots and status: ${spots.join(', ')}`, 'small'));
       fact(facts, 'On hand', where);
-    } else {
+    } else if (profile.purchase_rows.length) {
       fact(facts, 'On hand', 'None yet (purchased, not tagged).');
+    } else {
+      fact(facts, 'On hand', 'None. This species is on your seed list but is not in the inventory.');
     }
     const purchases = element('div');
     profile.purchase_rows.forEach(row => {
@@ -325,6 +346,12 @@ GROUPS.forEach(group => {
       purchases.append(element('div', parts.join('; '), 'small'));
     });
     if (profile.purchase_rows.length) fact(facts, 'Purchase sheet', purchases);
+    const seedRows = profile.seed_rows || [];
+    if (seedRows.length) {
+      const seeds = element('div');
+      seedRows.forEach(row => seeds.append(element('div', seedText(row), 'small')));
+      fact(facts, 'Seed list', seeds);
+    }
     card.append(facts);
 
     const foot = element('p', undefined, 'small sources');

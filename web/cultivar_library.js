@@ -4,9 +4,11 @@
   const byId = new Map(profiles.map(profile => [profile.id, profile]));
   const byInventoryRow = new Map();
   const byPurchaseRow = new Map();
+  const bySeedRow = new Map();
   profiles.forEach(profile => {
     profile.inventory_rows.forEach(row => byInventoryRow.set(row, profile));
     profile.purchase_rows.forEach(row => byPurchaseRow.set(row, profile));
+    (profile.seed_rows || []).forEach(row => bySeedRow.set(row, profile));
   });
   const GROUPS = ['Apple', 'Pear', 'Cherry', 'Peach', 'Apricot', 'Plum', 'Berry', 'Nut', 'Evergreen', 'Shade tree', 'Perennial'];
   const RIPENING_BANDS = ['Early', 'Mid', 'Late', 'Very late'];
@@ -17,6 +19,7 @@
 
   function forInventoryRow(row) { return byInventoryRow.get(row) || null; }
   function forPurchaseRow(row) { return byPurchaseRow.get(row) || null; }
+  function forSeedRow(row) { return bySeedRow.get(row) || null; }
   function profileById(id) { return byId.get(id) || null; }
   function groupNote(group) { return groupNotes.get(group) || null; }
   function guideHref(profile) { return `${GUIDE_PAGE}#${profile.id}`; }
@@ -33,5 +36,5 @@
   function tooltip(profile) {
     return [`${profile.name}: ${profile.tagline}`, ripeningText(profile) ? `Ripens: ${ripeningText(profile)}` : ''].filter(Boolean).join('\n');
   }
-  root.CultivarLibrary = { GROUPS, RIPENING_BANDS, GUIDE_PAGE, profiles, byId:profileById, forInventoryRow, forPurchaseRow, groupNote, guideHref, barkLabel, traits, ripeningText, tooltip };
+  root.CultivarLibrary = { GROUPS, RIPENING_BANDS, GUIDE_PAGE, profiles, byId:profileById, forInventoryRow, forPurchaseRow, forSeedRow, groupNote, guideHref, barkLabel, traits, ripeningText, tooltip };
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unidentified Cherries, Peaches, and Apricot: Possibility Lists and ID Logs</title>
+<style>
+  :root {
+    --text: #20251f;
+    --muted: #555d54;
+    --border: #9da59c;
+    --header: #e8eee6;
+    --row: #f7f9f6;
+    --accent: #3b6d11;
+    --ink: #50584f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    max-width: 8.5in;
+    margin: 0 auto;
+    padding: 0.45in;
+    color: var(--text);
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+    line-height: 1.25;
+  }
+  h1 {
+    margin: 0 0 0.08in;
+    font-size: 18pt;
+    line-height: 1.1;
+  }
+  h2 {
+    margin: 0.2in 0 0.08in;
+    font-size: 12pt;
+  }
+  .subtitle {
+    margin: 0 0 0.16in;
+    color: var(--muted);
+    font-size: 9.5pt;
+  }
+  .instructions {
+    margin: 0 0 0.12in;
+    padding: 0.12in 0.15in;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    background: var(--row);
+  }
+  .instructions p { margin: 0; }
+  .instructions p + p { margin-top: 0.06in; }
+  .print-help {
+    margin: 0 0 0.18in;
+    padding: 0.1in 0.15in;
+    background: #fff3cd;
+    border: 1px solid #d6b656;
+  }
+  .error {
+    color: #8b1e16;
+    background: #fbe9e7;
+    border: 1px solid #d78d86;
+    padding: 0.12in;
+    font-weight: bold;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 9pt;
+  }
+  th, td {
+    padding: 0.055in 0.065in;
+    border: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+  }
+  th {
+    background: var(--header);
+    font-weight: bold;
+  }
+  tbody tr { break-inside: avoid; }
+  thead { display: table-header-group; }
+  .possibilities tbody tr:nth-child(even) td { background: var(--row); }
+  .possibilities col:nth-child(1) { width: 15%; }
+  .possibilities col:nth-child(2) { width: 6%; }
+  .possibilities col:nth-child(3) { width: 15%; }
+  .possibilities col:nth-child(4) { width: 16%; }
+  .possibilities col:nth-child(5) { width: 8%; }
+  .possibilities col:nth-child(6) { width: 40%; }
+  .source-note {
+    color: var(--muted);
+    font-size: 7.5pt;
+    line-height: 1.15;
+  }
+  .long-shot { font-style: italic; }
+  .tag {
+    display: inline-block;
+    margin-left: 0.05in;
+    padding: 0 0.05in;
+    border: 1px solid var(--ink);
+    font-size: 7pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+  }
+  .sources a { color: inherit; }
+  .tree-card {
+    margin: 0 0 0.08in;
+    padding: 0.05in 0.09in;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    break-inside: avoid;
+  }
+  .tree-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.02in 0.18in;
+    margin-bottom: 0.03in;
+  }
+  .tree-label { font-size: 13pt; font-weight: bold; }
+  .mono {
+    font-family: Consolas, "SF Mono", Menlo, monospace;
+    font-size: 8.5pt;
+  }
+  .field {
+    display: inline-block;
+    min-width: 1.5in;
+    height: 0.17in;
+    border-bottom: 1px solid var(--ink);
+    vertical-align: bottom;
+  }
+  .field.short { min-width: 0.9in; }
+  .field.long { min-width: 2.4in; }
+  .log-table { margin-top: 0.04in; }
+  .log-table th, .log-table td {
+    padding: 0.02in 0.04in;
+    font-size: 8pt;
+    vertical-align: middle;
+  }
+  .log-table td {
+    height: 0.2in;
+    background: #fff;
+  }
+  .box {
+    display: inline-block;
+    width: 0.13in;
+    height: 0.13in;
+    margin-right: 0.04in;
+    border: 1px solid #333;
+    vertical-align: -0.02in;
+  }
+  .choices { margin-top: 0.035in; font-size: 8pt; }
+  .choices span.item { display: inline-block; margin: 0 0.12in 0.01in 0; white-space: nowrap; }
+  .final { margin-top: 0.035in; font-size: 8pt; display: flex; flex-wrap: wrap; gap: 0.02in 0.2in; align-items: baseline; }
+  .log-start { break-before: page; }
+  @page {
+    size: 8.5in 11in;
+    margin: 0.38in;
+  }
+  @media print {
+    body {
+      max-width: none;
+      margin: 0;
+      padding: 0;
+      font-size: 9pt;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+    h1 { font-size: 16pt; }
+    h2 { margin-top: 0.12in; break-after: avoid; }
+    .print-help { display: none; }
+    .instructions { break-inside: avoid; }
+    table { font-size: 8pt; }
+    th, td { padding: 0.035in 0.05in; }
+    .log-table th, .log-table td { padding: 0.02in 0.04in; }
+    .source-note { font-size: 7pt; }
+    .sources a { text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+<h1>Unidentified Cherries, Peaches, and Apricot: Possibility Lists and ID Logs</h1>
+<p class="subtitle" id="subtitle"></p>
+
+<div class="print-help"><strong>Print setup:</strong> Letter (8.5 × 11 in), portrait, 100% scale. Turn off browser headers and footers. Background graphics are optional.</div>
+
+<p id="load-error" class="error" role="alert" hidden></p>
+<noscript><p class="error">JavaScript is required to load the canonical orchard records for this sheet.</p></noscript>
+
+<section class="instructions" id="summary" aria-label="What is known"></section>
+
+<div id="lines"></div>
+<p class="source-note" id="cue-note"></p>
+<p class="source-note sources" id="sources"></p>
+
+<section class="log-start" aria-label="ID log">
+<h2>ID log</h2>
+<p class="source-note" id="log-note"></p>
+<div id="cards"></div>
+</section>
+
+<script>
+window.addEventListener('error', event => {
+  const notice = document.getElementById('load-error');
+  notice.textContent = `The orchard records could not be loaded: ${event.message}`;
+  notice.hidden = false;
+});
+</script>
+<script src="data/orchard_model.js"></script>
+<script src="data/cultivar_library.js"></script>
+<script>
+const element = (tag, text, className) => {
+  const node = document.createElement(tag);
+  if (text !== undefined) node.textContent = text;
+  if (className) node.className = className;
+  return node;
+};
+const sentenceList = names => names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : names.join('');
+const orList = names => names.length > 2 ? `${names.slice(0, -1).join(', ')}, or ${names[names.length - 1]}` : names.join(' or ');
+const labelled = (label, text) => {
+  const paragraph = element('p');
+  paragraph.append(element('strong', label + ' '), text);
+  return paragraph;
+};
+const NOUNS = { Cherry: ['cherry', 'cherries'], Peach: ['peach', 'peaches'], Apricot: ['apricot', 'apricots'], Plum: ['plum', 'plums'] };
+const TITLES = { Cherry: 'Sweet cherries', Peach: 'Peaches', Apricot: 'Apricot', Plum: 'Plums' };
+const noun = (type, count) => NOUNS[type][count === 1 ? 0 : 1];
+const treeWord = count => count === 1 ? 'tree' : 'trees';
+
+const { info, lines } = OrchardModel.unidentifiedStoneFruit();
+const treeCount = lines.reduce((total, line) => total + line.trees.length, 0);
+const range = line => line.trees.length > 1 ? `${line.trees[0].label} to ${line.trees[line.trees.length - 1].label}` : line.trees[0].label;
+
+document.getElementById('subtitle').textContent =
+  `${treeCount} untagged trees (${lines.map(line => `${line.trees.length} ${noun(line.type, line.trees.length)} tagged ${line.tag}`).join(', ')}), ` +
+  `each one of the purchased trees below. Status as of ${OrchardModel.STATUS_DATE}.`;
+
+const summary = document.getElementById('summary');
+summary.append(
+  labelled('What this is:', `${treeCount} trees lost their labels and carry only a general tag. Each is one of the purchased trees below that has no tagged tree. Bloom timing and fruit will tell them apart over the next few years.`),
+  labelled('Assumption (not yet confirmed by you):', info.assumption),
+  labelled('Numbering:', `Trees with the same tag share it. When each is planted, add a number tag (${lines.map(range).join('; ')}) and write down its actual spot so an ID stays with the right tree. Their planned spots are on the `)
+);
+const gridLink = element('a', 'pollination grid');
+gridLink.href = 'orchard_pollination_grid.html';
+summary.lastChild.append(gridLink, '; until they are identified they are not counted as pollen donors.');
+
+const lostText = pool => pool.lostMax === 0 ? 'none are' : pool.lostMin === pool.lostMax ? `${pool.lostMin} ${pool.lostMin === 1 ? 'is' : 'are'}` : `${pool.lostMin} to ${pool.lostMax} are`;
+const lineBox = document.getElementById('lines');
+lines.forEach(line => {
+  const main = line.candidates.filter(candidate => !candidate.longShot);
+  const section = element('section');
+  section.id = NOUNS[line.type][0];
+  section.append(element('h2', `${TITLES[line.type]} (tag ${line.tag}): ${line.trees.length} ${treeWord(line.trees.length)}`));
+
+  const untagged = main.filter(candidate => !candidate.taggedQty).map(candidate => candidate.name);
+  const repeats = main.filter(candidate => candidate.slots > 1);
+  const watched = main.filter(candidate => candidate.compareWith.length);
+  const total = line.pool.main + line.pool.longShot;
+  const box = element('div', undefined, 'instructions');
+  box.append(
+    labelled('The count:', `${total} purchased ${noun(line.type, total)} ${total === 1 ? 'has' : 'have'} no tagged tree (${line.candidates.map(candidate => `${candidate.name} ${candidate.slots}`).join(', ')}). ` +
+      `${line.pool.trees} of them ${line.pool.trees === 1 ? 'is this tree' : 'are these trees'}, so ${lostText(line.pool)} presumed to have died in Boise.`),
+    labelled('Narrowing it down:', 'Compare each tree with the tagged tree of the same name, by bloom timing first and by fruit later. ' +
+      (untagged.length ? `${sentenceList(untagged)} ${untagged.length > 1 ? 'have' : 'has'} no tagged tree to compare with, so a tree that matches none of the tagged trees points to ${untagged.length > 1 ? 'one of them' : 'it'}. ` : '') +
+      (repeats.length ? `Only ${sentenceList(repeats.map(candidate => candidate.name))} can fill more than one tree, so two trees that look identical are probably ${repeats.length === 1 ? `the ${repeats[0].slots} ${repeats[0].name} trees` : 'a repeated one of those'}. ` : '') +
+      watched.map(candidate => `${candidate.name}: also compare with the trees tagged ${sentenceList(candidate.compareWith.map(entry => entry.tag))}, because one of those tags may be wrong.`).join(' '))
+  );
+  section.append(box);
+
+  const table = element('table', undefined, 'possibilities');
+  table.setAttribute('aria-label', `Purchased ${noun(line.type, 2)} with no tagged tree that the unidentified trees could be`);
+  const columns = element('colgroup');
+  for (let i = 0; i < 6; i++) columns.append(element('col'));
+  table.append(columns);
+  const head = table.createTHead().insertRow();
+  ['Candidate', 'Slots', 'Vendor / rootstock', 'Tagged tree to compare with', 'Ripens', 'Typical fruit*'].forEach(text => head.append(element('th', text)));
+  const tbody = table.createTBody();
+  line.candidates.forEach(candidate => {
+    const row = tbody.insertRow();
+    const name = row.insertCell();
+    name.append(element('strong', candidate.name));
+    const profileLink = element('a', 'Full profile');
+    profileLink.href = CultivarLibrary.guideHref(candidate.profile);
+    const profileNote = element('div', undefined, 'source-note');
+    profileNote.append(profileLink);
+    name.append(profileNote);
+    if (candidate.longShot) name.append(element('span', 'Long shot', 'tag'));
+    row.insertCell().textContent = candidate.slots;
+    const source = row.insertCell();
+    source.append(orList(candidate.vendors));
+    if (candidate.rootstock) source.append(element('div', candidate.rootstock, 'source-note'));
+    if (candidate.fertility) source.append(element('div', candidate.fertility, 'source-note'));
+    const compare = row.insertCell();
+    if (candidate.tagged.length) {
+      candidate.tagged.forEach(entry => compare.append(element('div', `${entry.tag} ×${entry.qty}`)));
+    } else {
+      compare.append(element('strong', 'None tagged'));
+    }
+    candidate.compareWith.forEach(entry => compare.append(element('div', `Also compare: ${entry.tag} ×${entry.qty}`, 'source-note')));
+    row.insertCell().textContent = candidate.profile.ripening || '';
+    const fruit = row.insertCell();
+    fruit.append(candidate.profile.appearance);
+    fruit.append(element('div', `Recognize: ${candidate.profile.id_cues}`, 'source-note'));
+    CultivarLibrary.traits(candidate.profile).forEach(([label, text]) => fruit.append(element('div', `${label}: ${text}`, 'source-note')));
+    if (candidate.note) fruit.append(element('div', candidate.note, 'source-note'));
+    if (candidate.longShot) fruit.append(element('div', candidate.long_shot, 'source-note long-shot'));
+  });
+  section.append(table);
+  lineBox.append(section);
+});
+
+document.getElementById('cue-note').textContent =
+  '*Typical fruit, the Recognize lines, and any habit, bark, or leaf notes come from each cultivar\'s profile in the cultivar guide, which lists sources and says whether any details are general knowledge. Habit, bark, and leaf notes are shown only where a source describes that cultivar; otherwise compare your tree with the tagged tree of the same name. Ripening is relative to each fruit\'s own season, so go by the order Early, Mid, Late, Very late. The tagged tree is a better reference than any description. Slots are purchased trees minus tagged trees.';
+const sources = document.getElementById('sources');
+sources.append('Sources: ');
+lines.flatMap(line => line.candidates).flatMap(candidate => candidate.profile.sources).forEach(([label, link], index) => {
+  if (index) sources.append(' · ');
+  const anchor = element('a', label);
+  anchor.href = link;
+  sources.append(anchor);
+});
+
+document.getElementById('log-note').textContent =
+  'Record what you see even when unsure, and check off candidates you can rule out. Bark, twigs, leaves, and habit are worth writing down too: stand next to the tagged tree of a candidate and compare. For stone fruit, whether the stone comes free of the flesh (freestone) or clings, and whether the skin is fuzzy, are quick checks that separate cultivars. To keep an observation in the property data, add it as a plant event for the tree (see data/README.md).';
+const cards = document.getElementById('cards');
+const blankRows = (count, columnCount) => {
+  const body = element('tbody');
+  for (let i = 0; i < count; i++) {
+    const row = body.insertRow();
+    for (let c = 0; c < columnCount; c++) row.insertCell();
+  }
+  return body;
+};
+const logTable = (heading, labels, rows) => {
+  const table = element('table', undefined, 'log-table');
+  table.setAttribute('aria-label', heading);
+  const head = table.createTHead().insertRow();
+  labels.forEach(text => head.append(element('th', text)));
+  table.append(blankRows(rows, labels.length));
+  return table;
+};
+const field = (text, size) => {
+  const wrap = element('span');
+  wrap.append(`${text} `, element('span', undefined, 'field' + (size ? ' ' + size : '')));
+  return wrap;
+};
+const checkbox = text => {
+  const item = element('span', undefined, 'item');
+  item.append(element('span', undefined, 'box'), text);
+  return item;
+};
+lines.forEach(line => line.trees.forEach(tree => {
+  const card = element('article', undefined, 'tree-card');
+  const head = element('div', undefined, 'tree-head');
+  head.append(element('span', tree.label, 'tree-label'), element('span', tree.id, 'mono'), element('span', `${NOUNS[line.type][0]}, tag ${tree.tag}`),
+    element('span', `Planned spot ${tree.spot || 'pending'}${tree.siteRef ? ` · SiteRef ${tree.siteRef}` : ''}`, 'mono'));
+  const where = element('div', undefined, 'final');
+  where.append(field('Actual spot / SiteRef:', 'long'), field('Planted on:', 'short'), checkbox('Number tag added'));
+  const bloom = logTable(`${tree.label} bloom log`, ['Bloom year', 'First bloom', 'Full bloom', 'Last bloom', 'Compared with (tagged tree) / notes'], 3);
+  const form = logTable(`${tree.label} bark and leaf log`, ['Date', 'Habit and branching', 'Bark and twigs', 'Leaves (size, shape, underside)', 'Compared with (tagged tree)'], 2);
+  const fruit = logTable(`${tree.label} fruit log`, ['Fruit year', 'Ripe on', 'Size', 'Skin color / fuzz', 'Flesh color', 'Stone (free or cling)', 'Taste'], 3);
+  const choices = element('div', undefined, 'choices');
+  choices.append(element('strong', 'Ruled out: '));
+  line.candidates.forEach(candidate => choices.append(checkbox(candidate.name + (candidate.slots > 1 ? ` ×${candidate.slots}` : '') + (candidate.longShot ? ' (long shot)' : ''))));
+  const verdict = element('div', undefined, 'final');
+  verdict.append(field('Best match:', 'long'), field('Confirmed on:', 'short'), checkbox('bloom'), checkbox('fruit'), checkbox('side by side with the tagged tree'), checkbox('vendor records'));
+  const notes = element('div', undefined, 'final');
+  notes.append(field('Notes:', 'long'));
+  notes.lastChild.lastChild.style.minWidth = '6.2in';
+  card.append(head, where, bloom, form, fruit, choices, verdict, notes);
+  cards.append(card);
+}));
+</script>
+</body>
+</html>

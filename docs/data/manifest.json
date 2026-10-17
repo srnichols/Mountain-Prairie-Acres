@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "source_digest": "1e0a8cdda4ef9da6710ebe1db4c95564f4cd0d34be10c59fdfaf4f43fb193c18",
+  "source_digest": "f835cc9173cdcba2bd844280ef6a29b5023a1dc59199067bd879c8e81777497d",
   "plants": 432,
   "orchard_spots": 195,
   "terrain_samples": 18009,
-  "cultivar_profiles": 112
+  "cultivar_profiles": 137
 }

@@ -207,6 +207,20 @@ class PropertyDataTest(unittest.TestCase):
             ("cultivar_library", lambda d: d["group_notes"][0].update(bark="too short"), "bark must be 40"),
             ("cultivar_library", lambda d: d["group_notes"].append(copy.deepcopy(d["group_notes"][0])), "duplicated"),
             ("cultivar_library", lambda d: d["group_notes"][0].update(sources=[]), "at least one source"),
+            ("cultivar_library", lambda d: next(r for r in d["records"] if r["id"] == "ash").update(seed_rows=[8]), "linked to both"),
+            ("cultivar_library", lambda d: next(r for r in d["records"] if r["id"] == "ash").update(seed_rows=[1]), "missing or out-of-scope row 1"),
+            ("cultivar_library", lambda d: next(r for r in d["records"] if r["id"] == "ash").pop("seed_rows"), "without a cultivar profile"),
+            ("orchard", lambda d: d["rules"]["UNIDENTIFIED_STONE_FRUIT"]["lines"][0]["candidates"][0].update(slots=1), "slots disagree"),
+            ("orchard", lambda d: d["rules"]["UNIDENTIFIED_STONE_FRUIT"]["lines"][1]["candidates"].pop(0), "omit"),
+            ("orchard", lambda d: d["rules"]["UNIDENTIFIED_STONE_FRUIT"]["lines"][0].update(type="Apple"), "must be one of"),
+            ("orchard", lambda d: d["rules"]["UNIDENTIFIED_STONE_FRUIT"]["lines"][2]["candidates"][0].update(compare_with=[81]), "compare_with must be other apricot"),
+            ("orchard", lambda d: d["rules"]["UNIDENTIFIED_STONE_FRUIT"]["lines"][0].update(label="1 bad"), "label must be"),
+            ("orchard", lambda d: d["rules"]["UNIDENTIFIED_STONE_FRUIT"]["lines"][0].pop("label"), "missing fields"),
+            ("orchard", lambda d: d["rules"]["UNIDENTIFIED_STONE_FRUIT"]["lines"][1].update(label="Sweet"), "used by more than one line"),
+            ("orchard", lambda d: d["rules"]["UNIDENTIFIED_STONE_FRUIT"]["lines"][0].update(label="UnKn"), "used by more than one line"),
+            ("orchard", lambda d: d["rules"]["UNIDENTIFIED_STONE_FRUIT"]["lines"][0]["candidates"][0].update(compare_with=[73]), "repeats row 73"),
+            ("orchard", lambda d: d["rules"]["UNIDENTIFIED_STONE_FRUIT"]["lines"].append(
+                copy.deepcopy(d["rules"]["UNIDENTIFIED_STONE_FRUIT"]["lines"][0])), "listed twice"),
         ]
         for collection, change, message in cases:
             data = copy.deepcopy(self.data)
@@ -228,11 +242,52 @@ class PropertyDataTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "slots disagree"):
             validate_data(data)
 
+    def test_unidentified_stone_fruit_candidates_follow_purchases_and_inventory(self):
+        info = self.data["orchard"]["rules"]["UNIDENTIFIED_STONE_FRUIT"]
+        inventory = {r["source_row"]: r for r in self.data["inventory"]["records"]}
+        lines = {line["type"]: line for line in info["lines"]}
+        self.assertEqual({kind: (inventory[line["inventory_row"]]["metal_tag"], inventory[line["inventory_row"]]["quantity"])
+                          for kind, line in lines.items()},
+                         {"Cherry": ("CR-Sweet", 3), "Peach": ("PC-Unk", 2), "Apricot": ("AT-Unk", 1)})
+        self.assertEqual({kind: sum(c["slots"] for c in line["candidates"]) for kind, line in lines.items()},
+                         {"Cherry": 4, "Peach": 4, "Apricot": 1})
+        self.assertEqual(lines["Apricot"]["candidates"][0]["compare_with"], [70],
+                         "Two trees are tagged Moorpark but one was bought, so those trees are compared too")
+        stored = query("SELECT json_extract(data_json, '$.rules.UNIDENTIFIED_STONE_FRUIT.lines[0].type') AS type "
+                       "FROM source_documents WHERE name = 'orchard'", self.root)
+        self.assertEqual(stored[0]["type"], "Cherry")
+        data = copy.deepcopy(self.data)
+        next(r for r in data["inventory"]["records"] if r["source_row"] == 73)["quantity"] = 1
+        with self.assertRaisesRegex(ValueError, "slots disagree"):
+            validate_data(data)
+
+    def test_seed_list_species_all_have_profiles(self):
+        rows = query("SELECT source_row, species, profile_id FROM seed_list ORDER BY source_row", self.root)
+        self.assertEqual(len(rows), 28)
+        self.assertTrue(all(r["profile_id"] for r in rows), "Every species on the seed list has a profile")
+        by_row = {r["source_row"]: r["profile_id"] for r in rows}
+        self.assertEqual((by_row[7], by_row[13], by_row[30]), ("ash", "juniper-rocky-mountain", "serviceberry-western"))
+        links = query("SELECT link_type, COUNT(*) AS n FROM cultivar_profile_links GROUP BY link_type", self.root)
+        self.assertEqual({r["link_type"]: r["n"] for r in links}, {"inventory": 114, "purchase": 105, "seed": 28})
+        self.assertEqual(len(self.data["catalog"]["fruit_records"]), 105, "Every purchase-list cultivar has a profile")
+        build(self.root)
+        generated = (self.root / "docs" / "data" / "orchard_model.js").read_text(encoding="utf-8")
+        self.assertIn('"SEED_LIST":{"2":{"name":"Acer Japanese Maple"', generated)
+
+    def test_blank_seed_list_cells_are_not_species(self):
+        path = self.root / "data" / "catalog.json"
+        catalog = json.loads(path.read_text(encoding="utf-8"))
+        catalog["workbook_records"].append({"id": "Trees:Trees:31", "workbook": "Trees.xlsx", "sheet": "Trees",
+                                            "source_row": 31, "values": {"B": " ", "F": " "}})
+        path.write_text(json.dumps(catalog), encoding="utf-8")
+        validate_data(load_data(self.root))
+        self.assertEqual(query("SELECT COUNT(*) AS n FROM seed_list", self.root)[0]["n"], 28)
+
     def test_cultivar_library_is_queryable_and_covers_the_inventory(self):
         counts = query("SELECT COUNT(*) AS profiles, "
                        "(SELECT COUNT(*) FROM cultivar_profile_links WHERE link_type = 'inventory') AS inventory_links "
                        "FROM cultivar_profiles", self.root)[0]
-        self.assertEqual((counts["profiles"], counts["inventory_links"]), (112, 114))
+        self.assertEqual((counts["profiles"], counts["inventory_links"]), (137, 114))
         cortland = query("SELECT profile_name, ripening FROM plant_profiles WHERE plant_id = 'i29-1'", self.root)[0]
         self.assertEqual((cortland["profile_name"], cortland["ripening"]), ("Cortland", "Mid"))
         unknown = query("SELECT profile_id FROM plant_profiles WHERE plant_id = 'i62-1'", self.root)[0]
