@@ -2,7 +2,7 @@
   "schema_version": 1,
   "rules": {
     "PLAN_DATE": "October 4, 2026",
-    "STATUS_DATE": "October 11, 2026",
+    "STATUS_DATE": "October 17, 2026",
     "INVENTORY_MATCH": {
       "3": {
         "rows": [],
@@ -259,7 +259,7 @@
       "62": {
         "rows": [],
         "name": "Unidentified apple",
-        "note": "Tag AL-UnKn. Purchased apples not otherwise found at Prairie: Braeburn 1, Cortland 2, Dolgo 1, Empire 1, Aztec Fuji 1, Gala 1, Golden Russet 1, Honeycrisp 1, Sweet Sixteen 1, Zestar 1. Some of these 6 may be those trees; identify them at bloom or harvest."
+        "note": "Tag AL-UnKn. Owner (Oct 16, 2026): every purchased apple arrived, so a purchase with no tagged tree is presumed to have died in Boise, unrecorded. These 6 are among the 11 purchased apples with no tagged tree: Braeburn 1, Cortland 2, Dolgo 1 (long shot), Empire 1, Aztec Fuji 1, Gala 1, Golden Russet 1, Honeycrisp 1, Sweet Sixteen 1, Zestar 1. Identify them at bloom or harvest using the possibility list."
       },
       "63": {
         "rows": [
@@ -907,6 +907,112 @@
       42,
       43
     ],
+    "UNIDENTIFIED_APPLES": {
+      "inventory_row": 62,
+      "stated_on": "2026-10-16",
+      "owner_statement": "Every purchased apple arrived. A purchased apple with no tagged tree is presumed to have died in Boise; those deaths were not recorded.",
+      "candidates": [
+        {
+          "rows": [
+            45
+          ],
+          "slots": 1,
+          "vendors": [
+            "Lowes"
+          ]
+        },
+        {
+          "rows": [
+            22
+          ],
+          "slots": 1,
+          "vendors": [
+            "GrowOrganic"
+          ]
+        },
+        {
+          "rows": [
+            10
+          ],
+          "slots": 2,
+          "vendors": [
+            "GrowOrganic"
+          ]
+        },
+        {
+          "rows": [
+            14
+          ],
+          "slots": 1,
+          "vendors": [
+            "GrowOrganic"
+          ]
+        },
+        {
+          "rows": [
+            41
+          ],
+          "slots": 1,
+          "vendors": [
+            "Grandpa"
+          ]
+        },
+        {
+          "rows": [
+            19,
+            20
+          ],
+          "slots": 1,
+          "vendors": [
+            "GrowOrganic",
+            "Lowes"
+          ],
+          "note": "The tagged Gala could be either purchase, so the missing one could be either."
+        },
+        {
+          "rows": [
+            28
+          ],
+          "slots": 1,
+          "vendors": [
+            "GrowOrganic"
+          ]
+        },
+        {
+          "rows": [
+            7,
+            8
+          ],
+          "slots": 1,
+          "vendors": [
+            "GrowOrganic"
+          ],
+          "note": "The tagged Braeburn is the dwarf (Lowes) tree, so the missing one is the GrowOrganic tree on M-111."
+        },
+        {
+          "rows": [
+            4,
+            5
+          ],
+          "slots": 1,
+          "vendors": [
+            "Lowes",
+            "StarkBro"
+          ],
+          "note": "The two tagged Aztec Fujis could be any two of the three purchases (1 semi-dwarf from Lowes, 2 dwarf from StarkBro)."
+        },
+        {
+          "rows": [
+            13
+          ],
+          "slots": 1,
+          "vendors": [
+            "Montana Fruit"
+          ],
+          "long_shot": "Montana Fruit's four crabs (2 Dolgo, 2 Kerr) equal the four tagged crabs (1 Dolgo, 3 Kerr), so one Kerr tag may really be this Dolgo."
+        }
+      ]
+    },
     "PEAR_BLOOM": {
       "89": [
         "Early\u2013mid",

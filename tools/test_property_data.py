@@ -39,11 +39,15 @@ class PropertyDataTest(unittest.TestCase):
     def test_current_orchard_and_open_spots(self):
         rows = query("SELECT state, COUNT(*) AS n FROM orchard_spots GROUP BY state", self.root)
         counts = {r["state"]: r["n"] for r in rows}
-        self.assertEqual(counts, {"open": 71, "planned": 110, "planted": 1, "reserved": 13})
+        self.assertEqual(counts, {"open": 71, "planned": 109, "planted": 2, "reserved": 13})
         root = query("SELECT * FROM current_plantings WHERE plant_id = 'i56-1'", self.root)[0]
         self.assertEqual(root["site_ref"], "B10-E33-S35")
         self.assertEqual(root["status"], "planted")
         self.assertIsNone(root["planted_on"], "Do not invent a planting date from a report date")
+        pear = query("SELECT * FROM current_plantings WHERE plant_id = 'i94-1'", self.root)[0]
+        self.assertEqual((pear["status"], pear["location_name"], pear["site_ref"]), ("planted", "R8-C3", "B9-E33-S45"))
+        self.assertIsNone(pear["planted_on"], "Do not invent a planting date from a report date")
+        self.assertEqual(query("SELECT state FROM orchard_spots WHERE name = 'R8-C1'", self.root)[0]["state"], "open")
         outside = query("SELECT * FROM current_plantings WHERE plant_group = 'outside-orchard'", self.root)
         self.assertEqual(len(outside), 3)
         self.assertTrue(all(r["site_ref"] == "PENDING" and r["location_id"] is None for r in outside))
@@ -51,7 +55,7 @@ class PropertyDataTest(unittest.TestCase):
         self.assertEqual(dead["status"], "dead")
         self.assertEqual(dead["site_ref"], "PENDING", "A vacant planned spot is not the dead plant's current location")
         vacancies = query("SELECT name, replacement_year FROM orchard_spots WHERE replacement_year IS NOT NULL", self.root)
-        self.assertEqual({r["name"] for r in vacancies}, {"R4-C9", "R5-C9", "R5-C10", "R8-C3"})
+        self.assertEqual({r["name"] for r in vacancies}, {"R4-C9", "R5-C9", "R5-C10", "R8-C1"})
         self.assertTrue(all(r["replacement_year"] == 2027 for r in vacancies))
 
     def test_features_terrain_water_and_gps_are_queryable(self):
@@ -184,12 +188,77 @@ class PropertyDataTest(unittest.TestCase):
             ("water_harvesting", lambda d: d["months"].reverse(), "order"),
             ("water_harvesting", lambda d: d["catchments"][0].update(runoff_factor=1.5), "runoff"),
             ("inventory", lambda d: d["records"][0].update(quantity=0), "quantity"),
+            ("orchard", lambda d: d["rules"]["UNIDENTIFIED_APPLES"]["candidates"][2].update(slots=1), "slots disagree"),
+            ("orchard", lambda d: d["rules"]["UNIDENTIFIED_APPLES"]["candidates"].pop(3), "omit"),
+            ("orchard", lambda d: d["rules"]["UNIDENTIFIED_APPLES"]["candidates"][5].update(rows=[19]), "whole purchase group"),
+            ("orchard", lambda d: d["rules"]["UNIDENTIFIED_APPLES"]["candidates"][0].update(vendors=["Costco"]), "vendors"),
+            ("cultivar_library", lambda d: d["records"][0].update(ripening="Soon"), "ripening"),
+            ("cultivar_library", lambda d: d["records"].pop(0), "without a cultivar profile"),
+            ("cultivar_library", lambda d: d["records"][1].update(inventory_rows=d["records"][0]["inventory_rows"]), "linked to both"),
+            ("cultivar_library", lambda d: d["records"][0].update(tagline="short"), "characters"),
+            ("cultivar_library", lambda d: d["records"][0].update(sources=[["Example label", "http://example.com/page"]]), "https"),
+            ("cultivar_library", lambda d: d["unprofiled"].update({"26": "Listed twice"}), "both profiled and unprofiled"),
+            ("cultivar_library", lambda d: d["records"][0].update(basis="guess"), "basis"),
+            ("cultivar_library", lambda d: d["records"][0].update(kind="cluster"), "kind"),
+            ("cultivar_library", lambda d: d["records"][0].update(aliases=["Same name", "Same name"]), "aliases must be distinct"),
+            ("cultivar_library", lambda d: d["records"][0].update(bark="too short"), "characters or null"),
+            ("cultivar_library", lambda d: d["records"][0].pop("leaf"), "leaf"),
+            ("cultivar_library", lambda d: d["unprofiled"].update({"19": "Douglas-fir listed twice"}), "both profiled and unprofiled"),
+            ("cultivar_library", lambda d: d["group_notes"][0].update(bark="too short"), "bark must be 40"),
+            ("cultivar_library", lambda d: d["group_notes"].append(copy.deepcopy(d["group_notes"][0])), "duplicated"),
+            ("cultivar_library", lambda d: d["group_notes"][0].update(sources=[]), "at least one source"),
         ]
         for collection, change, message in cases:
             data = copy.deepcopy(self.data)
             change(data[collection])
             with self.subTest(collection=collection, message=message), self.assertRaisesRegex(ValueError, message):
                 validate_data(data)
+
+    def test_unidentified_apple_candidates_follow_purchases_and_inventory(self):
+        info = self.data["orchard"]["rules"]["UNIDENTIFIED_APPLES"]
+        unknown = next(r for r in self.data["inventory"]["records"] if r["source_row"] == info["inventory_row"])
+        self.assertEqual((unknown["metal_tag"], unknown["quantity"]), ("AL-UnKn", 6))
+        self.assertEqual(sum(c["slots"] for c in info["candidates"]), 11)
+        self.assertEqual([c["rows"] for c in info["candidates"] if "long_shot" in c], [[13]])
+        stored = query("SELECT json_extract(data_json, '$.rules.UNIDENTIFIED_APPLES.stated_on') AS stated "
+                       "FROM source_documents WHERE name = 'orchard'", self.root)
+        self.assertEqual(stored[0]["stated"], "2026-10-16")
+        data = copy.deepcopy(self.data)
+        next(r for r in data["inventory"]["records"] if r["source_row"] == 29)["quantity"] = 4
+        with self.assertRaisesRegex(ValueError, "slots disagree"):
+            validate_data(data)
+
+    def test_cultivar_library_is_queryable_and_covers_the_inventory(self):
+        counts = query("SELECT COUNT(*) AS profiles, "
+                       "(SELECT COUNT(*) FROM cultivar_profile_links WHERE link_type = 'inventory') AS inventory_links "
+                       "FROM cultivar_profiles", self.root)[0]
+        self.assertEqual((counts["profiles"], counts["inventory_links"]), (112, 114))
+        cortland = query("SELECT profile_name, ripening FROM plant_profiles WHERE plant_id = 'i29-1'", self.root)[0]
+        self.assertEqual((cortland["profile_name"], cortland["ripening"]), ("Cortland", "Mid"))
+        unknown = query("SELECT profile_id FROM plant_profiles WHERE plant_id = 'i62-1'", self.root)[0]
+        self.assertIsNone(unknown["profile_id"], "Unidentified apples have no profile")
+        by_tag = query("SELECT DISTINCT profile_name FROM plant_profiles WHERE metal_tag = 'AL-Zestar'", self.root)
+        self.assertEqual([r["profile_name"] for r in by_tag], ["Zestar!"])
+        self.assertEqual(sorted(self.data["cultivar_library"]["unprofiled"], key=int), ["61", "62", "71", "81", "91"])
+        self.assertEqual(query("SELECT COUNT(DISTINCT plant_id) AS n FROM plant_profiles WHERE profile_id IS NULL", self.root)[0]["n"], 13)
+
+    def test_cultivar_library_covers_trees_perennials_traits_and_group_notes(self):
+        fir = query("SELECT profile_id, bark, leaf FROM plant_profiles WHERE metal_tag = 'Dg. Fir'", self.root)
+        self.assertEqual({r["profile_id"] for r in fir}, {"douglas-fir"})
+        self.assertTrue(all(r["bark"] and r["leaf"] for r in fir), "Species profiles describe their own bark and leaves")
+        groups = {r["plant_group"] for r in query("SELECT plant_group FROM cultivar_profiles", self.root)}
+        self.assertTrue({"Evergreen", "Shade tree", "Perennial"} <= groups)
+        rootstock = query("SELECT kind FROM cultivar_profiles WHERE id = 'rootstock-m111'", self.root)[0]
+        self.assertEqual(rootstock["kind"], "rootstock")
+        bare = query("SELECT id FROM cultivar_profiles WHERE kind <> 'cultivar' AND kind <> 'rootstock' "
+                     "AND habit IS NULL AND bark IS NULL AND leaf IS NULL", self.root)
+        self.assertEqual(bare, [], "A species or genus profile is the plant itself, so it needs some tree description")
+        notes = query("SELECT plant_group FROM cultivar_group_notes ORDER BY plant_group", self.root)
+        self.assertEqual([r["plant_group"] for r in notes], ["Apple", "Apricot", "Cherry", "Peach", "Pear", "Plum"])
+        sources = query("SELECT COUNT(*) AS n FROM cultivar_group_note_sources WHERE url NOT LIKE 'https://%'", self.root)
+        self.assertEqual(sources[0]["n"], 0)
+        every_source = query("SELECT COUNT(*) AS n FROM cultivar_profile_sources WHERE url NOT LIKE 'https://%'", self.root)
+        self.assertEqual(every_source[0]["n"], 0)
 
     def test_generated_outputs_are_repeatable_and_checkable(self):
         build(self.root)

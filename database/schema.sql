@@ -61,6 +61,38 @@ CREATE TABLE plant_events (
     id TEXT PRIMARY KEY, plant_id TEXT NOT NULL REFERENCES plants(id),
     event_type TEXT NOT NULL, recorded_on TEXT, occurred_on TEXT, notes TEXT NOT NULL
 ) STRICT;
+CREATE TABLE cultivar_profiles (
+    id TEXT PRIMARY KEY, plant_group TEXT NOT NULL, type TEXT NOT NULL,
+    kind TEXT NOT NULL CHECK (kind IN ('cultivar', 'species', 'genus', 'rootstock')), name TEXT NOT NULL,
+    tagline TEXT NOT NULL, summary TEXT NOT NULL, appearance TEXT NOT NULL, flavor_use TEXT NOT NULL,
+    ripening TEXT CHECK (ripening IN ('Early', 'Mid', 'Late', 'Very late')), ripening_note TEXT NOT NULL,
+    id_cues TEXT NOT NULL, habit TEXT, bark TEXT, leaf TEXT, hardiness TEXT NOT NULL,
+    basis TEXT NOT NULL CHECK (basis IN ('sourced', 'general')), note TEXT, reviewed_on TEXT NOT NULL
+) STRICT;
+CREATE TABLE cultivar_profile_links (
+    profile_id TEXT NOT NULL REFERENCES cultivar_profiles(id),
+    link_type TEXT NOT NULL CHECK (link_type IN ('inventory', 'purchase')),
+    source_row INTEGER NOT NULL, PRIMARY KEY (link_type, source_row)
+) STRICT;
+CREATE TABLE cultivar_profile_aliases (
+    profile_id TEXT NOT NULL REFERENCES cultivar_profiles(id), alias TEXT NOT NULL,
+    PRIMARY KEY (profile_id, alias)
+) STRICT;
+CREATE TABLE cultivar_profile_uses (
+    profile_id TEXT NOT NULL REFERENCES cultivar_profiles(id), use TEXT NOT NULL,
+    PRIMARY KEY (profile_id, use)
+) STRICT;
+CREATE TABLE cultivar_profile_sources (
+    profile_id TEXT NOT NULL REFERENCES cultivar_profiles(id), position INTEGER NOT NULL,
+    label TEXT NOT NULL, url TEXT NOT NULL, PRIMARY KEY (profile_id, position)
+) STRICT;
+CREATE TABLE cultivar_group_notes (
+    plant_group TEXT PRIMARY KEY, habit TEXT NOT NULL, bark TEXT NOT NULL, leaf TEXT NOT NULL, reviewed_on TEXT NOT NULL
+) STRICT;
+CREATE TABLE cultivar_group_note_sources (
+    plant_group TEXT NOT NULL REFERENCES cultivar_group_notes(plant_group), position INTEGER NOT NULL,
+    label TEXT NOT NULL, url TEXT NOT NULL, PRIMARY KEY (plant_group, position)
+) STRICT;
 CREATE TABLE site_features (
     id TEXT PRIMARY KEY, name TEXT NOT NULL, feature_group TEXT NOT NULL, status TEXT NOT NULL,
     shape TEXT NOT NULL CHECK (shape IN ('rect', 'circle', 'line', 'point', 'polygon')),
@@ -152,6 +184,13 @@ SELECT l.*, a.plant_id,
             WHEN a.status IS NOT NULL THEN a.status ELSE 'open' END AS state
 FROM location_refs l LEFT JOIN plantings a ON a.location_id = l.id AND a.status IN ('planned', 'planted')
 WHERE l.orchard_row IS NOT NULL;
+
+CREATE VIEW plant_profiles AS
+SELECT p.id AS plant_id, b.metal_tag, b.type, b.variety AS inventory_name, p.plant_group, p.health_status,
+       c.id AS profile_id, c.name AS profile_name, c.tagline, c.ripening, c.habit, c.bark, c.leaf, c.basis
+FROM plants p JOIN inventory_batches b ON b.source_row = p.inventory_row
+LEFT JOIN cultivar_profile_links k ON k.link_type = 'inventory' AND k.source_row = p.inventory_row
+LEFT JOIN cultivar_profiles c ON c.id = k.profile_id;
 
 CREATE VIEW water_budget AS
 SELECT c.*, c.area_sqft * c.runoff_factor *

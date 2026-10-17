@@ -25,6 +25,7 @@ Queries are read-only: writes, attachment of another database, and extension loa
 |---|---|
 | `inventory_batches`, `plants`, `cultivars` | Source quantity groups, individual IDs, and cultivar source entries; multiple workbook entries for the same named cultivar retain their source-row differences |
 | `plantings`, `locations`, `plant_events` | Assignment and history, with foreign keys and unique active plant/spot indexes |
+| `cultivar_profiles`, `cultivar_profile_links`, `cultivar_profile_aliases`, `cultivar_profile_uses`, `cultivar_profile_sources`, `cultivar_group_notes`, `cultivar_group_note_sources` | The cultivar library: one profile per cultivar, species, genus, or rootstock in the inventory (including habit, bark, and leaf notes, which are `NULL` unless a source describes that plant), linked to inventory lines and purchase rows, with aliases, uses, and sources; plus a general habit, bark, and leaf note for each fruit-tree type. Not the same as `cultivars`, which holds purchase-sheet rows |
 | `workbook_rows`, `purchases` | Lossless structured workbook cells and purchase-list projections; headers are not purchases, dates not supplied stay null |
 | `grid_cells` | All master cells, clipped to the actual fence, with their northwest-corner latitude/longitude |
 | `site_features`, `feature_points` | Full mapped geometry and queryable vertices, including water pipes and hydrants |
@@ -41,6 +42,7 @@ inventory_batches -> plants -> plantings -> locations
                        |          +-> location_refs (calculated SiteRef)
                        +-> plant_events
                        +-> cultivars
+inventory_batches / cultivars -> cultivar_profile_links -> cultivar_profiles -> aliases, uses, sources
 site_features -> feature_points
 terrain_lines -> terrain_points
 water_observations -> locations (when supplied)
@@ -51,6 +53,7 @@ water_observations -> locations (when supplied)
 - **`current_plantings`**: individual plants and current active planned/planted locations. Unassigned/dead plants show `PENDING`; an outside-orchard plan does not pretend to occupy its old orchard slot.
 - **`orchard_spots`**: every orchard spot, its reservation, replacement plan, and occupancy (`planned`, `planted`, `reserved`, `open`).
 - **`location_refs`**: SiteRef and offsets calculated from lot coordinates and the master cells.
+- **`plant_profiles`**: each individual plant with its cultivar profile (name, tagline, ripening band, habit, bark, leaf, basis); plants on unidentified or unprofiled lines show `NULL`.
 - **`water_budget`**: per-inch, annual, and March–June harvest estimates; unknown areas return SQL `NULL`, not zero.
 
 For example, the current orchard has **110 planned fruit-tree assignments, one confirmed planted rootstock, 71 open spots, and 13 reserved spots**. SQL and the website use the same records. Most remaining inventory items have no measured individual planting locations.

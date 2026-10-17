@@ -196,18 +196,21 @@ window.addEventListener('error', event => {
 </script>
 <script src="data/site_grid.js"></script>
 <script src="data/orchard_model.js"></script>
+<script src="data/cultivar_library.js"></script>
 <script src="data/planting_checklist.js"></script>
 <script>
 const { records, rows } = OrchardModel.plan();
 OrchardChecklist.render(document.getElementById('planting-checklist'), records);
 const active = rows.flatMap(row => row.trees.filter(Boolean));
 const rootstocks = active.filter(tree => tree.rootstockOnly);
+const plantedFruit = active.filter(tree => tree.planted && !tree.rootstockOnly);
 document.getElementById('planting-status').textContent =
-  `${active.length} living orchard trees: ${active.length - rootstocks.length} fruit trees and ${rootstocks.length} planted rootstock.`;
+  `${active.length} living orchard trees: ${active.length - rootstocks.length} fruit trees and ${rootstocks.length} planted rootstock.` +
+  (plantedFruit.length ? ` ${plantedFruit.length} of the fruit trees ${plantedFruit.length === 1 ? 'is' : 'are'} already planted.` : '');
 const updates = document.getElementById('planting-updates');
-records.filter(tree => tree.orchardUpdate || tree.rootstockOnly).forEach(tree => {
+records.filter(tree => tree.orchardUpdate || tree.rootstockOnly || tree.planted).forEach(tree => {
   const paragraph = document.createElement('p');
-  if (tree.rootstockOnly) {
+  if (tree.rootstockOnly || tree.planted) {
     paragraph.textContent = `${tree.r && `R${tree.r}-C${tree.c}`}: ${tree.name} (${tree.tag}) is already planted; its checkbox is checked.`;
   } else {
     const update = tree.orchardUpdate;

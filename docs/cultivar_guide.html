@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cultivar Guide: Plant Profiles</title>
+<style>
+  :root {
+    --text: #20251f;
+    --muted: #555d54;
+    --border: #9da59c;
+    --header: #e8eee6;
+    --row: #f7f9f6;
+    --accent: #3b6d11;
+    --ink: #50584f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    max-width: 8.5in;
+    margin: 0 auto;
+    padding: 0.45in;
+    color: var(--text);
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+    line-height: 1.3;
+  }
+  h1 { margin: 0 0 0.08in; font-size: 18pt; line-height: 1.1; }
+  h2 { margin: 0.22in 0 0.08in; padding-bottom: 0.03in; border-bottom: 2px solid var(--accent); font-size: 13pt; break-after: avoid; }
+  .subtitle { margin: 0 0 0.14in; color: var(--muted); font-size: 9.5pt; }
+  .print-help {
+    margin: 0 0 0.14in;
+    padding: 0.1in 0.15in;
+    background: #fff3cd;
+    border: 1px solid #d6b656;
+  }
+  .error {
+    color: #8b1e16;
+    background: #fbe9e7;
+    border: 1px solid #d78d86;
+    padding: 0.12in;
+    font-weight: bold;
+  }
+  .how {
+    margin: 0 0 0.14in;
+    padding: 0.1in 0.15in;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    background: var(--row);
+    font-size: 9pt;
+  }
+  .how p { margin: 0; }
+  .how p + p { margin-top: 0.05in; }
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.08in 0.14in;
+    align-items: center;
+    margin: 0 0 0.1in;
+  }
+  .controls input[type="search"], .controls select {
+    font: inherit;
+    padding: 0.04in 0.07in;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+  }
+  .controls input[type="search"] { flex: 1 1 2.4in; min-width: 2in; }
+  .chips { display: flex; flex-wrap: wrap; gap: 0.05in; }
+  .chip {
+    font: inherit;
+    padding: 0.03in 0.1in;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: #fff;
+    cursor: pointer;
+  }
+  .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .results { margin: 0 0 0.1in; color: var(--muted); font-size: 9pt; }
+  .index {
+    margin: 0 0 0.1in;
+    font-size: 8.5pt;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .index a { color: var(--accent); margin-right: 0.1in; white-space: nowrap; }
+  .profile {
+    margin: 0 0 0.12in;
+    padding: 0.08in 0.12in;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    break-inside: avoid;
+  }
+  .profile:target { outline: 3px solid #d6b656; }
+  .profile h3 { margin: 0; font-size: 12pt; line-height: 1.2; }
+  .profile h3 a { color: inherit; text-decoration: none; }
+  .head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.03in 0.1in; }
+  .kind { color: var(--muted); font-size: 8.5pt; }
+  .badge {
+    display: inline-block;
+    padding: 0 0.06in;
+    border: 1px solid var(--ink);
+    font-size: 7.5pt;
+    font-weight: bold;
+    letter-spacing: 0.2px;
+    text-transform: uppercase;
+  }
+  .badge.possible { border-color: #8b5a00; color: #6b4300; background: #fff3cd; }
+  .tagline { margin: 0.02in 0 0.04in; font-style: italic; color: var(--muted); }
+  .summary { margin: 0 0 0.04in; }
+  .quick { margin: 0 0 0.05in; font-size: 9pt; color: var(--ink); }
+  .group-note { margin: 0 0 0.1in; padding: 0.06in 0.12in; border: 1px dashed var(--border); background: var(--row); break-inside: avoid; }
+  .group-note h3 { margin: 0 0 0.04in; font-size: 10.5pt; }
+  dl.facts { margin: 0; display: grid; grid-template-columns: 1.1in 1fr; gap: 0.025in 0.12in; font-size: 9pt; }
+  dl.facts dt { font-weight: bold; color: var(--ink); }
+  dl.facts dd { margin: 0; }
+  .mono { font-family: Consolas, "SF Mono", Menlo, monospace; font-size: 8.5pt; }
+  .small { color: var(--muted); font-size: 8pt; line-height: 1.25; }
+  .uses span { display: inline-block; margin: 0 0.05in 0 0; padding: 0 0.05in; border: 1px solid var(--border); border-radius: 3px; font-size: 8pt; }
+  .sources a { color: var(--accent); }
+  [hidden] { display: none !important; }
+  @page { size: 8.5in 11in; margin: 0.38in; }
+  @media print {
+    body { max-width: none; margin: 0; padding: 0; font-size: 8.5pt; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    h1 { font-size: 16pt; }
+    .print-help, .controls, .index, .results { display: none; }
+    .profile { margin-bottom: 0.05in; padding: 0.035in 0.08in; line-height: 1.15; }
+    .profile h3 { font-size: 10.5pt; }
+    .summary { display: none; }
+    .tagline, .quick { margin-bottom: 0.02in; }
+    .quick { font-size: 7.6pt; }
+    .group-note { margin-bottom: 0.06in; padding: 0.04in 0.09in; line-height: 1.15; }
+    .group-note h3 { font-size: 9.5pt; margin-bottom: 0.02in; }
+    dl.facts { font-size: 7.6pt; grid-template-columns: 0.9in 1fr; gap: 0 0.1in; }
+    .small { font-size: 7pt; line-height: 1.15; }
+    .sources a { color: inherit; text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+<h1>Cultivar Guide</h1>
+<p class="subtitle" id="subtitle"></p>
+
+<div class="print-help"><strong>Print setup:</strong> Letter (8.5 × 11 in), portrait, 100% scale. Turn off browser headers and footers. Filters do not print; everything shown on screen prints.</div>
+
+<p id="load-error" class="error" role="alert" hidden></p>
+<noscript><p class="error">JavaScript is required to load the cultivar library.</p></noscript>
+
+<section class="how" aria-label="How to read this guide">
+  <p><strong>What this is:</strong> short, plain-language profiles of the plants in the inventory and purchase list: fruit, nut, and berry plants, windbreak and shade trees, perennials, and the ungrafted apple rootstocks. Tap a tree anywhere on this site to land on its profile, or search by name, alias, or metal tag.</p>
+  <p><strong>Ripening</strong> is relative to each fruit type's own harvest window (Early, Mid, Late, Very late), with the actual timing noted. <strong>Basis</strong> says whether every claim is backed by the listed sources or partly comes from general knowledge. Bloom group, ploidy, and fertility come from your purchase sheet, not from these sources.</p>
+  <p><strong>Habit, bark, and leaves</strong> appear only where a source describes that specific cultivar or species. The box at the top of each fruit group describes the type in general. Where a profile has nothing of its own, compare your tree with the tagged trees of the same type and write down what you see (see the ID log sheet and the data guide).</p>
+</section>
+
+<section class="controls" aria-label="Filters">
+  <input type="search" id="search" placeholder="Search name, alias, or metal tag" aria-label="Search profiles">
+  <div class="chips" id="group-chips" role="group" aria-label="Plant group"></div>
+  <select id="ripening" aria-label="Ripening band"><option value="">Any ripening</option></select>
+  <select id="use" aria-label="Use"><option value="">Any use</option></select>
+  <label><input type="checkbox" id="on-hand"> Only plants on hand</label>
+</section>
+<p class="results" id="results" aria-live="polite"></p>
+<nav class="index" id="index" aria-label="Index of profiles"></nav>
+<main id="guide"></main>
+
+<script>
+window.addEventListener('error', event => {
+  const notice = document.getElementById('load-error');
+  notice.textContent = `The cultivar library could not be loaded: ${event.message}`;
+  notice.hidden = false;
+});
+</script>
+<script src="data/orchard_model.js"></script>
+<script src="data/cultivar_library.js"></script>
+<script>
+const element = (tag, text, className) => {
+  const node = document.createElement(tag);
+  if (text !== undefined) node.textContent = text;
+  if (className) node.className = className;
+  return node;
+};
+const { profiles, GROUPS, RIPENING_BANDS } = CultivarLibrary;
+const data = ORCHARD_DATA;
+const GROUP_LABELS = { Apple: 'Apples, crabapples, and rootstocks', Pear: 'Pears', Cherry: 'Cherries', Peach: 'Peaches', Apricot: 'Apricots', Plum: 'Plums', Berry: 'Berries and bush fruit', Nut: 'Nuts', Evergreen: 'Evergreen trees', 'Shade tree': 'Shade trees', Perennial: 'Perennial plants' };
+const GROUP_NOUNS = { Apple: 'apple trees', Pear: 'pear trees', Cherry: 'cherry trees', Peach: 'peach trees', Apricot: 'apricot trees', Plum: 'plum trees' };
+const NON_FOOD = new Set(['Evergreen', 'Shade tree', 'Perennial']);
+const KIND_LABELS = { cultivar: '', species: ' (described at species level)', genus: ' (described at genus level; species not recorded)', rootstock: ' (ungrafted rootstock)' };
+const USE_LABELS = { fresh: 'Fresh eating', cooking: 'Cooking and baking', cider: 'Cider', perry: 'Perry', juice: 'Juice', jelly: 'Jelly', canning: 'Canning', drying: 'Drying', storage: 'Long keeper', pollinizer: 'Pollinizer', ornamental: 'Ornamental', nuts: 'Nuts', windbreak: 'Windbreak', wildlife: 'Wildlife', shade: 'Shade', timber: 'Timber', syrup: 'Syrup', herb: 'Herb and tea', mulch: 'Mulch and compost', rootstock: 'Rootstock for grafting' };
+const USES = Object.keys(USE_LABELS);
+const candidates = data.UNIDENTIFIED_APPLES.candidates;
+
+const inventoryLine = row => OrchardModel.inventoryLine(row);
+const deadPlants = new Set(data.DEAD_PLANTS);
+const plantsOf = profile => profile.inventory_rows.flatMap(row => {
+  const line = inventoryLine(row);
+  return Array.from({ length: line[1] }, (_, index) => {
+    const id = `i${row}-${index + 1}`;
+    return { id, place: line[9], dead: deadPlants.has(id) };
+  });
+});
+// Only living plants are labeled, so an orchard update here is a tree planned outside the orchard.
+const spotLabel = plant => {
+  if (data.ORCHARD_UPDATES[plant.id]) return 'outside the orchard (location pending)';
+  const spot = data.PLANT_LOCATIONS[plant.id];
+  const match = spot && /^orchard-r(\d+)-c(\d+)$/.exec(spot.location_id);
+  if (match) return `R${match[1]}-C${match[2]}${spot.status === 'planted' ? ' (planted)' : ''}`;
+  return plant.place === 'Prairie' ? '' : `still in ${plant.place}`;
+};
+const fact = (list, label, value) => {
+  if (!value) return;
+  list.append(element('dt', label));
+  const detail = element('dd');
+  detail.append(value);
+  list.append(detail);
+};
+
+const total = profiles.length;
+const onHandCount = profiles.filter(profile => plantsOf(profile).some(plant => !plant.dead)).length;
+const untaggedCount = profiles.filter(profile => !profile.inventory_rows.length).length;
+const deadCount = total - onHandCount - untaggedCount;
+const subtitleParts = [`${onHandCount} for plants on hand`];
+if (untaggedCount) subtitleParts.push(`${untaggedCount} for purchased plants that are not tagged yet`);
+if (deadCount) subtitleParts.push(`${deadCount} for plants reported dead`);
+document.getElementById('subtitle').textContent =
+  `${total} profiles: ${subtitleParts.join(', ')}. Reviewed ${profiles[0].reviewed_on}.`;
+
+const guide = document.getElementById('guide');
+const index = document.getElementById('index');
+const cards = [];
+GROUPS.forEach(group => {
+  const members = profiles.filter(profile => profile.group === group).sort((a, b) => a.name.localeCompare(b.name));
+  if (!members.length) return;
+  const section = element('section');
+  section.dataset.group = group;
+  section.append(element('h2', `${GROUP_LABELS[group]} (${members.length})`));
+  const groupNote = CultivarLibrary.groupNote(group);
+  if (groupNote) {
+    const box = element('div', undefined, 'group-note');
+    box.append(element('h3', `How to tell ${GROUP_NOUNS[group] || group.toLowerCase()} by habit, bark, and leaves`));
+    const noteFacts = element('dl', undefined, 'facts');
+    fact(noteFacts, 'Habit', groupNote.habit);
+    fact(noteFacts, CultivarLibrary.barkLabel(group), groupNote.bark);
+    fact(noteFacts, 'Leaves', groupNote.leaf);
+    const noteFoot = element('p', undefined, 'small sources');
+    noteFoot.append(`Typical of the type, not of every cultivar; reviewed ${groupNote.reviewed_on}. Sources: `);
+    groupNote.sources.forEach(([label, link], position) => {
+      if (position) noteFoot.append(' · ');
+      const source = element('a', label);
+      source.href = link;
+      noteFoot.append(source);
+    });
+    box.append(noteFacts, noteFoot);
+    section.append(box);
+  }
+  members.forEach(profile => {
+    const plants = plantsOf(profile);
+    const living = plants.filter(plant => !plant.dead);
+    const tags = [...new Set(profile.inventory_rows.map(row => inventoryLine(row)[6]).filter(Boolean))];
+    const possible = candidates.some(candidate => CultivarLibrary.forPurchaseRow(candidate.rows[0]) === profile);
+    const card = element('article', undefined, 'profile');
+    card.id = profile.id;
+    card.dataset.group = group;
+    card.dataset.ripening = profile.ripening || '';
+    card.dataset.uses = profile.uses.join(' ');
+    card.dataset.onHand = living.length ? '1' : '';
+    card.dataset.search = [profile.name, profile.type, profile.tagline, profile.id, ...profile.aliases, ...tags,
+      profile.habit, profile.bark, profile.leaf].filter(Boolean).join(' ').toLowerCase();
+
+    const head = element('div', undefined, 'head');
+    const title = element('h3');
+    const anchor = element('a', profile.name);
+    anchor.href = `#${profile.id}`;
+    title.append(anchor);
+    head.append(title, element('span', `${profile.type}${KIND_LABELS[profile.kind]}`, 'kind'));
+    if (profile.ripening) head.append(element('span', profile.ripening, 'badge'));
+    if (possible) {
+      const link = element('a', 'Possible AL-UnKn identity', 'badge possible');
+      link.href = 'unidentified_apple_id_sheet.html';
+      head.append(link);
+    }
+    const quick = element('p', undefined, 'quick');
+    const quickParts = [];
+    const ripeText = CultivarLibrary.ripeningText(profile);
+    if (ripeText) quickParts.push([NON_FOOD.has(group) ? 'Season: ' : 'Ripens: ', ripeText]);
+    if (profile.hardiness) quickParts.push(['Hardiness: ', profile.hardiness]);
+    quickParts.push(['Uses: ', profile.uses.map(use => USE_LABELS[use]).join(', ')]);
+    quickParts.forEach(([label, text], position) => {
+      if (position) quick.append(' · ');
+      quick.append(element('strong', label), text);
+    });
+    card.append(head, element('p', profile.tagline, 'tagline'), element('p', profile.summary, 'summary'), quick);
+
+    const facts = element('dl', undefined, 'facts');
+    fact(facts, 'Appearance', profile.appearance);
+    fact(facts, NON_FOOD.has(group) || profile.kind === 'rootstock' ? 'Uses and care' : 'Flavor and use', profile.flavor_use);
+    fact(facts, 'How to recognize it', profile.id_cues);
+    const traitRows = CultivarLibrary.traits(profile);
+    traitRows.forEach(([label, text]) => fact(facts, label, text));
+    const missingTraits = [['habit', profile.habit], [CultivarLibrary.barkLabel(group).toLowerCase(), profile.bark], ['leaves', profile.leaf]]
+      .filter(([, text]) => !text).map(([label]) => label);
+    if (missingTraits.length) {
+      const see = groupNote ? `; see the notes for ${GROUP_NOUNS[group] || group.toLowerCase()} above` : '';
+      const missingText = missingTraits.length < 3 ? missingTraits.join(' or ') : `${missingTraits.slice(0, -1).join(', ')}, or ${missingTraits[missingTraits.length - 1]}`;
+      fact(facts, traitRows.length ? 'Not described' : 'Habit, bark, leaves',
+        element('span', `No source checked describes this plant's ${missingText}${see}.`, 'small'));
+    }
+    if (profile.aliases.length) fact(facts, 'Also listed as', profile.aliases.join('; '));
+
+    if (plants.length) {
+      const where = element('div');
+      where.append(`${living.length} on hand`);
+      if (living.length < plants.length) where.append(` (${plants.length - living.length} reported dead)`);
+      if (tags.length) { where.append(' · tag '); where.append(element('span', tags.join(' / '), 'mono')); }
+      const spots = living.map(spotLabel).filter(Boolean);
+      if (spots.length) where.append(element('div', `Planned spots and status: ${spots.join(', ')}`, 'small'));
+      fact(facts, 'On hand', where);
+    } else {
+      fact(facts, 'On hand', 'None yet (purchased, not tagged).');
+    }
+    const purchases = element('div');
+    profile.purchase_rows.forEach(row => {
+      const record = OrchardModel.fruitRecord(row);
+      const parts = [`${record.name} (Fruit row ${row})`, record.rootstock ? `rootstock ${record.rootstock}` : 'rootstock not recorded',
+        record.fg === null ? 'bloom group not numbered' : `bloom group ${record.fg}`, record.ploidy || 'ploidy not recorded',
+        record.fertility || 'fertility not recorded', record.pollenQuality ? `${record.pollenQuality.toLowerCase()} pollen` : ''].filter(Boolean);
+      purchases.append(element('div', parts.join('; '), 'small'));
+    });
+    if (profile.purchase_rows.length) fact(facts, 'Purchase sheet', purchases);
+    card.append(facts);
+
+    const foot = element('p', undefined, 'small sources');
+    foot.append(`Basis: ${profile.basis === 'sourced' ? 'claims backed by the sources below' : 'partly general knowledge'}; reviewed ${profile.reviewed_on}. Sources: `);
+    profile.sources.forEach(([label, link], position) => {
+      if (position) foot.append(' · ');
+      const source = element('a', label);
+      source.href = link;
+      foot.append(source);
+    });
+    card.append(foot);
+    if (profile.note) foot.append(` Note: ${profile.note}`);
+    section.append(card);
+    cards.push(card);
+  });
+  guide.append(section);
+  index.append(element('strong', `${group}: `));
+  members.forEach(profile => {
+    const link = element('a', profile.name);
+    link.href = `#${profile.id}`;
+    index.append(link, ' ');
+  });
+  index.append(document.createElement('br'));
+});
+
+const chips = document.getElementById('group-chips');
+let selectedGroup = '';
+const chipFor = (value, label) => {
+  const chip = element('button', label, 'chip');
+  chip.type = 'button';
+  chip.setAttribute('aria-pressed', String(value === ''));
+  chip.dataset.value = value;
+  chip.addEventListener('click', () => { selectedGroup = value; [...chips.children].forEach(c => c.setAttribute('aria-pressed', String(c.dataset.value === value))); apply(); });
+  chips.append(chip);
+};
+chipFor('', 'All');
+GROUPS.forEach(group => chipFor(group, group));
+RIPENING_BANDS.forEach(band => document.getElementById('ripening').append(new Option(band, band)));
+USES.forEach(use => document.getElementById('use').append(new Option(USE_LABELS[use], use)));
+
+function apply() {
+  const words = document.getElementById('search').value.toLowerCase().split(/\s+/).filter(Boolean);
+  const ripening = document.getElementById('ripening').value;
+  const use = document.getElementById('use').value;
+  const onHand = document.getElementById('on-hand').checked;
+  let shown = 0;
+  cards.forEach(card => {
+    const visible = (!selectedGroup || card.dataset.group === selectedGroup) && (!ripening || card.dataset.ripening === ripening) &&
+      (!use || card.dataset.uses.split(' ').includes(use)) && (!onHand || card.dataset.onHand) &&
+      words.every(word => card.dataset.search.includes(word));
+    card.hidden = !visible;
+    if (visible) shown++;
+  });
+  guide.querySelectorAll('section').forEach(section => { section.hidden = ![...section.querySelectorAll('.profile')].some(card => !card.hidden); });
+  document.getElementById('results').textContent = `Showing ${shown} of ${cards.length} profiles.`;
+}
+['search', 'ripening', 'use', 'on-hand'].forEach(id => document.getElementById(id).addEventListener('input', apply));
+// A link such as cultivar_guide.html?q=douglas opens the guide already filtered.
+const startingSearch = new URLSearchParams(location.search).get('q');
+if (startingSearch) document.getElementById('search').value = startingSearch;
+apply();
+if (location.hash) {
+  const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+  if (target) target.scrollIntoView();
+}
+</script>
+</body>
+</html>

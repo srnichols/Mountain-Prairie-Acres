@@ -13,7 +13,7 @@
     if (!tree.orchardUpdate) {
       planted.type = 'checkbox';
       planted.className = 'plant-check';
-      planted.checked = !!tree.rootstockPlanting;
+      planted.checked = planted.defaultChecked = !!tree.planted;
       planted.setAttribute('aria-label', `Planted ${position} ${tree.name}`);
     }
     const tag = element('span', tree.tag || 'NO METAL TAG', 'metal-tag');
@@ -34,6 +34,8 @@
       treeName.append(element('div', `${outside}Leave this spot open; plant a new ${replacement} in ${update.replacementYear} (variety not yet chosen).`, 'source-note'));
     }
     if (tree.rootstockOnly) treeName.append(element('div', 'Already planted; scion cultivar not yet recorded.', 'source-note'));
+    const profile = !update && root.CultivarLibrary ? root.CultivarLibrary.forInventoryRow(tree.invRow) : null;
+    if (profile) treeName.append(element('div', profile.tagline, 'source-note'));
     const row = element('tr');
     row.dataset.plantId = tree.id;
     for (const value of [

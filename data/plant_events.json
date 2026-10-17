@@ -56,6 +56,14 @@
       "recorded_on": null,
       "occurred_on": null,
       "notes": "owner reports both died"
+    },
+    {
+      "id": "owner-2026-10-17-i94-1",
+      "plant_id": "i94-1",
+      "event_type": "planting_reported",
+      "recorded_on": "2026-10-17",
+      "occurred_on": null,
+      "notes": "Owner update: the PR-Asian tree is in R8-C3, not the planned R8-C1, and R8-C1 is empty. The open 2027 pear spot moved from R8-C3 to R8-C1. Exact event date not supplied."
     }
   ]
 }

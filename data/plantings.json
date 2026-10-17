@@ -614,13 +614,13 @@
       "notes": ""
     },
     {
-      "id": "planting-i94-1",
-      "plant_id": "i94-1",
+      "id": "planting-i108-1",
+      "plant_id": "i108-1",
       "location_id": "orchard-r8-c1",
-      "status": "planned",
+      "status": "dead",
       "planted_on": null,
-      "recorded_on": "2026-10-04",
-      "notes": ""
+      "recorded_on": "2026-10-11",
+      "notes": "Original planned slot moved from R8-C3 to R8-C1 on 2026-10-17, when the Asian pear was found in R8-C3. R8-C1 is now the open 2027 pear spot."
     },
     {
       "id": "planting-i93-1",
@@ -632,13 +632,13 @@
       "notes": ""
     },
     {
-      "id": "planting-i108-1",
-      "plant_id": "i108-1",
+      "id": "planting-i94-1",
+      "plant_id": "i94-1",
       "location_id": "orchard-r8-c3",
-      "status": "dead",
+      "status": "planted",
       "planted_on": null,
-      "recorded_on": "2026-10-11",
-      "notes": ""
+      "recorded_on": "2026-10-17",
+      "notes": "Planting date not supplied. Planned for R8-C1; the owner reports it is in R8-C3 and R8-C1 is empty."
     },
     {
       "id": "planting-i103-1",

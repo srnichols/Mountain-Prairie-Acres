@@ -5,6 +5,7 @@ import hashlib
 import json
 import math
 import pathlib
+import re
 import sqlite3
 import sys
 import tempfile
@@ -14,7 +15,7 @@ from site_grid import M_TO_FT, SiteGrid
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 DOCUMENTS = (
     "site", "terrain", "inventory", "catalog", "orchard", "plants", "locations",
-    "plantings", "plant_events", "water_harvesting",
+    "plantings", "plant_events", "water_harvesting", "cultivar_library",
 )
 INVENTORY_FIELDS = (
     "source_row", "quantity", "category", "subcategory", "type", "variety", "metal_tag",
@@ -118,6 +119,202 @@ def _point(point, label):
         _number(v, label)
 
 
+RIPENING_BANDS = ("Early", "Mid", "Late", "Very late")
+LIBRARY_GROUPS = ("Apple", "Pear", "Cherry", "Peach", "Apricot", "Plum", "Berry", "Nut", "Evergreen", "Shade tree", "Perennial")
+LIBRARY_KINDS = ("cultivar", "species", "genus", "rootstock")
+LIBRARY_USES = ("fresh", "cooking", "cider", "perry", "juice", "jelly", "canning", "drying", "storage", "pollinizer",
+                "ornamental", "nuts", "windbreak", "wildlife", "shade", "timber", "syrup", "herb", "mulch", "rootstock")
+LIBRARY_TEXT = {"tagline": (15, 70), "summary": (40, 240), "appearance": (30, 320), "flavor_use": (30, 320),
+                "id_cues": (30, 320), "ripening_note": (0, 140), "hardiness": (0, 80)}
+# Tree habit, bark, and leaf notes are null when no source describes them for that plant.
+LIBRARY_TRAITS = {"habit": (20, 300), "bark": (20, 300), "leaf": (20, 300)}
+LIBRARY_GROUP_TEXT = {"habit": (40, 400), "bark": (40, 400), "leaf": (40, 400)}
+
+
+def _validate_sources(sources, label):
+    if not isinstance(sources, list) or not sources:
+        raise ValueError(f"{label}: needs at least one source")
+    for source in sources:
+        if not isinstance(source, list) or len(source) != 2:
+            raise ValueError(f"{label}: sources must be [label, link] pairs")
+        _text(source[0], f"{label} source label", False)
+        _text(source[1], f"{label} source link", False)
+        if not source[1].startswith("https://"):
+            raise ValueError(f"{label}: source links must use https")
+
+
+def _validate_cultivar_library(data, inventory, fruit):
+    library = data["cultivar_library"]
+    _require(library, ("unprofiled", "records", "group_notes"), "cultivar library")
+    matches = data["orchard"]["rules"]["INVENTORY_MATCH"]
+    profiles = _index(library["records"], "cultivar profile")
+    in_scope = set(inventory)
+    inventory_links, purchase_links = {}, {}
+    for profile in profiles.values():
+        label = profile["id"]
+        _require(profile, ("group", "type", "kind", "name", "aliases", "inventory_rows", "purchase_rows", *LIBRARY_TEXT,
+                           *LIBRARY_TRAITS, "uses", "ripening", "sources", "basis", "reviewed_on"), "cultivar profile " + label)
+        if not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", label):
+            raise ValueError(f"Cultivar profile id must be a lowercase slug: {label}")
+        if profile["group"] not in LIBRARY_GROUPS:
+            raise ValueError(f"{label}: group must be one of {LIBRARY_GROUPS}")
+        if profile["kind"] not in LIBRARY_KINDS:
+            raise ValueError(f"{label}: kind must be one of {LIBRARY_KINDS}")
+        _text(profile["type"], f"{label} type", False)
+        _text(profile["name"], f"{label} name", False)
+        if not isinstance(profile["aliases"], list):
+            raise ValueError(f"{label}: aliases must be a list")
+        for alias in profile["aliases"]:
+            _text(alias, f"{label} alias", False)
+        if len(set(profile["aliases"])) != len(profile["aliases"]):
+            raise ValueError(f"{label}: aliases must be distinct")
+        for key, links, valid in (("inventory_rows", inventory_links, in_scope), ("purchase_rows", purchase_links, fruit)):
+            if not isinstance(profile[key], list):
+                raise ValueError(f"{label}: {key} must be a list")
+            for source in profile[key]:
+                _integer(source, f"{label} {key}", 1)
+                if source not in valid:
+                    raise ValueError(f"{label}: {key} references missing or out-of-scope row {source}")
+                if source in links:
+                    raise ValueError(f"{key} row {source} is linked to both {links[source]} and {label}")
+                links[source] = label
+        if not profile["inventory_rows"] and not profile["purchase_rows"]:
+            raise ValueError(f"{label}: needs at least one inventory or purchase row")
+        for row in profile["inventory_rows"]:
+            if not set(matches.get(str(row), {}).get("rows", [])) <= set(profile["purchase_rows"]):
+                raise ValueError(f"{label}: purchase rows must include the purchase match of inventory row {row}")
+        for key, (low, high) in LIBRARY_TEXT.items():
+            _text(profile[key], f"{label} {key}")
+            if not low <= len(profile[key]) <= high:
+                raise ValueError(f"{label}: {key} must be {low} to {high} characters")
+        for key, (low, high) in LIBRARY_TRAITS.items():
+            if profile[key] is not None:
+                _text(profile[key], f"{label} {key}", False)
+                if not low <= len(profile[key]) <= high:
+                    raise ValueError(f"{label}: {key} must be {low} to {high} characters or null")
+        if profile.get("note") is not None:
+            _text(profile["note"], f"{label} note", False)
+        if (not isinstance(profile["uses"], list) or not profile["uses"] or len(set(profile["uses"])) != len(profile["uses"])
+                or not set(profile["uses"]) <= set(LIBRARY_USES)):
+            raise ValueError(f"{label}: uses must be distinct values from {LIBRARY_USES}")
+        if profile["ripening"] is not None and profile["ripening"] not in RIPENING_BANDS:
+            raise ValueError(f"{label}: ripening must be one of {RIPENING_BANDS} or null")
+        if profile["basis"] not in ("sourced", "general"):
+            raise ValueError(f"{label}: basis must be sourced or general")
+        _date(profile["reviewed_on"], f"{label} reviewed_on")
+        if profile["reviewed_on"] is None:
+            raise ValueError(f"{label}: reviewed_on is required")
+        _validate_sources(profile["sources"], label)
+    unprofiled = library["unprofiled"]
+    if not isinstance(unprofiled, dict):
+        raise ValueError("Unprofiled inventory rows must be an object")
+    for key, reason in unprofiled.items():
+        _text(reason, f"unprofiled reason {key}", False)
+        if not key.isdigit() or int(key) not in in_scope:
+            raise ValueError(f"Unprofiled row {key} is not an inventory line")
+        if int(key) in inventory_links:
+            raise ValueError(f"Inventory row {key} cannot be both profiled and unprofiled")
+    missing = sorted(in_scope - set(inventory_links) - {int(key) for key in unprofiled})
+    if missing:
+        raise ValueError(f"Inventory lines without a cultivar profile: {missing}")
+    notes = library["group_notes"]
+    if not isinstance(notes, list):
+        raise ValueError("Group notes must be a list")
+    present = {profile["group"] for profile in profiles.values()}
+    seen = set()
+    for note in notes:
+        _require(note, ("group", *LIBRARY_GROUP_TEXT, "sources", "reviewed_on"), "group note")
+        label = f"group note {note['group']}"
+        if note["group"] not in present:
+            raise ValueError(f"{label}: no cultivar profile belongs to this group")
+        if note["group"] in seen:
+            raise ValueError(f"{label}: duplicated")
+        seen.add(note["group"])
+        for key, (low, high) in LIBRARY_GROUP_TEXT.items():
+            _text(note[key], f"{label} {key}", False)
+            if not low <= len(note[key]) <= high:
+                raise ValueError(f"{label}: {key} must be {low} to {high} characters")
+        _date(note["reviewed_on"], f"{label} reviewed_on")
+        if note["reviewed_on"] is None:
+            raise ValueError(f"{label}: reviewed_on is required")
+        _validate_sources(note["sources"], label)
+    return {source: profiles[label] for source, label in purchase_links.items()}
+
+
+def _validate_unidentified_apples(rules, inventory, fruit, workbook, profile_by_purchase_row):
+    info = rules["UNIDENTIFIED_APPLES"]
+    _require(info, ("inventory_row", "stated_on", "owner_statement", "candidates"), "unidentified apples")
+    row, matches = info["inventory_row"], rules["INVENTORY_MATCH"]
+    if row not in inventory or inventory[row]["type"] != "Apple" or matches[str(row)]["rows"]:
+        raise ValueError("Unidentified apples must reference an apple inventory row with no purchase match")
+    _date(info["stated_on"], "unidentified apples stated_on")
+    if info["stated_on"] is None:
+        raise ValueError("Unidentified apples need a stated_on date")
+    _text(info["owner_statement"], "unidentified apples owner_statement", False)
+    # Purchase rows that share a tagged inventory line form one group; what the group bought minus what is tagged is unmatched.
+    parent = {source: source for source, record in fruit.items() if record["type"] == "Apple"}
+
+    def find(source):
+        while parent[source] != source:
+            parent[source] = parent[parent[source]]
+            source = parent[source]
+        return source
+
+    for match in matches.values():
+        linked = [source for source in match["rows"] if source in parent]
+        for source in linked[1:]:
+            parent[find(source)] = find(linked[0])
+    members = {}
+    for source in parent:
+        members.setdefault(find(source), []).append(source)
+    tagged = dict.fromkeys(members, 0)
+    for line, match in matches.items():
+        linked = [source for source in match["rows"] if source in parent]
+        if linked and int(line) != row:
+            tagged[find(linked[0])] += inventory[int(line)]["quantity"]
+    unmatched = {group: sum(fruit[source]["quantity"] for source in rows) - tagged[group] for group, rows in members.items()}
+    unmatched = {group: count for group, count in unmatched.items() if count > 0}
+    candidates = info["candidates"]
+    if not isinstance(candidates, list) or not candidates:
+        raise ValueError("Unidentified apples need a candidate list")
+    listed = set()
+    for candidate in candidates:
+        _require(candidate, ("rows", "slots", "vendors"), "unidentified apple candidate")
+        rows = candidate["rows"]
+        if not isinstance(rows, list) or not rows or any(source not in parent for source in rows):
+            raise ValueError("Unidentified apple candidate rows must be apple purchase rows")
+        group = find(rows[0])
+        if sorted(rows) != sorted(members[group]):
+            raise ValueError(f"Unidentified apple candidate rows {rows} must list the whole purchase group {sorted(members[group])}")
+        if group in listed:
+            raise ValueError(f"Duplicate unidentified apple candidate for purchase rows {rows}")
+        listed.add(group)
+        _integer(candidate["slots"], "unidentified apple candidate slots", 1)
+        if candidate["slots"] != unmatched.get(group, 0):
+            raise ValueError(f"Unidentified apple candidate slots disagree with purchases minus tagged trees for rows {rows}")
+        sellers = set()
+        for source in rows:
+            purchase = workbook.get(f"Trees:Fruit:{source}")
+            if purchase is None:
+                raise ValueError(f"Fruit row {source} is missing from the workbook records")
+            sellers.add(purchase["values"].get("A"))
+        vendors = candidate["vendors"]
+        if not isinstance(vendors, list) or not vendors or not set(vendors) <= sellers:
+            raise ValueError(f"Unidentified apple candidate vendors must be vendors of purchase rows {rows}")
+        for key in ("note", "long_shot"):
+            if key in candidate:
+                _text(candidate[key], "unidentified apple " + key, False)
+        profile = profile_by_purchase_row.get(rows[0])
+        if profile is None or sorted(profile["purchase_rows"]) != sorted(rows):
+            raise ValueError(f"Unidentified apple candidate rows {rows} need a cultivar profile for exactly those purchase rows")
+    omitted = set(unmatched) - listed
+    if omitted:
+        raise ValueError("Unidentified apple candidates omit unmatched purchases: " +
+                         ", ".join(str(sorted(members[group])) for group in omitted))
+    if sum(candidate["slots"] for candidate in candidates) < inventory[row]["quantity"]:
+        raise ValueError("Unidentified apple candidates cannot cover every unidentified tree")
+
+
 def validate_data(data):
     if set(data) != set(DOCUMENTS):
         raise ValueError("Missing or unexpected canonical collections")
@@ -196,7 +393,7 @@ def validate_data(data):
             raise ValueError("Workbook values must be a cell object")
     rules = data["orchard"]["rules"]
     for key in ("ORCHARD_ROWS", "GRID_COLUMNS", "INVENTORY_MATCH", "WINDBREAK", "C1_GUILDS", "EAST_HEDGE",
-                "ROOTSTOCK_LABELS", "GENERATED_CODES", "APPLE_BLOOM_RESEARCH", "PEAR_BLOOM", "CHERRY_CHART"):
+                "ROOTSTOCK_LABELS", "GENERATED_CODES", "APPLE_BLOOM_RESEARCH", "PEAR_BLOOM", "CHERRY_CHART", "UNIDENTIFIED_APPLES"):
         if key not in rules:
             raise ValueError(f"Orchard rules missing {key}")
     if rules["ORCHARD_ROWS"] != site["orchard"]["rows"] or rules["GRID_COLUMNS"] != site["orchard"]["columns"]:
@@ -212,6 +409,8 @@ def validate_data(data):
             raise ValueError(f"Inventory match references missing row {row}")
         if any(source not in fruit for source in match["rows"]):
             raise ValueError(f"Inventory match {row} references a missing cultivar")
+    profile_by_purchase_row = _validate_cultivar_library(data, inventory, fruit)
+    _validate_unidentified_apples(rules, inventory, fruit, workbook, profile_by_purchase_row)
     for source_row, research in rules["APPLE_BLOOM_RESEARCH"].items():
         record = fruit.get(int(source_row))
         if record is None or record["type"] != "Apple" or research["fg"] != record["flowering_group"]:
@@ -451,6 +650,26 @@ def _populate(connection, data, digest):
         ("plant_events", "plant_events", ("id", "plant_id", "event_type", "recorded_on", "occurred_on", "notes")),
     ]:
         _insert(connection, table, columns, [tuple(row[key] for key in columns) for row in data[document]["records"]])
+    profiles = data["cultivar_library"]["records"]
+    _insert(connection, "cultivar_profiles",
+            ("id", "plant_group", "type", "kind", "name", "tagline", "summary", "appearance", "flavor_use", "ripening",
+             "ripening_note", "id_cues", "habit", "bark", "leaf", "hardiness", "basis", "note", "reviewed_on"),
+            [(p["id"], p["group"], p["type"], p["kind"], p["name"], p["tagline"], p["summary"], p["appearance"], p["flavor_use"],
+              p["ripening"], p["ripening_note"], p["id_cues"], p["habit"], p["bark"], p["leaf"], p["hardiness"], p["basis"],
+              p.get("note"), p["reviewed_on"])
+             for p in profiles])
+    _insert(connection, "cultivar_profile_links", ("profile_id", "link_type", "source_row"),
+            [(p["id"], "inventory", row) for p in profiles for row in p["inventory_rows"]] +
+            [(p["id"], "purchase", row) for p in profiles for row in p["purchase_rows"]])
+    _insert(connection, "cultivar_profile_aliases", ("profile_id", "alias"), [(p["id"], a) for p in profiles for a in p["aliases"]])
+    _insert(connection, "cultivar_profile_uses", ("profile_id", "use"), [(p["id"], u) for p in profiles for u in p["uses"]])
+    _insert(connection, "cultivar_profile_sources", ("profile_id", "position", "label", "url"),
+            [(p["id"], index, source[0], source[1]) for p in profiles for index, source in enumerate(p["sources"])])
+    notes = data["cultivar_library"]["group_notes"]
+    _insert(connection, "cultivar_group_notes", ("plant_group", "habit", "bark", "leaf", "reviewed_on"),
+            [(n["group"], n["habit"], n["bark"], n["leaf"], n["reviewed_on"]) for n in notes])
+    _insert(connection, "cultivar_group_note_sources", ("plant_group", "position", "label", "url"),
+            [(n["group"], index, source[0], source[1]) for n in notes for index, source in enumerate(n["sources"])])
     features, points = [], []
     for feature in grid.data["features"]:
         x, y = grid.center(feature)
@@ -537,7 +756,8 @@ def orchard_constants(data):
             }
         if planting["status"] == "planted" and "rootstock" in inventory[plant["inventory_row"]]["variety"].lower():
             rootstocks.append({"invRow": plant["inventory_row"], "instance": plant["instance"], "r": r, "c": c})
-    rules.update(ROW_PLAN=row_plan, ORCHARD_UPDATES=updates, PLANTED_ROOTSTOCKS=rootstocks, PLANT_LOCATIONS=current)
+    rules.update(ROW_PLAN=row_plan, ORCHARD_UPDATES=updates, PLANTED_ROOTSTOCKS=rootstocks, PLANT_LOCATIONS=current,
+                 DEAD_PLANTS=[plant["id"] for plant in data["plants"]["records"] if plant["health_status"] == "dead"])
     return rules
 
 
@@ -550,14 +770,17 @@ def generated_outputs(data, root, digest):
     terrain += "\n" + _json(data["terrain"]) + "\n/* END SITE_TERRAIN JSON */;\n"
     orchard = heading + "window.ORCHARD_DATA = " + _json(orchard_constants(data)) + ";\n"
     orchard += (root / "web" / "orchard_model.js").read_text(encoding="utf-8")
+    library = heading + "window.CULTIVAR_LIBRARY = " + _json(data["cultivar_library"]) + ";\n"
+    library += (root / "web" / "cultivar_library.js").read_text(encoding="utf-8")
     water = heading + "window.WATER_HARVESTING = " + _json(data["water_harvesting"]) + ";\n"
     checklist = heading + (root / "web" / "planting_checklist.js").read_text(encoding="utf-8")
     manifest = json.dumps({"schema_version": 1, "source_digest": digest,
                            "plants": len(data["plants"]["records"]), "orchard_spots": len(data["locations"]["records"]),
-                           "terrain_samples": len(data["terrain"]["grid"]["z"])}, indent=2) + "\n"
+                           "terrain_samples": len(data["terrain"]["grid"]["z"]),
+                           "cultivar_profiles": len(data["cultivar_library"]["records"])}, indent=2) + "\n"
     return {name: text.encode("utf-8") for name, text in {
         "site_grid.js": site, "site_terrain.js": terrain, "orchard_model.js": orchard,
-        "water_harvesting.js": water, "planting_checklist.js": checklist, "manifest.json": manifest,
+        "water_harvesting.js": water, "planting_checklist.js": checklist, "cultivar_library.js": library, "manifest.json": manifest,
     }.items()}
 
 

@@ -1,7 +1,7 @@
 (function (root) {
   'use strict';
 const { C1_GUILDS } = root.ORCHARD_DATA;
-const { PLAN_DATE, STATUS_DATE, FRUIT_SHEET, INVENTORY, INVENTORY_MATCH, TYPE_ORDER, BLOCK_ROWS, SHARED_ROWS, RESERVED_ROWS, ORCHARD_ROWS, ROW_PLAN, GRID_COLUMNS, PLOT_WIDTH, EAST_SIDE, PLOT_DEPTH, TREE_SPACING, ROW_SPACING, LOCAL_RADIUS, ORCHARD_WEST_SETBACK, JUNIPER_DISTANCE, WINDBREAK, EAST_HEDGE, OWNER_NOTES, ORCHARD_UPDATES, PLANTED_ROOTSTOCKS, ROOTSTOCK_LABELS, GENERATED_CODES, FAMILY_OVERRIDES, APPLE_ALIASES, HARRISON_BLOOM_RESEARCH, APPLE_BLOOM_RESEARCH, URBAN_APPLE_ROWS, PEAR_BLOOM, CHERRY_CHART, PLANT_LOCATIONS } = root.ORCHARD_DATA;
+const { PLAN_DATE, STATUS_DATE, FRUIT_SHEET, INVENTORY, INVENTORY_MATCH, TYPE_ORDER, BLOCK_ROWS, SHARED_ROWS, RESERVED_ROWS, ORCHARD_ROWS, ROW_PLAN, GRID_COLUMNS, PLOT_WIDTH, EAST_SIDE, PLOT_DEPTH, TREE_SPACING, ROW_SPACING, LOCAL_RADIUS, ORCHARD_WEST_SETBACK, JUNIPER_DISTANCE, WINDBREAK, EAST_HEDGE, OWNER_NOTES, ORCHARD_UPDATES, PLANTED_ROOTSTOCKS, ROOTSTOCK_LABELS, GENERATED_CODES, FAMILY_OVERRIDES, APPLE_ALIASES, HARRISON_BLOOM_RESEARCH, APPLE_BLOOM_RESEARCH, URBAN_APPLE_ROWS, PEAR_BLOOM, CHERRY_CHART, PLANT_LOCATIONS, UNIDENTIFIED_APPLES } = root.ORCHARD_DATA;
 const FRUIT_BY_ROW = new Map(FRUIT_SHEET.map(([sourceRow, quantity, fruit, name, code, rootstock, fertility, pollenQuality, ploidy, fg, pollenizers]) =>
   [sourceRow, { sourceRow, quantity, fruit, name, code, rootstock, fertility, pollenQuality, ploidy, fg, pollenizers }]));
 const INVENTORY_BY_ROW = new Map(INVENTORY.map(line => [line[0], line]));
@@ -188,6 +188,14 @@ function rowTemplate(trees) {
   return template;
 }
 
+// A position counts as planted only when a planting record at that very orchard spot says so. Trees under one tag are
+// interchangeable, so the record's plant number may differ from the one the layout puts there, and a tree planted
+// outside the orchard never marks its old orchard spot.
+function plantedAt(spot, invRow) {
+  return Object.values(PLANT_LOCATIONS).some(planting =>
+    planting.status === 'planted' && planting.location_id === spot && planting.inventory_row === invRow);
+}
+
 // Places the trees listed in a row plan (see ROW_PLAN) after checking every position against the row template.
 function layoutRows(plan, trees) {
   const template = rowTemplate(trees);
@@ -202,6 +210,7 @@ function layoutRows(plan, trees) {
     const r = index + 1;
     const off = r % 2 === 0;
     const planned = plan[index];
+    const held = [];
     if (planned.length > GRID_COLUMNS) throw new Error(`R${r} lists more than ${GRID_COLUMNS} positions`);
     const placed = cells.map((expected, column) => {
       const id = planned[column] ?? null;
@@ -218,10 +227,14 @@ function layoutRows(plan, trees) {
         throw new Error(`Inventory row ${id}: the recorded planting position must stay at R${fixedPosition.r}-C${fixedPosition.c}`);
       }
       used.set(id, next + 1);
-      Object.assign(tree, { r, c:column + 1, x:column * TREE_SPACING + (off ? TREE_SPACING / 2 : 0), y:index * ROW_SPACING });
+      Object.assign(tree, {
+        r, c:column + 1, x:column * TREE_SPACING + (off ? TREE_SPACING / 2 : 0), y:index * ROW_SPACING,
+        planted:plantedAt(`orchard-r${r}-c${column + 1}`, tree.invRow)
+      });
+      if (tree.orchardUpdate) held.push(tree);
       return tree.orchardUpdate ? null : tree;
     });
-    return { r, off, types, type:types.length === 1 ? types[0] : null, shared, reserved, future, trees:placed };
+    return { r, off, types, type:types.length === 1 ? types[0] : null, shared, reserved, future, trees:placed, held };
   });
   byLine.forEach((list, invRow) => {
     const placed = used.get(invRow) || 0;
@@ -288,8 +301,10 @@ function laneGeometry() {
   return { west:tall.offset, east, width:east - tall.offset };
 }
 
-// Guild positions around each C1 trunk (x from the west fence, y north of the R1 line). Bushes go around planted C1 trees;
-// positions around C1 spots without a tree become future positions, and bushes beyond the room are returned as spares.
+// Guild positions around each C1 trunk (x from the west fence, y north of the R1 line). Bushes go around planted C1 trees and
+// around C1 spots held open for a replacement (a dead or relocated tree), so one open spot does not move the berry plan;
+// positions around C1 spots with no tree and no replacement become future positions, and bushes beyond the room are
+// returned as spares.
 function guildLayout(rows) {
   const queue = C1_GUILDS.groups.flatMap(group => Array(lineCount(group.invRows)).fill(group));
   const bushes = [], future = [];
@@ -297,11 +312,12 @@ function guildLayout(rows) {
   rows.forEach(row => {
     const spec = row.off ? C1_GUILDS.even : C1_GUILDS.odd;
     const trunkX = ORCHARD_X0 + (row.off ? TREE_SPACING / 2 : 0), trunkY = (row.r - 1) * ROW_SPACING;
+    const holdsC1 = !!row.trees[0] || row.held.some(tree => tree.c === 1);
     spec.bearings.forEach(bearing => {
       const angle = bearing * Math.PI / 180;
       const spot = { r:row.r, x:trunkX + spec.radius * Math.sin(angle), y:trunkY + spec.radius * Math.cos(angle) };
       if (spot.x - C1_GUILDS.bushWidth / 2 < alleyEdge) throw new Error(`R${row.r}: a guild bush would reach into the tractor alley`);
-      if (row.trees[0] && queue.length) bushes.push({ ...spot, group:queue.shift() });
+      if (holdsC1 && queue.length) bushes.push({ ...spot, group:queue.shift() });
       else future.push(spot);
     });
   });
@@ -386,5 +402,42 @@ function plan() {
   records.sort((a, b) => a.r - b.r || a.c - b.c);
   return { records, rows };
 }
-root.OrchardModel = { PLAN_DATE, STATUS_DATE, FRUIT_SHEET, INVENTORY, INVENTORY_MATCH, TYPE_ORDER, BLOCK_ROWS, SHARED_ROWS, RESERVED_ROWS, ORCHARD_ROWS, ROW_PLAN, GRID_COLUMNS, PLOT_WIDTH, EAST_SIDE, PLOT_DEPTH, TREE_SPACING, ROW_SPACING, LOCAL_RADIUS, ORCHARD_WEST_SETBACK, JUNIPER_DISTANCE, WINDBREAK, C1_GUILDS, EAST_HEDGE, OWNER_NOTES, ORCHARD_UPDATES, PLANTED_ROOTSTOCKS, ROOTSTOCK_LABELS, GENERATED_CODES, FAMILY_OVERRIDES, APPLE_ALIASES, HARRISON_BLOOM_RESEARCH, APPLE_BLOOM_RESEARCH, URBAN_APPLE_ROWS, PEAR_BLOOM, CHERRY_CHART, FRUIT_BY_ROW, INVENTORY_BY_ROW, ORCHARD_X0, RESERVED, fruitRecord, inventoryLine, rootstockRemaining, normalizeName, placementOf, buildOrchardTrees, balancedRows, blockShape, sharedGroupOf, blockColumns, rowTemplate, layoutRows, lineCount, layoutPlantRow, windbreakLayout, eastHedgeLayout, alleyGeometry, laneGeometry, guildLayout, treeDistance, needsTwoDonors, compatiblePair, nearestPartners, PLANT_LOCATIONS, plan };
+// The untagged apples and the purchased apples they could still be, with the tagged trees to compare each against.
+function unidentifiedApples() {
+  const library = root.CultivarLibrary;
+  if (!library) throw new Error('Load data/cultivar_library.js before calling unidentifiedApples()');
+  const unknownLine = inventoryLine(UNIDENTIFIED_APPLES.inventory_row);
+  const trees = Array.from({ length:unknownLine[1] }, (_, index) => {
+    const id = `i${unknownLine[0]}-${index + 1}`;
+    const location = PLANT_LOCATIONS[id];
+    const spot = location && /^orchard-r(\d+)-c(\d+)$/.exec(location.location_id);
+    return {
+      id, number:index + 1, label:`UnKn-${index + 1}`, tag:unknownLine[6], status:location ? location.status : null,
+      spot:spot ? `R${spot[1]}-C${spot[2]}` : location ? location.location_id : null,
+      siteRef:location ? location.site_ref : null
+    };
+  });
+  const candidates = UNIDENTIFIED_APPLES.candidates.map(candidate => {
+    const records = candidate.rows.map(fruitRecord);
+    const profile = library.forPurchaseRow(candidate.rows[0]);
+    const tagged = INVENTORY.filter(line => line[0] !== unknownLine[0] &&
+      ((INVENTORY_MATCH[line[0]] || {}).rows || []).some(row => candidate.rows.includes(row)))
+      .map(line => ({ invRow:line[0], tag:line[6], qty:line[1] }));
+    return {
+      ...candidate,
+      name:profile.name, profile,
+      fg:records[0].fg, ploidy:records[0].ploidy, fertility:records[0].fertility,
+      rootstock:[...new Set(records.map(record => record.rootstock).filter(Boolean))].join(' / '),
+      tagged, taggedQty:tagged.reduce((total, line) => total + line.qty, 0), longShot:Boolean(candidate.long_shot)
+    };
+  });
+  const slots = list => list.reduce((total, candidate) => total + candidate.slots, 0);
+  const main = slots(candidates.filter(candidate => !candidate.longShot));
+  const longShot = slots(candidates.filter(candidate => candidate.longShot));
+  return {
+    info:UNIDENTIFIED_APPLES, tag:unknownLine[6], trees, candidates,
+    pool:{ main, longShot, trees:trees.length, lostMin:Math.max(0, main - trees.length), lostMax:Math.max(0, main + longShot - trees.length) }
+  };
+}
+root.OrchardModel = { PLAN_DATE, STATUS_DATE, FRUIT_SHEET, INVENTORY, INVENTORY_MATCH, TYPE_ORDER, BLOCK_ROWS, SHARED_ROWS, RESERVED_ROWS, ORCHARD_ROWS, ROW_PLAN, GRID_COLUMNS, PLOT_WIDTH, EAST_SIDE, PLOT_DEPTH, TREE_SPACING, ROW_SPACING, LOCAL_RADIUS, ORCHARD_WEST_SETBACK, JUNIPER_DISTANCE, WINDBREAK, C1_GUILDS, EAST_HEDGE, OWNER_NOTES, ORCHARD_UPDATES, PLANTED_ROOTSTOCKS, ROOTSTOCK_LABELS, GENERATED_CODES, FAMILY_OVERRIDES, APPLE_ALIASES, HARRISON_BLOOM_RESEARCH, APPLE_BLOOM_RESEARCH, URBAN_APPLE_ROWS, PEAR_BLOOM, CHERRY_CHART, FRUIT_BY_ROW, INVENTORY_BY_ROW, ORCHARD_X0, RESERVED, fruitRecord, inventoryLine, rootstockRemaining, normalizeName, placementOf, buildOrchardTrees, balancedRows, blockShape, sharedGroupOf, blockColumns, rowTemplate, layoutRows, lineCount, layoutPlantRow, windbreakLayout, eastHedgeLayout, alleyGeometry, laneGeometry, guildLayout, treeDistance, needsTwoDonors, compatiblePair, nearestPartners, PLANT_LOCATIONS, plan, UNIDENTIFIED_APPLES, unidentifiedApples };
 })(typeof window !== 'undefined' ? window : globalThis);

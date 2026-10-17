@@ -98,6 +98,8 @@
   .tag-star { background: #FAEEDA; color: #633806; border: 1px solid #EF9F27; }
   .tag-psm { background: #FFF6CC; color: #6B5300; border: 1px solid #E0B800; }
   .tag-unk { background: #EEEDEA; color: #3d3c38; border: 1px solid #AAA89F; }
+  .tag-planted { background: #E4EEF9; color: #1F4E79; border: 1px solid #8FB0D6; }
+  .planted-mark { position: absolute; left: 3px; bottom: 1px; font-size: 11px; line-height: 1; font-weight: 700; color: #fff; text-shadow: 0 0 2px rgba(0,0,0,0.85); }
   .planting-checklist { margin-top: 8px; }
   .planting-checklist col:nth-child(1) { width: 42px; }
   .planting-checklist col:nth-child(2) { width: 76px; }
@@ -344,7 +346,8 @@
 <div class="legend" id="legend"></div>
 <p class="legend-note">▲ Dashed border = <strong>triploid</strong>, excluded as a pollen donor and placed near two different diploid cultivars. ★ Gold glow = <strong>good pollen donor in the workbook</strong>, not a guarantee of compatibility with every nearby tree.</p>
 <p class="legend-note">◥ Yellow corner = <strong>Pseudomonas (bacterial canker) positive, untreated</strong> in the inventory. When one tag covers several trees and only some tested positive, the inventory does not say which, so all of them are flagged.</p>
-<p class="legend-note"><strong>S</strong> = self-fertile according to the planning notes; <strong>?</strong> = information missing or needing confirmation; <strong>UNK</strong> / <strong>SWT</strong> = unidentified tree (not counted as a pollen donor until identified). Different trees of the same cultivar, including color sports, are not counted as different pollen partners.</p>
+<p class="legend-note" id="planted-note"></p>
+<p class="legend-note"><strong>S</strong> = self-fertile according to the planning notes; <strong>?</strong> = information missing or needing confirmation; <strong>UNK</strong> / <strong>SWT</strong> = unidentified tree (not counted as a pollen donor until identified; for the unidentified apples see the <a href="unidentified_apple_id_sheet.html">possibility list</a>). Hover over a tree for its cultivar profile, or click or tap it to jump to its row in the inventory table, which links to the <a href="cultivar_guide.html">cultivar guide</a>. Different trees of the same cultivar, including color sports, are not counted as different pollen partners.</p>
 <p class="legend-note">Apple <strong>FG</strong> means flowering group, not harvest season. <strong>*</strong> after a group number means sources differ; the planning value follows Orange Pippin. <strong>FG 2?</strong> marks a provisional estimate. <strong>Midseason; FG ?</strong> records nursery bloom guidance without inventing a numbered group.</p>
 </section>
 
@@ -451,7 +454,7 @@
 </div>
 
 <h2 class="page-break">Full Tree Inventory by Row</h2>
-<p class="source-note">Living orchard trees and records of vacated planting positions, south (R1) to north and west (C1) to east. Dead and outside-orchard trees retain their original planned slots as history; those slots are open, not their current locations. They are excluded from orchard counts and pollen partners. The planted M-111 rootstock occupies R6-C3 but is not counted as a fruit tree or pollen partner without a recorded scion cultivar. Original workbook fertility values are retained.</p>
+<p class="source-note">Living orchard trees and records of vacated planting positions, south (R1) to north and west (C1) to east. Dead and outside-orchard trees retain their original planned slots as history; those slots are open, not their current locations. They are excluded from orchard counts and pollen partners. The planted M-111 rootstock occupies R6-C3 but is not counted as a fruit tree or pollen partner without a recorded scion cultivar. The Pineapple's open slot moved from R8-C3 to R8-C1 when the owner found the Asian pear (PR-Asian) in R8-C3. Original workbook fertility values are retained.</p>
 <p class="source-note">Spot SiteRef identifies the listed planned or vacated orchard position, not an outside-orchard tree's current location. It is generated from the shared grid coordinates and is separate from the metal tag and individual Plant ID.</p>
 <div class="table-scroll">
 <table class="detail inventory-detail">
@@ -480,6 +483,7 @@
 <div class="footer" id="footer"></div>
 <script src="data/site_grid.js"></script>
 <script src="data/orchard_model.js"></script>
+<script src="data/cultivar_library.js"></script>
 <script src="data/planting_checklist.js"></script>
 <script>
 window.addEventListener('error', event => {
@@ -512,6 +516,7 @@ const openRecords = orchardTrees.filter(tree => tree.orchardUpdate).sort((a, b) 
 const lostTrees = openRecords.filter(tree => tree.orchardUpdate.status === 'dead');
 const outsideTrees = openRecords.filter(tree => tree.orchardUpdate.status === 'outside-orchard');
 const plantingRecords = [...allTrees, ...openRecords].sort((a, b) => a.r - b.r || a.c - b.c);
+const plantedTrees = allTrees.filter(tree => tree.planted).sort((a, b) => a.r - b.r || a.c - b.c);
 const updateOpenText = openRecords.length ? `, and at ${openRecords.map(position).join(', ')} after the owner's planting updates` : '';
 const windbreakRows = windbreakLayout(rows.length);
 const alley = alleyGeometry();
@@ -661,6 +666,15 @@ function position(tree) {
   return `R${tree.r}-C${tree.c}`;
 }
 
+function profileOf(tree) {
+  return window.CultivarLibrary ? CultivarLibrary.forInventoryRow(tree.invRow) : null;
+}
+
+function profileTip(tree) {
+  const profile = profileOf(tree);
+  return profile ? CultivarLibrary.tooltip(profile) : '';
+}
+
 function spotSiteRef(r, c) {
   return SiteGrid.siteRef(...SiteGrid.treeXY(r, c));
 }
@@ -779,6 +793,10 @@ function svgNode(tag, attrs = {}, text) {
 document.getElementById('subtitle').textContent = `Prairie Plants — inventory of ${PLAN_DATE}; planting status updated ${STATUS_DATE} — orchard plot ${PLOT_WIDTH} × ${PLOT_DEPTH} ft plus a ${WINDBREAK.width} ft west windbreak — ${GRID_COLUMNS} positions per row — ${TREE_SPACING} ft in-row (E–W) × ${ROW_SPACING} ft rows (N–S), triangular offset`;
 openRecords.forEach(tree => document.getElementById('orchard-updates').append(element('p', updateNote(tree))));
 plantedRootstocks.forEach(tree => document.getElementById('orchard-updates').append(element('p', planningNote(tree))));
+plantedTrees.filter(tree => !tree.rootstockOnly).forEach(tree => document.getElementById('orchard-updates').append(
+  element('p', `${position(tree)}: ${tree.name} (tag ${tree.tag || 'none'}, inventory row ${tree.invRow}) is already planted, per the owner's update of ${STATUS_DATE}.`)));
+document.getElementById('planted-note').textContent = plantedTrees.length ?
+  `✓ = already planted, from your planting updates: ${plantedTrees.map(tree => `${position(tree)} (${tree.name})`).join('; ')}.` : '';
 document.getElementById('plot-size').textContent = `${PLOT_WIDTH} × ${PLOT_DEPTH} ft`;
 document.getElementById('wb-width').textContent = `${WINDBREAK.width} ft, ${windbreakRows.length} rows`;
 document.getElementById('alley-width').textContent = `${num(alley.clear)} ft clear`;
@@ -823,8 +841,15 @@ rows.forEach(row => {
       const guild = index === 0 ? guilds.bushes.filter(bush => bush.r === row.r) : [];
       if (guild.length) cell.classList.add('guild');
       cell.dataset.treeId = tree.id;
+      const openRow = () => { location.hash = `tree-${tree.id}`; };
+      cell.addEventListener('click', openRow);
+      cell.addEventListener('keydown', event => { if (event.key === 'Enter') openRow(); });
+      cell.tabIndex = 0;
+      cell.style.cursor = 'pointer';
       cell.title = [
         `${position(tree)} — ${tree.name}`,
+        profileTip(tree),
+        tree.planted ? 'Already planted (owner update).' : '',
         `Tag ${tree.tag || 'none'} (inventory row ${tree.invRow}); rootstock ${tree.rootstock || 'not recorded'}`,
         `${bloomLabel(tree)}. ${planningNote(tree)}`,
         psmLabel(tree),
@@ -837,6 +862,7 @@ rows.forEach(row => {
         tree.type === 'Cherry' && CHERRY_CHART[tree.sourceRow] ? `Period ${CHERRY_CHART[tree.sourceRow].bloom}` :
         tree.pearAsian ? 'Asian' : '?';
       cell.append(element('span', tree.code, 'code'), element('span', shortLabel, 'fg'));
+      if (tree.planted) cell.append(element('span', '✓', 'planted-mark'));
     } else if (reserved) {
       cell.title = `R${row.r}-C${index + 1} — reserved for a grafted rootstock apple (${rootstockSummary} rootstocks in the inventory)`;
       cell.setAttribute('aria-label', cell.title);
@@ -844,7 +870,10 @@ rows.forEach(row => {
     } else if (update) {
       const dead = update.orchardUpdate.status === 'dead';
       cell.classList.add(dead ? 'loss' : 'deferred');
-      cell.title = updateNote(update);
+      // A C1 spot held for a replacement keeps its berry guild.
+      const heldGuild = index === 0 ? guilds.bushes.filter(bush => bush.r === row.r) : [];
+      if (heldGuild.length) cell.classList.add('guild');
+      cell.title = updateNote(update) + (heldGuild.length ? `\nBerry guild on the alley side: ${heldGuild.map(bush => bush.group.name).join(', ')}` : '');
       cell.setAttribute('aria-label', cell.title);
       cell.append(element('span', 'Open', 'code'), element('span', `${update.code} ${dead ? 'dead' : 'outside'}`, 'fg'),
         element('span', `${update.orchardUpdate.replacementType} ${update.orchardUpdate.replacementYear}`, 'fg'));
@@ -1481,9 +1510,15 @@ plantingRecords.forEach(tree => {
   if (tree.selfFertile) notes.append(element('span', 'Self-fertile', 'tag tag-self'));
   if (tree.pollenQuality === 'Good') notes.append(element('span', '★ Good donor', 'tag tag-star'));
   if (tree.unknown) notes.append(element('span', 'Unidentified', 'tag tag-unk'));
+  if (tree.planted) notes.append(element('span', 'Planted', 'tag tag-planted'));
   if (psmLabel(tree)) notes.append(element('span', 'Pseudomonas +', 'tag tag-psm'));
   notes.append(element('p', planningNote(tree)), partnerList(tree));
   if (tree.matchNote) notes.append(element('p', `Inventory match: ${tree.matchNote}`, 'source-note'));
+  if (tree.unknown && tree.type === 'Apple') {
+    const possibilities = element('a', 'Unidentified apple possibility list');
+    possibilities.href = 'unidentified_apple_id_sheet.html';
+    notes.append(possibilities);
+  }
   if (psmLabel(tree)) notes.append(element('p', `${psmLabel(tree)}.`, 'source-note'));
   if (tree.appleBloom) {
     const link = element('a', 'Bloom research and sources');
@@ -1492,6 +1527,12 @@ plantingRecords.forEach(tree => {
   }
   const name = element('div');
   name.append(element('strong', tree.name), element('div', `Tag ${tree.tag || 'none'}; inventory name: ${tree.invVariety}`, 'source-note'));
+  const profile = profileOf(tree);
+  if (profile) {
+    const guide = element('a', 'Cultivar profile');
+    guide.href = CultivarLibrary.guideHref(profile);
+    name.append(element('div', profile.tagline, 'source-note'), guide);
+  }
   const tr = addTableRow('detail-table', [
     position(tree), element('code', spotSiteRef(tree.r, tree.c), 'site-ref'), element('strong', tree.code), name, tree.type, tree.rootstock || 'Not recorded',
     bloomLabel(tree), tree.fertility || 'Not recorded', notes,
