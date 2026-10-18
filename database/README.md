@@ -57,7 +57,7 @@ water_observations -> locations (when supplied)
 - **`seed_list`**: each named species on the owner's seed list (the `Trees` sheet) with its zones, size, growth, and sowing notes and the cultivar profile it links to.
 - **`water_budget`**: per-inch, annual, and March–June harvest estimates; unknown areas return SQL `NULL`, not zero.
 
-For example, the current orchard has **109 planned and one planted fruit-tree assignment, one planted rootstock, 71 open spots, and 13 reserved spots**. SQL and the website use the same records. Most remaining inventory items have no measured individual planting locations.
+For example, the current orchard has **107 planned and one planted fruit-tree assignment, one planted rootstock, 73 open spots, and 13 reserved spots**. SQL and the website use the same records. Most remaining inventory items have no measured individual planting locations.
 
 ## Terrain and units
 

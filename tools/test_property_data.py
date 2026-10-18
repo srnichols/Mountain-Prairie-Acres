@@ -39,7 +39,7 @@ class PropertyDataTest(unittest.TestCase):
     def test_current_orchard_and_open_spots(self):
         rows = query("SELECT state, COUNT(*) AS n FROM orchard_spots GROUP BY state", self.root)
         counts = {r["state"]: r["n"] for r in rows}
-        self.assertEqual(counts, {"open": 71, "planned": 109, "planted": 2, "reserved": 13})
+        self.assertEqual(counts, {"open": 73, "planned": 107, "planted": 2, "reserved": 13})
         root = query("SELECT * FROM current_plantings WHERE plant_id = 'i56-1'", self.root)[0]
         self.assertEqual(root["site_ref"], "B10-E33-S35")
         self.assertEqual(root["status"], "planted")
@@ -54,9 +54,15 @@ class PropertyDataTest(unittest.TestCase):
         dead = query("SELECT * FROM current_plantings WHERE plant_id = 'i108-1'", self.root)[0]
         self.assertEqual(dead["status"], "dead")
         self.assertEqual(dead["site_ref"], "PENDING", "A vacant planned spot is not the dead plant's current location")
-        vacancies = query("SELECT name, replacement_year FROM orchard_spots WHERE replacement_year IS NOT NULL", self.root)
-        self.assertEqual({r["name"] for r in vacancies}, {"R4-C9", "R5-C9", "R5-C10", "R8-C1"})
+        for plant_id, spot in (("i80-1", "R9-C2"), ("i88-1", "R11-C10")):
+            lost = query(f"SELECT status, health_status, site_ref FROM current_plantings WHERE plant_id = '{plant_id}'", self.root)[0]
+            self.assertEqual((lost["status"], lost["health_status"], lost["site_ref"]), ("dead", "dead", "PENDING"), plant_id)
+            self.assertEqual(query(f"SELECT state FROM orchard_spots WHERE name = '{spot}'", self.root)[0]["state"], "open")
+        vacancies = query("SELECT name, replacement_year, replacement_type FROM orchard_spots WHERE replacement_year IS NOT NULL", self.root)
+        self.assertEqual({r["name"] for r in vacancies}, {"R4-C9", "R5-C9", "R5-C10", "R8-C1", "R9-C2", "R11-C10"})
         self.assertTrue(all(r["replacement_year"] == 2027 for r in vacancies))
+        self.assertEqual({r["name"]: r["replacement_type"] for r in vacancies if r["name"] in ("R9-C2", "R11-C10")},
+                         {"R9-C2": "Cherry", "R11-C10": "Peach"})
 
     def test_features_terrain_water_and_gps_are_queryable(self):
         self.assertEqual(query("SELECT COUNT(*) AS n FROM site_features", self.root)[0]["n"], 44)

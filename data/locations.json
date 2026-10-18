@@ -1164,8 +1164,8 @@
       "orchard_row": 9,
       "orchard_column": 2,
       "reserved_for": null,
-      "replacement_year": null,
-      "replacement_type": null
+      "replacement_year": 2027,
+      "replacement_type": "Cherry"
     },
     {
       "id": "orchard-r9-c3",
@@ -1538,8 +1538,8 @@
       "orchard_row": 11,
       "orchard_column": 10,
       "reserved_for": null,
-      "replacement_year": null,
-      "replacement_type": null
+      "replacement_year": 2027,
+      "replacement_type": "Peach"
     },
     {
       "id": "orchard-r11-c11",

@@ -744,7 +744,7 @@ function planningNote(tree) {
   if (tree.unknown) {
     if (tree.type === 'Apple') return 'Unidentified apple: bloom group and ploidy are unknown, so it is not counted as a pollen donor. Placed among identified apples of several bloom groups; identify it at bloom or harvest, then re-check its partners.';
     if (tree.type === 'Cherry') return 'Unidentified sweet cherry, possibly one of the purchased Black Tartarian, Regina, or Sam trees not otherwise found. Its compatibility group is unknown, so it is not counted as a donor until identified.';
-    if (tree.type === 'Peach') return 'Unidentified peach, possibly Contender, Elberta, Reliance, or Veteran. Not counted as a J.H. Hale pollinizer until identified, because Elberta does not work for Hale.';
+    if (tree.type === 'Peach') return 'Unidentified peach, possibly Contender, Elberta, Reliance, or Veteran. Not counted as a pollen donor until identified.';
     return 'Unidentified apricot, possibly the purchased Patterson (self-fertile in the workbook). Confirm its identity.';
   }
   if (tree.sourceRow === 35) return 'Liberty ploidy/donor status is disputed. Excluded as a donor; given two diploid candidates.';
@@ -1302,7 +1302,7 @@ document.getElementById('site-plan-note').textContent = `To scale, south up and 
   `Rows by fruit type: ${rowPlanText()}. The cherries use the two rows you chose${presentGroups.length ? `, and the shared rows ${listText(presentGroups.map(group => rowRange(group.blocks[0].type)))} follow your layout` : ''}; the orchard keeps all ${rows.length} rows.`,
   ...reservedRows.map(row => `Added R${row.r}, a full ${row.type.toLowerCase()} row at the top of the map with ${row.reserved} spots reserved for grafted rootstock apples. ${countBy('rootstock')} rootstocks remain available (${rootstockSummary}), after the M-111 planted at R6-C3.`),
   `The fruit types run south to north as ${typeOrderText()}, with the apples at the top of the map; the September plan had apples, pears, cherries, apricots, peaches, and plums, each in its own rows. The apples are about ${JUNIPER_DISTANCE + typeOffset('Apple')}+ ft from the closest juniper, closer than UMN advises; the windbreak notes list ways to limit cedar–apple rust.`,
-  'J.H. Hale now relies on other non-Elberta peaches nearby because Veteran, its earlier partner, was not found at Prairie.',
+  'The J.H. Hale peach died (owner report, Oct 17); the identified peaches that remain are all self-fertile.',
   'The map is drawn with south at the top and the west fence on the right, the view from the north end looking south; the site plan and windbreak cross-section match. The earlier grid put south at the top but kept west on the left, which mirrored the real layout.'
 ].forEach(text => document.getElementById('change-list').append(element('li', text)));
 
@@ -1452,7 +1452,7 @@ const unidentifiedSummary = TYPE_ORDER.map(type => [type, unidentifiedByType(typ
   'Apple candidates use the workbook pollenizer lists and same/adjacent flowering groups, supplemented by the linked bloom research. The three Urban apples also use Raintree\'s within-series recommendation. Known triploids, disputed Liberty, unidentified trees, and unverified pollen donors are excluded as suppliers. Fuji/Aztec/Auvil, Honeycrisp/Super Red, and Bartlett/Red Bartlett count as shared cultivar identities.',
   'Pear bloom charts are a screening tool, not proof of cross-compatibility. Asian pears are grouped without assuming European pears will pollinate them, and perry pears with different bloom windows are not treated as interchangeable.',
   'Sweet cherries use compatibility groups plus same/adjacent bloom periods. Lapins is the only identified sweet cherry within one bloom period of both Black Tartarian and Bing, so the sweet cherries are grouped around it. Stella is not relied on for Bing. Montmorency is a self-fertile tart cherry, and the Nanking bushes are kept together and are not sweet-cherry donors.',
-  'J.H. Hale needs another peach. With Veteran missing, it sits beside identified non-Elberta peaches, following UC Davis guidance; unidentified peaches are not counted because one could be Elberta.',
+  'J.H. Hale was the only peach needing a partner, and it died (owner report, Oct 17). The remaining identified peaches are self-fertile; unidentified peaches are not counted as donors.',
   `${unidentified.length} unidentified trees (${unidentifiedSummary}) are placed among identified trees of their type but are not counted as donors until identified.`,
   `${missingCandidates.length} trees that are not self-fertile still have no screened partner, mostly unidentified trees and trees missing bloom or compatibility data. They are marked unconfirmed below; proximity alone is not counted as pollination evidence.`
 ].forEach(text => document.getElementById('design-notes').append(element('p', text)));
@@ -1473,7 +1473,7 @@ rows.forEach(row => {
   const TYPE_NOTES = {
     Pear: 'European/perry bloom windows and the Asian group checked separately.',
     Cherry: 'Sweet cherries grouped around Lapins; tart and Nanking kept out of the sweet-cherry network.',
-    Peach: 'J.H. Hale beside non-Elberta peaches; the others are self-fertile.',
+    Peach: 'All identified peaches are self-fertile (J.H. Hale died).',
     Apricot: 'Compact block of self-fertile apricots.',
     Plum: 'Italian plums, self-fertile.'
   };
@@ -1590,7 +1590,7 @@ const leftover = rootstockCount - reservedTotal;
 [
   `Canonical JSON in data/ supplies the current records, with the original inventory and purchase workbooks retained for provenance. Owner-reported losses and outside-orchard plans leave their original slots open and are excluded from orchard counts and pollen partners. The M-111 planted at R6-C3 is allocated from inventory row 56; ${rootstockRemaining(56)} of that line's original ${inventoryLine(56)[1]} rootstocks remain available. It is not a fruit tree or pollen partner without a recorded scion cultivar. Every inventory line is matched to its purchase record(s) in the reconciliation table. When one inventory line matches several records of the same cultivar, the first record's cultivar data is used and the rootstock lists the possibilities. Plot dimensions, windbreaks, hedges, juniper distance, planting updates, and white pine losses are retained in the JSON records. Berry bushes are matched to the original Berry sheet.`,
   'Invalid cross-species spreadsheet entries are not used: Bartlett/Moonglow/Anjou are not cherry pollenizers, and Jefferson/Theta are not pear pollenizers. The size note in the Asian Hardy Giant pollenizer cell is not a pollination relationship.',
-  'Planning corrections are separate from the source fields: Liberty donor status remains disputed; Lapins and Montmorency are treated as self-fertile; Bing is not treated as reliably self-fertile; J.H. Hale needs another peach despite its workbook label, and Elberta is not used for it. Original fertility values remain visible in the inventory.',
+  'Planning corrections are separate from the source fields: Liberty donor status remains disputed; Lapins and Montmorency are treated as self-fertile; Bing is not treated as reliably self-fertile; J.H. Hale needed another peach despite its workbook label (it has since died). Original fertility values remain visible in the inventory.',
   'Apple flowering-group research is dated September 24, 2026 and linked in its own table. Workbook FG values drive the grid colors, bloom labels, and candidate screening. Seed-grown Kerr uses group 2 only as an owner-approved best guess (FG 2?). Qualitative Urban Apple bloom seasons remain unnumbered.',
   'Pseudomonas (bacterial canker) results come from the inventory. Positive, untreated trees are flagged but not relocated; the layout is driven by pollination.',
   'Before planting, confirm cultivar identities, bloom overlap, local climate suitability, rootstock and mature size, and insect activity. Windbreak sizes and spacings are planning values from the cited guides; adjust them to the plants you have.'

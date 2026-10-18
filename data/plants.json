@@ -2323,7 +2323,7 @@
       "inventory_row": 80,
       "instance": 1,
       "group": "orchard",
-      "health_status": "living"
+      "health_status": "dead"
     },
     {
       "id": "i81-1",
@@ -2393,7 +2393,7 @@
       "inventory_row": 88,
       "instance": 1,
       "group": "orchard",
-      "health_status": "living"
+      "health_status": "dead"
     },
     {
       "id": "i89-1",

@@ -24,10 +24,11 @@ test('Generated orchard model preserves current assignments and vacancies', () =
   const { records, rows } = model.plan();
   const active = rows.flatMap(row => row.trees.filter(Boolean));
   assert.equal(records.length, 115);
-  assert.equal(active.length, 111);
-  assert.equal(active.filter(tree => !tree.rootstockOnly).length, 110);
+  assert.equal(active.length, 109);
+  assert.equal(active.filter(tree => !tree.rootstockOnly).length, 108);
   assert.equal(rows.filter(row => row.reserved).reduce((sum, row) => sum + row.reserved, 0), 13);
-  for (const [r, c] of [[4, 9], [5, 9], [5, 10], [8, 1]]) assert.equal(rows[r - 1].trees[c - 1], null);
+  for (const [r, c] of [[4, 9], [5, 9], [5, 10], [8, 1], [9, 2], [11, 10]]) assert.equal(rows[r - 1].trees[c - 1], null);
+  assert.deepEqual(Array.from(rows.flatMap(row => row.held).map(tree => tree.id).sort()), ['i108-1', 'i63-1', 'i64-1', 'i65-1', 'i80-1', 'i88-1']);
   assert.equal(rows[5].trees[2].id, 'i56-1');
   assert.equal(rows[7].trees[2].id, 'i94-1');
   assert.equal(rows[7].trees[2].planted, true);
@@ -75,7 +76,7 @@ test('Dead plants are exported for the pages that count what is on hand', () => 
   const plants = JSON.parse(fs.readFileSync(path.join(root, 'data', 'plants.json'), 'utf8')).records;
   const dead = plants.filter(plant => plant.health_status === 'dead').map(plant => plant.id);
   assert.deepEqual(Array.from(context.window.ORCHARD_DATA.DEAD_PLANTS), dead);
-  assert.deepEqual(dead, ['i24-1', 'i24-2', 'i108-1']);
+  assert.deepEqual(dead, ['i24-1', 'i24-2', 'i80-1', 'i88-1', 'i108-1']);
 });
 
 test('Generated orchard model retains every windbreak, hedge, and guild rule', () => {

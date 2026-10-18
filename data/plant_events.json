@@ -64,6 +64,22 @@
       "recorded_on": "2026-10-17",
       "occurred_on": null,
       "notes": "Owner update: the PR-Asian tree is in R8-C3, not the planned R8-C1, and R8-C1 is empty. The open 2027 pear spot moved from R8-C3 to R8-C1. Exact event date not supplied."
+    },
+    {
+      "id": "owner-2026-10-17-i80-1",
+      "plant_id": "i80-1",
+      "event_type": "death_reported",
+      "recorded_on": "2026-10-17",
+      "occurred_on": null,
+      "notes": "Owner update: CR-Royalton in R9-C2 is dead, so R9-C2 is open. Exact event date not supplied."
+    },
+    {
+      "id": "owner-2026-10-17-i88-1",
+      "plant_id": "i88-1",
+      "event_type": "death_reported",
+      "recorded_on": "2026-10-17",
+      "occurred_on": null,
+      "notes": "Owner update: PC-Hale in R11-C10 is dead, so R11-C10 is open. Exact event date not supplied."
     }
   ]
 }
