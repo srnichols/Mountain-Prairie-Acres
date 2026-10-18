@@ -534,6 +534,8 @@ const gridWidth = rowSpan + TREE_SPACING / 2;
 const gridDepth = (rows.length - 1) * ROW_SPACING;
 const reservedRows = rows.filter(row => row.reserved);
 const reservedTotal = reservedRows.reduce((sum, row) => sum + row.reserved, 0);
+const reservedUnplanned = reservedRows.reduce((sum, row) =>
+  sum + Array.from({ length: row.reserved }, (_, index) => index + 1).filter(column => !plannedAt(row.r, column)).length, 0);
 const openCount = rows.length * GRID_COLUMNS - allTrees.length - reservedTotal;
 const neighborDistance = Math.hypot(TREE_SPACING / 2, ROW_SPACING);
 const windbreakTotal = windbreakRows.reduce((sum, row) => sum + row.count, 0);
@@ -875,9 +877,19 @@ rows.forEach(row => {
       cell.append(element('span', tree.code, 'code'), element('span', shortLabel, 'fg'));
       if (tree.planted) cell.append(element('span', '✓', 'planted-mark'));
     } else if (reserved) {
-      cell.title = `R${row.r}-C${index + 1} — reserved for a grafted rootstock apple (${rootstockSummary} rootstocks in the inventory)`;
-      cell.setAttribute('aria-label', cell.title);
-      cell.append(element('span', 'RS', 'code'), element('span', 'Rootstock', 'fg'));
+      const graft = plannedAt(row.r, index + 1);
+      if (graft) {
+        // A reserved rootstock spot with a planned scion shows as a planned cell, marked "graft".
+        cell.classList.remove('reserved');
+        cell.classList.add('planned');
+        cell.title = `R${row.r}-C${index + 1} — planned ${PLANTING_PLAN.year}: graft ${graft.item.cultivar} onto a reserved rootstock (${rootstockSummary} rootstocks in the inventory); ${graft.item.role}.\n${graft.item.caution}`;
+        cell.setAttribute('aria-label', cell.title);
+        cell.append(element('span', graft.item.code, 'code'), element('span', 'graft', 'fg'));
+      } else {
+        cell.title = `R${row.r}-C${index + 1} — reserved for a grafted rootstock apple (${rootstockSummary} rootstocks in the inventory)`;
+        cell.setAttribute('aria-label', cell.title);
+        cell.append(element('span', 'RS', 'code'), element('span', 'Rootstock', 'fg'));
+      }
     } else if (update) {
       const dead = update.orchardUpdate.status === 'dead';
       cell.classList.add(dead ? 'loss' : 'deferred');
@@ -944,7 +956,7 @@ function addLegend(color, label) {
   legendBox.append(item);
 }
 legend.forEach(([, color, label]) => addLegend(color, label));
-if (reservedTotal) {
+if (reservedUnplanned) {
   const box = element('span', '', 'lbox reserved');
   const item = element('div');
   item.append(box, 'Reserved: grafted rootstock apple (RS)');
@@ -965,14 +977,15 @@ if (outsideTrees.length) {
 if (plannedSpots().length) {
   const box = element('span', '', 'lbox empty planned');
   const item = element('div');
-  item.append(box, `Planned ${PLANTING_PLAN.year}: recommended cultivar for an open spot (a dashed border marks a spot held for a dead or relocated tree)`);
+  item.append(box, `Planned ${PLANTING_PLAN.year}: recommended cultivar for an open spot (a dashed border marks a spot held for a dead or relocated tree; "graft" marks a scion for one of your rootstocks)`);
   legendBox.append(item);
   const note = document.getElementById('plan-note');
   const counts = {};
   plannedSpots().forEach(({ item: planned }) => { counts[planned.type] = (counts[planned.type] || 0) + 1; });
+  const graftCount = plannedSpots().filter(({ item: planned }) => planned.method === 'graft').length;
   const link = element('a', `${PLANTING_PLAN.year} planting plan`);
   link.href = 'fy27_planting_plan.html';
-  note.append(`Green cells are the recommended ${PLANTING_PLAN.year} plantings (${Object.entries(counts).map(([type, count]) => `${count} ${count === 1 ? type.toLowerCase() : PLURAL[type]}`).join(', ')}), shown by cultivar code with the year; the rootstocks, cautions, and buy list are in the `, link, '. The planned trees are not counted as pollen partners for the trees on this page.');
+  note.append(`Green cells are the recommended ${PLANTING_PLAN.year} plantings for every open spot in R1 to R${PLANTING_PLAN.covers_rows} (${Object.entries(counts).map(([type, count]) => `${count} ${count === 1 ? type.toLowerCase() : PLURAL[type]}`).join(', ')}), shown by cultivar code with the year${graftCount ? `; the ${graftCount} marked graft are scions for the rootstocks you own` : ''}. The rootstocks, cautions, and buy list are in the `, link, '. The planned trees are not counted as pollen partners for the trees on this page.');
   note.hidden = false;
 }
 windbreakRows.forEach(row => addLegend(row.color, `Windbreak: ${row.name}`));
@@ -1610,9 +1623,13 @@ const leftover = rootstockCount - reservedTotal;
   `${outsideTrees.length} living Urban apples will be planted outside the orchard; grid locations are pending. Their former orchard slots stay open for new trees in 2027 and are not used for spare rootstocks now.`,
   'Penn State notes that black walnut and butternut are the best-known sources of juglone, a compound that injures many plants, and that English walnut and hickories (the group that includes pecans and hicans) also produce it to a lesser degree. Heartnut is a walnut closely related to butternut. Site these nut trees away from the orchard rather than beside it.',
   reservedTotal ?
-    `Once grafted, ${Math.min(rootstockCount, reservedTotal)} of the ${rootstockCount} remaining rootstocks go in reserved row R${reservedRows[0].r}${leftover > 0 ? `; the other ${leftover} can fill open spots at the east end of ${shortAppleRow ? `R${shortAppleRow.r}, the short apple row` : 'a new apple row'} (${appleOpen} open)` : ''}.${futureRows.length ? ` ${futureRange} ${futureRows.length > 1 ? 'are' : 'is'} held open for more trees you buy or graft later.` : ''}` :
+    `Once grafted, ${Math.min(rootstockCount, reservedTotal)} of the ${rootstockCount} remaining rootstocks go in reserved row R${reservedRows[0].r}${leftover > 0 ? (plannedSpots().length ? `; the other ${leftover} is a spare for a graft that fails or a later replacement` : `; the other ${leftover} can fill open spots at the east end of ${shortAppleRow ? `R${shortAppleRow.r}, the short apple row` : 'a new apple row'} (${appleOpen} open)`) : ''}.${futureRows.length ? ` ${futureRange} ${futureRows.length > 1 ? 'are' : 'is'} held open for more trees you buy or graft later.` : ''}` :
     `Once grafted, ${Math.min(rootstockCount, appleOpen)} of the ${rootstockCount} rootstocks can fill the open positions at the east end of the apple rows${rootstockCount > appleOpen ? `; the other ${rootstockCount - appleOpen} would need another apple row` : ''}.`,
-  plannedSpots().length ? `The ${PLANTING_PLAN.year} planting plan names a recommended cultivar for each of the ${plannedSpots().length} open spots: the six held for replacements and the ${appleOpen} empty positions at the east end of the short apple row. They show as green cells and are not counted as trees or pollen partners until the trees are in the ground.` : '',
+  plannedSpots().length ? (() => {
+    const grafts = plannedSpots().filter(({ item }) => item.method === 'graft').length;
+    const others = plannedSpots().length - grafts - openRecords.length;
+    return `The ${PLANTING_PLAN.year} planting plan names a cultivar for every open spot in R1 to R${PLANTING_PLAN.covers_rows}: ${plannedSpots().length} in all (the ${openRecords.length} spots held for replacements, ${others} other empty positions, and the ${grafts} reserved spots in R1, which are grafted). They show as green cells and are not counted as trees or pollen partners until the trees are in the ground.${futureRows.length ? ` ${futureRange} stay open for later.` : ''}`;
+  })() : '',
   'The Chinese apricot and Craig\'s Crimson cherry are still in Boise (girdled and mulched) and are not part of the Prairie plan.'
 ].filter(Boolean).forEach(text => document.getElementById('separate-notes').append(element('p', text)));
 

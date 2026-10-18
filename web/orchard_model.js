@@ -335,6 +335,8 @@ function needsTwoDonors(tree) {
 function compatiblePair(recipient, donor) {
   if (recipient.orchardUpdate || donor.orchardUpdate || recipient.rootstockOnly || donor.rootstockOnly) return null;
   if (recipient.id === donor.id || recipient.type !== donor.type || recipient.family === donor.family) return null;
+  // A planned tree can list cultivars that are known not to pollinate it, whatever their bloom times.
+  if (recipient.avoid && recipient.avoid.some(name => String(donor.name).toLowerCase().startsWith(name.toLowerCase()))) return null;
   if (recipient.type === 'Apple') {
     if (donor.planningPloidy !== 'Diploid' || donor.pollenQuality === 'Poor') return null;
     const listed = recipient.listedPartners.has(donor.family);
@@ -416,11 +418,12 @@ function plannedAt(r, c) {
 }
 function plannedTrees() {
   return plannedSpots().map(({ spot, r, c, item }) => ({
-    id:`plan-${item.id}-${spot}`, planned:true, spot, r, c,
+    id:`plan-${item.id}-${spot}`, planned:true, method:item.method, spot, r, c,
     x:(c - 1) * TREE_SPACING + (r % 2 === 0 ? TREE_SPACING / 2 : 0), y:(r - 1) * ROW_SPACING,
     type:item.type, fruit:item.type, name:item.cultivar, code:item.code, family:`plan-${item.id}`, sourceRow:null,
     planningFg:item.flowering_group ?? null, planningPloidy:item.ploidy || '', pollenQuality:'', listedPartners:new Set(),
-    appleBloom:null, pearAsian:false, pearBloom:item.pear_bloom, cherryChart:item.cherry_chart, selfFertile:!!item.self_fertile
+    appleBloom:null, pearAsian:false, pearBloom:item.pear_bloom, cherryChart:item.cherry_chart, selfFertile:!!item.self_fertile,
+    avoid:item.not_pollinated_by || []
   }));
 }
 // Partners within the local radius for each planned tree, drawn from the living orchard trees and the other planned trees.

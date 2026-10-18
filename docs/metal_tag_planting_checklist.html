@@ -229,9 +229,10 @@ if (OrchardModel.plannedSpots().length) {
   const link = document.createElement('a');
   const held = records.filter(tree => tree.orchardUpdate).length;
   const total = OrchardModel.plannedSpots().length;
+  const grafts = OrchardModel.plannedSpots().filter(({ item }) => item.method === 'graft').length;
   link.href = 'fy27_planting_plan.html';
   link.textContent = `${ORCHARD_DATA.PLANTING_PLAN.year} planting plan`;
-  paragraph.append(`${total} open spots have recommended cultivars: the ${held} above and ${total - held} more empty positions. They are in the `, link, '. Nothing is tagged or bought yet, so they are not on this checklist.');
+  paragraph.append(`Every open spot in R1 to R${ORCHARD_DATA.PLANTING_PLAN.covers_rows} has a recommended cultivar: ${total} in all (the ${held} above, ${grafts} grafts in reserved R1, and ${total - held - grafts} other empty positions). They are in the `, link, '. Nothing is tagged or bought yet, so they are not on this checklist.');
   updates.append(paragraph);
 }
 </script>

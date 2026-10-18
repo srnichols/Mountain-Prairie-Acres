@@ -120,10 +120,16 @@ def _point(point, label):
 
 
 RIPENING_BANDS = ("Early", "Mid", "Late", "Very late")
-PLAN_TYPES = ("Apple", "Pear", "Cherry", "Peach")
+PLAN_TYPES = ("Apple", "Pear", "Cherry", "Peach", "Plum", "Apricot")
+# A planned tree is either bought as a tree or grafted onto one of the owner's reserved rootstocks.
+PLAN_METHODS = ("buy", "graft")
 # Optional fields each fruit type may carry; the pollination rules read them.
-PLAN_TYPE_FIELDS = {"Apple": {"flowering_group", "ploidy"}, "Pear": {"self_fertile", "pear_bloom"},
-                    "Cherry": {"self_fertile", "cherry_chart"}, "Peach": {"self_fertile"}}
+PLAN_TYPE_FIELDS = {"Apple": {"flowering_group", "ploidy", "not_pollinated_by"},
+                    "Pear": {"self_fertile", "pear_bloom", "not_pollinated_by"},
+                    "Cherry": {"self_fertile", "cherry_chart", "not_pollinated_by"}, "Peach": {"self_fertile"},
+                    "Plum": {"self_fertile"}, "Apricot": {"self_fertile"}}
+# The pollination rules pair only apples, pears, and cherries, so these must not need a partner.
+PLAN_SELF_FERTILE_ONLY = ("Peach", "Plum", "Apricot")
 PEAR_BLOOM_PERIODS = ("early", "mid", "late")
 LIBRARY_GROUPS = ("Apple", "Pear", "Cherry", "Peach", "Apricot", "Plum", "Berry", "Nut", "Evergreen", "Shade tree", "Perennial")
 LIBRARY_KINDS = ("cultivar", "species", "genus", "rootstock")
@@ -276,21 +282,42 @@ def _validate_cultivar_library(data, inventory, fruit, workbook):
 STONE_FRUIT_TYPES = ("Apricot", "Cherry", "Peach", "Plum")
 
 
+def _living_donor_names(data):
+    """Names the pollination model gives the living orchard trees, by fruit type: the purchase-sheet cultivar, or the match name."""
+    rules = data["orchard"]["rules"]
+    fruit = {record["source_row"]: record for record in data["catalog"]["fruit_records"]}
+    types = {record["source_row"]: record["type"] for record in data["inventory"]["records"]}
+    names = {}
+    for plant in data["plants"]["records"]:
+        if plant["group"] != "orchard" or plant["health_status"] != "living":
+            continue
+        match = rules["INVENTORY_MATCH"][str(plant["inventory_row"])]
+        name = fruit[match["rows"][0]]["variety"] if match["rows"] else match.get("name")
+        if name:
+            names.setdefault(types[plant["inventory_row"]], set()).add(name)
+    return names
+
+
 def _validate_planting_plan(data, locations, active_spots):
     """Check PLANTING_PLAN: the cultivars recommended for the open spots of one planting year."""
-    plan = data["orchard"]["rules"].get("PLANTING_PLAN")
+    rules = data["orchard"]["rules"]
+    plan = rules.get("PLANTING_PLAN")
     if plan is None:
         return
-    _require(plan, ("year", "status", "summary", "rootstock_advice", "shipping_note", "items"), "planting plan")
+    _require(plan, ("year", "covers_rows", "status", "summary", "rootstock_advice", "shipping_note", "items"), "planting plan")
     _integer(plan["year"], "planting plan year", 2000)
+    _integer(plan["covers_rows"], "planting plan covers_rows", 1)
+    if plan["covers_rows"] > rules["ORCHARD_ROWS"]:
+        raise ValueError("Planting plan covers_rows is more than the orchard has")
     for key in ("status", "summary", "rootstock_advice", "shipping_note"):
         _text(plan[key], "planting plan " + key, False)
     if not isinstance(plan["items"], list) or not plan["items"]:
         raise ValueError("The planting plan needs at least one item")
     profiles = {record["id"]: record for record in data["cultivar_library"]["records"]}
     spots = {location["name"]: location for location in locations.values() if location["orchard_row"] is not None}
-    required = ("id", "type", "cultivar", "code", "profile", "quantity", "spots", "rootstock", "role", "caution")
+    required = ("id", "type", "method", "cultivar", "code", "profile", "quantity", "spots", "rootstock", "role", "caution")
     seen_ids, seen_codes, seen_spots, seen_profiles = set(), set(), set(), set()
+    grafts = 0
     for item in plan["items"]:
         if not isinstance(item, dict):
             raise ValueError("Each planting plan item must be an object")
@@ -298,6 +325,10 @@ def _validate_planting_plan(data, locations, active_spots):
         label = item["id"]
         if item["type"] not in PLAN_TYPES:
             raise ValueError(f"Planting plan item {label}: type must be one of {PLAN_TYPES}")
+        if item["method"] not in PLAN_METHODS:
+            raise ValueError(f"Planting plan item {label}: method must be one of {PLAN_METHODS}")
+        if item["method"] == "graft" and item["type"] != "Apple":
+            raise ValueError(f"Planting plan item {label}: only apples are grafted onto the reserved rootstocks")
         if extra := set(item) - set(required) - PLAN_TYPE_FIELDS[item["type"]]:
             raise ValueError(f"Planting plan item {label} has unknown fields for a {item['type'].lower()}: {sorted(extra)}")
         if not isinstance(label, str) or not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", label) or label in seen_ids:
@@ -319,6 +350,8 @@ def _validate_planting_plan(data, locations, active_spots):
         _integer(item["quantity"], f"planting plan {label} quantity", 1)
         if not isinstance(item["spots"], list) or len(item["spots"]) != item["quantity"]:
             raise ValueError(f"Planting plan item {label}: quantity must equal the number of spots")
+        if item["method"] == "graft":
+            grafts += item["quantity"]
         for name in item["spots"]:
             location = spots.get(name) if isinstance(name, str) else None
             if location is None:
@@ -326,8 +359,10 @@ def _validate_planting_plan(data, locations, active_spots):
             if name in seen_spots:
                 raise ValueError(f"Planting plan spot {name} is used twice")
             seen_spots.add(name)
-            if location["reserved_for"] is not None or location["id"] in active_spots:
-                raise ValueError(f"Planting plan spot {name} is reserved or already holds an active planting")
+            if location["id"] in active_spots:
+                raise ValueError(f"Planting plan spot {name} already holds an active planting")
+            if (location["reserved_for"] is not None) != (item["method"] == "graft"):
+                raise ValueError(f"Planting plan spot {name}: grafted trees go in reserved spots and bought trees in the others")
             if location["replacement_year"] is not None and (
                     location["replacement_year"] != plan["year"] or location["replacement_type"] not in (item["type"], "Tree")):
                 raise ValueError(f"Planting plan spot {name} disagrees with its recorded replacement")
@@ -337,6 +372,14 @@ def _validate_planting_plan(data, locations, active_spots):
                 raise ValueError(f"Planting plan item {label}: apples need a flowering group of 1 to 5 and a ploidy")
         elif not isinstance(item.get("self_fertile"), bool):
             raise ValueError(f"Planting plan item {label}: self_fertile must be true or false")
+        elif item["type"] in PLAN_SELF_FERTILE_ONLY and not item["self_fertile"]:
+            raise ValueError(f"Planting plan item {label}: the pollination rules cannot pair a {item['type'].lower()}; "
+                             "choose a self-fertile cultivar")
+        avoid = item.get("not_pollinated_by", [])
+        if not isinstance(avoid, list) or any(not isinstance(name, str) or not name.strip() for name in avoid):
+            raise ValueError(f"Planting plan item {label}: not_pollinated_by must be a list of cultivar names")
+        if any(name != name.strip() for name in avoid):
+            raise ValueError(f"Planting plan item {label}: not_pollinated_by names must not start or end with a space")
         if item["type"] == "Pear":
             bloom = item.get("pear_bloom")
             if (not isinstance(bloom, list) or len(bloom) < 2 or not isinstance(bloom[0], str) or not bloom[0]
@@ -344,12 +387,38 @@ def _validate_planting_plan(data, locations, active_spots):
                 raise ValueError(f"Planting plan item {label}: pear_bloom needs a label and bloom periods from {PEAR_BLOOM_PERIODS}")
         if item["type"] == "Cherry":
             chart = item.get("cherry_chart")
-            if not isinstance(chart, dict) or set(chart) != {"group", "bloom"} or not (
-                    chart["group"] is None or isinstance(chart["group"], str)):
-                raise ValueError(f"Planting plan item {label}: cherry_chart needs group and bloom")
-            _integer(chart["bloom"], f"planting plan {label} cherry bloom", 1)
-            if chart["bloom"] > 6:
-                raise ValueError(f"Planting plan item {label}: cherry bloom must be 1 to 6")
+            if chart is None:
+                if not item["self_fertile"]:
+                    raise ValueError(f"Planting plan item {label}: a cherry that is not self-fertile needs a cherry_chart")
+            else:
+                if not isinstance(chart, dict) or set(chart) != {"group", "bloom"} or not (
+                        chart["group"] is None or isinstance(chart["group"], str)):
+                    raise ValueError(f"Planting plan item {label}: cherry_chart needs group and bloom")
+                _integer(chart["bloom"], f"planting plan {label} cherry bloom", 1)
+                if chart["bloom"] > 6:
+                    raise ValueError(f"Planting plan item {label}: cherry bloom must be 1 to 6")
+    # The model drops a donor whose name starts with an entry (any case), so an entry that starts no name would do nothing.
+    donors = _living_donor_names(data)
+    for item in plan["items"]:
+        names = donors.get(item["type"], set()) | {other["cultivar"] for other in plan["items"]
+                                                    if other is not item and other["type"] == item["type"]}
+        for avoided in item.get("not_pollinated_by", []):
+            if not any(name.lower().startswith(avoided.lower()) for name in names):
+                raise ValueError(f"Planting plan item {item['id']}: not_pollinated_by {avoided!r} matches no living or "
+                                 f"planned {item['type'].lower()} cultivar, so it would exclude nothing")
+    if grafts:
+        _text(plan.get("graft_advice"), "planting plan graft_advice", False)
+        rootstocks = {p["id"] for p in data["plants"]["records"] if p["group"] == "rootstock" and p["health_status"] == "living"}
+        planted = {a["plant_id"] for a in data["plantings"]["records"] if a["status"] == "planted"}
+        if grafts > len(rootstocks - planted):
+            raise ValueError(f"The planting plan grafts {grafts} trees but only {len(rootstocks - planted)} rootstocks are unplanted")
+    elif "graft_advice" in plan:
+        raise ValueError("graft_advice belongs only to a plan with grafted items")
+    unplanned = sorted((spot["orchard_row"], spot["orchard_column"]) for name, spot in spots.items()
+                       if spot["orchard_row"] <= plan["covers_rows"] and spot["id"] not in active_spots and name not in seen_spots)
+    if unplanned:
+        raise ValueError("Orchard spots in rows 1 to {} have no planting plan item: {}".format(
+            plan["covers_rows"], [f"R{r}-C{c}" for r, c in unplanned]))
     held = {name for name, location in spots.items() if location["replacement_year"] == plan["year"]}
     if held - seen_spots:
         raise ValueError(f"Open replacement spots without a planting plan item: {sorted(held - seen_spots)}")
@@ -834,9 +903,9 @@ def _populate(connection, data, digest):
     if plan:
         spot_ids = {location["name"]: location["id"] for location in data["locations"]["records"]}
         _insert(connection, "planting_plan_items",
-                ("id", "plan_year", "type", "cultivar", "code", "profile_id", "quantity", "rootstock",
+                ("id", "plan_year", "type", "cultivar", "method", "code", "profile_id", "quantity", "rootstock",
                  "flowering_group", "ploidy", "self_fertile", "role", "caution"),
-                [(i["id"], plan["year"], i["type"], i["cultivar"], i["code"], i["profile"], i["quantity"], i["rootstock"],
+                [(i["id"], plan["year"], i["type"], i["cultivar"], i["method"], i["code"], i["profile"], i["quantity"], i["rootstock"],
                   i.get("flowering_group"), i.get("ploidy"), None if i.get("self_fertile") is None else int(i["self_fertile"]),
                   i["role"], i["caution"]) for i in plan["items"]])
         _insert(connection, "planting_plan_spots", ("item_id", "location_id"),

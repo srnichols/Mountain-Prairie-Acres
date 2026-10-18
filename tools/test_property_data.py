@@ -76,24 +76,36 @@ class PropertyDataTest(unittest.TestCase):
 
     def test_planting_plan_is_queryable_and_matches_the_open_spots(self):
         plan = self.data["orchard"]["rules"]["PLANTING_PLAN"]
-        self.assertEqual(plan["year"], 2027)
-        items = query("SELECT id, type, quantity, profile_id FROM planting_plan_items ORDER BY id", self.root)
-        self.assertEqual(len(items), 9)
-        self.assertEqual(sum(r["quantity"] for r in items), 16)
-        spots = query("SELECT spot, state, type, cultivar FROM planned_spots ORDER BY orchard_row, orchard_column", self.root)
-        self.assertEqual(len(spots), 16)
-        self.assertTrue(all(r["state"] == "open" for r in spots), "Planned spots are still empty")
+        self.assertEqual((plan["year"], plan["covers_rows"]), (2027, 12))
+        items = query("SELECT id, type, method, quantity, profile_id FROM planting_plan_items ORDER BY id", self.root)
+        self.assertEqual(len(items), len(plan["items"]))
+        self.assertEqual(len(items), 24)
+        self.assertEqual(sum(r["quantity"] for r in items), 47)
+        spots = query("SELECT spot, state, type, method, cultivar FROM planned_spots ORDER BY orchard_row, orchard_column", self.root)
+        self.assertEqual(len(spots), 47)
+        self.assertTrue(all(r["state"] in ("open", "reserved") for r in spots), "Planned spots are still empty")
         by_type = {}
         for r in spots:
             by_type[r["type"]] = by_type.get(r["type"], 0) + 1
-        self.assertEqual(by_type, {"Apple": 13, "Pear": 1, "Cherry": 1, "Peach": 1})
-        self.assertEqual({r["spot"]: r["cultivar"] for r in spots if r["spot"] in ("R8-C1", "R9-C2", "R11-C10")},
-                         {"R8-C1": "Harrow Delight", "R9-C2": "Black Gold", "R11-C10": "Intrepid"})
+        self.assertEqual(by_type, {"Apple": 26, "Pear": 2, "Cherry": 11, "Peach": 1, "Plum": 7})
+        self.assertEqual({r["spot"]: r["cultivar"] for r in spots if r["spot"] in ("R8-C1", "R8-C13", "R9-C2", "R11-C10", "R12-C8")},
+                         {"R8-C1": "Harrow Delight", "R8-C13": "Seckel", "R9-C2": "Black Gold", "R11-C10": "Intrepid", "R12-C8": "Damson"})
+        # Grafts go only in the 13 reserved spots of R1, and bought trees only in the others.
+        self.assertEqual({(r["method"], r["state"]) for r in spots}, {("graft", "reserved"), ("buy", "open")})
+        grafts = [r for r in spots if r["method"] == "graft"]
+        self.assertEqual(sorted(r["spot"] for r in grafts), sorted(f"R1-C{c}" for c in range(1, 14)))
+        # No hole is left in R1 to R12: every empty or reserved spot there has a planned cultivar; R13 to R15 stay open.
+        holes = query("SELECT name FROM orchard_spots WHERE orchard_row <= 12 AND state IN ('open', 'reserved') "
+                      "AND name NOT IN (SELECT spot FROM planned_spots)", self.root)
+        self.assertEqual(holes, [])
+        later = query("SELECT COUNT(*) AS n FROM orchard_spots WHERE orchard_row > 12 AND state = 'open' "
+                      "AND name NOT IN (SELECT spot FROM planned_spots)", self.root)[0]["n"]
+        self.assertEqual(later, 39)
         held = query("SELECT name FROM orchard_spots WHERE replacement_year = 2027 ORDER BY name", self.root)
         self.assertTrue({r["name"] for r in held} <= {r["spot"] for r in spots}, "Every held replacement spot has a planned cultivar")
         linked = query("SELECT COUNT(*) AS n FROM planting_plan_items i JOIN cultivar_profiles p ON p.id = i.profile_id "
                        "WHERE p.type = i.type", self.root)[0]["n"]
-        self.assertEqual(linked, 9)
+        self.assertEqual(linked, 24)
         validate_data(self.data)
 
     def test_features_terrain_water_and_gps_are_queryable(self):
@@ -261,14 +273,14 @@ class PropertyDataTest(unittest.TestCase):
                 copy.deepcopy(d["rules"]["UNIDENTIFIED_STONE_FRUIT"]["lines"][0])), "listed twice"),
             ("orchard", lambda d: plan_item(d, "williams-pride").update(quantity=2), "quantity must equal"),
             ("orchard", lambda d: plan_item(d, "williams-pride")["spots"].__setitem__(0, "R6-C8"), "used twice"),
-            ("orchard", lambda d: plan_item(d, "williams-pride")["spots"].__setitem__(0, "R1-C1"), "reserved or already holds"),
+            ("orchard", lambda d: plan_item(d, "williams-pride")["spots"].__setitem__(0, "R1-C1"), "grafted trees go in reserved spots"),
             ("orchard", lambda d: plan_item(d, "williams-pride")["spots"].__setitem__(0, "R9-C2"), "disagrees with its recorded replacement"),
             ("orchard", lambda d: plan_item(d, "williams-pride")["spots"].__setitem__(0, "R20-C1"), "unknown orchard spot"),
             ("orchard", lambda d: plan_item(d, "williams-pride").update(profile="missing"), "or a place in the planting plan"),
             ("orchard", lambda d: plan_item(d, "williams-pride").update(code="wlp"), "unique 2 to 4 letter"),
             ("orchard", lambda d: plan_item(d, "williams-pride").update(colour="red"), "unknown fields"),
             ("orchard", lambda d: plan_item(d, "williams-pride").pop("flowering_group"), "flowering_group"),
-            ("orchard", lambda d: plan_item(d, "dayton").update(type="Plum"), "type must be one of"),
+            ("orchard", lambda d: plan_item(d, "dayton").update(type="Grape"), "type must be one of"),
             ("orchard", lambda d: plan_item(d, "harrow-delight").pop("self_fertile"), "self_fertile"),
             ("orchard", lambda d: plan_item(d, "harrow-delight").update(pear_bloom=["Mid"]), "pear_bloom"),
             ("orchard", lambda d: plan_item(d, "black-gold").update(cherry_chart={"group": None, "bloom": 9}), "cherry bloom must be 1 to 6"),
@@ -277,9 +289,28 @@ class PropertyDataTest(unittest.TestCase):
             ("orchard", lambda d: plan_item(d, "harrow-delight").update(pear_bloom=["Mid", "Mid"]), "pear_bloom needs"),
             ("orchard", lambda d: plan_item(d, "black-gold").update(self_fertile="yes"), "self_fertile must be true or false"),
             ("orchard", add_plan_item_with_dayton_profile, "repeats a profile"),
+            ("orchard", lambda d: plan_item(d, "dayton").update(method="seed"), "method must be one of"),
+            ("orchard", lambda d: plan_item(d, "redfree").update(type="Pear"), "only apples are grafted"),
+            ("orchard", lambda d: plan_item(d, "redfree")["spots"].__setitem__(0, "R13-C1"), "grafted trees go in reserved spots"),
+            ("orchard", lambda d: d["rules"]["PLANTING_PLAN"].pop("graft_advice"), "graft_advice"),
+            ("orchard", lambda d: d["rules"]["PLANTING_PLAN"].pop("covers_rows"), "covers_rows"),
+            ("orchard", lambda d: d["rules"]["PLANTING_PLAN"].update(covers_rows=16), "more than the orchard has"),
+            ("orchard", lambda d: plan_item(d, "surefire").update(self_fertile=False), "needs a cherry_chart"),
+            ("orchard", lambda d: plan_item(d, "stanley").update(self_fertile=False), "cannot pair a plum"),
+            ("orchard", lambda d: plan_item(d, "seckel").update(not_pollinated_by="Bartlett"), "not_pollinated_by must be a list"),
+            ("orchard", lambda d: plan_item(d, "dayton").update(not_pollinated_by=[""]), "not_pollinated_by must be a list"),
+            ("orchard", lambda d: plan_item(d, "seckel").update(not_pollinated_by=["Bartlett "]), "must not start or end with a space"),
+            ("orchard", lambda d: plan_item(d, "seckel").update(not_pollinated_by=["Barlett", "Red Bartlett"]), "matches no living or planned pear"),
+            ("orchard", lambda d: plan_item(d, "dayton").update(not_pollinated_by=["Kumquat"]), "matches no living or planned apple"),
+            ("orchard", lambda d: plan_item(d, "dayton").update(not_pollinated_by=["Dayton"]), "matches no living or planned apple"),
+            ("orchard", lambda d: plan_item(d, "seckel").update(not_pollinated_by=["Dayton"]), "matches no living or planned pear"),
+            ("orchard", lambda d: (plan_item(d, "stanley")["spots"].pop(), plan_item(d, "stanley").update(quantity=2)),
+             "have no planting plan item"),
+            ("plants", lambda d: [p.update(health_status="dead") for p in d["records"] if p["id"] in ("i56-2", "i56-3")],
+             "rootstocks are unplanted"),
             ("orchard", lambda d: d["rules"]["PLANTING_PLAN"].update(year=1999), "planting plan year"),
             ("cultivar_library", lambda d: next(r for r in d["records"] if r["id"] == "apple-dayton").update(type="Pear"), "disagrees with Apple"),
-            ("locations", lambda d: next(r for r in d["records"] if r["name"] == "R12-C5").update(replacement_year=2027, replacement_type="Apple"),
+            ("locations", lambda d: next(r for r in d["records"] if r["name"] == "R13-C1").update(replacement_year=2027, replacement_type="Apple"),
              "without a planting plan item"),
         ]
         for collection, change, message in cases:
@@ -287,6 +318,21 @@ class PropertyDataTest(unittest.TestCase):
             change(data[collection])
             with self.subTest(collection=collection, message=message), self.assertRaisesRegex(ValueError, message):
                 validate_data(data)
+
+    def test_not_pollinated_by_names_must_match_a_living_or_planned_cultivar(self):
+        # The names the shipped plan relies on, in any letter case, and a planned cultivar's name all validate.
+        for changes in ({"seckel": ["Bartlett", "Red Bartlett"]}, {"seckel": ["bartlett", "red bartlett", "COMICE"]},
+                        {"dayton": ["priscilla", "Honeycrisp"]}):
+            data = copy.deepcopy(self.data)
+            for item_id, names in changes.items():
+                plan_item(data["orchard"], item_id)["not_pollinated_by"] = names
+            with self.subTest(changes=changes):
+                validate_data(data)
+        # A tree that is dead or outside the orchard is not a donor, so its name excludes nothing.
+        data = copy.deepcopy(self.data)
+        plan_item(data["orchard"], "seckel")["not_pollinated_by"] = ["Pineapple"]
+        with self.assertRaisesRegex(ValueError, "matches no living or planned pear"):
+            validate_data(data)
 
     def test_unidentified_apple_candidates_follow_purchases_and_inventory(self):
         info = self.data["orchard"]["rules"]["UNIDENTIFIED_APPLES"]
@@ -347,7 +393,7 @@ class PropertyDataTest(unittest.TestCase):
         counts = query("SELECT COUNT(*) AS profiles, "
                        "(SELECT COUNT(*) FROM cultivar_profile_links WHERE link_type = 'inventory') AS inventory_links "
                        "FROM cultivar_profiles", self.root)[0]
-        self.assertEqual((counts["profiles"], counts["inventory_links"]), (146, 114))
+        self.assertEqual((counts["profiles"], counts["inventory_links"]), (161, 114))
         cortland = query("SELECT profile_name, ripening FROM plant_profiles WHERE plant_id = 'i29-1'", self.root)[0]
         self.assertEqual((cortland["profile_name"], cortland["ripening"]), ("Cortland", "Mid"))
         unknown = query("SELECT profile_id FROM plant_profiles WHERE plant_id = 'i62-1'", self.root)[0]

@@ -3266,6 +3266,51 @@
       "reviewed_on": "2026-10-17"
     },
     {
+      "id": "pear-seckel",
+      "group": "Pear",
+      "type": "Pear",
+      "kind": "cultivar",
+      "name": "Seckel",
+      "aliases": [
+        "Sugar pear"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Sept; small russet sugar pear; fire blight resistant",
+      "summary": "An American heirloom pear found near Philadelphia in the 1700s, called the sugar or candy pear for its small, russeted, very sweet fruit; used fresh, poached, canned or in preserves.",
+      "appearance": "Small, russeted yellow-brown fruit per Stark Bros and the Intermountain guide; NC State calls it a smaller version of the common pear.",
+      "flavor_use": "Sweet, honeyed and spicy with a fine, buttery texture per Stark Bros; stores only 1 to 3 months per the Intermountain guide, the shortest keeper on that table. Resists fire blight per all three sources. NC State says it needs another cultivar though it is partly self-fertile; not a Bartlett pollinator per Stark Bros.",
+      "uses": [
+        "fresh",
+        "canning",
+        "cooking"
+      ],
+      "ripening": "Mid",
+      "ripening_note": "Ripens in September per Stark Bros, a few weeks after Bartlett's late August harvest on the Intermountain guide.",
+      "id_cues": "Much smaller and more russeted than Bartlett or Anjou; ripens weeks after Bartlett; resists fire blight while the Intermountain guide rates Bartlett and Anjou susceptible. No source compares it with Comice or Moonglow.",
+      "habit": "NC State calls it a vigorous, easily grown tree; on dwarfing rootstock it reaches about 15 feet with good disease resistance.",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "Zones 5-8 per Stark Bros; NC State says cold hardy but gives no zone number.",
+      "sources": [
+        [
+          "Stark Bros: Seckel Pear Tree",
+          "https://www.starkbros.com/products/fruit-trees/pear-trees/seckel-pear"
+        ],
+        [
+          "NC State Extension: Seckel Pear Plant Profile",
+          "https://plants.ces.ncsu.edu/plants/pyrus-communis-seckel/"
+        ],
+        [
+          "Intermountain Tree Fruit Guide: Pear Variety Table",
+          "https://intermountainfruit.org/fruit-tables/pear"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Stark Bros' bloom chart puts Seckel in Early-Mid bloom, with Bartlett and Anjou. NC State says it needs another cultivar though it is partly self-fertile, and Stark Bros says it is not a suitable pollinator for Bartlett.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
       "id": "cherry-bing",
       "group": "Cherry",
       "type": "Cherry",
@@ -3848,6 +3893,226 @@
       "reviewed_on": "2026-10-17"
     },
     {
+      "id": "cherry-surefire",
+      "group": "Cherry",
+      "type": "Cherry",
+      "kind": "cultivar",
+      "name": "Surefire",
+      "aliases": [],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Mid; late-blooming; firm red Morello type; dodges frost",
+      "summary": "A 1999 Cornell tart cherry from Geneva, NY, also called NY 12716, with firm red-fleshed Morello-type fruit on a self-fertile, late-blooming tree; used mainly for pies, sauce, jelly and canning.",
+      "appearance": "Round cherry with red skin and red flesh (a Morello type), firmer-textured than most tart cherries; Cummins does not give an exact fruit size for this cultivar.",
+      "flavor_use": "Tart, firm, juicy fruit for pies, sauce, jelly, canning and fresh eating; keeps under a month. Self-fertile, and like other tart cherries it does not share pollen with sweet cherries. Cummins calls it somewhat resistant to canker and brown rot; that rating is a nursery claim, not a university trial.",
+      "uses": [
+        "fresh",
+        "cooking",
+        "canning",
+        "jelly"
+      ],
+      "ripening": "Mid",
+      "ripening_note": "Cummins: fruit ripens about 2 weeks after Montmorency, later than Meteor's 1-week gap; blooms 4-7 days after Montmorency.",
+      "id_cues": "Ripens about 2 weeks after Montmorency and later than Meteor, so it is the latest of Montmorency, Meteor and Surefire. Red flesh separates it from yellow-fleshed Montmorency and Meteor, but English Morello is also red-fleshed and July-ripening, so that cue is weak; later bloom and firmer texture are more reliable.",
+      "habit": "Medium-vigor tree, upright and open with wide branch angles on a half-standard rootstock framework; becomes productive by its third year.",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "Zone 4 (Cummins).",
+      "sources": [
+        [
+          "Cummins Nursery: Surefire Cherry on Mahaleb",
+          "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=tree&id=22319"
+        ],
+        [
+          "Intermountain Fruit: Cherry variety table",
+          "https://intermountainfruit.org/fruit-tables/cherry"
+        ],
+        [
+          "WSU Tree Fruit: Bacterial canker in Washington sweet cherries",
+          "https://treefruit.wsu.edu/bacterial-canker-in-washington-sweet-cherries/"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Canker and brown rot resistance is Cummins' nursery claim, not a university trial; WSU material covers sweet cherry but names tart cherry as another host of the same bacterium. No poor fit found for zone 5a, season length, or canker.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "cherry-meteor",
+      "group": "Cherry",
+      "type": "Cherry",
+      "kind": "cultivar",
+      "name": "Meteor",
+      "aliases": [],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Early; amarelle red and yellow; ultra-hardy dwarf",
+      "summary": "A 1952 University of Minnesota tart cherry crossing Montmorency with hardy Russian cherries; a naturally dwarf, extremely cold-hardy tree with red-skinned, yellow-fleshed Amarelle fruit for pies and sauce.",
+      "appearance": "Large, round cherry with bright red skin and pale yellow flesh (an Amarelle type) that presses to clear juice; medium-firm, medium-juicy texture per Intermountain.",
+      "flavor_use": "Clear-juiced, yellow-fleshed fruit used for pies and sauce rather than fresh eating; keeps under a month. Self-fertile, no pollenizer needed. Cummins rates it resistant to leaf spot and brown rot; none of these sources give it a bacterial canker rating.",
+      "uses": [
+        "cooking",
+        "canning",
+        "jelly"
+      ],
+      "ripening": "Early",
+      "ripening_note": "Sources disagree: Cummins and UMN, its own breeder, put it about 1 week after Montmorency, early July; Intermountain lists late July.",
+      "id_cues": "Yellow flesh matches Montmorency, a shared, weak cue; ripens about a week after Montmorency per Cummins and UMN, though Intermountain says much later. Its dwarf, 10 to 14 ft size is shared with North Star, but North Star has red, not yellow, flesh.",
+      "habit": "Naturally dwarf tree, about 10 to 14 ft tall, upright-spreading with a rounded, dense crown that helps hide fruit from birds.",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "Zone 4-7 (Intermountain); to -50F dormant (Cummins).",
+      "sources": [
+        [
+          "Cummins Nursery: Meteor Cherry on Mahaleb",
+          "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=tree&id=21997"
+        ],
+        [
+          "Intermountain Fruit: Cherry variety table",
+          "https://intermountainfruit.org/fruit-tables/cherry"
+        ],
+        [
+          "Univ. of Minnesota Extension: Growing stone fruits in the home garden",
+          "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-stone-fruits-in-the-home-garden"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Ripening claims conflict by weeks: Cummins and its own breeder, UMN, say early July, but Intermountain says late July; I favored the breeder. No poor fit found for zone 5a, season length, or canker; no canker rating at all was located.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "cherry-carmine-jewel",
+      "group": "Cherry",
+      "type": "Cherry",
+      "kind": "cultivar",
+      "name": "Carmine Jewel",
+      "aliases": [],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Late; dwarf bush cherry; dark red, sweet-tart, heavy bearer",
+      "summary": "A 1999 University of Saskatchewan dwarf sour cherry, Prunus fruticosa x P. cerasus, grown as an own-root shrub rather than a tree; dark red, sweet-tart fruit for fresh eating and jam.",
+      "appearance": "Small to medium, round, dark red cherry, called quarter-sized by St. Lawrence Nurseries, with juicy, sweet-tart flesh that darkens and sweetens further as it fully ripens.",
+      "flavor_use": "Sweet-tart flesh eaten fresh or made into jam; self-fertile, so one plant fruits alone, though a second plant nearby can raise yields. One Green World states plainly that bacterial canker can still damage branches despite the plant's hardiness; no brown rot rating was found.",
+      "uses": [
+        "fresh",
+        "jelly"
+      ],
+      "ripening": "Late",
+      "ripening_note": "St. Lawrence Nurseries: ripens in late July; One Green World gives only a vague mid-summer window.",
+      "id_cues": "Grows as a multi-stemmed shrub, not a standard tree like Montmorency or Surefire, usually sold own-root. Fruit darkens toward near-black red at full ripeness, later than Montmorency; Nanking cherry is a different, non-dwarf species with smaller, single-seeded fruit, a weak cue in young plants.",
+      "habit": "Own-root, multi-stemmed shrub pruned as a bush rather than trained as a tree; mature height is given as about 6 ft (USask), 6 to 12 ft (One Green World) or 8 to 10 ft (St. Lawrence).",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "Zone 2 (USask) to zone 3 (OGW); -40F to -50F with injury, sources vary.",
+      "sources": [
+        [
+          "Univ. of Saskatchewan: Sour cherry varieties",
+          "https://research-groups.usask.ca/fruit/our-varieties/sour-cherry-varieties.php"
+        ],
+        [
+          "One Green World: Carmine Jewel Bush Cherry",
+          "https://onegreenworld.com/product/carmine-jewel-bush-cherry/"
+        ],
+        [
+          "St. Lawrence Nurseries: Carmine Jewel dwarf sour cherry",
+          "https://www.slngrow.com/products/carmine-jewel-dwarf-sour-cherry"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "One Green World plainly warns bacterial canker can still damage this plant, a real caution for a canker-prone site. Mature height and hardiness zone (2 vs 3) also vary by source; all give it far more cold tolerance than zone 5a needs.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "cherry-skeena",
+      "group": "Cherry",
+      "type": "Cherry",
+      "kind": "cultivar",
+      "name": "Skeena",
+      "aliases": [],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Late; self-fertile; very large, near-black, firm",
+      "summary": "A self-fertile sweet cherry bred at a Canadian station in Summerland, British Columbia. Very large, firm, dark red to near-black fruit with high sugar, ripening late among sweet cherries. Used mainly fresh, also in pies, juice and jam.",
+      "appearance": "Very large, round to kidney-shaped fruit. Skin dark red, deepening to nearly black at full ripeness; flesh dark red, firm and crunchy.",
+      "flavor_use": "Sweet, about 18-19 percent sugar, firm and crunchy; mainly fresh eating, also pies, juice and jam. Self-fertile. Brighter Blooms calls the fruit crack-resistant, a retail claim, not an independent trial. No university trial names Skeena as canker-susceptible or canker-resistant.",
+      "uses": [
+        "fresh",
+        "cooking",
+        "juice",
+        "jelly"
+      ],
+      "ripening": "Late",
+      "ripening_note": "WSU: ripens 12-15 days after Bing and blooms 4-5 days after Bing; WSU's own tag for this timing is Late.",
+      "id_cues": "Self-fertile like Lapins, Stella and Black Gold, so that trait does not separate them (Bing needs a second tree). Fruit color overlaps too, dark red to near black in all, so color and size are weak cues. The better cue is ripening, 12-15 days after Bing per WSU, about with Lapins (10-14 days).",
+      "habit": "Moderate-growing tree reaching about 12-18 ft tall and 12-15 ft wide at maturity, per Brighter Blooms.",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "Zone 5-9, to about -10F (Brighter Blooms); WSU's page gives no number.",
+      "sources": [
+        [
+          "Washington State Univ. Tree Fruit: Skeena sweet cherry variety profile",
+          "https://treefruit.wsu.edu/variety/skeena/"
+        ],
+        [
+          "Washington State Univ. Extension: Bacterial canker in Washington sweet cherries",
+          "https://treefruit.wsu.edu/bacterial-canker-in-washington-sweet-cherries/"
+        ],
+        [
+          "Brighter Blooms: Skeena Cherry Tree",
+          "https://www.brighterblooms.com/products/skeena-cherry-tree"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "WSU's canker-susceptibility list does not name Skeena at all; its only numeric hardiness claim, -10F, is milder than zone 5a's usual minimum.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "cherry-whitegold",
+      "group": "Cherry",
+      "type": "Cherry",
+      "kind": "cultivar",
+      "name": "WhiteGold",
+      "aliases": [
+        "White Gold"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Mid; self-fertile; yellow blushed red, white flesh",
+      "summary": "A self-fertile sweet cherry Cornell bred in Geneva, NY from Emperor Francis x Stella, introduced around 2001. Medium to large yellow fruit blushed red, white flesh, sweet, crack-resistant. Used fresh, canned, baked and brined.",
+      "appearance": "Medium to large, round fruit. Skin yellow with a red blush; flesh white and firm, unlike the all-red to near-black look-alikes in this group.",
+      "flavor_use": "Sweet and firm, said to resist cracking per Cummins and Stark. Self-fertile, diploid; Cummins says it can pollinize other early to mid-blooming cherries. Cummins and Stark both call it very resistant to bacterial canker, Stark adds brown rot, but WSU's canker list does not include WhiteGold among tested cultivars.",
+      "uses": [
+        "fresh",
+        "cooking",
+        "canning",
+        "jelly",
+        "pollinizer"
+      ],
+      "ripening": "Mid",
+      "ripening_note": "Cummins: ripens about 10 days after Bing; Stark Bro's describes it as a June, mid-season ripener.",
+      "id_cues": "Yellow skin with a red blush and white flesh set WhiteGold apart at a glance from the all-red to near-black Bing, Stella, Skeena and Black Gold; color is the strongest cue, since its ripening, about 10 days after Bing per Cummins, is close to Lapins (10-14 days per WSU).",
+      "habit": null,
+      "bark": null,
+      "leaf": null,
+      "hardiness": "Zone 5-7 per Stark Bro's; Cummins calls it cold-hardy, no zone given.",
+      "sources": [
+        [
+          "Cummins Nursery: WhiteGold Cherry on Mahaleb",
+          "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=tree&id=22325"
+        ],
+        [
+          "Stark Bro's: WhiteGold Sweet Cherry",
+          "https://www.starkbros.com/products/fruit-trees/cherry-trees/whitegold-sweet-cherry"
+        ],
+        [
+          "Washington State Univ. Extension: Bacterial canker in Washington sweet cherries",
+          "https://treefruit.wsu.edu/bacterial-canker-in-washington-sweet-cherries/"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Cummins and Stark call WhiteGold canker-resistant, but WSU's trial-based list does not name it; Cummins gives 2001 as introduction year, Stark says circa 2003.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
       "id": "cherry-black-gold",
       "group": "Cherry",
       "type": "Cherry",
@@ -3870,7 +4135,7 @@
         "jelly"
       ],
       "ripening": "Mid",
-      "ripening_note": "Cummins says fruit matures early to mid cherry season; no source here gave an exact date relative to Bing, only its much later bloom.",
+      "ripening_note": "Cummins says fruit matures early to mid cherry season; no source gives a date relative to Bing, only its much later bloom.",
       "id_cues": "OSU's bloom chart places Black Gold in Period IV, later than Bing and Stella (Period II) and Lapins (Period I); its near-black skin is common among dark sweet cherries generally, so bloom timing is the stronger, more specific cue.",
       "habit": "Upright, spreading growth habit; late blooming and very hardy, reported undamaged near -30F in Minnesota plantings.",
       "bark": null,
@@ -4361,7 +4626,7 @@
       "tagline": "Mid; yellow freestone; very cold-hardy flower buds",
       "summary": "Intrepid is an NC State Sandhills Station release, Redhaven x (Reliance x Biscoe), patented 2002 for flower buds that tolerate hard spring freezes. Fruit is medium to large, red over yellow, freestone, used fresh and for canning.",
       "appearance": "Medium to large, round peach, about 6.6 cm; red skin over a yellow ground color; firm yellow freestone flesh.",
-      "flavor_use": "Firm yellow freestone flesh, normal peach acidity, used fresh and for canning; self-fertile. Patent record rates foliage and buds highly resistant to bacterial spot, better than Redhaven; buds survived 6 freezing nights that killed commercial checks in 1996. No source here reported bacterial canker for this cultivar.",
+      "flavor_use": "Firm yellow freestone flesh, normal peach acidity, used fresh and for canning; self-fertile. Patent record rates foliage and buds highly resistant to bacterial spot, better than Redhaven; buds survived 6 freezing nights that killed commercial checks in 1996. No source reports bacterial canker for this cultivar.",
       "uses": [
         "fresh",
         "cooking",
@@ -4369,7 +4634,7 @@
       ],
       "ripening": "Mid",
       "ripening_note": "About 2 weeks after Redhaven in NC trials (average July 7 there); one Wisconsin nursery lists mid-July",
-      "id_cues": "Ripens about 2 weeks after Redhaven and Reliance per NC trial records; sources used here give no exact date for Contender or Canadian Harmony, and red-over-yellow skin is shared across this group, so the Redhaven and Reliance timing gap is the clearest cue.",
+      "id_cues": "Ripens about 2 weeks after Redhaven and Reliance per NC trial records; no source gives an exact date for Contender or Canadian Harmony, and red-over-yellow skin is shared across this group, so the Redhaven and Reliance timing gap is the clearest cue.",
       "habit": "Vigorous, semi-upright growth with roughly 75 degree branch angles; young trees grow about 2 to 3 ft a year and often first flower in their third year.",
       "bark": null,
       "leaf": null,
@@ -4707,6 +4972,139 @@
       ],
       "basis": "sourced",
       "note": "Italian Plum, Italian Prune and Fellenberg are one variety (Stark). 'Italian Seedling' may be grown from seed and vary in fruit; 'Lovell' is normally a peach rootstock name, so the tag may refer to rootstock.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "plum-mount-royal",
+      "group": "Plum",
+      "type": "Plum",
+      "kind": "cultivar",
+      "name": "Mount Royal",
+      "aliases": [],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "August; small blue freestone; self-fertile; very hardy",
+      "summary": "A European plum grown in Quebec since before 1903; Raintree calls it bred there while Stark Bros calls it a chance seedling. Round blue freestone fruit, yellow flesh, sweet, used fresh, canned, baked or dried.",
+      "appearance": "Small to medium, round plums with deep blue skin over yellow, freestone flesh, borne in heavy clusters each August.",
+      "flavor_use": "Sweet and juicy, good fresh and for jam, baking, canning, drying or freezing per Stark Bros. Self-fertile, so one tree can bear alone. Neither opened source rates this cultivar for black knot, brown rot or bacterial canker.",
+      "uses": [
+        "fresh",
+        "jelly",
+        "cooking",
+        "canning",
+        "drying"
+      ],
+      "ripening": "Early",
+      "ripening_note": "Ripens in August per Raintree and Stark Bros, ahead of Italian Prune's mid to late August window.",
+      "id_cues": "Ripens earlier than Italian Prune and well ahead of Stanley; fruit runs small to medium, against the large Italian Prune and Stanley. Blue skin alone is a weak cue, since these plums share it.",
+      "habit": "Raintree lists a mature height of about 12 feet; neither opened source describes shape, vigor or bearing habit further.",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "Zone 4 (Raintree) to Zones 4-7 (Stark Bros), both above this site's zone 5a.",
+      "sources": [
+        [
+          "Raintree Nursery: Mount Royal European Plum",
+          "https://raintreenursery.com/products/mount-royal-e-plum-semi-dwarf"
+        ],
+        [
+          "Stark Bros: Mount Royal Plum Tree",
+          "https://www.starkbros.com/products/fruit-trees/plum-trees/mount-royal-plum"
+        ],
+        [
+          "Intermountain Tree Fruit Guide: Plum Variety Table",
+          "https://intermountainfruit.org/fruit-tables/plum"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Raintree says Mount Royal was bred in Quebec; Stark Bros calls it a chance seedling near Montreal. Penn State's black knot list does not name it; no opened source rates it for bacterial canker.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "plum-stanley",
+      "group": "Plum",
+      "type": "Plum",
+      "kind": "cultivar",
+      "name": "Stanley",
+      "aliases": [],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Early Sept; blue-purple freestone; high sugar; black knot risk",
+      "summary": "A Cornell-bred European prune plum from 1926, long a standard American home-orchard variety. Large oval blue-purple freestone fruit with sweet yellow-green flesh, for fresh eating, baking, canning or drying into prunes.",
+      "appearance": "Large, oval fruit with deep blue-purple skin over firm, sweet yellow-green freestone flesh, per Stark Bros and the Intermountain guide.",
+      "flavor_use": "High in natural sugar, firm and freestone, so it dries into true prunes and holds up in baking per Stark Bros. Self-pollinating with late bloom that Stark Bros says avoids spring frost. Penn State Extension rates Stanley very susceptible to black knot.",
+      "uses": [
+        "fresh",
+        "cooking",
+        "canning",
+        "drying"
+      ],
+      "ripening": "Mid",
+      "ripening_note": "Ripens late Aug to early Sept per the Intermountain guide, about a week after Italian Prune's mid to late Aug window.",
+      "id_cues": "Ripens about a week after Italian Prune and weeks after Mount Royal's August crop; fruit is large, bigger than Mount Royal's small to medium size; dark blue-purple skin is a weak cue shared with Italian Prune.",
+      "habit": null,
+      "bark": null,
+      "leaf": null,
+      "hardiness": "Zones 5-7 per Stark Bros and Intermountain guide; 5a is this range's cold edge.",
+      "sources": [
+        [
+          "Stark Bros: Stanley Prune-Plum Tree",
+          "https://www.starkbros.com/products/fruit-trees/plum-trees/stanley-prune-plum"
+        ],
+        [
+          "Intermountain Tree Fruit Guide: Plum Variety Table",
+          "https://intermountainfruit.org/fruit-tables/plum"
+        ],
+        [
+          "Penn State Extension: Black Knot of Stone Fruit",
+          "https://extension.psu.edu/stone-fruit-disease-black-knot"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Penn State rates Stanley very susceptible to black knot. Zones 5-7 puts this zone 5a site at the cold edge, and neither source confirms it suits a 70 to 110 day season.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "plum-damson",
+      "group": "Plum",
+      "type": "Plum",
+      "kind": "cultivar",
+      "name": "Damson",
+      "aliases": [],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Sept; small tart blue plum; self-fertile; disputed knot rating",
+      "summary": "An old European plum of the damson type, grown in America since colonial times and found growing wild in places such as Idaho per a UC Davis note. Small, tart blue fruit with gold flesh, used mainly for jam, baking and canning.",
+      "appearance": "Small, oval fruit with dark blue to purple skin over golden yellow flesh, tarter than the other plums in the Intermountain guide's table.",
+      "flavor_use": "Tart, high in sugar, best for jam, baking and canning; self-fertile. Cummins calls it black knot resistant, NC State calls its Shropshire Prune Damson susceptible, and Penn State lists Damson as somewhat resistant but Shropshire as very susceptible.",
+      "uses": [
+        "fresh",
+        "cooking",
+        "jelly",
+        "canning"
+      ],
+      "ripening": "Mid",
+      "ripening_note": "Intermountain guide says it ripens in September; Cummins says about 10 days before Stanley, so the two timings do not fully agree.",
+      "id_cues": "Smallest and most tart of the four plums; Cummins says it ripens before Stanley, though the Intermountain guide puts both in a similar window; dark skin is a weak cue shared with Stanley and Italian Prune.",
+      "habit": "NC State says it has a moderate growth rate of 13 to 24 inches a year and can be grown as a hedge or windbreak; a UC Davis note on the Cummins page puts mature height near six meters.",
+      "bark": "That UC Davis note, quoted on the Cummins page, describes Damson as having dark bark.",
+      "leaf": null,
+      "hardiness": "Zone 4-8 (Intermountain guide); NC State says cold hardy, no zone given.",
+      "sources": [
+        [
+          "Cummins Nursery: Damson Plum on Myrobalan",
+          "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=tree&id=21588"
+        ],
+        [
+          "NC State Extension: Shropshire Prune Damson Plum",
+          "https://plants.ces.ncsu.edu/plants/prunus-domestica-subsp-insititia-shropshire-prune/"
+        ],
+        [
+          "Intermountain Tree Fruit Guide: Plum Variety Table",
+          "https://intermountainfruit.org/fruit-tables/plum"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Black knot rating is disputed: Cummins calls Damson resistant, Penn State calls Damson partly resistant but Shropshire very susceptible, NC State calls its Shropshire Damson susceptible. Damson may be a type, not one clone.",
       "reviewed_on": "2026-10-17"
     },
     {
@@ -7444,7 +7842,7 @@
         ]
       ],
       "basis": "sourced",
-      "note": "Cummins calls it field immune to scab; Purdue's university table instead rates scab Very Resistant, which is used here.",
+      "note": "Cummins calls it field immune to scab; Purdue's university table rates scab Very Resistant.",
       "reviewed_on": "2026-10-17"
     },
     {
@@ -7468,7 +7866,7 @@
       ],
       "ripening": "Mid",
       "ripening_note": "SLN Nursery says early to mid September; no source names a benchmark cultivar",
-      "id_cues": "Ripens early-mid September, overlapping Honeycrisp and McIntosh. Medium fruit blushed red over a yellow background, with a licorice note in the flavor; McIntosh is more solidly bright red, but season overlap makes timing alone a weak cue here.",
+      "id_cues": "Ripens early-mid September, overlapping Honeycrisp and McIntosh. Medium fruit blushed red over a yellow background, with a licorice note in the flavor; McIntosh is more solidly bright red, but season overlap makes timing alone a weak cue.",
       "habit": "Productive, spreading, vigorous tree; bears consistently as an annual cropper and can overbear if the fruit is not thinned.",
       "bark": null,
       "leaf": null,
@@ -7532,7 +7930,7 @@
         ]
       ],
       "basis": "sourced",
-      "note": "Raintree calls it resistant to cedar-apple rust; Purdue's university table rates cedar rust and mildew only Moderately Resistant, used here.",
+      "note": "Raintree calls it resistant to cedar-apple rust, but Purdue's university table rates cedar rust and mildew only Moderately Resistant.",
       "reviewed_on": "2026-10-17"
     },
     {
@@ -7622,7 +8020,7 @@
         ]
       ],
       "basis": "sourced",
-      "note": "Roots to Fruits lists Bloom Group 4; an earlier group-3 claim could not be confirmed here. Parentage: Malinda x open-pollinated (Fedco) vs Malinda x Wealthy (Roots to Fruits). Flesh color also differs: white vs yellow-gold.",
+      "note": "Roots to Fruits lists Bloom Group 4, the only source found for it. Parentage differs: Malinda x open-pollinated (Fedco) vs Malinda x Wealthy (Roots to Fruits). Flesh color also differs: white vs yellow-gold.",
       "reviewed_on": "2026-10-17"
     },
     {
@@ -7666,6 +8064,276 @@
       ],
       "basis": "sourced",
       "note": "Sources disagree on ripening month (Stark Bro's mid-July vs Raintree August) and zone (5-8 vs 4-9). Purdue rates cedar-apple rust susceptible; both nurseries claim resistance; this entry keeps the university rating.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "apple-redfree",
+      "group": "Apple",
+      "type": "Apple",
+      "kind": "cultivar",
+      "name": "Redfree",
+      "aliases": [],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Early; glossy red over yellow; mild subacid flavor",
+      "summary": "Redfree (Co-op 13) is a disease-resistant summer apple bred by Purdue, Rutgers, and Illinois universities; medium, glossy red fruit over yellow, crisp cream flesh, mild subacid flavor, for fresh eating.",
+      "appearance": "Medium-sized apple with glossy red skin over a yellow background and crisp, cream-colored flesh.",
+      "flavor_use": "Mild, subacid flavor, crisp cream flesh; fresh eating only. Holds on the tree about two weeks, keeps one to three months. Purdue: scab resistant, fire blight moderately resistant, cedar-apple rust very resistant, mildew moderately resistant. Bloom group 3, diploid, not self-fertile; a good pollinizer.",
+      "uses": [
+        "fresh",
+        "pollinizer"
+      ],
+      "ripening": "Early",
+      "ripening_note": "Ripens toward the end of August in upstate New York, per Cummins Nursery; picking spreads over several weeks.",
+      "id_cues": "Glossy red over yellow, ripening toward the end of August over several weeks, so it is picked in stages. No source gives a direct visual comparison with Williams' Pride, Zestar! or Gala.",
+      "habit": "Upright and vigorous; bears reliable annual crops that ripen over several weeks, per Cummins Nursery.",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "USDA zone 4 (-34C) per Orange Pippin Trees; Cummins tags it only Cold-Hardy.",
+      "sources": [
+        [
+          "Cummins Nursery: Redfree Apple Scionwood",
+          "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=scion&id=36103"
+        ],
+        [
+          "Purdue Extension: BP-132-W apple disease table",
+          "https://extension.purdue.edu/extmedia/BP/BP-132-W.pdf"
+        ],
+        [
+          "Orange Pippin Trees: Redfree apple trees",
+          "https://www.orangepippintrees.com/trees/apple-trees/redfree"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Purdue rates scab Resistant, milder than Cummins' field immune and Orange Pippin's very resistant claims; kept the university figure. No source shows a poor fit for zone 5a, a short season, or cedar-apple rust.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "apple-akane",
+      "group": "Apple",
+      "type": "Apple",
+      "kind": "cultivar",
+      "name": "Akane",
+      "aliases": [],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Early; bright red; sweet-tart with strawberry notes",
+      "summary": "Akane is a 1937 Japanese cross of Jonathan and Worcester Pearmain from the Morioka Experimental Station; small to medium bright red fruit, sweet-tart with strawberry and floral notes.",
+      "appearance": "Small to medium, bright red apple, flattened like its Worcester Pearmain parent, with crisp, slightly chewy, creamy to off-white, medium-grained flesh.",
+      "flavor_use": "Sweet-tart flavor with strawberry and floral notes; flesh holds its shape, so it suits baking as well as fresh eating. Purdue BP-132-W rates it scab resistant, fire blight and cedar-apple rust moderately resistant, powdery mildew resistant. Bloom group 4, diploid, not self-fertile, per Cummins.",
+      "uses": [
+        "fresh",
+        "cooking"
+      ],
+      "ripening": "Early",
+      "ripening_note": "Ripens late August to early September in upstate New York, per Cummins Nursery; Intermountain lists August harvest for Utah.",
+      "id_cues": "Akane's flattened, Worcester Pearmain-type shape and bright red color are its cues; it ripens in August per Cummins and Intermountain, well before Gala's September harvest (Intermountain). No source compares its shape or timing with Zestar! or Williams' Pride.",
+      "habit": "Hardy and precocious tree, bearing early in its life, per Cummins Nursery.",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "Cold hardy for Utah per Intermountain; no USDA zone given.",
+      "sources": [
+        [
+          "Cummins Nursery: Akane Apple Scionwood",
+          "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=scion&id=35933"
+        ],
+        [
+          "Intermountainfruit.org: Apple variety table for Utah",
+          "https://intermountainfruit.org/fruit-tables/apple"
+        ],
+        [
+          "Purdue Extension: BP-132-W apple disease table",
+          "https://extension.purdue.edu/extmedia/BP/BP-132-W.pdf"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Intermountain recommends it mainly for baking and says it does not store; Cummins lists fresh eating too. No source rates it a poor fit for zone 5a, a short season, or cedar-apple rust (Purdue: Moderately Resistant).",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "apple-sansa",
+      "group": "Apple",
+      "type": "Apple",
+      "kind": "cultivar",
+      "name": "Sansa",
+      "aliases": [],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Early; pink-orange-red, gold russet; sweet-tart; low vigor",
+      "summary": "Sansa is a 1988 Japanese-New Zealand cross of Gala and Akane; conical, pink-orange-red fruit flecked with gold russet and creamy white flesh, mainly for fresh eating.",
+      "appearance": "Medium to medium-large, conical fruit with a pink to orange-red blush lightly flecked with gold russet over a creamy white background; flesh is creamy white.",
+      "flavor_use": "Sweet, Gala-like flavor balanced by Akane's acidity; firm, almost woody flesh. For fresh eating: keeps under a month or a week refrigerated, though Raintree calls it a good keeper. Some resistance to scab, fire blight and mildew; very resistant to cedar-apple rust. Bloom group 4, not self-fertile.",
+      "uses": [
+        "fresh"
+      ],
+      "ripening": "Early",
+      "ripening_note": "Early per Orange Pippin Trees and Cummins; growers in Orange Pippin's tree register picked from late August to mid-September",
+      "id_cues": "Firm, almost woody flesh contrasts with Honeycrisp's crisp bite, per Cummins Nursery. Its conical shape and pink-orange-red, gold-russeted skin (Raintree, Cummins) are its clearest visual cues; no source describes Akane's or Gala's shape.",
+      "habit": "Productive tree; Cummins calls its vigor low while Orange Pippin Trees calls it average and a good cropper.",
+      "bark": null,
+      "leaf": "Leaves show a genetic chlorosis (yellowing) that is not caused by disease, per Cummins Nursery.",
+      "hardiness": "USDA zone 4 (-34C) per Orange Pippin Trees; Raintree lists zone 4-9.",
+      "sources": [
+        [
+          "Cummins Nursery: Sansa Apple Scionwood",
+          "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=scion&id=36118"
+        ],
+        [
+          "Orange Pippin Trees: Sansa apple trees",
+          "https://www.orangepippintrees.com/trees/apple-trees/sansa"
+        ],
+        [
+          "Raintree Nursery: Sansa Apple product page",
+          "https://raintreenursery.com/products/sansa-apple-dwarf"
+        ],
+        [
+          "Orange Pippin: Sansa apple variety page",
+          "https://www.orangepippin.com/varieties/apples/sansa"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Zone ratings of 4 (Orange Pippin Trees) and 4-9 (Raintree) are well inside zone 5a. Sources disagree on vigor (low vs average) and on storage life (under a month vs a good keeper).",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "apple-chestnut-crab",
+      "group": "Apple",
+      "type": "Apple",
+      "kind": "cultivar",
+      "name": "Chestnut crabapple",
+      "aliases": [
+        "Chestnut Crab"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Early Sept; bronzed-red russet; rich nutty-caramel flavor",
+      "summary": "Chestnut crabapple is a University of Minnesota release, bred in 1949 per Cummins (Stark Bro's instead says 1946). The large russeted bronze-red crab has crisp yellow flesh and a rich nutty, caramel flavor, eaten fresh or cooked.",
+      "appearance": "Large for a crabapple, about 2 inches across, with finely russeted bronze-red skin over a yellow background; flesh is yellowish, finely grained and crisp.",
+      "flavor_use": "Rich, nutty flavor with caramel, nutmeg or vanilla notes and high sugar (Cummins); used fresh, in cider, sauce and jelly. Purdue rates it scab moderately resistant, fire blight, cedar rust and mildew resistant. Diploid, bloom group 3, not self-fertile; keeps 4-5 weeks (UMN) to 1-3 months (Cummins).",
+      "uses": [
+        "fresh",
+        "cooking",
+        "cider",
+        "jelly",
+        "pollinizer"
+      ],
+      "ripening": "Early",
+      "ripening_note": "UMN and Stark Bro's both say early September; Cummins notes picking spans several weeks into mid-September.",
+      "id_cues": "At about 2 inches it is larger than Dolgo (about 1 inch), Kerr (about 1.75 inches) and the very small Wickson. Its nutty-caramel flavor is mild enough for fresh eating, and it ripens in early September, earlier than Kerr (late September to early October) and Wickson (late October).",
+      "habit": "Semi-compact, slightly weeping, moderately vigorous tree (Cummins); blooms early and over a long period, which nursery sources tie to spring frost risk for the crop.",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "No zone from UMN or Cummins; Stark Bro's says zone 3, a retailer's figure.",
+      "sources": [
+        [
+          "University of Minnesota: All Apple Varieties page",
+          "https://mnhardy.umn.edu/apples/varieties"
+        ],
+        [
+          "Cummins Nursery: Chestnut Crab Apple on G.890 product page",
+          "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=tree&id=21729"
+        ],
+        [
+          "Stark Bro's: Chestnut Crabapple",
+          "https://www.starkbros.com/products/fruit-trees/apple-trees/chestnut-crabapple"
+        ],
+        [
+          "Purdue Extension: Disease Susceptibility of Common Apple Cultivars",
+          "https://extension.purdue.edu/extmedia/BP/BP-132-W.pdf"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Cummins says its early, long bloom risks spring frost, a concern for this site's short season. Origin year differs (1946 per Stark Bro's, 1949 per Cummins), and only Stark Bro's gives a hardiness zone (3).",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "apple-novamac",
+      "group": "Apple",
+      "type": "Apple",
+      "kind": "cultivar",
+      "name": "Novamac",
+      "aliases": [],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Early-Mid; deep red; wine-tart Mac flavor, very disease resistant",
+      "summary": "Novamac is a McIntosh-type apple bred at the AAFC Kentville station in Nova Scotia, introduced 1978. It ripens just ahead of McIntosh with deep red skin, crisp white flesh and the same wine-like Mac flavor; for fresh eating, cooking, cider.",
+      "appearance": "Medium apple with deep red to red-washed skin over a pale background; flesh is white, crisp and juicy, turning creamy in storage.",
+      "flavor_use": "Crisp, juicy, wine-tart McIntosh-style flavor for fresh eating, cooking and cider. Purdue rates it Very Resistant for scab, fire blight, cedar-apple rust and mildew, the strongest four-disease score in that table; Silver Creek Nursery also calls it canker resistant. Not self-fertile; keeps a few months.",
+      "uses": [
+        "fresh",
+        "cooking",
+        "cider"
+      ],
+      "ripening": "Mid",
+      "ripening_note": "Walden Heights (Vermont) says mid to late September; Silver Creek (Canada) says early September; Orange Pippin, a bit ahead of McIntosh.",
+      "id_cues": "Ripens a bit ahead of its parent McIntosh (Orange Pippin) and shares its wine-tart Mac flavor, so taste is a weak cue; Cortland ripens later, in late September to early October. Purdue rates Novamac's scab resistance Very Resistant, far above McIntosh and Cortland (both Very Susceptible) and equal to Liberty's.",
+      "habit": "Moderately vigorous, upright and spreading growth, with reliable spur-borne crops (Silver Creek Nursery); needs a different apple variety nearby for pollination.",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "Canadian Hardiness Zone 4 (Silver Creek); no USDA zone number in these sources.",
+      "sources": [
+        [
+          "Orange Pippin: Novamac apple variety page",
+          "https://www.orangepippin.com/varieties/apples/novamac"
+        ],
+        [
+          "Silver Creek Nursery: Novamac Apple Tree product page",
+          "https://silvercreeknursery.ca/products/novamac-apple"
+        ],
+        [
+          "Walden Heights Nursery: Novamac Apple",
+          "https://waldenheightsnursery.com/product/novamac-apple/"
+        ],
+        [
+          "Purdue Extension: Disease Susceptibility of Common Apple Cultivars",
+          "https://extension.purdue.edu/extmedia/BP/BP-132-W.pdf"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Hardiness is given only as Canadian zone 4, with no USDA figure. Silver Creek and Orange Pippin place its origin at Kentville, Nova Scotia; Silver Creek and Walden Heights give 1978 (Walden Heights spells it Kentfield).",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "apple-pixie-crunch",
+      "group": "Apple",
+      "type": "Apple",
+      "kind": "cultivar",
+      "name": "Pixie Crunch",
+      "aliases": [
+        "Co-op 33"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Mid-Sept; small deep red; sweet-spicy Honeycrisp-like crunch",
+      "summary": "Pixie Crunch (Co-op 33) is a Purdue, Rutgers and Illinois release from a 1971 cross, introduced 2004. The small to medium apple is deep red over yellow with crisp yellow flesh and a sweet, spicy flavor, sized for children and fresh eating.",
+      "appearance": "Small to medium fruit, green-based skin blushing to deep red, with crisp yellow flesh (Cummins, Roots to Fruits).",
+      "flavor_use": "Sweet, spicy flavor, exceptionally crisp and breaking, compared to Honeycrisp; mainly fresh eating, keeps one to three months. Cummins rates it scab field immune, fire blight fairly resistant, but susceptible to cedar rust and mildew, a concern with nearby junipers. Not self-fertile; thin or it bears biennially.",
+      "uses": [
+        "fresh"
+      ],
+      "ripening": "Mid",
+      "ripening_note": "Cummins places harvest in mid-September; Roots to Fruits says about a week before Delicious.",
+      "id_cues": "Far smaller than Honeycrisp despite a similar crisp texture, and ripens later than the early Zestar!. Closest in timing to Priscilla, which is a bit larger, tastes milder with a licorice note, and is rated Resistant to cedar-apple rust by Purdue, where Cummins calls Pixie Crunch susceptible.",
+      "habit": "Small, spreading tree with a spindly habit needing careful pruning; fruit must be thinned or it bears only every other year (Cummins Nursery).",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "USDA zone 3-9 per Roots to Fruits; other retail pages instead say zone 4-8.",
+      "sources": [
+        [
+          "Cummins Nursery: Pixie Crunch Apple on G.214 product page",
+          "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=tree&id=24291"
+        ],
+        [
+          "Purdue Extension: Disease Susceptibility of Common Apple Cultivars",
+          "https://extension.purdue.edu/extmedia/BP/BP-132-W.pdf"
+        ],
+        [
+          "Roots to Fruits Nursery: Pixie Crunch Apple Trees product page",
+          "https://rootstofruitsnursery.com/products/pixie-crunch"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Purdue's table omits Pixie Crunch and Co-op 33, so the cedar-apple rust and mildew susceptibility above comes from Cummins Nursery only, not a university rating.",
       "reviewed_on": "2026-10-17"
     }
   ]

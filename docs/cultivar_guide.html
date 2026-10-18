@@ -349,14 +349,15 @@ GROUPS.forEach(group => {
     } else if (profile.purchase_rows.length) {
       fact(facts, 'On hand', 'None yet (purchased, not tagged).');
     } else if (plannedItem) {
-      fact(facts, 'On hand', `None yet (planned for ${planYear}, not bought).`);
+      fact(facts, 'On hand', `None yet (planned for ${planYear}, ${plannedItem.method === 'graft' ? 'not grafted' : 'not bought'}).`);
     } else {
       fact(facts, 'On hand', 'None. This species is on your seed list but is not in the inventory.');
     }
     if (plannedItem) {
       const plan = element('div');
-      plan.append(`${plannedItem.quantity} ${plannedItem.quantity === 1 ? 'tree' : 'trees'} at ${plannedItem.spots.join(', ')}. ${plannedItem.role}.`);
-      plan.append(element('div', `Rootstock: ${plannedItem.rootstock}.`, 'small'));
+      const noun = plannedItem.method === 'graft' ? (plannedItem.quantity === 1 ? 'grafted tree' : 'grafted trees') : (plannedItem.quantity === 1 ? 'tree' : 'trees');
+      plan.append(`${plannedItem.quantity} ${noun} at ${plannedItem.spots.join(', ')}. ${plannedItem.role}.`);
+      plan.append(element('div', `${plannedItem.method === 'graft' ? 'Graft onto' : 'Rootstock'}: ${plannedItem.rootstock}.`, 'small'));
       plan.append(element('div', plannedItem.caution, 'small'));
       fact(facts, `Planned for ${planYear}`, plan);
     }

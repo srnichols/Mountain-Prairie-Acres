@@ -1190,14 +1190,17 @@
     },
     "PLANTING_PLAN": {
       "year": 2027,
-      "status": "Recommended cultivars for the open 2027 spots; none are purchased yet",
-      "summary": "Chosen in October 2026 for a short-season U-pick orchard at about 4,750 ft with roughly 70 to 110 frost-free days: disease-resistant apples that fill the thin early band, plus hardy replacements for the dead pear, cherry and peach.",
+      "covers_rows": 12,
+      "status": "Recommended cultivars for every open spot in R1 to R12; nothing is bought or grafted yet",
+      "summary": "Chosen in October 2026 for a short-season U-pick orchard at about 4,750 ft with roughly 70 to 110 frost-free days. Disease-resistant apples that ripen early or in mid-season fill R4 to R6 and the grafted row R1; hardy tart and sweet cherries, European plums, a Seckel pear, and replacements for the dead pear, cherry and peach fill the rest. R13 to R15 stay open for later.",
       "rootstock_advice": "Ask nurseries for semi-dwarf trees (about 60 to 75 percent of standard; G.890, G.214 or M.7 for apples). The grid is 18 x 20 ft and the site is dry and windy, so dwarf stocks (M.27, M.9, B.9) would need permanent stakes and leave gaps.",
+      "graft_advice": "The 13 grafts in R1 go onto rootstocks you already own: 11 M-111 (vigorous, semi-standard), 2 EMLA 7 (semi-dwarf) and 1 of unknown type, so one rootstock is left as a spare. Order scionwood in winter from a nursery that sells it for spring 2027 (some sell out early), keep it cold and damp until grafting, and graft in early spring as the rootstock buds begin to swell. Use the two EMLA 7 rootstocks for Redfree, a vigorous scion (its third tree goes on an M-111), and put lower-vigor scions such as Pixie Crunch on the vigorous M-111. Grafted trees take longer to bear than bought trees. Check that a cultivar may be propagated at home before ordering scionwood.",
       "shipping_note": "Confirm that each nursery ships the item to Idaho before ordering; some retailers exclude Idaho for some items.",
       "items": [
         {
           "id": "williams-pride",
           "type": "Apple",
+          "method": "buy",
           "cultivar": "Williams' Pride",
           "code": "WLP",
           "profile": "apple-williams-pride",
@@ -1216,6 +1219,7 @@
         {
           "id": "priscilla",
           "type": "Apple",
+          "method": "buy",
           "cultivar": "Priscilla",
           "code": "PSC",
           "profile": "apple-priscilla",
@@ -1233,6 +1237,7 @@
         {
           "id": "dayton",
           "type": "Apple",
+          "method": "buy",
           "cultivar": "Dayton",
           "code": "DAY",
           "profile": "apple-dayton",
@@ -1250,6 +1255,7 @@
         {
           "id": "freedom",
           "type": "Apple",
+          "method": "buy",
           "cultivar": "Freedom",
           "code": "FRD",
           "profile": "apple-freedom",
@@ -1268,6 +1274,7 @@
         {
           "id": "haralson",
           "type": "Apple",
+          "method": "buy",
           "cultivar": "Haralson",
           "code": "HAL",
           "profile": "apple-haralson",
@@ -1280,11 +1287,12 @@
           "flowering_group": 4,
           "ploidy": "Diploid",
           "role": "October pie and cider apple; zone 3, late bloom",
-          "caution": "Roots to Fruits lists bloom group 4; an earlier group-3 claim could not be confirmed. Ripens in mid-October, the latest of the new apples, and is tart rather than a fresh-eating favorite."
+          "caution": "Bloom group 4 comes from a single nursery page (Roots to Fruits). Ripens in mid-October, the latest of the new apples, and is tart rather than a fresh-eating favorite."
         },
         {
           "id": "pristine",
           "type": "Apple",
+          "method": "buy",
           "cultivar": "Pristine",
           "code": "PTN",
           "profile": "apple-pristine",
@@ -1301,6 +1309,7 @@
         {
           "id": "harrow-delight",
           "type": "Pear",
+          "method": "buy",
           "cultivar": "Harrow Delight",
           "code": "HDL",
           "profile": "pear-harrow-delight",
@@ -1320,6 +1329,7 @@
         {
           "id": "black-gold",
           "type": "Cherry",
+          "method": "buy",
           "cultivar": "Black Gold",
           "code": "BGD",
           "profile": "cherry-black-gold",
@@ -1339,6 +1349,7 @@
         {
           "id": "intrepid",
           "type": "Peach",
+          "method": "buy",
           "cultivar": "Intrepid",
           "code": "INT",
           "profile": "peach-intrepid",
@@ -1350,6 +1361,285 @@
           "self_fertile": true,
           "role": "Bud-hardy, self-fertile mid-season freestone",
           "caution": "Peaches here carry bacterial canker (untreated positives). Prune only in dry weather, use dormant copper, and buy clean certified stock."
+        },
+        {
+          "id": "redfree",
+          "type": "Apple",
+          "method": "graft",
+          "cultivar": "Redfree",
+          "code": "RDF",
+          "profile": "apple-redfree",
+          "quantity": 3,
+          "spots": [
+            "R1-C3",
+            "R1-C4",
+            "R1-C5"
+          ],
+          "rootstock": "Your EMLA 7 rootstocks (it is a vigorous scion), then M-111",
+          "flowering_group": 3,
+          "ploidy": "Diploid",
+          "role": "Earliest graft: ripe toward the end of August, with a very good cedar-apple rust rating (Purdue)",
+          "caution": "Ripens over several weeks, so plan on picking in stages, and keeps only 1 to 3 months. Scionwood showed sold out at Cummins in mid-October while another nursery had stock, so order early."
+        },
+        {
+          "id": "chestnut-crab",
+          "type": "Apple",
+          "method": "graft",
+          "cultivar": "Chestnut crabapple",
+          "code": "CNC",
+          "profile": "apple-chestnut-crab",
+          "quantity": 2,
+          "spots": [
+            "R1-C1",
+            "R1-C2"
+          ],
+          "rootstock": "Your M-111 rootstock",
+          "flowering_group": 3,
+          "ploidy": "Diploid",
+          "role": "Crabapple you eat fresh: crisp and nutty, about 2 inches, ripe in early September",
+          "caution": "The orchard already has three crabapples (Kerr, Dolgo, Wickson); this one is larger, about 2 inches, with a nutty flavor mild enough for fresh eating. Cummins says it blooms early over a long period, so a spring frost can cost a crop."
+        },
+        {
+          "id": "akane",
+          "type": "Apple",
+          "method": "graft",
+          "cultivar": "Akane",
+          "code": "AKN",
+          "profile": "apple-akane",
+          "quantity": 2,
+          "spots": [
+            "R1-C6",
+            "R1-C7"
+          ],
+          "rootstock": "Your M-111 rootstock",
+          "flowering_group": 4,
+          "ploidy": "Diploid",
+          "role": "Early red apple, ripe from late August into early September; precocious",
+          "caution": "Sources disagree on use: Intermountain calls it a baking apple that does not store, Orange Pippin a fresh-eating apple."
+        },
+        {
+          "id": "novamac",
+          "type": "Apple",
+          "method": "graft",
+          "cultivar": "Novamac",
+          "code": "NVM",
+          "profile": "apple-novamac",
+          "quantity": 2,
+          "spots": [
+            "R1-C10",
+            "R1-C11"
+          ],
+          "rootstock": "Your M-111 rootstock",
+          "flowering_group": 4,
+          "ploidy": "Diploid",
+          "role": "McIntosh-type apple, ripe a little ahead of McIntosh; very resistant to all four common diseases (Purdue)",
+          "caution": "Hardiness (Canadian zone 4) and bloom group come from nursery pages, not a university. Scionwood was found at Walden Heights Nursery, not at Cummins."
+        },
+        {
+          "id": "sansa",
+          "type": "Apple",
+          "method": "graft",
+          "cultivar": "Sansa",
+          "code": "SNS",
+          "profile": "apple-sansa",
+          "quantity": 2,
+          "spots": [
+            "R1-C8",
+            "R1-C9"
+          ],
+          "rootstock": "Your M-111 rootstock",
+          "flowering_group": 4,
+          "ploidy": "Diploid",
+          "role": "Early Gala-type dessert apple, picked from late August to mid-September in Orange Pippin growers' records, with a very good cedar-apple rust rating",
+          "caution": "Orange Pippin Trees and Raintree rate it zone 4. Sources disagree on vigor (low at Cummins, average at Orange Pippin) and on storage (under a month, or a good keeper)."
+        },
+        {
+          "id": "pixie-crunch",
+          "type": "Apple",
+          "method": "graft",
+          "cultivar": "Pixie Crunch",
+          "code": "PXC",
+          "profile": "apple-pixie-crunch",
+          "quantity": 2,
+          "spots": [
+            "R1-C12",
+            "R1-C13"
+          ],
+          "rootstock": "Your M-111 rootstock (a low-vigor scion)",
+          "flowering_group": 4,
+          "ploidy": "Diploid",
+          "role": "Small, crunchy, kid-sized apple for mid-September, sold for U-pick",
+          "caution": "Cummins rates it susceptible to cedar-apple rust and powdery mildew (Purdue's table does not list it), and junipers grow near the orchard. Thin the crop or it turns biennial."
+        },
+        {
+          "id": "surefire",
+          "type": "Cherry",
+          "method": "buy",
+          "cultivar": "Surefire",
+          "code": "SUR",
+          "profile": "cherry-surefire",
+          "quantity": 3,
+          "spots": [
+            "R10-C9",
+            "R10-C10",
+            "R10-C11"
+          ],
+          "rootstock": "Mahaleb, as nurseries sell it",
+          "self_fertile": true,
+          "role": "Late-blooming tart pie cherry; ripe about two weeks after Montmorency",
+          "caution": "Cummins calls it somewhat resistant to canker and brown rot, which is a nursery claim and not a trial. Tart cherries do not pollinate sweet cherries."
+        },
+        {
+          "id": "meteor",
+          "type": "Cherry",
+          "method": "buy",
+          "cultivar": "Meteor",
+          "code": "MET",
+          "profile": "cherry-meteor",
+          "quantity": 2,
+          "spots": [
+            "R9-C12",
+            "R9-C13"
+          ],
+          "rootstock": "Mahaleb (the dwarf size, 10 to 12 ft, is genetic)",
+          "self_fertile": true,
+          "role": "Dwarf Minnesota tart cherry that you can pick without a ladder",
+          "caution": "Sources disagree on ripening: about a week after Montmorency, in early July (Cummins and the University of Minnesota), or late July (Intermountain's table). No source gives it a bacterial canker rating."
+        },
+        {
+          "id": "carmine-jewel",
+          "type": "Cherry",
+          "method": "buy",
+          "cultivar": "Carmine Jewel",
+          "code": "CJL",
+          "profile": "cherry-carmine-jewel",
+          "quantity": 2,
+          "spots": [
+            "R10-C12",
+            "R10-C13"
+          ],
+          "rootstock": "Usually sold on its own roots (it is a bush of 6 to 12 ft, not a tree)",
+          "self_fertile": true,
+          "role": "Very hardy tart bush cherry (zone 2 to 3), a multi-stemmed shrub of about 6 to 12 ft",
+          "caution": "One Green World warns that bacterial canker can still damage it. It is a shrub, so it stands lower than the cherry trees beside it."
+        },
+        {
+          "id": "skeena",
+          "type": "Cherry",
+          "method": "buy",
+          "cultivar": "Skeena",
+          "code": "SKN",
+          "profile": "cherry-skeena",
+          "quantity": 2,
+          "spots": [
+            "R9-C10",
+            "R9-C11"
+          ],
+          "rootstock": "Mazzard, the least canker-susceptible; avoid Gisela 6",
+          "self_fertile": true,
+          "cherry_chart": {
+            "group": null,
+            "bloom": 4
+          },
+          "role": "Very large, very firm dark sweet cherry; ripe 12 to 15 days after Bing",
+          "caution": "Hardiness is the thinnest margin in the cherry block: the only figure found is a retailer's zone 5 to 9 (about -10 F), milder than zone 5a's usual low, and WSU gives none. No trial rates its bacterial canker resistance. Birds need netting."
+        },
+        {
+          "id": "whitegold",
+          "type": "Cherry",
+          "method": "buy",
+          "cultivar": "WhiteGold",
+          "code": "WGC",
+          "profile": "cherry-whitegold",
+          "quantity": 1,
+          "spots": [
+            "R9-C9"
+          ],
+          "rootstock": "Mazzard, the least canker-susceptible; Cummins sells it on Mahaleb",
+          "self_fertile": true,
+          "cherry_chart": {
+            "group": null,
+            "bloom": 4
+          },
+          "role": "Cold-hardy yellow sweet cherry from Cornell",
+          "caution": "Cummins and Stark call it very resistant to bacterial canker, a nursery claim that WSU's trial list does not confirm. Cummins showed it sold out for spring 2027 in mid-October, so confirm stock elsewhere (Stark Bro's lists it). Birds need netting."
+        },
+        {
+          "id": "mount-royal",
+          "type": "Plum",
+          "method": "buy",
+          "cultivar": "Mount Royal",
+          "code": "MTR",
+          "profile": "plum-mount-royal",
+          "quantity": 3,
+          "spots": [
+            "R11-C4",
+            "R11-C5",
+            "R11-C6"
+          ],
+          "rootstock": "Semi-dwarf tree (Raintree sells it as a semi-dwarf)",
+          "self_fertile": true,
+          "role": "Hardy blue European plum (zone 4 to 7) that ripens in August, before Italian plum",
+          "caution": "Bloom timing and black knot rating were not documented. The apricots beside it carry bacterial canker, so buy clean stock."
+        },
+        {
+          "id": "stanley",
+          "type": "Plum",
+          "method": "buy",
+          "cultivar": "Stanley",
+          "code": "STN",
+          "profile": "plum-stanley",
+          "quantity": 3,
+          "spots": [
+            "R12-C3",
+            "R12-C4",
+            "R12-C5"
+          ],
+          "rootstock": "Semi-dwarf tree",
+          "self_fertile": true,
+          "role": "Late-blooming prune plum (zone 5 to 7) that eats fresh and dries; ripe in early September",
+          "caution": "Penn State rates Stanley very susceptible to black knot, so prune knots out in winter. Early September is close to the limit in a 70-day season."
+        },
+        {
+          "id": "damson",
+          "type": "Plum",
+          "method": "buy",
+          "cultivar": "Damson",
+          "code": "DMS",
+          "profile": "plum-damson",
+          "quantity": 1,
+          "spots": [
+            "R12-C8"
+          ],
+          "rootstock": "Semi-dwarf tree",
+          "self_fertile": true,
+          "role": "Tart blue jam and baking plum (zone 4 to 8), ripe in September",
+          "caution": "Sources disagree on its black knot resistance and on whether it ripens before or after Stanley."
+        },
+        {
+          "id": "seckel",
+          "type": "Pear",
+          "method": "buy",
+          "cultivar": "Seckel",
+          "code": "SKL",
+          "profile": "pear-seckel",
+          "quantity": 1,
+          "spots": [
+            "R8-C13"
+          ],
+          "rootstock": "Semi-dwarf; ask for OHxF 87 or another fire-blight-resistant stock",
+          "self_fertile": false,
+          "pear_bloom": [
+            "Early-mid (Stark Bro's)",
+            "early",
+            "mid"
+          ],
+          "not_pollinated_by": [
+            "Bartlett",
+            "Red Bartlett"
+          ],
+          "role": "Small, very sweet, fire-blight-resistant 'sugar pear', ripe in September",
+          "caution": "Only partly self-fertile. Stark Bro's says Seckel is not a suitable pollinator for Bartlett, so the two Bartlett trees are not counted as its partners; it relies on Comice at 18 ft and, a little farther off, Anjou and Starking Delicious."
         }
       ]
     },

@@ -95,7 +95,8 @@ CREATE TABLE cultivar_group_note_sources (
 ) STRICT;
 CREATE TABLE planting_plan_items (
     id TEXT PRIMARY KEY, plan_year INTEGER NOT NULL,
-    type TEXT NOT NULL CHECK (type IN ('Apple', 'Pear', 'Cherry', 'Peach')), cultivar TEXT NOT NULL,
+    type TEXT NOT NULL CHECK (type IN ('Apple', 'Pear', 'Cherry', 'Peach', 'Plum', 'Apricot')), cultivar TEXT NOT NULL,
+    method TEXT NOT NULL CHECK (method IN ('buy', 'graft')),
     code TEXT NOT NULL UNIQUE, profile_id TEXT NOT NULL REFERENCES cultivar_profiles(id),
     quantity INTEGER NOT NULL CHECK (quantity > 0), rootstock TEXT NOT NULL,
     flowering_group INTEGER, ploidy TEXT, self_fertile INTEGER CHECK (self_fertile IN (0, 1)),
@@ -199,7 +200,7 @@ WHERE l.orchard_row IS NOT NULL;
 
 CREATE VIEW planned_spots AS
 SELECT s.name AS spot, s.orchard_row, s.orchard_column, s.site_ref, s.state, s.replacement_type,
-       i.plan_year, i.type, i.cultivar, i.profile_id, i.rootstock, i.role
+       i.plan_year, i.type, i.method, i.cultivar, i.profile_id, i.rootstock, i.role
 FROM planting_plan_spots p
 JOIN planting_plan_items i ON i.id = p.item_id
 JOIN orchard_spots s ON s.id = p.location_id;
