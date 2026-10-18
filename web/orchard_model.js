@@ -1,7 +1,7 @@
 (function (root) {
   'use strict';
 const { C1_GUILDS } = root.ORCHARD_DATA;
-const { PLAN_DATE, STATUS_DATE, FRUIT_SHEET, INVENTORY, INVENTORY_MATCH, TYPE_ORDER, BLOCK_ROWS, SHARED_ROWS, RESERVED_ROWS, ORCHARD_ROWS, ROW_PLAN, GRID_COLUMNS, PLOT_WIDTH, EAST_SIDE, PLOT_DEPTH, TREE_SPACING, ROW_SPACING, LOCAL_RADIUS, ORCHARD_WEST_SETBACK, JUNIPER_DISTANCE, WINDBREAK, EAST_HEDGE, OWNER_NOTES, ORCHARD_UPDATES, PLANTED_ROOTSTOCKS, ROOTSTOCK_LABELS, GENERATED_CODES, FAMILY_OVERRIDES, APPLE_ALIASES, HARRISON_BLOOM_RESEARCH, APPLE_BLOOM_RESEARCH, URBAN_APPLE_ROWS, PEAR_BLOOM, CHERRY_CHART, PLANT_LOCATIONS, UNIDENTIFIED_APPLES, UNIDENTIFIED_STONE_FRUIT } = root.ORCHARD_DATA;
+const { PLAN_DATE, STATUS_DATE, FRUIT_SHEET, INVENTORY, INVENTORY_MATCH, TYPE_ORDER, BLOCK_ROWS, SHARED_ROWS, RESERVED_ROWS, ORCHARD_ROWS, ROW_PLAN, GRID_COLUMNS, PLOT_WIDTH, EAST_SIDE, PLOT_DEPTH, TREE_SPACING, ROW_SPACING, LOCAL_RADIUS, ORCHARD_WEST_SETBACK, JUNIPER_DISTANCE, WINDBREAK, EAST_HEDGE, OWNER_NOTES, ORCHARD_UPDATES, PLANTED_ROOTSTOCKS, ROOTSTOCK_LABELS, GENERATED_CODES, FAMILY_OVERRIDES, APPLE_ALIASES, HARRISON_BLOOM_RESEARCH, APPLE_BLOOM_RESEARCH, URBAN_APPLE_ROWS, PEAR_BLOOM, CHERRY_CHART, PLANTING_PLAN, PLANT_LOCATIONS, UNIDENTIFIED_APPLES, UNIDENTIFIED_STONE_FRUIT } = root.ORCHARD_DATA;
 const FRUIT_BY_ROW = new Map(FRUIT_SHEET.map(([sourceRow, quantity, fruit, name, code, rootstock, fertility, pollenQuality, ploidy, fg, pollenizers]) =>
   [sourceRow, { sourceRow, quantity, fruit, name, code, rootstock, fertility, pollenQuality, ploidy, fg, pollenizers }]));
 const INVENTORY_BY_ROW = new Map(INVENTORY.map(line => [line[0], line]));
@@ -354,14 +354,14 @@ function compatiblePair(recipient, donor) {
     if (recipient.sourceRow === 106 && donor.sourceRow === 100) {
       return { basis:'Nursery-recommended Parker for Summercrisp; confirm local bloom' };
     }
-    const a = PEAR_BLOOM[recipient.sourceRow];
-    const b = PEAR_BLOOM[donor.sourceRow];
+    const a = recipient.pearBloom || PEAR_BLOOM[recipient.sourceRow];
+    const b = donor.pearBloom || PEAR_BLOOM[donor.sourceRow];
     if (!a || !b || !a.slice(1).some(period => b.slice(1).includes(period))) return null;
     return { basis:'Pear bloom-chart candidate; confirm compatibility' };
   }
   if (recipient.type === 'Cherry') {
-    const a = CHERRY_CHART[recipient.sourceRow];
-    const b = CHERRY_CHART[donor.sourceRow];
+    const a = recipient.cherryChart || CHERRY_CHART[recipient.sourceRow];
+    const b = donor.cherryChart || CHERRY_CHART[donor.sourceRow];
     if (!a || !b || (a.group && a.group === b.group) || Math.abs(a.bloom - b.bloom) > 1) return null;
     if ([53,54].includes(recipient.sourceRow) && donor.sourceRow === 65) return null;
     return { basis:'Cherry compatibility + bloom chart; confirm local overlap' };
@@ -401,6 +401,33 @@ function plan() {
   const rows = layoutRows(ROW_PLAN, records);
   records.sort((a, b) => a.r - b.r || a.c - b.c);
   return { records, rows };
+}
+// The recommended plantings for the open spots (PLANTING_PLAN). A planned tree stands in for a cultivar that is not bought
+// yet, so the pollination rules above can say who would pollinate it. Planned trees never change the results for living trees.
+const PLANNED_ITEMS = PLANTING_PLAN ? PLANTING_PLAN.items : [];
+function plannedSpots() {
+  return PLANNED_ITEMS.flatMap(item => item.spots.map(spot => {
+    const [, r, c] = /^R(\d+)-C(\d+)$/.exec(spot);
+    return { spot, r:Number(r), c:Number(c), item };
+  }));
+}
+function plannedAt(r, c) {
+  return plannedSpots().find(entry => entry.r === r && entry.c === c) || null;
+}
+function plannedTrees() {
+  return plannedSpots().map(({ spot, r, c, item }) => ({
+    id:`plan-${item.id}-${spot}`, planned:true, spot, r, c,
+    x:(c - 1) * TREE_SPACING + (r % 2 === 0 ? TREE_SPACING / 2 : 0), y:(r - 1) * ROW_SPACING,
+    type:item.type, fruit:item.type, name:item.cultivar, code:item.code, family:`plan-${item.id}`, sourceRow:null,
+    planningFg:item.flowering_group ?? null, planningPloidy:item.ploidy || '', pollenQuality:'', listedPartners:new Set(),
+    appleBloom:null, pearAsian:false, pearBloom:item.pear_bloom, cherryChart:item.cherry_chart, selfFertile:!!item.self_fertile
+  }));
+}
+// Partners within the local radius for each planned tree, drawn from the living orchard trees and the other planned trees.
+function plannedPollination(records) {
+  const planned = plannedTrees();
+  const pool = records.filter(tree => tree.r != null).concat(planned);
+  return planned.map(tree => ({ tree, partners:nearestPartners(tree, pool).filter(partner => partner.distance <= LOCAL_RADIUS) }));
 }
 // The untagged trees of one inventory line and the purchases they could still be, with the tagged trees to compare each against.
 function unidentifiedLine(info) {
@@ -448,5 +475,5 @@ function unidentifiedApples() {
 function unidentifiedStoneFruit() {
   return { info:UNIDENTIFIED_STONE_FRUIT, lines:UNIDENTIFIED_STONE_FRUIT.lines.map(unidentifiedLine) };
 }
-root.OrchardModel = { PLAN_DATE, STATUS_DATE, FRUIT_SHEET, INVENTORY, INVENTORY_MATCH, TYPE_ORDER, BLOCK_ROWS, SHARED_ROWS, RESERVED_ROWS, ORCHARD_ROWS, ROW_PLAN, GRID_COLUMNS, PLOT_WIDTH, EAST_SIDE, PLOT_DEPTH, TREE_SPACING, ROW_SPACING, LOCAL_RADIUS, ORCHARD_WEST_SETBACK, JUNIPER_DISTANCE, WINDBREAK, C1_GUILDS, EAST_HEDGE, OWNER_NOTES, ORCHARD_UPDATES, PLANTED_ROOTSTOCKS, ROOTSTOCK_LABELS, GENERATED_CODES, FAMILY_OVERRIDES, APPLE_ALIASES, HARRISON_BLOOM_RESEARCH, APPLE_BLOOM_RESEARCH, URBAN_APPLE_ROWS, PEAR_BLOOM, CHERRY_CHART, FRUIT_BY_ROW, INVENTORY_BY_ROW, ORCHARD_X0, RESERVED, fruitRecord, inventoryLine, rootstockRemaining, normalizeName, placementOf, buildOrchardTrees, balancedRows, blockShape, sharedGroupOf, blockColumns, rowTemplate, layoutRows, lineCount, layoutPlantRow, windbreakLayout, eastHedgeLayout, alleyGeometry, laneGeometry, guildLayout, treeDistance, needsTwoDonors, compatiblePair, nearestPartners, PLANT_LOCATIONS, plan, UNIDENTIFIED_APPLES, unidentifiedApples, UNIDENTIFIED_STONE_FRUIT, unidentifiedStoneFruit };
+root.OrchardModel = { PLAN_DATE, STATUS_DATE, FRUIT_SHEET, INVENTORY, INVENTORY_MATCH, TYPE_ORDER, BLOCK_ROWS, SHARED_ROWS, RESERVED_ROWS, ORCHARD_ROWS, ROW_PLAN, GRID_COLUMNS, PLOT_WIDTH, EAST_SIDE, PLOT_DEPTH, TREE_SPACING, ROW_SPACING, LOCAL_RADIUS, ORCHARD_WEST_SETBACK, JUNIPER_DISTANCE, WINDBREAK, C1_GUILDS, EAST_HEDGE, OWNER_NOTES, ORCHARD_UPDATES, PLANTED_ROOTSTOCKS, ROOTSTOCK_LABELS, GENERATED_CODES, FAMILY_OVERRIDES, APPLE_ALIASES, HARRISON_BLOOM_RESEARCH, APPLE_BLOOM_RESEARCH, URBAN_APPLE_ROWS, PEAR_BLOOM, CHERRY_CHART, PLANTING_PLAN, FRUIT_BY_ROW, INVENTORY_BY_ROW, ORCHARD_X0, RESERVED, fruitRecord, inventoryLine, rootstockRemaining, normalizeName, placementOf, buildOrchardTrees, balancedRows, blockShape, sharedGroupOf, blockColumns, rowTemplate, layoutRows, lineCount, layoutPlantRow, windbreakLayout, eastHedgeLayout, alleyGeometry, laneGeometry, guildLayout, treeDistance, needsTwoDonors, compatiblePair, nearestPartners, PLANT_LOCATIONS, plan, plannedSpots, plannedAt, plannedTrees, plannedPollination, UNIDENTIFIED_APPLES, unidentifiedApples, UNIDENTIFIED_STONE_FRUIT, unidentifiedStoneFruit };
 })(typeof window !== 'undefined' ? window : globalThis);

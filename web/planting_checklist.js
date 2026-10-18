@@ -31,7 +31,9 @@
       const replacement = update.replacementType === 'Tree' ? 'tree' : `${update.replacementType.toLowerCase()} tree`;
       const outside = update.status === 'outside-orchard' ?
         `Planned outside the orchard; current SiteRef: ${root.ORCHARD_DATA.PLANT_LOCATIONS[tree.id]?.site_ref || 'PENDING'}. ` : '';
-      treeName.append(element('div', `${outside}Leave this spot open; plant a new ${replacement} in ${update.replacementYear} (variety not yet chosen).`, 'source-note'));
+      const planned = root.OrchardModel && root.OrchardModel.plannedAt(tree.r, tree.c);
+      const variety = planned ? `planned: ${planned.item.cultivar}` : 'variety not yet chosen';
+      treeName.append(element('div', `${outside}Leave this spot open; plant a new ${replacement} in ${update.replacementYear} (${variety}).`, 'source-note'));
     }
     if (tree.rootstockOnly) treeName.append(element('div', 'Already planted; scion cultivar not yet recorded.', 'source-note'));
     const profile = !update && root.CultivarLibrary ? root.CultivarLibrary.forInventoryRow(tree.invRow) : null;

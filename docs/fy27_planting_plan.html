@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2027 Planting Plan: Open Spots, Cultivars, and Buy List</title>
+<style>
+  :root {
+    --text: #20251f;
+    --muted: #555d54;
+    --border: #9da59c;
+    --header: #e8eee6;
+    --row: #f7f9f6;
+    --accent: #3b6d11;
+    --green: #e3f1e6;
+    --green-line: #3e7b50;
+    --green-ink: #1b4d2b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    max-width: 8.5in;
+    margin: 0 auto;
+    padding: 0.45in;
+    color: var(--text);
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+    line-height: 1.3;
+  }
+  h1 { margin: 0 0 0.08in; font-size: 18pt; line-height: 1.1; }
+  h2 { margin: 0.22in 0 0.08in; padding-bottom: 0.03in; border-bottom: 2px solid var(--accent); font-size: 13pt; break-after: avoid; }
+  h3 { margin: 0.12in 0 0.04in; font-size: 10.5pt; break-after: avoid; }
+  p { margin: 0 0 0.07in; }
+  ul { margin: 0 0 0.07in; padding-left: 0.22in; }
+  li { margin: 0 0 0.03in; }
+  a { color: var(--accent); }
+  .subtitle { margin: 0 0 0.14in; color: var(--muted); font-size: 9.5pt; }
+  .print-help { margin: 0 0 0.14in; padding: 0.1in 0.15in; background: #fff3cd; border: 1px solid #d6b656; }
+  .error { color: #8b1e16; background: #fbe9e7; border: 1px solid #d78d86; padding: 0.12in; font-weight: bold; }
+  .how {
+    margin: 0 0 0.14in; padding: 0.1in 0.15in; border: 1px solid var(--border); border-left: 4px solid var(--accent);
+    background: var(--row); font-size: 9pt;
+  }
+  .how p { margin: 0; }
+  .how p + p { margin-top: 0.05in; }
+  table { width: 100%; border-collapse: collapse; font-size: 8.5pt; margin: 0.05in 0 0.1in; }
+  th, td { border: 1px solid var(--border); padding: 0.03in 0.06in; text-align: left; vertical-align: top; }
+  th { background: var(--header); }
+  tr { break-inside: avoid; }
+  td.num, th.num { text-align: center; }
+  .small { color: var(--muted); font-size: 8pt; line-height: 1.25; }
+  .map { table-layout: fixed; font-size: 7.5pt; }
+  .map th, .map td { text-align: center; padding: 0.025in 0.01in; }
+  .map th:first-child { width: 0.42in; }
+  .map td.tree { color: #424b54; background: #fff; }
+  .map td.empty { color: #9aa29a; background: var(--row); }
+  .map td.planned { background: var(--green); border: 1.5px solid var(--green-line); color: var(--green-ink); font-weight: bold; }
+  .map td.held { border-style: dashed; }
+  .key { display: inline-block; width: 0.14in; height: 0.14in; vertical-align: middle; border: 1.5px solid var(--green-line); background: var(--green); }
+  .key.tree { border: 1px solid var(--border); background: #fff; }
+  .key.held { border-style: dashed; }
+  .badge {
+    display: inline-block; padding: 0 0.06in; border: 1px solid var(--green-line); background: var(--green); color: var(--green-ink);
+    font-size: 7.5pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.2px;
+  }
+  .callout { margin: 0.05in 0 0.1in; padding: 0.07in 0.12in; border: 1px solid var(--border); border-left: 4px solid #c2412f; background: #fdf3f0; font-size: 9pt; }
+  .callout p:last-child { margin-bottom: 0; }
+  [hidden] { display: none !important; }
+  .keep { break-inside: avoid; }
+  .home-link { margin: 0 0 0.1in; font-size: 9.5pt; }
+  @page { size: 8.5in 11in; margin: 0.38in; }
+  @media print {
+    body { max-width: none; margin: 0; padding: 0; font-size: 8.5pt; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    h1 { font-size: 16pt; }
+    h2 { margin-top: 0.14in; }
+    .print-help, .home-link { display: none; }
+    table { font-size: 7.6pt; }
+    th, td { padding: 0.02in 0.05in; }
+    .map { font-size: 7pt; }
+    a { color: inherit; text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+<nav class="home-link" aria-label="Back to the home page"><a href="index.html">← Mountain Prairie Acres — Orchard and Ranch Projects</a></nav>
+<h1>2027 Planting Plan</h1>
+<p class="subtitle" id="subtitle"></p>
+
+<div class="print-help"><strong>Print setup:</strong> Letter (8.5 × 11 in), portrait, 100% scale. Turn off browser headers and footers.</div>
+
+<p id="load-error" class="error" role="alert" hidden></p>
+<noscript><p class="error">JavaScript is required to load the planting plan.</p></noscript>
+
+<section class="how" aria-label="About this plan">
+  <p><strong>What this is:</strong> the recommended cultivar for each spot left open for 2027, chosen for a short-season U-pick orchard at about 4,750 ft: the three Urban-apple spots, the dead pear, cherry, and peach spots, and the empty apple positions at the east end of R6. Every cultivar links to its profile in the <a href="cultivar_guide.html">cultivar guide</a>, with sources.</p>
+  <p><strong>Status:</strong> recommended, not bought, not planted. Chosen so far: Harrow Delight pear, Black Gold cherry on Mazzard, Intrepid peach, and the apple mix below; the trees will be bought rather than grafted. The planned trees are not counted as pollen partners on the <a href="orchard_pollination_grid.html">pollination grid</a> until they are in the ground.</p>
+</section>
+
+<h2>Buy list</h2>
+<div id="buy-list"></div>
+<p class="small" id="buy-notes"></p>
+
+<section class="keep">
+<h2>Where they go</h2>
+<p>Draft placement, rows listed south to north as in the planting map. C1 is the west end of each row and C13 the east end by the driveway; every other row is staggered half a spot. Where it works, same-cultivar trees sit side by side for signage and easy picking: the Williams' Pride trio and two of the three Freedom. The other cultivars are split between the west and east halves, and the east end (C11 to C13) gets three different group-3 apples because it has the fewest pollen partners.</p>
+<div id="map"></div>
+<p class="small"><span class="key"></span> planned 2027 cultivar code &nbsp; <span class="key held"></span> a spot held open for a dead or relocated tree &nbsp; <span class="key tree"></span> tree already on hand, by its code. Codes: <span id="codes"></span>.</p>
+</section>
+
+<h2>Pollination check</h2>
+<p>Using the pollination grid's rules: partners are other cultivars within 50 ft that bloom in the same or an adjacent period and are compatible (apples: diploid donors whose flowering group is within one of the tree's own; cherries and pears: the bloom charts on the grid page). Living trees and the other planned trees count.</p>
+<div id="pollination"></div>
+<p class="small" id="pollination-notes"></p>
+
+<h2>Season fit</h2>
+<p id="season-text"></p>
+<div id="season"></div>
+<p class="small">Bands are relative to a cool northern apple harvest: Early before about Sept 10, Mid about Sept 10 to Oct 5, Late about Oct 5 to 25, Very late after Oct 25 (see the <a href="cultivar_guide.html">guide</a>). Unidentified apples are not banded.</p>
+
+<h2>Why these picks</h2>
+<h3>The site</h3>
+<ul>
+  <li>About 4,750 ft, nearly flat; Simonton loam with soil pH about 6.2; 12 to 16 in of precipitation, with July and August almost dry (see the <a href="orchard_water_harvesting_plan.html">water-harvesting plan</a>).</li>
+  <li>NRCS lists only <strong>60 to 100 frost-free days</strong> for this soil's setting. The four NOAA stations serving Elmore County share an 80-day season, and the longest single station allows 160 days; the nearest similar-elevation station (Hill City, 5,100 ft) has a median season of 111 days. Best estimate here: 70 to 110 days and USDA zone 5a to 5b. Sources disagree and the USDA map was not checked for this exact point, so treat these as estimates, not readings.</li>
+  <li>In general, bloom-frost risk runs worst to best from apricot to peach, sweet cherry, pear, and apple (a general horticultural ranking, not something measured here). That is why apples carry the plan and the three replacements are chosen for hardiness: late bloom or frost-tolerant buds.</li>
+</ul>
+<h3>What a U-pick orchard needs</h3>
+<ul>
+  <li>Fruit people eat off the tree, a harvest that stretches over weeks (the orchard had four early apples), trees small enough to pick without ladders, and few sprays. That points to semi-dwarf trees and disease-resistant cultivars.</li>
+  <li>Sweet cherries and European pears are the harder U-pick crops (birds and splitting; pears are picked hard and ripen off the tree), so the single replacement trees are a modest bet, not a block.</li>
+</ul>
+<h3>Bacterial canker in the stone fruit</h3>
+<div class="callout" id="canker"></div>
+<h3>Suggestions not followed</h3>
+<ul>
+  <li><strong>Encore peach</strong> topped the first round of research for being the latest ripener. It ripens in fall, after Elberta, which is already a gamble here, so Intrepid replaces it.</li>
+  <li><strong>Gisela 6 cherry rootstock</strong> was suggested for Black Gold. The Intermountain Tree Fruit Production Guide lists Gisela 6 as the most bacterial-canker-susceptible rootstock and Mazzard as the least, so the plan says Mazzard.</li>
+</ul>
+
+<h2>Alternates and what to avoid</h2>
+<table>
+  <thead><tr><th>Spot</th><th>Picked</th><th>Alternates</th><th>Avoid</th></tr></thead>
+  <tbody>
+    <tr><td>13 apple spots</td><td>The six-cultivar mix above</td><td>Redfree (August, very rust resistant, but soft and the only confirmed source was Canadian). Honeygold is a poor fit: fire blight very susceptible and rust susceptible, with junipers on site.</td><td>Braeburn: susceptible to scab, fire blight, rust, and mildew, and needs a long warm fall (one Braeburn is already in the orchard plan at R2-C2).</td></tr>
+    <tr><td>R8-C1 pear</td><td>Harrow Delight</td><td>Potomac; Magness (pollen-sterile, so it needs a partner and pollinates nothing)</td><td>Pineapple again (the first one died; cause unknown)</td></tr>
+    <tr><td>R9-C2 cherry</td><td>Black Gold on Mazzard</td><td>WhiteGold (self-fertile, zone 5 to 7, resists brown rot and canker; blooms earlier than Black Gold, so it would add a second pollen source for the Bing trees); Skeena</td><td>Royalton again (it died); Gisela 6 rootstock</td></tr>
+    <tr><td>R11-C10 peach</td><td>Intrepid</td><td>Madison (late August, hardy buds)</td><td>Encore (ripens too late); J.H. Hale again (it died)</td></tr>
+  </tbody>
+</table>
+<p class="small">Not checked yet: extra Honeycrisp or Zestar for name recognition, Spartan, SnowSweet, and tart cherries and plums for the other empty positions and R13 to R15.</p>
+
+<h2>Ripening watch: apples you already have</h2>
+<p>These apples ripen very late, after about Oct 25 in a cool northern climate. With 70 to 110 frost-free days they may not ripen reliably here. Watch them for the first few crops; any that cannot ripen before the hard freeze can be top-worked (grafted over) to an early or mid-season cultivar.</p>
+<div id="watch"></div>
+<p class="small">Braeburn at R2-C2 belongs on this watch list too: its band is Late, but it is disease-susceptible and wants a long warm fall. Golden Delicious, Idared, Red Delicious, and Mutsu are less likely to be a problem: the Intermountain Tree Fruit Production Guide's apple table, written for Utah, lists them as cold hardy with September to October harvests. Prairie has a shorter season than most of Utah, so treat that as encouraging, not proof.</p>
+
+<h2>Sources and caveats</h2>
+<ul class="small">
+  <li>Site: <a href="soil/WebSoilSurvey_PrairieID.pdf">NRCS Web Soil Survey report</a> (soil pH, frost-free period); <a href="https://usgrowersguide.com/county/elmore-county-id">US Growers Guide: Planting zones in Elmore County, Idaho</a> (zones 5a to 7a; last spring freeze May 1 to June 16 and first fall freeze Sept 4 to Oct 8 across four NOAA stations); <a href="https://bield.app/farm/frost-dates/idaho/elmore-county">Bield: Elmore County frost dates</a> (Hill City 1 W, 5,100 ft: median last frost May 30, first fall frost Sept 18, 111 days, zone 5b); <a href="https://www.uidaho.edu/extension/publications/bul-0867">University of Idaho Extension: backyard tree fruit in harsher climates</a> (apples, apricots, cherries, pears, and plums can be grown in short-season zones with the right cultivars).</li>
+  <li>Cherries: <a href="https://extension.oregonstate.edu/catalog/em-9484-sweet-cherry-compatibility-bloom-timing-chart-commercial-growers">Oregon State Extension: sweet cherry compatibility and bloom timing chart</a> (Black Gold in pollination period IV; Bing and Stella in II; Lapins in I); <a href="https://intermountainfruit.org/dbm/bac-canker">Intermountain Tree Fruit Production Guide: bacterial canker</a> (rootstocks and copper sprays).</li>
+  <li>Apples: <a href="https://intermountainfruit.org/fruit-tables/apple">Intermountain Tree Fruit Production Guide: apple varieties for Utah</a> (harvest times and hardiness for Golden Delicious, Idared, Red Delicious, Mutsu, and Haralson).</li>
+  <li>Cultivar facts, ratings, and ripening dates are in each profile's sources in the <a href="cultivar_guide.html">cultivar guide</a>. The flowering groups for Williams' Pride, Freedom, and Pristine are planning values that no source confirmed; Dayton's and Priscilla's come from Cummins, and sources disagree on Haralson's (Roots to Fruits says group 4). Sources also disagree on Pristine's ripening, zone, and rust rating. The buy list says so.</li>
+  <li>Confirm that each nursery ships the item to Idaho and offers the rootstock you want before ordering. This plan does not pick nurseries.</li>
+</ul>
+
+<script>
+window.addEventListener('error', event => {
+  const notice = document.getElementById('load-error');
+  notice.textContent = `The planting plan could not be completed: ${event.message}`;
+  notice.hidden = false;
+});
+</script>
+<script src="data/orchard_model.js"></script>
+<script src="data/cultivar_library.js"></script>
+<script>
+const element = (tag, text, className) => {
+  const node = document.createElement(tag);
+  if (text !== undefined) node.textContent = text;
+  if (className) node.className = className;
+  return node;
+};
+const { PLANTING_PLAN, plannedSpots, plannedAt, plannedPollination, plan, GRID_COLUMNS, LOCAL_RADIUS, PLANT_LOCATIONS } = OrchardModel;
+if (!PLANTING_PLAN) throw new Error('This build has no planting plan.');
+const data = ORCHARD_DATA;
+const library = CultivarLibrary;
+const { records, rows } = plan();
+const spots = plannedSpots();
+const PLURAL = { Apple: 'apples', Pear: 'pears', Cherry: 'cherries', Peach: 'peaches' };
+const TYPE_ORDER = ['Apple', 'Pear', 'Cherry', 'Peach'];
+const BANDS = ['Early', 'Mid', 'Late', 'Very late'];
+const num = (count, type) => `${count} ${count === 1 ? type.toLowerCase() : PLURAL[type]}`;
+const profileOf = item => library.byId(item.profile);
+const guideLink = (text, profile) => {
+  const link = element('a', text);
+  link.href = library.guideHref(profile);
+  return link;
+};
+const table = (headers, bodyRows, className) => {
+  const node = element('table', undefined, className);
+  const head = element('thead');
+  const headRow = element('tr');
+  headers.forEach(header => headRow.append(element('th', header)));
+  head.append(headRow);
+  const body = element('tbody');
+  bodyRows.forEach(cells => {
+    const row = element('tr');
+    cells.forEach(cell => {
+      const td = element('td');
+      td.append(cell);
+      row.append(td);
+    });
+    body.append(row);
+  });
+  node.append(head, body);
+  return node;
+};
+
+const counts = {};
+spots.forEach(({ item }) => { counts[item.type] = (counts[item.type] || 0) + 1; });
+const countText = TYPE_ORDER.filter(type => counts[type]).map(type => num(counts[type], type)).join(', ');
+document.getElementById('subtitle').textContent =
+  `${spots.length} open spots, ${PLANTING_PLAN.items.length} cultivars: ${countText}. ${PLANTING_PLAN.status}.`;
+
+// Buy list: one row per cultivar, apples first, earliest ripening first.
+const items = [...PLANTING_PLAN.items].sort((a, b) =>
+  TYPE_ORDER.indexOf(a.type) - TYPE_ORDER.indexOf(b.type) ||
+  (BANDS.indexOf(profileOf(a).ripening) + 1 || 9) - (BANDS.indexOf(profileOf(b).ripening) + 1 || 9) || a.cultivar.localeCompare(b.cultivar));
+const pollinationText = item => item.type === 'Apple' ? `Flowering group ${item.flowering_group}, ${item.ploidy.toLowerCase()}` :
+  item.self_fertile ? 'Self-fertile' : 'Needs a partner (not self-fertile)';
+document.getElementById('buy-list').append(table(
+  ['Cultivar', 'Trees and spots', 'Ripens', 'Rootstock', 'Pollination', 'Why, and cautions'],
+  items.map(item => {
+    const profile = profileOf(item);
+    const name = element('div');
+    name.append(element('strong', item.type + ': '), guideLink(item.cultivar, profile));
+    const why = element('div');
+    why.append(item.role + '.', element('div', item.caution, 'small'));
+    const ripens = element('span', profile.ripening || 'Not stated');
+    ripens.title = library.ripeningText(profile);
+    return [name, `${item.quantity}: ${item.spots.join(', ')}`, ripens, item.rootstock, pollinationText(item), why];
+  })));
+document.getElementById('buy-notes').textContent = `${spots.length} trees in all (${countText}). ${PLANTING_PLAN.rootstock_advice} ${PLANTING_PLAN.shipping_note}`;
+
+// Planting map: only the rows that have a planned spot.
+const mapRows = [...new Set(spots.map(entry => entry.r))].sort((a, b) => a - b);
+const mapTable = element('table', undefined, 'map');
+const mapHead = element('tr');
+mapHead.append(element('th', 'Row'));
+for (let c = 1; c <= GRID_COLUMNS; c++) mapHead.append(element('th', `C${c}`));
+const mapBody = element('tbody');
+mapRows.forEach(r => {
+  const line = element('tr');
+  line.append(element('th', `R${r}`));
+  for (let c = 1; c <= GRID_COLUMNS; c++) {
+    const cell = element('td');
+    const planned = plannedAt(r, c);
+    const tree = rows[r - 1].trees[c - 1];
+    const held = rows[r - 1].held.find(entry => entry.c === c);
+    if (planned) {
+      cell.className = 'planned' + (held ? ' held' : '');
+      cell.textContent = planned.item.code;
+      cell.title = `R${r}-C${c}: planned ${planned.item.cultivar}${held ? ` (${held.name} ${held.orchardUpdate.status === 'dead' ? 'died' : 'moved outside'})` : ''}`;
+    } else if (tree) {
+      cell.className = 'tree';
+      cell.textContent = tree.code;
+      cell.title = `R${r}-C${c}: ${tree.name}`;
+    } else {
+      cell.className = 'empty';
+      cell.textContent = '—';
+    }
+    line.append(cell);
+  }
+  mapBody.append(line);
+});
+const mapHeadWrap = element('thead');
+mapHeadWrap.append(mapHead);
+mapTable.append(mapHeadWrap, mapBody);
+document.getElementById('map').append(mapTable);
+document.getElementById('codes').textContent = items.map(item => `${item.code} = ${item.cultivar}`).join('; ');
+
+// Pollination: partners from the pollination grid's own rules.
+const planned = plannedPollination(records).sort((a, b) => a.tree.r - b.tree.r || a.tree.c - b.tree.c);
+document.getElementById('pollination').append(table(
+  ['Spot', 'Cultivar', 'Partners within 50 ft', 'Nearest partners'],
+  planned.map(({ tree, partners }) => {
+    const item = PLANTING_PLAN.items.find(entry => `plan-${entry.id}-${tree.spot}` === tree.id);
+    const nearest = partners.slice(0, 3).map(partner => `${partner.donor.name} (${Math.round(partner.distance)} ft)`).join(', ');
+    const self = item.type !== 'Apple' && item.self_fertile;
+    return [tree.spot, tree.name, self && !partners.length ? 'Self-fertile; none needed' : String(partners.length),
+      nearest || (self ? 'None counted' : 'None within 50 ft')];
+  })));
+const weakest = Math.min(...planned.filter(({ tree }) => tree.type === 'Apple').map(({ partners }) => partners.length));
+const cherry = planned.find(({ tree }) => tree.type === 'Cherry');
+const cherryPollinates = cherry ? records.filter(tree => tree.type === 'Cherry' && tree.r != null &&
+  OrchardModel.compatiblePair(tree, cherry.tree) && OrchardModel.treeDistance(tree, cherry.tree) <= LOCAL_RADIUS) : [];
+document.getElementById('pollination-notes').textContent =
+  `Every planned apple has at least ${weakest} partners. ` +
+  (cherry ? `${cherry.tree.name} is self-fertile and ${cherryPollinates.length ? `would also pollinate ${[...new Set(cherryPollinates.map(tree => tree.name))].join(', ')}` : 'blooms later than the Bing and Black Tartarian trees beside it, so it adds no pollen for them; they still depend on Lapins'}. ` : '') +
+  'Planned trees never change the partners shown for the trees already on the pollination grid.';
+
+// Season fit: apple harvest bands today and after the plan.
+const bandOf = tree => {
+  const profile = tree.invRow != null ? library.forInventoryRow(tree.invRow) : null;
+  return profile && profile.ripening ? profile.ripening : null;
+};
+const livingApples = records.filter(tree => tree.type === 'Apple' && tree.r != null && !tree.rootstockOnly && !tree.orchardUpdate);
+const tally = list => {
+  const result = { Early: 0, Mid: 0, Late: 0, 'Very late': 0, none: 0 };
+  list.forEach(band => { result[band || 'none'] += 1; });
+  return result;
+};
+const now = tally(livingApples.map(bandOf));
+const added = tally(spots.filter(({ item }) => item.type === 'Apple').map(({ item }) => profileOf(item).ripening));
+const bandCells = (label, tallies, total) => [label, ...BANDS.map(band => String(tallies[band])), String(tallies.none), String(total)];
+const totalNow = livingApples.length;
+const totalAdded = spots.filter(({ item }) => item.type === 'Apple').length;
+const after = Object.fromEntries(Object.keys(now).map(key => [key, now[key] + added[key]]));
+const lateNew = [...new Set(spots.filter(({ item }) => item.type === 'Apple' && profileOf(item).ripening === 'Late').map(({ item }) => item.cultivar))];
+document.getElementById('season-text').textContent =
+  `Only ${now.Early} of the ${totalNow} apples you already have ripen early, and ${now.Late + now['Very late']} ripen late or very late, which is a gamble with 60 to 100 frost-free days. ` +
+  `The new apples add ${added.Early} early, ${added.Mid} mid-season, and ${added.Late} late trees` +
+  `${lateNew.length ? `; the late ones (${lateNew.join(' and ')}) are the riskiest of the new picks, so the plan adds no more` : ''}.`;
+document.getElementById('season').append(table(
+  ['Apples', ...BANDS, 'Not identified', 'Total'],
+  [bandCells('Living trees now', now, totalNow), bandCells('New in 2027', added, totalAdded), bandCells('After the plan', after, totalNow + totalAdded)]));
+
+// Ripening watch: living apples in the Very late band, grouped by cultivar.
+const watch = new Map();
+livingApples.filter(tree => bandOf(tree) === 'Very late').forEach(tree => {
+  const profile = library.forInventoryRow(tree.invRow);
+  if (!watch.has(profile.id)) watch.set(profile.id, { profile, spots: [] });
+  watch.get(profile.id).spots.push(`R${tree.r}-C${tree.c}`);
+});
+document.getElementById('watch').append(table(
+  ['Cultivar', 'Trees', 'Ripening, from its profile'],
+  [...watch.values()].sort((a, b) => a.profile.name.localeCompare(b.profile.name)).map(({ profile, spots: where }) =>
+    [guideLink(profile.name, profile), `${where.length}: ${where.join(', ')}`, library.ripeningText(profile)])));
+
+// Bacterial canker note, from the inventory's own flags.
+const flagged = records.filter(tree => tree.psm && tree.type !== 'Apple');
+const flaggedTypes = {};
+flagged.forEach(tree => { flaggedTypes[tree.type] = (flaggedTypes[tree.type] || 0) + 1; });
+const canker = document.getElementById('canker');
+canker.append(element('p', `The inventory flags ${flagged.length} stone-fruit records as Pseudomonas (bacterial canker) positive and untreated: ${Object.entries(flaggedTypes).map(([type, n]) => `${n} ${n === 1 ? type.toLowerCase() : PLURAL[type] || type.toLowerCase() + 's'}`).join(', ')}. The dead Royalton cherry and J.H. Hale peach were among them. That is a pattern, not proof of why they died; the causes of all three losses are unknown.`),
+  element('p', 'So the replacements are chosen and handled with canker in mind: a cherry with reported canker resistance on Mazzard, buying clean certified stock, pruning only in dry weather, and dormant copper sprays at budbreak and leaf drop (Intermountain Tree Fruit Production Guide). Cold-air drainage, winter injury, and drought stress all make canker worse; see the water-harvesting plan for how the stone-fruit rows drain.'));
+</script>
+</body>
+</html>

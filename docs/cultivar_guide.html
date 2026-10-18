@@ -105,6 +105,7 @@
     text-transform: uppercase;
   }
   .badge.possible { border-color: #8b5a00; color: #6b4300; background: #fff3cd; }
+  .badge.planned { border-color: #2f6b3f; color: #1b4d2b; background: #e3f1e6; }
   .tagline { margin: 0.02in 0 0.04in; font-style: italic; color: var(--muted); }
   .summary { margin: 0 0 0.04in; }
   .quick { margin: 0 0 0.05in; font-size: 9pt; color: var(--ink); }
@@ -149,7 +150,7 @@
 <noscript><p class="error">JavaScript is required to load the cultivar library.</p></noscript>
 
 <section class="how" aria-label="How to read this guide">
-  <p><strong>What this is:</strong> short, plain-language profiles of the plants in the inventory, the purchase list, and your seed list: fruit, nut, and berry plants, windbreak and shade trees, perennials, and the ungrafted apple rootstocks. Tap a tree anywhere on this site to land on its profile, or search by name, alias, or metal tag.</p>
+  <p><strong>What this is:</strong> short, plain-language profiles of the plants in the inventory, the purchase list, your seed list, and the cultivars planned for the open 2027 spots: fruit, nut, and berry plants, windbreak and shade trees, perennials, and the ungrafted apple rootstocks. Tap a tree anywhere on this site to land on its profile, or search by name, alias, or metal tag.</p>
   <p><strong>Ripening</strong> is relative to each fruit type's own harvest window (Early, Mid, Late, Very late), with the actual timing noted. <strong>Basis</strong> says whether every claim is backed by the listed sources or partly comes from general knowledge. Bloom group, ploidy, and fertility come from your purchase sheet, not from these sources.</p>
   <p><strong>Habit, bark, and leaves</strong> appear only where a source describes that specific cultivar or species. The box at the top of each fruit group describes the type in general. Where a profile has nothing of its own, compare your tree with the tagged trees of the same type and write down what you see (see the ID log sheet and the data guide).</p>
 </section>
@@ -236,10 +237,14 @@ const total = profiles.length;
 const hasLivingPlants = profile => plantsOf(profile).some(plant => !plant.dead);
 const onHandCount = profiles.filter(hasLivingPlants).length;
 const deadCount = profiles.filter(profile => profile.inventory_rows.length && !hasLivingPlants(profile)).length;
+const planned = new Map((data.PLANTING_PLAN ? data.PLANTING_PLAN.items : []).map(item => [item.profile, item]));
+const planYear = data.PLANTING_PLAN ? data.PLANTING_PLAN.year : '';
+const plannedCount = profiles.filter(profile => !profile.inventory_rows.length && !profile.purchase_rows.length && planned.has(profile.id)).length;
 const purchasedCount = profiles.filter(profile => !profile.inventory_rows.length && profile.purchase_rows.length).length;
-const seedOnlyCount = profiles.filter(profile => !profile.inventory_rows.length && !profile.purchase_rows.length).length;
+const seedOnlyCount = profiles.filter(profile => !profile.inventory_rows.length && !profile.purchase_rows.length && !planned.has(profile.id)).length;
 const subtitleParts = [`${onHandCount} for plants on hand`];
 if (purchasedCount) subtitleParts.push(`${purchasedCount} for purchased plants that are not tagged yet`);
+if (plannedCount) subtitleParts.push(`${plannedCount} for cultivars planned for ${planYear} but not bought yet`);
 if (deadCount) subtitleParts.push(`${deadCount} for plants reported dead`);
 if (seedOnlyCount) subtitleParts.push(`${seedOnlyCount} for species on your seed list only`);
 document.getElementById('subtitle').textContent =
@@ -278,6 +283,7 @@ GROUPS.forEach(group => {
     const living = plants.filter(plant => !plant.dead);
     const tags = [...new Set(profile.inventory_rows.map(row => inventoryLine(row)[6]).filter(Boolean))];
     const possible = possibleIdentity.get(profile);
+    const plannedItem = planned.get(profile.id);
     const card = element('article', undefined, 'profile');
     card.id = profile.id;
     card.dataset.group = group;
@@ -294,6 +300,11 @@ GROUPS.forEach(group => {
     title.append(anchor);
     head.append(title, element('span', `${profile.type}${KIND_LABELS[profile.kind]}`, 'kind'));
     if (profile.ripening) head.append(element('span', profile.ripening, 'badge'));
+    if (plannedItem) {
+      const link = element('a', `Planned ${planYear}`, 'badge planned');
+      link.href = 'fy27_planting_plan.html';
+      head.append(link);
+    }
     if (possible) {
       const link = element('a', `Possible ${possible.tag} identity`, 'badge possible');
       link.href = possible.href;
@@ -337,8 +348,17 @@ GROUPS.forEach(group => {
       fact(facts, 'On hand', where);
     } else if (profile.purchase_rows.length) {
       fact(facts, 'On hand', 'None yet (purchased, not tagged).');
+    } else if (plannedItem) {
+      fact(facts, 'On hand', `None yet (planned for ${planYear}, not bought).`);
     } else {
       fact(facts, 'On hand', 'None. This species is on your seed list but is not in the inventory.');
+    }
+    if (plannedItem) {
+      const plan = element('div');
+      plan.append(`${plannedItem.quantity} ${plannedItem.quantity === 1 ? 'tree' : 'trees'} at ${plannedItem.spots.join(', ')}. ${plannedItem.role}.`);
+      plan.append(element('div', `Rootstock: ${plannedItem.rootstock}.`, 'small'));
+      plan.append(element('div', plannedItem.caution, 'small'));
+      fact(facts, `Planned for ${planYear}`, plan);
     }
     const purchases = element('div');
     profile.purchase_rows.forEach(row => {

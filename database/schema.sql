@@ -93,6 +93,18 @@ CREATE TABLE cultivar_group_note_sources (
     plant_group TEXT NOT NULL REFERENCES cultivar_group_notes(plant_group), position INTEGER NOT NULL,
     label TEXT NOT NULL, url TEXT NOT NULL, PRIMARY KEY (plant_group, position)
 ) STRICT;
+CREATE TABLE planting_plan_items (
+    id TEXT PRIMARY KEY, plan_year INTEGER NOT NULL,
+    type TEXT NOT NULL CHECK (type IN ('Apple', 'Pear', 'Cherry', 'Peach')), cultivar TEXT NOT NULL,
+    code TEXT NOT NULL UNIQUE, profile_id TEXT NOT NULL REFERENCES cultivar_profiles(id),
+    quantity INTEGER NOT NULL CHECK (quantity > 0), rootstock TEXT NOT NULL,
+    flowering_group INTEGER, ploidy TEXT, self_fertile INTEGER CHECK (self_fertile IN (0, 1)),
+    role TEXT NOT NULL, caution TEXT NOT NULL
+) STRICT;
+CREATE TABLE planting_plan_spots (
+    item_id TEXT NOT NULL REFERENCES planting_plan_items(id),
+    location_id TEXT NOT NULL UNIQUE REFERENCES locations(id), PRIMARY KEY (item_id, location_id)
+) STRICT;
 CREATE TABLE site_features (
     id TEXT PRIMARY KEY, name TEXT NOT NULL, feature_group TEXT NOT NULL, status TEXT NOT NULL,
     shape TEXT NOT NULL CHECK (shape IN ('rect', 'circle', 'line', 'point', 'polygon')),
@@ -184,6 +196,13 @@ SELECT l.*, a.plant_id,
             WHEN a.status IS NOT NULL THEN a.status ELSE 'open' END AS state
 FROM location_refs l LEFT JOIN plantings a ON a.location_id = l.id AND a.status IN ('planned', 'planted')
 WHERE l.orchard_row IS NOT NULL;
+
+CREATE VIEW planned_spots AS
+SELECT s.name AS spot, s.orchard_row, s.orchard_column, s.site_ref, s.state, s.replacement_type,
+       i.plan_year, i.type, i.cultivar, i.profile_id, i.rootstock, i.role
+FROM planting_plan_spots p
+JOIN planting_plan_items i ON i.id = p.item_id
+JOIN orchard_spots s ON s.id = p.location_id;
 
 CREATE VIEW plant_profiles AS
 SELECT p.id AS plant_id, b.metal_tag, b.type, b.variety AS inventory_name, p.plant_group, p.health_status,

@@ -527,7 +527,7 @@
       "orchard_column": 9,
       "reserved_for": null,
       "replacement_year": 2027,
-      "replacement_type": "Tree"
+      "replacement_type": "Apple"
     },
     {
       "id": "orchard-r4-c10",
@@ -670,7 +670,7 @@
       "orchard_column": 9,
       "reserved_for": null,
       "replacement_year": 2027,
-      "replacement_type": "Tree"
+      "replacement_type": "Apple"
     },
     {
       "id": "orchard-r5-c10",
@@ -681,7 +681,7 @@
       "orchard_column": 10,
       "reserved_for": null,
       "replacement_year": 2027,
-      "replacement_type": "Tree"
+      "replacement_type": "Apple"
     },
     {
       "id": "orchard-r5-c11",

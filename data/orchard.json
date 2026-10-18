@@ -1188,6 +1188,171 @@
         "mid"
       ]
     },
+    "PLANTING_PLAN": {
+      "year": 2027,
+      "status": "Recommended cultivars for the open 2027 spots; none are purchased yet",
+      "summary": "Chosen in October 2026 for a short-season U-pick orchard at about 4,750 ft with roughly 70 to 110 frost-free days: disease-resistant apples that fill the thin early band, plus hardy replacements for the dead pear, cherry and peach.",
+      "rootstock_advice": "Ask nurseries for semi-dwarf trees (about 60 to 75 percent of standard; G.890, G.214 or M.7 for apples). The grid is 18 x 20 ft and the site is dry and windy, so dwarf stocks (M.27, M.9, B.9) would need permanent stakes and leave gaps.",
+      "shipping_note": "Confirm that each nursery ships the item to Idaho before ordering; some retailers exclude Idaho for some items.",
+      "items": [
+        {
+          "id": "williams-pride",
+          "type": "Apple",
+          "cultivar": "Williams' Pride",
+          "code": "WLP",
+          "profile": "apple-williams-pride",
+          "quantity": 3,
+          "spots": [
+            "R6-C7",
+            "R6-C8",
+            "R5-C9"
+          ],
+          "rootstock": "Semi-dwarf wanted; G.214 is cold-hardy and fire-blight resistant",
+          "flowering_group": 2,
+          "ploidy": "Diploid",
+          "role": "Early block: the first apples of the season",
+          "caution": "Ripens unevenly over about a week, so plan on more than one picking; keeps about six weeks in the fridge. Sources put its bloom early, in group 1 to 2, so group 2 is a planning value."
+        },
+        {
+          "id": "priscilla",
+          "type": "Apple",
+          "cultivar": "Priscilla",
+          "code": "PSC",
+          "profile": "apple-priscilla",
+          "quantity": 2,
+          "spots": [
+            "R5-C10",
+            "R6-C12"
+          ],
+          "rootstock": "Semi-dwarf wanted; G.890 (about 60 percent of standard) is offered",
+          "flowering_group": 3,
+          "ploidy": "Diploid",
+          "role": "Early-to-mid September apple; hardy to about -50 F",
+          "caution": "Medium fruit with a mild flavor and a licorice note; bears heavily, so thin the crop."
+        },
+        {
+          "id": "dayton",
+          "type": "Apple",
+          "cultivar": "Dayton",
+          "code": "DAY",
+          "profile": "apple-dayton",
+          "quantity": 2,
+          "spots": [
+            "R6-C4",
+            "R6-C11"
+          ],
+          "rootstock": "Semi-dwarf wanted; nurseries list EMLA 27 or M.26 dwarfs, too small for 18 x 20 ft spacing",
+          "flowering_group": 3,
+          "ploidy": "Diploid",
+          "role": "Large crisp sweet-tart apple for mid to late September",
+          "caution": "Cummins lists bloom group 3 and diploid. Raintree puts harvest in late September but Cummins calls it early-ripening, so its timing here is uncertain."
+        },
+        {
+          "id": "freedom",
+          "type": "Apple",
+          "cultivar": "Freedom",
+          "code": "FRD",
+          "profile": "apple-freedom",
+          "quantity": 3,
+          "spots": [
+            "R6-C5",
+            "R6-C6",
+            "R6-C13"
+          ],
+          "rootstock": "Size-controlling semi-dwarf wanted; nurseries often ship it on MM.111, which stays large",
+          "flowering_group": 3,
+          "ploidy": "Diploid",
+          "role": "Large striped-red apple for early October; very disease resistant",
+          "caution": "Ripens with Delicious (about Oct 5 at Geneva, NY), so it is a gamble in a short season. Vigorous, spreading tree. No source gave its flowering group, so group 3 is assumed."
+        },
+        {
+          "id": "haralson",
+          "type": "Apple",
+          "cultivar": "Haralson",
+          "code": "HAL",
+          "profile": "apple-haralson",
+          "quantity": 2,
+          "spots": [
+            "R4-C9",
+            "R6-C10"
+          ],
+          "rootstock": "M.7 semi-dwarf; B.9 dwarf is also offered but too small here",
+          "flowering_group": 4,
+          "ploidy": "Diploid",
+          "role": "October pie and cider apple; zone 3, late bloom",
+          "caution": "Roots to Fruits lists bloom group 4; an earlier group-3 claim could not be confirmed. Ripens in mid-October, the latest of the new apples, and is tart rather than a fresh-eating favorite."
+        },
+        {
+          "id": "pristine",
+          "type": "Apple",
+          "cultivar": "Pristine",
+          "code": "PTN",
+          "profile": "apple-pristine",
+          "quantity": 1,
+          "spots": [
+            "R6-C9"
+          ],
+          "rootstock": "Semi-dwarf wanted; nurseries list M.27 or EMLA 26 dwarfs, too small here",
+          "flowering_group": 2,
+          "ploidy": "Diploid",
+          "role": "One-tree test of a very early yellow apple",
+          "caution": "Sources disagree on ripening (mid-July or August) and zone (4 to 9 or 5 to 8), and Purdue rates it susceptible to cedar-apple rust, with junipers on site. No source gave its flowering group, so group 2 is assumed."
+        },
+        {
+          "id": "harrow-delight",
+          "type": "Pear",
+          "cultivar": "Harrow Delight",
+          "code": "HDL",
+          "profile": "pear-harrow-delight",
+          "quantity": 1,
+          "spots": [
+            "R8-C1"
+          ],
+          "rootstock": "OHxF 87 (semi-dwarf, cold-hardy, fire-blight resistant)",
+          "self_fertile": false,
+          "pear_bloom": [
+            "Mid",
+            "mid"
+          ],
+          "role": "Fire-blight-resistant European pear that ripens early",
+          "caution": "Not self-fertile. Only one pollination partner counts within 50 ft (Red Bartlett at 49 ft), so fruit set may be light. A fifth Asian pear would have Hosui and Hardy Giant beside it."
+        },
+        {
+          "id": "black-gold",
+          "type": "Cherry",
+          "cultivar": "Black Gold",
+          "code": "BGD",
+          "profile": "cherry-black-gold",
+          "quantity": 1,
+          "spots": [
+            "R9-C2"
+          ],
+          "rootstock": "Mazzard or another canker-tolerant stock; avoid Gisela 6, the most canker-susceptible (Intermountain Fruit)",
+          "self_fertile": true,
+          "cherry_chart": {
+            "group": null,
+            "bloom": 5
+          },
+          "role": "Hardy, late-blooming, canker-resistant dark sweet cherry",
+          "caution": "Blooms later than Bing, so it adds no pollen for the Bing or Black Tartarian trees, which still depend on Lapins at R10-C2. Birds need netting."
+        },
+        {
+          "id": "intrepid",
+          "type": "Peach",
+          "cultivar": "Intrepid",
+          "code": "INT",
+          "profile": "peach-intrepid",
+          "quantity": 1,
+          "spots": [
+            "R11-C10"
+          ],
+          "rootstock": "Krymsk 86 was suggested (cold-hardy, anchors well, near-standard size); canker tolerance of the rootstock is unverified",
+          "self_fertile": true,
+          "role": "Bud-hardy, self-fertile mid-season freestone",
+          "caution": "Peaches here carry bacterial canker (untreated positives). Prune only in dry weather, use dormant copper, and buy clean certified stock."
+        }
+      ]
+    },
     "CHERRY_CHART": {
       "53": {
         "group": "III",

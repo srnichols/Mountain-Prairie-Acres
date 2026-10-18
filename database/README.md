@@ -25,8 +25,9 @@ Queries are read-only: writes, attachment of another database, and extension loa
 |---|---|
 | `inventory_batches`, `plants`, `cultivars` | Source quantity groups, individual IDs, and cultivar source entries; multiple workbook entries for the same named cultivar retain their source-row differences |
 | `plantings`, `locations`, `plant_events` | Assignment and history, with foreign keys and unique active plant/spot indexes |
-| `cultivar_profiles`, `cultivar_profile_links`, `cultivar_profile_aliases`, `cultivar_profile_uses`, `cultivar_profile_sources`, `cultivar_group_notes`, `cultivar_group_note_sources` | The cultivar library: one profile per cultivar, species, genus, or rootstock in the inventory, the purchase list, or the seed list (including habit, bark, and leaf notes, which are `NULL` unless a source describes that plant), linked to inventory lines (`link_type = 'inventory'`), purchase rows (`'purchase'`), and seed-list rows (`'seed'`), with aliases, uses, and sources; plus a general habit, bark, and leaf note for each fruit-tree type. Not the same as `cultivars`, which holds purchase-sheet rows |
+| `cultivar_profiles`, `cultivar_profile_links`, `cultivar_profile_aliases`, `cultivar_profile_uses`, `cultivar_profile_sources`, `cultivar_group_notes`, `cultivar_group_note_sources` | The cultivar library: one profile per cultivar, species, genus, or rootstock in the inventory, the purchase list, the seed list, or the planting plan (including habit, bark, and leaf notes, which are `NULL` unless a source describes that plant), linked to inventory lines (`link_type = 'inventory'`), purchase rows (`'purchase'`), and seed-list rows (`'seed'`), with aliases, uses, and sources; plus a general habit, bark, and leaf note for each fruit-tree type. A cultivar you plan to buy is linked through `planting_plan_items.profile_id` instead of a row. Not the same as `cultivars`, which holds purchase-sheet rows |
 | `workbook_rows`, `purchases` | Lossless structured workbook cells and purchase-list projections; headers are not purchases, dates not supplied stay null |
+| `planting_plan_items`, `planting_plan_spots` | The planting plan (`PLANTING_PLAN` in `orchard.json`): one row per recommended cultivar with its fruit type, quantity, rootstock note, and library profile, and one row per planned orchard spot. A recommendation, not a record of trees: nothing here is bought or planted |
 | `grid_cells` | All master cells, clipped to the actual fence, with their northwest-corner latitude/longitude |
 | `site_features`, `feature_points` | Full mapped geometry and queryable vertices, including water pipes and hydrants |
 | `terrain_samples`, `terrain_lines`, `terrain_points`, `drainage_areas` | All 18,009 lidar mesh points, contours/flows/split/ridge/ditch, and eight drainage-area values |
@@ -43,6 +44,7 @@ inventory_batches -> plants -> plantings -> locations
                        +-> plant_events
                        +-> cultivars
 inventory_batches / cultivars / workbook_rows (seed list) -> cultivar_profile_links -> cultivar_profiles -> aliases, uses, sources
+planting_plan_items -> cultivar_profiles; planting_plan_spots -> planting_plan_items, locations
 site_features -> feature_points
 terrain_lines -> terrain_points
 water_observations -> locations (when supplied)
@@ -52,6 +54,7 @@ water_observations -> locations (when supplied)
 
 - **`current_plantings`**: individual plants and current active planned/planted locations. Unassigned/dead plants show `PENDING`; an outside-orchard plan does not pretend to occupy its old orchard slot.
 - **`orchard_spots`**: every orchard spot, its reservation, replacement plan, and occupancy (`planned`, `planted`, `reserved`, `open`).
+- **`planned_spots`**: each spot in the planting plan with its occupancy, recorded replacement type, and the planned cultivar, library profile, rootstock note, and role. Example: `SELECT spot, cultivar, rootstock FROM planned_spots ORDER BY orchard_row, orchard_column`.
 - **`location_refs`**: SiteRef and offsets calculated from lot coordinates and the master cells.
 - **`plant_profiles`**: each individual plant with its cultivar profile (name, tagline, ripening band, habit, bark, leaf, basis); plants on unidentified or unprofiled lines show `NULL`.
 - **`seed_list`**: each named species on the owner's seed list (the `Trees` sheet) with its zones, size, growth, and sowing notes and the cultivar profile it links to.

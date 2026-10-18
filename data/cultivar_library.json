@@ -3223,6 +3223,49 @@
       "reviewed_on": "2026-10-17"
     },
     {
+      "id": "pear-harrow-delight",
+      "group": "Pear",
+      "type": "Pear",
+      "kind": "cultivar",
+      "name": "Harrow Delight",
+      "aliases": [],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Early; buttery Bartlett style; fire blight and scab resistant",
+      "summary": "Harrow Delight is a Canadian-bred European pear (Bartlett x Purdue 80-51) selected mainly for fire blight resistance. Fruit is medium, greenish-yellow with a red blush, buttery Bartlett-style flesh, used fresh and for baking.",
+      "appearance": "Medium, Bartlett-shaped pear; greenish-yellow skin with a red blush; cream-colored flesh.",
+      "flavor_use": "Buttery, melting, Bartlett-style flesh, good sweet flavor; used fresh, baked, or canned. Diploid, not self-fertile; needs a mid-bloom partner such as Bartlett. Very resistant to fire blight and scab; one nursery notes moderate pseudomonas and psylla risk. Picked green; drops fast, loses shelf life if left on tree.",
+      "uses": [
+        "fresh",
+        "cooking",
+        "canning"
+      ],
+      "ripening": "Early",
+      "ripening_note": "About 2 weeks before Bartlett per Cummins; Orange Pippin calls it early season, but Raintree's PNW listing shows September instead.",
+      "id_cues": "Ripens about 2 weeks before Bartlett and drops quickly if left on the tree; skin is greenish-yellow with a red blush, a pattern shared with other Bartlett-type pears, so timing is the stronger cue than color.",
+      "habit": "Reaches about 15 ft on OHxF87 semi-dwarf rootstock; very precocious, often blooming and fruiting the year after planting, and crops heavily.",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "Zone 4, roughly -30F (Raintree; Orange Pippin Trees).",
+      "sources": [
+        [
+          "Raintree Nursery: Harrow Delight European Pear",
+          "https://raintreenursery.com/products/harrow-delight-e-pear-semi-dwarf"
+        ],
+        [
+          "Orange Pippin Trees: Harrow Delight pear trees",
+          "https://www.orangepippintrees.com/trees/pear-trees/harrow-delight"
+        ],
+        [
+          "Cummins Nursery: Harrow Delight Pear Scionwood",
+          "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=scion&id=36217"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Sources disagree on ripening month: about 2 weeks before Bartlett (Cummins) versus a September listing from a Pacific Northwest nursery.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
       "id": "cherry-bing",
       "group": "Cherry",
       "type": "Cherry",
@@ -3805,6 +3848,53 @@
       "reviewed_on": "2026-10-17"
     },
     {
+      "id": "cherry-black-gold",
+      "group": "Cherry",
+      "type": "Cherry",
+      "kind": "cultivar",
+      "name": "Black Gold",
+      "aliases": [
+        "Blackgold",
+        "NY 13791"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Very late bloom; near-black firm fruit; self-fertile, canker-tolerant",
+      "summary": "Black Gold (NY 13791) is a Cornell Geneva sweet cherry, Stark Gold x Stella, bred for very late bloom that helps it escape spring frost. Fruit is large, glossy, near black and firm, used fresh, in preserves, and for canning.",
+      "appearance": "Large, glossy, heart-shaped sweet cherry; skin and flesh both deep red to near black.",
+      "flavor_use": "Firm, juicy fruit for fresh eating, preserves and canning; keeps under a month. Self-fertile, diploid; stands alone or pollinizes other mid to late cherries. Cummins reports considerable bacterial canker resistance with only moderate crack tolerance; Fedco calls it disease and crack resistant instead.",
+      "uses": [
+        "fresh",
+        "cooking",
+        "canning",
+        "jelly"
+      ],
+      "ripening": "Mid",
+      "ripening_note": "Cummins says fruit matures early to mid cherry season; no source here gave an exact date relative to Bing, only its much later bloom.",
+      "id_cues": "OSU's bloom chart places Black Gold in Period IV, later than Bing and Stella (Period II) and Lapins (Period I); its near-black skin is common among dark sweet cherries generally, so bloom timing is the stronger, more specific cue.",
+      "habit": "Upright, spreading growth habit; late blooming and very hardy, reported undamaged near -30F in Minnesota plantings.",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "Zone 4; undamaged near -30F (Cummins) to -33F (Fedco) in Minnesota plantings.",
+      "sources": [
+        [
+          "Cummins Nursery: BlackGold Cherry on Mahaleb",
+          "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=tree&id=21573"
+        ],
+        [
+          "Fedco Seeds: BlackGold sweet cherry",
+          "https://fedcoseeds.com/trees/blackgold-sweet-cherry-7389"
+        ],
+        [
+          "OSU Extension: Sweet cherry compatibility and bloom timing chart",
+          "https://extension.oregonstate.edu/catalog/em-9484-sweet-cherry-compatibility-bloom-timing-chart-commercial-growers"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Sources differ on release year (about 2000 per Cummins vs 2001 per Fedco) and on crack tolerance (moderate vs resistant).",
+      "reviewed_on": "2026-10-17"
+    },
+    {
       "id": "peach-blazing-star",
       "group": "Peach",
       "type": "Peach",
@@ -4257,6 +4347,49 @@
       ],
       "basis": "sourced",
       "note": "UC Davis says 900 chill hours, Raintree 900-1000. Maine's table does not list Veteran; it is used only for the comparison peaches. Nothing in the listed pages mentions J.H. Hale, so the owner's note about it is not repeated.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "peach-intrepid",
+      "group": "Peach",
+      "type": "Peach",
+      "kind": "cultivar",
+      "name": "Intrepid",
+      "aliases": [],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Mid; yellow freestone; very cold-hardy flower buds",
+      "summary": "Intrepid is an NC State Sandhills Station release, Redhaven x (Reliance x Biscoe), patented 2002 for flower buds that tolerate hard spring freezes. Fruit is medium to large, red over yellow, freestone, used fresh and for canning.",
+      "appearance": "Medium to large, round peach, about 6.6 cm; red skin over a yellow ground color; firm yellow freestone flesh.",
+      "flavor_use": "Firm yellow freestone flesh, normal peach acidity, used fresh and for canning; self-fertile. Patent record rates foliage and buds highly resistant to bacterial spot, better than Redhaven; buds survived 6 freezing nights that killed commercial checks in 1996. No source here reported bacterial canker for this cultivar.",
+      "uses": [
+        "fresh",
+        "cooking",
+        "canning"
+      ],
+      "ripening": "Mid",
+      "ripening_note": "About 2 weeks after Redhaven in NC trials (average July 7 there); one Wisconsin nursery lists mid-July",
+      "id_cues": "Ripens about 2 weeks after Redhaven and Reliance per NC trial records; sources used here give no exact date for Contender or Canadian Harmony, and red-over-yellow skin is shared across this group, so the Redhaven and Reliance timing gap is the clearest cue.",
+      "habit": "Vigorous, semi-upright growth with roughly 75 degree branch angles; young trees grow about 2 to 3 ft a year and often first flower in their third year.",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "Zone 4 to 8 (Roots to Fruits); flower buds very cold-hardy per NC State trials.",
+      "sources": [
+        [
+          "Clemson Extension: Intrepid peach variety record",
+          "https://www.clemsonpeach.org/index.php?p=181&e=5113"
+        ],
+        [
+          "Cummins Nursery: Intrepid Peach Tree",
+          "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=tree&id=25169"
+        ],
+        [
+          "Roots to Fruits Nursery: Intrepid Peach Trees",
+          "https://rootstofruitsnursery.com/products/intrepid-peach"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Ripening timing differs by source: NC trial records average July 7 (about 2 weeks after Redhaven), but a Wisconsin nursery lists mid-July instead.",
       "reviewed_on": "2026-10-17"
     },
     {
@@ -6052,7 +6185,7 @@
         7
       ],
       "tagline": "Tough shade tree; paired compound leaves; diamond bark",
-      "summary": "Large shade and windbreak tree from eastern and central North America, with paired compound leaves and diamond-patterned bark. Tough on dry, high-pH ground, but emerald ash borer makes new plantings a gamble.",
+      "summary": "Large shade and windbreak tree from eastern and central North America, with paired compound leaves and diamond-patterned bark. Tolerates dry ground and high pH, but emerald ash borer makes new plantings a gamble.",
       "appearance": "Mature size is 50 to 70 ft high with a 35 to 50 ft spread. Pyramidal when young, becoming a rounded, irregular crown with age. Leaflets are bright green and go yellow in autumn.",
       "flavor_use": "Shade and windbreak tree that tolerates drought, wind and soils with a high pH; seeds feed wildlife. Watch for emerald ash borer, lilac borer on stressed trees, brittle limbs in wind or ice, and messy seed drop from female trees.",
       "uses": [
@@ -6179,7 +6312,7 @@
         ]
       ],
       "basis": "sourced",
-      "note": "Sources differ on bark color (gray vs brown). Utah State says it can work in Utah if scorching, dry spots and strongly alkaline soil are avoided; check soil pH before planting more.",
+      "note": "Sources differ on bark color (gray vs brown). Utah State says it can work in Utah if scorching, dry spots and strongly alkaline soil are avoided. Soil pH here is about 6.2, so the scorching, dry spots are the larger risk.",
       "reviewed_on": "2026-10-17"
     },
     {
@@ -6254,7 +6387,7 @@
       ],
       "purchase_rows": [],
       "tagline": "Pointed lobes = red oak; rounded = white or bur oak",
-      "summary": "Genus-level profile for 8 oaks of mixed or unrecorded type. Leaf lobe shape and acorn timing separate red-type oaks from white-type oaks; bur oak copes with dry, windy, high-pH ground better than red oak.",
+      "summary": "Genus-level profile for 8 oaks of mixed or unrecorded type. Leaf lobe shape and acorn timing separate red-type oaks from white-type oaks; bur oak copes with dry, windy sites better than red oak.",
       "appearance": "Large, broad-crowned shade trees. Northern red oak reaches 50 to 75 ft tall and as wide; white and bur oak also get fairly large with wide canopies. Fall color: red oak reddish-brown, white oak brown to dark red, bur oak yellow to brown.",
       "flavor_use": "Shade and wildlife trees; acorns feed deer, squirrels and birds, though the drop is a nuisance for some. Wood is used for lumber and furniture. Bur oak copes with high soil pH, dry spells, heat, cold and wind; red oak yellows (chlorosis) in soil that is not acidic enough and can get oak wilt.",
       "uses": [
@@ -6303,7 +6436,7 @@
         5
       ],
       "tagline": "Deciduous conifer; red fluted bark; wants moist soil",
-      "summary": "Fast, cone-shaped deciduous conifer from China with feathery needles that turn bronze and drop in fall. A big specimen or shade tree for moist ground; a poor match for dry, alkaline soil.",
+      "summary": "Fast, cone-shaped deciduous conifer from China with feathery needles that turn bronze and drop in fall. A big specimen or shade tree for moist ground; a poor match for dry soil.",
       "appearance": "Conical, uniform crown about 70 to 100 ft tall and 25 ft wide, and old trees can pass 100 ft. Foliage is light green in spring, darker in summer, then russet to pinkish bronze in fall; the tree is leafless in winter.",
       "flavor_use": "Specimen or lawn shade tree for big spaces; transplants easily. UConn warns it struggles in dry soil or soil with a high pH, and spider mites show up when it is dry, so it needs steady moisture. Early fall frosts hurt late growth, so avoid frost pockets. Japanese beetles feed on the leaves.",
       "uses": [
@@ -6332,7 +6465,7 @@
         ]
       ],
       "basis": "sourced",
-      "note": "Sheet says zones 4b to 8; UConn gives zone 4 only. UConn and Morton both favor moist, slightly acid soil, and UConn warns it struggles on dry or alkaline ground, which describes this site.",
+      "note": "Sheet says zones 4b to 8; UConn gives zone 4 only. UConn and Morton both favor moist, slightly acid soil, and UConn warns it struggles in dry soil or soil with a high pH. This site is dry, but its soil pH is about 6.2, near the range it prefers.",
       "reviewed_on": "2026-10-17"
     },
     {
@@ -6351,7 +6484,7 @@
         14
       ],
       "tagline": "Deciduous conifer; needle tufts; gold fall; plated bark",
-      "summary": "Native Inland Northwest conifer that turns gold and drops its soft needles in fall, with very thick bark on old trunks. It comes from cool, moist mountain sites, so a dry, alkaline site is a stretch.",
+      "summary": "Native Inland Northwest conifer that turns gold and drops its soft needles in fall, with very thick bark on old trunks. It comes from cool, moist mountain sites, so a dry site is a stretch.",
       "appearance": "Typically 100 to 180 ft tall, some over 200 ft, on a very straight trunk often bare of branches for much of its length, topped by a short, airy, pyramid-shaped crown. Golden in fall, then bare. Spread is not given in the sources (sheet: 25 to 30 ft).",
       "flavor_use": "Large tree for deep soil in full sun; Oregon State says it soon outgrows a typical garden. Roots anchor well against wind, but branches are brittle. Low rainfall limits its native range at the low end, so on a dry site plan to irrigate (inference). No salt tolerance.",
       "uses": [
@@ -6380,7 +6513,7 @@
         ]
       ],
       "basis": "sourced",
-      "note": "Sheet says medium growth (12 in/yr); FEIS and Oregon State call it fast. FEIS: low rainfall limits its range and soil pH 6 to 7 suits it, so dry alkaline ground is uncertain (inference).",
+      "note": "Sheet says medium growth (12 in/yr); FEIS and Oregon State call it fast. FEIS: low rainfall limits its range and soil pH 6 to 7 suits it. This site's pH is about 6.2, so the dry climate is the uncertainty (inference).",
       "reviewed_on": "2026-10-17"
     },
     {
@@ -6496,7 +6629,7 @@
         8
       ],
       "tagline": "Smooth gray bark; slim sharp buds; holds winter leaves",
-      "summary": "Large eastern shade tree with smooth gray bark, sharply toothed leaves that cling in winter, and edible nuts. It wants moist, acid, well-drained soil, so dry alkaline ground is a stretch.",
+      "summary": "Large eastern shade tree with smooth gray bark, sharply toothed leaves that cling in winter, and edible nuts. It wants moist, acid, well-drained soil, so this dry site is a stretch.",
       "appearance": "Large, low-branched tree, often 50 to 80 ft tall and 40 to 80 ft wide, with a dense, rounded to oval crown of wide-spreading limbs. Summer foliage is dark green and fall color is golden bronze.",
       "flavor_use": "Shade or woodland tree; wildlife eat the nuts, and people can eat small amounts (NC State: large servings may upset the stomach). Wants moist, acid, well-drained soil; Utah State rates drought and alkaline tolerance only medium. Beech bark disease (scale plus fungus) has killed millions of beeches in New England.",
       "uses": [
@@ -6597,7 +6730,7 @@
         10
       ],
       "tagline": "Vase-shaped shade tree; lopsided leaves; Dutch elm risk",
-      "summary": "Large, fast-growing native shade tree with a vase shape, doubly toothed leaves and ridged bark. Copes with dry, windy, alkaline ground, but Dutch elm disease makes ordinary seedlings a gamble.",
+      "summary": "Large, fast-growing native shade tree with a vase shape, doubly toothed leaves and ridged bark. Copes with dry, windy sites and alkaline soil, but Dutch elm disease makes ordinary seedlings a gamble.",
       "appearance": "Large vase- or urn-shaped tree, 60 to 80 ft tall and 30 to 60 ft wide, with arching limbs. In the open the trunk often forks low; in a dense stand the crown is narrow on a long clear trunk. Fall color is soft yellow.",
       "flavor_use": "Dense-shade tree for large sites, with food and nesting value for wildlife; Utah State rates drought and alkaline tolerance high, and Morton says it copes with heat and wind. Dutch elm disease is fatal with no cure; elm yellows and Verticillium wilt also occur.",
       "uses": [
@@ -6647,7 +6780,7 @@
       "tagline": "Tough shade tree; warty corky bark; 3-vein uneven leaves",
       "summary": "Tough, long-lived shade tree with warty, corky bark and leaves with an uneven base. Utah State rates it high for drought and alkaline soil and notes it is often used in windbreaks.",
       "appearance": "Medium to large tree, usually 40 to 60 ft tall and wide (NC State says up to 130 ft in ideal conditions), with a straight trunk, arching branches and a broad, spreading crown. Fall color is a plain yellow.",
-      "flavor_use": "Shade, street and windbreak tree for dry, windy, high-pH ground; birds eat the dark fruit and people can eat the thin, sweet flesh. Witches' broom and leaf nipple galls look untidy but do little harm. NC State lists it as immune to Dutch elm disease.",
+      "flavor_use": "Shade, street and windbreak tree for dry, windy sites; it also tolerates high pH. Birds eat the dark fruit and people can eat the thin, sweet flesh. Witches' broom and leaf nipple galls look untidy but do little harm. NC State lists it as immune to Dutch elm disease.",
       "uses": [
         "shade",
         "windbreak",
@@ -6771,7 +6904,7 @@
         ]
       ],
       "basis": "sourced",
-      "note": "USU rates zones 5-9 and OSU hardy to zone 5, so zone 4 is a risk. NC State and OSU both call for well-drained, acid soil. Drought and wind tolerance are reported, but none of the pages covers an alkaline, windy inland site.",
+      "note": "USU rates zones 5-9 and OSU hardy to zone 5, so zone 4 is a risk. NC State and OSU both call for well-drained, acid soil. Drought and wind tolerance are reported, but none of the pages covers a dry, windy inland site like this one (soil pH here is about 6.2, near the acid soil it wants).",
       "reviewed_on": "2026-10-17"
     },
     {
@@ -7267,6 +7400,272 @@
       ],
       "basis": "sourced",
       "note": "Ungrafted stock: uses lists what a grafted apple would be for. The tables list M.7A/M.7a (an improved M.7), not EMLA 7 by name. NMSU says susceptible to collar rot; the Intermountain table rates root rot moderately resistant.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "apple-williams-pride",
+      "group": "Apple",
+      "type": "Apple",
+      "kind": "cultivar",
+      "name": "Williams' Pride",
+      "aliases": [
+        "Williams Pride",
+        "Co-op 23"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Very early; dark red-purple; rich, pear-like tart-sweet",
+      "summary": "Williams' Pride (Co-op 23) is a 1979 Purdue-Rutgers-Illinois selection named for breeder Edwin Williams. It is a medium, dark red-purple apple with crisp cream flesh and a rich, pear-like tart-sweet flavor, mainly for fresh eating.",
+      "appearance": "Medium to medium-large fruit ripening dark red-purple, dotted with small white lenticels; flesh is cream to white, crisp and firm.",
+      "flavor_use": "Crisp, firm, rich pear-like tart-sweet flavor; mainly fresh eating. Purdue rates scab and cedar rust Very Resistant, fire blight and mildew Resistant. Not self-fertile; long early bloom makes it a useful pollinizer. Ripens unevenly over about a week; keeps six weeks refrigerated.",
+      "uses": [
+        "fresh",
+        "pollinizer"
+      ],
+      "ripening": "Early",
+      "ripening_note": "Ripens about Aug 18 per Cummins Nursery's listing, about 4 weeks before their Sep 15 Honeycrisp date.",
+      "id_cues": "Ripens mid-to-late August: after the very early Pristine but before Zestar! and Gala. Fruit is dark red-purple, sometimes marbled, and ripens unevenly over about a week; all four can bloom early, so flower timing alone is a weak cue.",
+      "habit": "Vigorous, spreading tree with sturdy, well-angled branches; blooms early and over a long period, making it a useful pollinizer for other apple varieties.",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "USDA zone 4 and colder (Cummins Nursery).",
+      "sources": [
+        [
+          "Cummins Nursery: Williams' Pride apple tree product page",
+          "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=tree&id=32992"
+        ],
+        [
+          "Purdue Extension: Disease Susceptibility of Common Apple Cultivars",
+          "https://extension.purdue.edu/extmedia/BP/BP-132-W.pdf"
+        ],
+        [
+          "Cummins Nursery: All Apple Trees listing with ripening dates",
+          "https://www.cumminsnursery.com/buy-trees/index.php?type=tree&category=apple"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Cummins calls it field immune to scab; Purdue's university table instead rates scab Very Resistant, which is used here.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "apple-priscilla",
+      "group": "Apple",
+      "type": "Apple",
+      "kind": "cultivar",
+      "name": "Priscilla",
+      "aliases": [
+        "Co-op 4"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Mid-Sept; red over yellow; mild subacid, licorice note",
+      "summary": "Priscilla (Co-op 4) is a 1972 Purdue-Rutgers-Illinois release from a 1961 Starking Delicious cross. The medium apple is blushed red over yellow, with white, coarse flesh, a mild subacid flavor and a licorice note.",
+      "appearance": "Medium-sized fruit blushed bright red over a yellow background; flesh is white, coarse textured and juicy.",
+      "flavor_use": "White, crisp flesh; mild subacid flavor with a licorice note; fresh eating or baking. Purdue: scab Very Resistant, fire blight and cedar rust Resistant, mildew Moderately Resistant. Diploid, group 3, not self-fertile; bears heavily, can overbear if not thinned. Keeps 1 to 3 months chilled.",
+      "uses": [
+        "fresh",
+        "cooking"
+      ],
+      "ripening": "Mid",
+      "ripening_note": "SLN Nursery says early to mid September; no source names a benchmark cultivar",
+      "id_cues": "Ripens early-mid September, overlapping Honeycrisp and McIntosh. Medium fruit blushed red over a yellow background, with a licorice note in the flavor; McIntosh is more solidly bright red, but season overlap makes timing alone a weak cue here.",
+      "habit": "Productive, spreading, vigorous tree; bears consistently as an annual cropper and can overbear if the fruit is not thinned.",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "To about -50 F per SLN Nursery; no USDA zone number stated in these sources.",
+      "sources": [
+        [
+          "SLN Nursery: Priscilla Apple product page",
+          "https://www.slngrow.com/products/priscilla-apple"
+        ],
+        [
+          "Cummins Nursery: Priscilla Apple on G.890 product page",
+          "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=tree&id=36749"
+        ],
+        [
+          "Purdue Extension: Disease Susceptibility of Common Apple Cultivars",
+          "https://extension.purdue.edu/extmedia/BP/BP-132-W.pdf"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "SLN calls it immune to scab; Purdue's university table rates scab Very Resistant (not immune) and mildew only Moderately Resistant.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "apple-dayton",
+      "group": "Apple",
+      "type": "Apple",
+      "kind": "cultivar",
+      "name": "Dayton",
+      "aliases": [
+        "Co-op 21"
+      ],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Mid-season; glossy solid red; crisp sweet-tart, Honeycrisp-like",
+      "summary": "Dayton (Co-op 21) is a 1988 Purdue-Rutgers-Illinois release named for breeder Daniel F. Dayton of the University of Illinois. The large apple ripens glossy solid red with cream, crisp flesh and a sweet-tart flavor.",
+      "appearance": "Large fruit with glossy solid red skin over a yellow background; flesh is cream colored, crisp and juicy.",
+      "flavor_use": "Crisp, juicy flesh with a sweet-tart flavor in the style of Honeycrisp; for fresh eating and baking. Purdue rates scab Very Resistant, fire blight Resistant, cedar rust and mildew Moderately Resistant. Bloom group 3, diploid, not self-fertile; needs a pollinizer. Keeps under a month; eat soon after picking.",
+      "uses": [
+        "fresh",
+        "cooking"
+      ],
+      "ripening": "Mid",
+      "ripening_note": "Raintree puts harvest in late September, but Cummins's scionwood page calls it early-ripening",
+      "id_cues": "Ripens Mid season with glossy, fairly uniform red skin over yellow, unlike Honeycrisp's patchier red-over-green blush; lacks Red Delicious's elongated, ribbed shape. Similar size and timing to Freedom make that pairing a weak cue.",
+      "habit": "Vigorous, upright tree with strong branch angles; a productive, reliable annual cropper.",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "USDA zone 4 to 9 (Raintree Nursery).",
+      "sources": [
+        [
+          "Raintree Nursery: Dayton Apple product page",
+          "https://raintreenursery.com/products/dayton-apple-dwarf"
+        ],
+        [
+          "Purdue Extension: Disease Susceptibility of Common Apple Cultivars",
+          "https://extension.purdue.edu/extmedia/BP/BP-132-W.pdf"
+        ],
+        [
+          "Cummins Nursery: Dayton Apple Scionwood product page",
+          "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=scion&id=35985"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Raintree calls it resistant to cedar-apple rust; Purdue's university table rates cedar rust and mildew only Moderately Resistant, used here.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "apple-freedom",
+      "group": "Apple",
+      "type": "Apple",
+      "kind": "cultivar",
+      "name": "Freedom",
+      "aliases": [],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Early Oct; red-striped on yellow; crisp, subacid, scab-resistant",
+      "summary": "Cornell NYSAES (Geneva, NY) release bred in 1958 and introduced in 1983; a large, oblate apple with bright red stripes over yellow, cream, firm flesh and a sprightly subacid flavor for fresh eating, sauce and juice.",
+      "appearance": "Large, oblate apple (about 2.7 by 3.3 inches) with bright red stripes covering most of a yellow background; flesh is cream colored, firm, medium-fine and juicy (Cornell 1983).",
+      "flavor_use": "Sprightly subacid flavor; dual-purpose for fresh eating, sauce and juice (Cornell 1983), also cider (Trees of Antiquity). Purdue rates scab and fire blight very resistant, cedar-apple rust and powdery mildew resistant. Needs a same-midseason pollinizer; keeps in storage into winter.",
+      "uses": [
+        "fresh",
+        "cooking",
+        "cider",
+        "juice",
+        "storage",
+        "pollinizer"
+      ],
+      "ripening": "Late",
+      "ripening_note": "Ripens about Oct 5 at Geneva NY, same time as Delicious (Cornell 1983); Trees of Antiquity lists it as a Late harvest.",
+      "id_cues": "Ripens in early October, well after McIntosh's mid-September harvest; red stripes over a yellow ground rather than Cortland's deeper solid red. Most resembles Liberty, another Geneva, scab-resistant release, but blooms and disease-rating details differ between sources.",
+      "habit": "Vigorous, spreading tree reaching about 12 to 16 ft at maturity (Trees of Antiquity); buds on one-year wood form spurs that stay productive two to three years (Cornell 1983).",
+      "bark": "Young shoots are reddish, nearly hairless at the base and downy near the tip, with scattered oval lenticels along the shoot (Cornell 1983).",
+      "leaf": "Leaves are large, thick and leathery, elliptic with an acuminate tip and coarsely serrate edge; upper side dark green and hairless, underside grayish green and downy (Cornell 1983).",
+      "hardiness": "Zones 4 to 9 (Trees of Antiquity)",
+      "sources": [
+        [
+          "Cornell NYSAES: Freedom, A New Disease-Resistant Apple (1983)",
+          "https://ecommons.cornell.edu/server/api/core/bitstreams/9278e645-6f15-4d9b-b318-de450fa5edf3/content"
+        ],
+        [
+          "Purdue Extension: Disease Susceptibility of Common Apple Cultivars BP-132-W",
+          "https://extension.purdue.edu/extmedia/BP/BP-132-W.pdf"
+        ],
+        [
+          "Trees of Antiquity: Freedom Apple Tree",
+          "https://www.treesofantiquity.com/products/freedom-apple-tree"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Cross made in 1958, named and introduced in 1983 (Cornell), which explains differing origin years on nursery pages. Trees of Antiquity's own text says fruit stores to January but its spec table says 1 to 2 months.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "apple-haralson",
+      "group": "Apple",
+      "type": "Apple",
+      "kind": "cultivar",
+      "name": "Haralson",
+      "aliases": [],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Oct; nearly solid red; firm, tart, good pie apple",
+      "summary": "A University of Minnesota release from 1923, bred from the Malinda apple; a medium to large, nearly solid red apple with firm, tart flesh, used mainly for pies, cider and fresh eating, and stored for months.",
+      "appearance": "Medium to large, roundish-conic apple, nearly solid bright red with moderately conspicuous dots and some russeting; flesh is firm, crisp and juicy, described as white (Fedco) or yellow-gold (Roots to Fruits).",
+      "flavor_use": "Sprightly, tart, subacid flavor; good fresh, and especially for pies, baking, sauce and cider (Fedco); keeps in storage into March. Purdue rates scab, cedar-apple rust and powdery mildew moderately resistant and fire blight resistant. Needs a pollinizer; blooms late, which helps it avoid spring frost.",
+      "uses": [
+        "fresh",
+        "cooking",
+        "cider",
+        "storage"
+      ],
+      "ripening": "Late",
+      "ripening_note": "Harvest in October per Fedco; Roots to Fruits Nursery lists mid-October specifically.",
+      "id_cues": "Nearly solid red, unlike yellow-green Golden Delicious. Idared is also red but, per Purdue, far more susceptible to scab and fire blight than Haralson. Harrison is a different, little-grown cider apple; no source gives a cue to tell them apart.",
+      "habit": "Extremely hardy, naturally small tree with a strong central leader and wide-angled branching (Fedco); sets fruit heavily and needs thinning to encourage annual cropping.",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "Zone 3 (Fedco) or 3 to 8 (Roots to Fruits Nursery)",
+      "sources": [
+        [
+          "Fedco Trees: Haralson Apple",
+          "https://fedcoseeds.com/trees/haralson-apple-7879"
+        ],
+        [
+          "Roots to Fruits Nursery: Haralson Apple Trees",
+          "https://rootstofruitsnursery.com/products/haralson-apple"
+        ],
+        [
+          "Purdue Extension: Disease Susceptibility of Common Apple Cultivars BP-132-W",
+          "https://extension.purdue.edu/extmedia/BP/BP-132-W.pdf"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Roots to Fruits lists Bloom Group 4; an earlier group-3 claim could not be confirmed here. Parentage: Malinda x open-pollinated (Fedco) vs Malinda x Wealthy (Roots to Fruits). Flesh color also differs: white vs yellow-gold.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "apple-pristine",
+      "group": "Apple",
+      "type": "Apple",
+      "kind": "cultivar",
+      "name": "Pristine",
+      "aliases": [],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Mid-Jul to Aug; yellow with pink blush; crisp, sweet-tart",
+      "summary": "A Purdue-Rutgers-Illinois (PRI) cooperative release; one of the earliest-ripening apples, with crisp, juicy, sweet-tart canary-yellow fruit used fresh, in pies and in applesauce.",
+      "appearance": "Medium-sized apple with canary-yellow skin and a light pink blush; crisp, juicy flesh; borne in large early-season crops (Raintree).",
+      "flavor_use": "Crisp, juicy, sweet-tart flavor; good fresh, in pies and applesauce; keeps refrigerated up to six weeks (Stark Bro's). Purdue rates scab very resistant and fire blight and powdery mildew resistant, but cedar-apple rust susceptible; Stark Bro's and Raintree instead claim rust resistance. Needs a pollinizer (Raintree).",
+      "uses": [
+        "fresh",
+        "cooking",
+        "storage"
+      ],
+      "ripening": "Early",
+      "ripening_note": "Stark Bro's: ripens mid-July, about 1.5 weeks after Lodi. Raintree: ripens in August. Both call it an early apple.",
+      "id_cues": "Ripens weeks before Williams' Pride, Zestar! or Gala; canary-yellow with a pink blush is far less red than those cultivars. Purdue rates Williams' Pride very resistant to cedar-apple rust, while Pristine is rated susceptible.",
+      "habit": "Vigorous grower that establishes quickly and bears fruit reliably within a few years (Stark Bro's).",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "Zones 5 to 8 (Stark Bro's) or 4 to 9 (Raintree)",
+      "sources": [
+        [
+          "Stark Bro's: Pristine Apple Tree",
+          "https://www.starkbros.com/products/fruit-trees/apple-trees/pristine-apple"
+        ],
+        [
+          "Raintree Nursery: Pristine Apple",
+          "https://raintreenursery.com/products/pristine-apple-standard"
+        ],
+        [
+          "Purdue Extension: Disease Susceptibility of Common Apple Cultivars BP-132-W",
+          "https://extension.purdue.edu/extmedia/BP/BP-132-W.pdf"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Sources disagree on ripening month (Stark Bro's mid-July vs Raintree August) and zone (5-8 vs 4-9). Purdue rates cedar-apple rust susceptible; both nurseries claim resistance; this entry keeps the university rating.",
       "reviewed_on": "2026-10-17"
     }
   ]

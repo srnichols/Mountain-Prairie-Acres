@@ -120,6 +120,11 @@ def _point(point, label):
 
 
 RIPENING_BANDS = ("Early", "Mid", "Late", "Very late")
+PLAN_TYPES = ("Apple", "Pear", "Cherry", "Peach")
+# Optional fields each fruit type may carry; the pollination rules read them.
+PLAN_TYPE_FIELDS = {"Apple": {"flowering_group", "ploidy"}, "Pear": {"self_fertile", "pear_bloom"},
+                    "Cherry": {"self_fertile", "cherry_chart"}, "Peach": {"self_fertile"}}
+PEAR_BLOOM_PERIODS = ("early", "mid", "late")
 LIBRARY_GROUPS = ("Apple", "Pear", "Cherry", "Peach", "Apricot", "Plum", "Berry", "Nut", "Evergreen", "Shade tree", "Perennial")
 LIBRARY_KINDS = ("cultivar", "species", "genus", "rootstock")
 LIBRARY_USES = ("fresh", "cooking", "cider", "perry", "juice", "jelly", "canning", "drying", "storage", "pollinizer",
@@ -167,6 +172,10 @@ def _validate_cultivar_library(data, inventory, fruit, workbook):
     profiles = _index(library["records"], "cultivar profile")
     in_scope = set(inventory)
     seeds = _seed_list(workbook.values())
+    plan = data["orchard"]["rules"].get("PLANTING_PLAN")
+    # Cultivars the owner plans to buy have no inventory or purchase row yet; the planting plan is their link.
+    planned = ({item["profile"] for item in plan["items"] if isinstance(item, dict) and isinstance(item.get("profile"), str)}
+               if isinstance(plan, dict) and isinstance(plan.get("items"), list) else set())
     inventory_links, purchase_links, seed_links = {}, {}, {}
     for profile in profiles.values():
         label = profile["id"]
@@ -198,8 +207,8 @@ def _validate_cultivar_library(data, inventory, fruit, workbook):
                 if source in links:
                     raise ValueError(f"{key} row {source} is linked to both {links[source]} and {label}")
                 links[source] = label
-        if not (profile["inventory_rows"] or profile["purchase_rows"] or profile.get("seed_rows")):
-            raise ValueError(f"{label}: needs at least one inventory, purchase, or seed-list row")
+        if not (profile["inventory_rows"] or profile["purchase_rows"] or profile.get("seed_rows") or label in planned):
+            raise ValueError(f"{label}: needs at least one inventory, purchase, or seed-list row, or a place in the planting plan")
         for row in profile["inventory_rows"]:
             if not set(matches.get(str(row), {}).get("rows", [])) <= set(profile["purchase_rows"]):
                 raise ValueError(f"{label}: purchase rows must include the purchase match of inventory row {row}")
@@ -265,6 +274,85 @@ def _validate_cultivar_library(data, inventory, fruit, workbook):
 
 
 STONE_FRUIT_TYPES = ("Apricot", "Cherry", "Peach", "Plum")
+
+
+def _validate_planting_plan(data, locations, active_spots):
+    """Check PLANTING_PLAN: the cultivars recommended for the open spots of one planting year."""
+    plan = data["orchard"]["rules"].get("PLANTING_PLAN")
+    if plan is None:
+        return
+    _require(plan, ("year", "status", "summary", "rootstock_advice", "shipping_note", "items"), "planting plan")
+    _integer(plan["year"], "planting plan year", 2000)
+    for key in ("status", "summary", "rootstock_advice", "shipping_note"):
+        _text(plan[key], "planting plan " + key, False)
+    if not isinstance(plan["items"], list) or not plan["items"]:
+        raise ValueError("The planting plan needs at least one item")
+    profiles = {record["id"]: record for record in data["cultivar_library"]["records"]}
+    spots = {location["name"]: location for location in locations.values() if location["orchard_row"] is not None}
+    required = ("id", "type", "cultivar", "code", "profile", "quantity", "spots", "rootstock", "role", "caution")
+    seen_ids, seen_codes, seen_spots, seen_profiles = set(), set(), set(), set()
+    for item in plan["items"]:
+        if not isinstance(item, dict):
+            raise ValueError("Each planting plan item must be an object")
+        _require(item, required, "planting plan item")
+        label = item["id"]
+        if item["type"] not in PLAN_TYPES:
+            raise ValueError(f"Planting plan item {label}: type must be one of {PLAN_TYPES}")
+        if extra := set(item) - set(required) - PLAN_TYPE_FIELDS[item["type"]]:
+            raise ValueError(f"Planting plan item {label} has unknown fields for a {item['type'].lower()}: {sorted(extra)}")
+        if not isinstance(label, str) or not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", label) or label in seen_ids:
+            raise ValueError(f"Planting plan item id must be a unique lowercase slug: {label}")
+        seen_ids.add(label)
+        for key in ("cultivar", "rootstock", "role", "caution"):
+            _text(item[key], f"planting plan {label} {key}", False)
+        if not isinstance(item["code"], str) or not re.fullmatch(r"[A-Z]{2,4}", item["code"]) or item["code"] in seen_codes:
+            raise ValueError(f"Planting plan item {label}: code must be a unique 2 to 4 letter capital code")
+        seen_codes.add(item["code"])
+        profile = profiles.get(item["profile"]) if isinstance(item["profile"], str) else None
+        if profile is None:
+            raise ValueError(f"Planting plan item {label} references a missing cultivar profile")
+        if profile["type"] != item["type"]:
+            raise ValueError(f"Planting plan item {label}: profile type {profile['type']} disagrees with {item['type']}")
+        if item["profile"] in seen_profiles:
+            raise ValueError(f"Planting plan item {label} repeats a profile; list each cultivar once")
+        seen_profiles.add(item["profile"])
+        _integer(item["quantity"], f"planting plan {label} quantity", 1)
+        if not isinstance(item["spots"], list) or len(item["spots"]) != item["quantity"]:
+            raise ValueError(f"Planting plan item {label}: quantity must equal the number of spots")
+        for name in item["spots"]:
+            location = spots.get(name) if isinstance(name, str) else None
+            if location is None:
+                raise ValueError(f"Planting plan item {label} names an unknown orchard spot: {name}")
+            if name in seen_spots:
+                raise ValueError(f"Planting plan spot {name} is used twice")
+            seen_spots.add(name)
+            if location["reserved_for"] is not None or location["id"] in active_spots:
+                raise ValueError(f"Planting plan spot {name} is reserved or already holds an active planting")
+            if location["replacement_year"] is not None and (
+                    location["replacement_year"] != plan["year"] or location["replacement_type"] not in (item["type"], "Tree")):
+                raise ValueError(f"Planting plan spot {name} disagrees with its recorded replacement")
+        if item["type"] == "Apple":
+            _integer(item.get("flowering_group"), f"planting plan {label} flowering_group", 1)
+            if item["flowering_group"] > 5 or item.get("ploidy") not in ("Diploid", "Triploid"):
+                raise ValueError(f"Planting plan item {label}: apples need a flowering group of 1 to 5 and a ploidy")
+        elif not isinstance(item.get("self_fertile"), bool):
+            raise ValueError(f"Planting plan item {label}: self_fertile must be true or false")
+        if item["type"] == "Pear":
+            bloom = item.get("pear_bloom")
+            if (not isinstance(bloom, list) or len(bloom) < 2 or not isinstance(bloom[0], str) or not bloom[0]
+                    or any(period not in PEAR_BLOOM_PERIODS for period in bloom[1:])):
+                raise ValueError(f"Planting plan item {label}: pear_bloom needs a label and bloom periods from {PEAR_BLOOM_PERIODS}")
+        if item["type"] == "Cherry":
+            chart = item.get("cherry_chart")
+            if not isinstance(chart, dict) or set(chart) != {"group", "bloom"} or not (
+                    chart["group"] is None or isinstance(chart["group"], str)):
+                raise ValueError(f"Planting plan item {label}: cherry_chart needs group and bloom")
+            _integer(chart["bloom"], f"planting plan {label} cherry bloom", 1)
+            if chart["bloom"] > 6:
+                raise ValueError(f"Planting plan item {label}: cherry bloom must be 1 to 6")
+    held = {name for name, location in spots.items() if location["replacement_year"] == plan["year"]}
+    if held - seen_spots:
+        raise ValueError(f"Open replacement spots without a planting plan item: {sorted(held - seen_spots)}")
 
 
 def _validate_unidentified_apples(rules, inventory, fruit, workbook, profile_by_purchase_row):
@@ -573,6 +661,7 @@ def validate_data(data):
         _text(event["notes"], "event notes")
         for key in ("recorded_on", "occurred_on"):
             _date(event[key], "event date")
+    _validate_planting_plan(data, locations, active_spots)
     _require(terrain, ("grid", "contours", "flows", "flows_fine", "split", "ridge", "ditch", "drainage_ac"), "terrain")
     mesh = terrain["grid"]
     if mesh.get("unit") != "cm above base (m)":
@@ -741,6 +830,17 @@ def _populate(connection, data, digest):
             [(n["group"], n["habit"], n["bark"], n["leaf"], n["reviewed_on"]) for n in notes])
     _insert(connection, "cultivar_group_note_sources", ("plant_group", "position", "label", "url"),
             [(n["group"], index, source[0], source[1]) for n in notes for index, source in enumerate(n["sources"])])
+    plan = data["orchard"]["rules"].get("PLANTING_PLAN")
+    if plan:
+        spot_ids = {location["name"]: location["id"] for location in data["locations"]["records"]}
+        _insert(connection, "planting_plan_items",
+                ("id", "plan_year", "type", "cultivar", "code", "profile_id", "quantity", "rootstock",
+                 "flowering_group", "ploidy", "self_fertile", "role", "caution"),
+                [(i["id"], plan["year"], i["type"], i["cultivar"], i["code"], i["profile"], i["quantity"], i["rootstock"],
+                  i.get("flowering_group"), i.get("ploidy"), None if i.get("self_fertile") is None else int(i["self_fertile"]),
+                  i["role"], i["caution"]) for i in plan["items"]])
+        _insert(connection, "planting_plan_spots", ("item_id", "location_id"),
+                [(i["id"], spot_ids[spot]) for i in plan["items"] for spot in i["spots"]])
     features, points = [], []
     for feature in grid.data["features"]:
         x, y = grid.center(feature)

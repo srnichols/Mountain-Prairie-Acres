@@ -167,7 +167,7 @@ test('Cultivar library covers every inventory line and its links resolve', () =>
   assert.equal(library.byId('apple-cortland').inventory_rows[0], 29);
   assert.ok(library.tooltip(library.byId('apple-cortland')).startsWith('Cortland: '));
   assert.equal(library.guideHref(library.byId('apple-cortland')), 'cultivar_guide.html#apple-cortland');
-  assert.equal(library.profiles.length, 137);
+  assert.equal(library.profiles.length, 146);
   assert.equal(library.GROUPS.length, 11);
   assert.ok(library.profiles.every(profile => library.GROUPS.includes(profile.group)));
 });
@@ -188,4 +188,75 @@ test('Cultivar library describes habit, bark, and leaves only where a source doe
   assert.equal(library.groupNote('Apple').group, 'Apple');
   assert.equal(library.groupNote('Nut'), null);
   assert.ok(library.groupNote('Cherry').sources.length >= 2);
+});
+
+test('No library text calls this site alkaline; its soil pH is about 6.2', () => {
+  assert.equal(context.window.WATER_HARVESTING.soil.ph, 6.2);
+  const claim = /(alkaline|high-pH) (site|ground)|(dry|windy),? (windy,? )?(alkaline|high-pH)|which describes this site/i;
+  const texts = [...context.window.CULTIVAR_LIBRARY.records, ...context.window.CULTIVAR_LIBRARY.group_notes]
+    .flatMap(record => Object.values(record).filter(value => typeof value === 'string'));
+  assert.deepEqual(texts.filter(text => claim.test(text)), []);
+});
+
+test('The 2027 planting plan fills each open spot and leaves living-tree pollination unchanged', () => {
+  const { records, rows } = model.plan();
+  const plan = context.window.ORCHARD_DATA.PLANTING_PLAN;
+  const spots = model.plannedSpots();
+  assert.equal(plan.year, 2027);
+  assert.equal(spots.length, 16);
+  assert.equal(new Set(spots.map(entry => entry.spot)).size, 16);
+  const counts = {};
+  spots.forEach(entry => { counts[entry.item.type] = (counts[entry.item.type] || 0) + 1; });
+  assert.deepEqual(counts, { Apple: 13, Pear: 1, Cherry: 1, Peach: 1 });
+  spots.forEach(({ r, c, spot }) => assert.equal(rows[r - 1].trees[c - 1], null, `${spot} should be open`));
+  rows.flatMap(row => row.held).forEach(tree => assert.ok(model.plannedAt(tree.r, tree.c), `R${tree.r}-C${tree.c} has no planned cultivar`));
+  assert.equal(model.plannedAt(6, 4).item.cultivar, 'Dayton');
+  assert.equal(model.plannedAt(1, 1), null);
+  // Planned trees stand in for cultivars not bought yet, so they are never donors for the living trees.
+  records.filter(tree => tree.r != null).forEach(tree => {
+    assert.ok(model.nearestPartners(tree, records).every(partner => !partner.donor.planned));
+  });
+});
+
+test('Every planned cultivar has a library profile of the same fruit type with sources', () => {
+  const library = context.window.CultivarLibrary;
+  for (const item of context.window.ORCHARD_DATA.PLANTING_PLAN.items) {
+    const profile = library.byId(item.profile);
+    assert.ok(profile, item.id);
+    assert.equal(profile.type, item.type, item.id);
+    assert.ok(profile.sources.length >= 1 && profile.sources.every(([, link]) => link.startsWith('https://')), item.id);
+  }
+});
+
+test('Planned apples have several pollination partners, even if a flowering group is one off', () => {
+  const partnerCounts = win => {
+    const { records } = win.OrchardModel.plan();
+    return win.OrchardModel.plannedPollination(records).filter(entry => entry.tree.type === 'Apple').map(entry => entry.partners.length);
+  };
+  const base = partnerCounts(context.window);
+  assert.equal(base.length, 13);
+  assert.ok(Math.min(...base) >= 4, `fewest partners: ${Math.min(...base)}`);
+  const shifted = (ids, step) => {
+    const win = freshWindow();
+    win.ORCHARD_DATA.PLANTING_PLAN.items.forEach(item => { if (ids.includes(item.id)) item.flowering_group += step; });
+    return Math.min(...partnerCounts(win));
+  };
+  assert.ok(shifted(['williams-pride', 'pristine'], -1) >= 3, 'early cultivars one group earlier');
+  assert.ok(shifted(['dayton', 'freedom'], 1) >= 3, 'group-3 cultivars one group later');
+  assert.ok(shifted(['haralson'], -1) >= 3, 'Haralson in group 3, as another source says');
+});
+
+test('The planned pear and cherry follow the pollination chart rules', () => {
+  const { records } = model.plan();
+  const planned = name => model.plannedPollination(records).find(entry => entry.tree.name === name);
+  const pear = planned('Harrow Delight');
+  assert.deepEqual(Array.from(pear.partners, partner => partner.donor.name), ['Red Bartlett']);
+  assert.ok(pear.partners[0].distance <= model.LOCAL_RADIUS);
+  const cherry = planned('Black Gold').tree;
+  assert.equal(cherry.selfFertile, true);
+  assert.equal(planned('Intrepid').partners.length, 0, 'A self-fertile peach needs no partner');
+  // Black Gold blooms later than Bing, so it adds no pollen for Bing; a chart step earlier would.
+  const bing = records.find(tree => tree.name === 'Bing');
+  assert.equal(model.compatiblePair(bing, cherry), null);
+  assert.ok(model.compatiblePair(bing, { ...cherry, cherryChart: { group: null, bloom: 4 } }));
 });

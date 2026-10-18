@@ -219,10 +219,21 @@ records.filter(tree => tree.orchardUpdate || tree.rootstockOnly || tree.planted)
     const update = tree.orchardUpdate;
     const status = update.status === 'dead' ? 'reported dead' :
       `not planted in the orchard; planned outside it (SiteRef ${ORCHARD_DATA.PLANT_LOCATIONS[tree.id]?.site_ref || 'PENDING'})`;
-    paragraph.textContent = `R${tree.r}-C${tree.c}: ${tree.tag} ${status}. Leave this spot open for a new ${update.replacementType.toLowerCase()} in ${update.replacementYear}.`;
+    const planned = OrchardModel.plannedAt(tree.r, tree.c);
+    paragraph.textContent = `R${tree.r}-C${tree.c}: ${tree.tag} ${status}. Leave this spot open for a new ${update.replacementType.toLowerCase()} in ${update.replacementYear}${planned ? `: planned ${planned.item.cultivar}` : ''}.`;
   }
   updates.append(paragraph);
 });
+if (OrchardModel.plannedSpots().length) {
+  const paragraph = document.createElement('p');
+  const link = document.createElement('a');
+  const held = records.filter(tree => tree.orchardUpdate).length;
+  const total = OrchardModel.plannedSpots().length;
+  link.href = 'fy27_planting_plan.html';
+  link.textContent = `${ORCHARD_DATA.PLANTING_PLAN.year} planting plan`;
+  paragraph.append(`${total} open spots have recommended cultivars: the ${held} above and ${total - held} more empty positions. They are in the `, link, '. Nothing is tagged or bought yet, so they are not on this checklist.');
+  updates.append(paragraph);
+}
 </script>
 </body>
 </html>

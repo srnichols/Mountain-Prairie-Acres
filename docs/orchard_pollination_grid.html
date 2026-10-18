@@ -40,6 +40,9 @@
   .empty { background: var(--bg2); color: var(--text3); }
   .loss { border: 1.5px dashed #9F3A32; color: #7A2416; }
   .deferred { border: 1.5px dashed #5F6872; color: #424B54; }
+  .planned { background: #E3F1E6; color: #1B4D2B; border: 1.5px solid #3E7B50; }
+  .planned.loss { border: 1.5px dashed #9F3A32; }
+  .planned.deferred { border: 1.5px dashed #5F6872; }
   .reserved { background: repeating-linear-gradient(135deg, #FCE9E3 0 6px, #F5D3C8 6px 12px); border: 1.5px dashed #C2412F; color: #7A2416; }
   .tri { border: 2px dashed #F2C14E !important; }
   .star { box-shadow: inset 0 0 0 2px rgba(255,180,0,0.55); }
@@ -350,6 +353,7 @@
 <p class="legend-note">▲ Dashed border = <strong>triploid</strong>, excluded as a pollen donor and placed near two different diploid cultivars. ★ Gold glow = <strong>good pollen donor in the workbook</strong>, not a guarantee of compatibility with every nearby tree.</p>
 <p class="legend-note">◥ Yellow corner = <strong>Pseudomonas (bacterial canker) positive, untreated</strong> in the inventory. When one tag covers several trees and only some tested positive, the inventory does not say which, so all of them are flagged.</p>
 <p class="legend-note" id="planted-note"></p>
+<p class="legend-note" id="plan-note" hidden></p>
 <p class="legend-note"><strong>S</strong> = self-fertile according to the planning notes; <strong>?</strong> = information missing or needing confirmation; <strong>UNK</strong> / <strong>SWT</strong> = unidentified tree (not counted as a pollen donor until identified; see the possibility lists for the <a href="unidentified_apple_id_sheet.html">apples</a> and for the <a href="unidentified_stone_fruit_id_sheet.html">cherries, peaches, and apricot</a>). Hover over a tree for its cultivar profile, or click or tap it to jump to its row in the inventory table, which links to the <a href="cultivar_guide.html">cultivar guide</a>. Different trees of the same cultivar, including color sports, are not counted as different pollen partners.</p>
 <p class="legend-note">Apple <strong>FG</strong> means flowering group, not harvest season. <strong>*</strong> after a group number means sources differ; the planning value follows Orange Pippin. <strong>FG 2?</strong> marks a provisional estimate. <strong>Midseason; FG ?</strong> records nursery bloom guidance without inventing a numbered group.</p>
 </section>
@@ -508,7 +512,7 @@ window.addEventListener('afterprint', () => {
 });
 
 const { PLAN_DATE, STATUS_DATE, FRUIT_SHEET, INVENTORY, INVENTORY_MATCH, TYPE_ORDER, BLOCK_ROWS, SHARED_ROWS, RESERVED_ROWS, ORCHARD_ROWS, ROW_PLAN, GRID_COLUMNS, PLOT_WIDTH, EAST_SIDE, PLOT_DEPTH, TREE_SPACING, ROW_SPACING, LOCAL_RADIUS, ORCHARD_WEST_SETBACK, JUNIPER_DISTANCE, WINDBREAK, EAST_HEDGE, OWNER_NOTES, ORCHARD_UPDATES, PLANTED_ROOTSTOCKS, ROOTSTOCK_LABELS, GENERATED_CODES, FAMILY_OVERRIDES, APPLE_ALIASES, HARRISON_BLOOM_RESEARCH, APPLE_BLOOM_RESEARCH, URBAN_APPLE_ROWS, PEAR_BLOOM, CHERRY_CHART, FRUIT_BY_ROW, INVENTORY_BY_ROW, RESERVED, fruitRecord, inventoryLine, rootstockRemaining, normalizeName, placementOf, buildOrchardTrees, balancedRows, blockShape, sharedGroupOf, blockColumns, rowTemplate, layoutRows, lineCount, layoutPlantRow, windbreakLayout, eastHedgeLayout, alleyGeometry, laneGeometry, guildLayout, treeDistance, needsTwoDonors, compatiblePair, nearestPartners, PLANT_LOCATIONS } = window.OrchardModel;
-const { C1_GUILDS, ORCHARD_X0 } = window.OrchardModel;
+const { C1_GUILDS, ORCHARD_X0, PLANTING_PLAN, plannedAt, plannedSpots } = window.OrchardModel;
 
 const orchardTrees = buildOrchardTrees();
 const rows = layoutRows(ROW_PLAN, orchardTrees);
@@ -688,6 +692,10 @@ function updateAt(r, c) {
 
 function replacementNote(tree) {
   const update = tree.orchardUpdate;
+  const planned = plannedAt(tree.r, tree.c);
+  if (planned) {
+    return `Leave this spot open; the plan is a new ${planned.item.cultivar} (${planned.item.type.toLowerCase()}) in ${update.replacementYear}, described in the planting plan.`;
+  }
   const replacement = update.replacementType === 'Tree' ? 'tree' : `${update.replacementType.toLowerCase()} tree`;
   return `Leave this spot open; plant a new ${replacement} in ${update.replacementYear} (variety not yet chosen).`;
 }
@@ -873,13 +881,20 @@ rows.forEach(row => {
     } else if (update) {
       const dead = update.orchardUpdate.status === 'dead';
       cell.classList.add(dead ? 'loss' : 'deferred');
+      if (plannedAt(row.r, index + 1)) cell.classList.add('planned');
       // A C1 spot held for a replacement keeps its berry guild.
       const heldGuild = index === 0 ? guilds.bushes.filter(bush => bush.r === row.r) : [];
       if (heldGuild.length) cell.classList.add('guild');
       cell.title = updateNote(update) + (heldGuild.length ? `\nBerry guild on the alley side: ${heldGuild.map(bush => bush.group.name).join(', ')}` : '');
       cell.setAttribute('aria-label', cell.title);
       cell.append(element('span', 'Open', 'code'), element('span', `${update.code} ${dead ? 'dead' : 'outside'}`, 'fg'),
-        element('span', `${update.orchardUpdate.replacementType} ${update.orchardUpdate.replacementYear}`, 'fg'));
+        element('span', plannedAt(row.r, index + 1) ? `${plannedAt(row.r, index + 1).item.code} ${update.orchardUpdate.replacementYear}` :
+          `${update.orchardUpdate.replacementType} ${update.orchardUpdate.replacementYear}`, 'fg'));
+    } else if (plannedAt(row.r, index + 1)) {
+      const { item } = plannedAt(row.r, index + 1);
+      cell.classList.add('planned');
+      cell.title = `R${row.r}-C${index + 1} — planned ${PLANTING_PLAN.year}: ${item.cultivar} (${item.type.toLowerCase()}); ${item.role}.\nRootstock: ${item.rootstock}.\n${item.caution}`;
+      cell.append(element('span', item.code, 'code'), element('span', String(PLANTING_PLAN.year), 'fg'));
     } else {
       cell.title = row.future ? `R${row.r}-C${index + 1} — open position in a row held for trees you buy or graft later` :
         row.shared ? `R${row.r}-C${index + 1} — open position in the rows shared by ${listText(row.types.map(type => PLURAL[type]))}` :
@@ -946,6 +961,19 @@ if (outsideTrees.length) {
   const item = element('div');
   item.append(box, 'Not planted here: tree planned outside; replacement in 2027');
   legendBox.append(item);
+}
+if (plannedSpots().length) {
+  const box = element('span', '', 'lbox empty planned');
+  const item = element('div');
+  item.append(box, `Planned ${PLANTING_PLAN.year}: recommended cultivar for an open spot (a dashed border marks a spot held for a dead or relocated tree)`);
+  legendBox.append(item);
+  const note = document.getElementById('plan-note');
+  const counts = {};
+  plannedSpots().forEach(({ item: planned }) => { counts[planned.type] = (counts[planned.type] || 0) + 1; });
+  const link = element('a', `${PLANTING_PLAN.year} planting plan`);
+  link.href = 'fy27_planting_plan.html';
+  note.append(`Green cells are the recommended ${PLANTING_PLAN.year} plantings (${Object.entries(counts).map(([type, count]) => `${count} ${count === 1 ? type.toLowerCase() : PLURAL[type]}`).join(', ')}), shown by cultivar code with the year; the rootstocks, cautions, and buy list are in the `, link, '. The planned trees are not counted as pollen partners for the trees on this page.');
+  note.hidden = false;
 }
 windbreakRows.forEach(row => addLegend(row.color, `Windbreak: ${row.name}`));
 if (guilds.bushes.length) {
@@ -1584,8 +1612,9 @@ const leftover = rootstockCount - reservedTotal;
   reservedTotal ?
     `Once grafted, ${Math.min(rootstockCount, reservedTotal)} of the ${rootstockCount} remaining rootstocks go in reserved row R${reservedRows[0].r}${leftover > 0 ? `; the other ${leftover} can fill open spots at the east end of ${shortAppleRow ? `R${shortAppleRow.r}, the short apple row` : 'a new apple row'} (${appleOpen} open)` : ''}.${futureRows.length ? ` ${futureRange} ${futureRows.length > 1 ? 'are' : 'is'} held open for more trees you buy or graft later.` : ''}` :
     `Once grafted, ${Math.min(rootstockCount, appleOpen)} of the ${rootstockCount} rootstocks can fill the open positions at the east end of the apple rows${rootstockCount > appleOpen ? `; the other ${rootstockCount - appleOpen} would need another apple row` : ''}.`,
+  plannedSpots().length ? `The ${PLANTING_PLAN.year} planting plan names a recommended cultivar for each of the ${plannedSpots().length} open spots: the six held for replacements and the ${appleOpen} empty positions at the east end of the short apple row. They show as green cells and are not counted as trees or pollen partners until the trees are in the ground.` : '',
   'The Chinese apricot and Craig\'s Crimson cherry are still in Boise (girdled and mulched) and are not part of the Prairie plan.'
-].forEach(text => document.getElementById('separate-notes').append(element('p', text)));
+].filter(Boolean).forEach(text => document.getElementById('separate-notes').append(element('p', text)));
 
 [
   `Canonical JSON in data/ supplies the current records, with the original inventory and purchase workbooks retained for provenance. Owner-reported losses and outside-orchard plans leave their original slots open and are excluded from orchard counts and pollen partners. The M-111 planted at R6-C3 is allocated from inventory row 56; ${rootstockRemaining(56)} of that line's original ${inventoryLine(56)[1]} rootstocks remain available. It is not a fruit tree or pollen partner without a recorded scion cultivar. Every inventory line is matched to its purchase record(s) in the reconciliation table. When one inventory line matches several records of the same cultivar, the first record's cultivar data is used and the rootstock lists the possibilities. Plot dimensions, windbreaks, hedges, juniper distance, planting updates, and white pine losses are retained in the JSON records. Berry bushes are matched to the original Berry sheet.`,
