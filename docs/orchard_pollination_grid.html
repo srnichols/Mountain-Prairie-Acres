@@ -711,7 +711,7 @@ function updateNote(tree) {
   const current = PLANT_LOCATIONS[tree.id];
   const outside = current ? `This living tree is ${current.status} outside the orchard; SiteRef ${current.site_ref}.` :
     'This living tree is planned for planting outside the orchard; grid location pending.';
-  const status = update.status === 'dead' ? `reported dead ${update.reported}.` :
+  const status = update.status === 'dead' ? `reported dead ${update.reported}${update.lostBeforePlanting ? ' (it died in its pot before planting)' : ''}.` :
     `not planted in the orchard (owner update ${update.reported}). ${outside}`;
   return `${position(tree)}: ${tree.name} (tag ${tree.tag}, inventory row ${tree.invRow}) ${status} ${replacementNote(tree)}`;
 }
@@ -1396,7 +1396,7 @@ INVENTORY.filter(line => placementOf(line) !== 'other').forEach(line => {
       plan.append(treeLink(tree, position(tree)));
     });
     lineUpdates.forEach(tree => plan.append(element('div',
-      `${position(tree)} - ${tree.orchardUpdate.status === 'dead' ? 'DEAD' : 'NOT PLANTED HERE'}; open for a replacement in ${tree.orchardUpdate.replacementYear}`, 'source-note')));
+      `${position(tree)} - ${tree.orchardUpdate.status === 'dead' ? `DEAD${tree.orchardUpdate.lostBeforePlanting ? ' (in its pot, before planting)' : ''}` : 'NOT PLANTED HERE'}; open for a replacement in ${tree.orchardUpdate.replacementYear}`, 'source-note')));
   }
   if (placement === 'rootstock') {
     plan = element('div', `${rootstockRemaining(invRow)} remain for grafting and planting; ${placementLabels.rootstock}.`);

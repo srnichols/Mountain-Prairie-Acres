@@ -222,7 +222,7 @@ records.filter(tree => tree.orchardUpdate || tree.rootstockOnly || (tree.planted
     paragraph.textContent = `${tree.r && `R${tree.r}-C${tree.c}`}: ${tree.name} (${tree.tag}) is already planted; its checkbox is checked.`;
   } else {
     const update = tree.orchardUpdate;
-    const status = update.status === 'dead' ? 'reported dead' :
+    const status = update.status === 'dead' ? `reported dead${update.lostBeforePlanting ? ' (it died in its pot before planting)' : ''}` :
       `not planted in the orchard; planned outside it (SiteRef ${ORCHARD_DATA.PLANT_LOCATIONS[tree.id]?.site_ref || 'PENDING'})`;
     const planned = OrchardModel.plannedAt(tree.r, tree.c);
     paragraph.textContent = `R${tree.r}-C${tree.c}: ${tree.tag} ${status}. Leave this spot open for a new ${update.replacementType.toLowerCase()} in ${update.replacementYear}${planned ? `: planned ${planned.item.cultivar}` : ''}.`;

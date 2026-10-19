@@ -1,5 +1,173 @@
 {
   "schema_version": 1,
+  "event_types": [
+    {
+      "id": "planting_reported",
+      "group": "history",
+      "label": "Planting reported",
+      "description": "The tree was planted, or was found in, or moved to, a different spot."
+    },
+    {
+      "id": "outside_orchard_planned",
+      "group": "history",
+      "label": "Placed outside the orchard",
+      "description": "The tree is meant to go outside the orchard, and its place is not yet known."
+    },
+    {
+      "id": "death_reported",
+      "group": "history",
+      "label": "Death reported",
+      "description": "The owner reported the tree dead. The notes say what is known about when and where."
+    },
+    {
+      "id": "lost_before_planting",
+      "group": "history",
+      "label": "Lost before planting",
+      "description": "The tree died, or was judged too poor to plant, while it was still in its pot. It was never in the ground here."
+    },
+    {
+      "id": "lost_in_ground",
+      "group": "history",
+      "label": "Lost after planting",
+      "description": "A planted tree died. Also mark the plant and its planting dead, and say in the notes when it was last seen alive and what the damage looked like."
+    },
+    {
+      "id": "identified",
+      "group": "history",
+      "label": "Identified",
+      "description": "The cultivar of an unidentified tree was worked out. The notes give the evidence."
+    },
+    {
+      "id": "bud_swell",
+      "group": "stage",
+      "order": 1,
+      "label": "Bud swell",
+      "description": "The buds are visibly swelling in late winter or early spring."
+    },
+    {
+      "id": "bud_break",
+      "group": "stage",
+      "order": 2,
+      "label": "Bud break",
+      "description": "The buds have opened and the first green shows (green tip on apples and pears)."
+    },
+    {
+      "id": "leaf_out",
+      "group": "stage",
+      "order": 3,
+      "label": "Leaf out",
+      "description": "About half of the leaf buds have opened."
+    },
+    {
+      "id": "first_bloom",
+      "group": "stage",
+      "order": 4,
+      "label": "First bloom",
+      "description": "The first flowers are open."
+    },
+    {
+      "id": "full_bloom",
+      "group": "stage",
+      "order": 5,
+      "label": "Full bloom",
+      "description": "About 80 percent of the flowers are open."
+    },
+    {
+      "id": "petal_fall",
+      "group": "stage",
+      "order": 6,
+      "label": "Petal fall",
+      "description": "Most of the petals have fallen."
+    },
+    {
+      "id": "fruit_set",
+      "group": "stage",
+      "order": 7,
+      "label": "Fruit set",
+      "description": "Small fruit are visibly set and growing."
+    },
+    {
+      "id": "first_harvest",
+      "group": "stage",
+      "order": 8,
+      "label": "First harvest",
+      "description": "The first ripe fruit is picked."
+    },
+    {
+      "id": "fall_color",
+      "group": "stage",
+      "order": 9,
+      "label": "Fall color",
+      "description": "About half of the leaves have changed color."
+    },
+    {
+      "id": "leaf_drop",
+      "group": "stage",
+      "order": 10,
+      "label": "Leaf drop",
+      "description": "About half of the leaves have fallen."
+    },
+    {
+      "id": "survival_check",
+      "group": "condition",
+      "label": "Survival check",
+      "description": "A check on whether the tree is alive, usually in spring after winter. The notes say alive, damaged (and where), or dead."
+    },
+    {
+      "id": "winter_injury",
+      "group": "condition",
+      "label": "Winter injury",
+      "description": "Dieback, split bark, or dead buds after winter. The notes say how much and where."
+    },
+    {
+      "id": "frost_damage",
+      "group": "condition",
+      "label": "Frost damage",
+      "description": "Frost damage to blossoms, young fruit, or new growth. The notes give the night's low if known and how much was hurt."
+    },
+    {
+      "id": "pest_or_disease",
+      "group": "condition",
+      "label": "Pest or disease",
+      "description": "A pest, canker, rot, or other disease seen on the tree. The notes say what it is and how bad."
+    },
+    {
+      "id": "bloom_observed",
+      "group": "condition",
+      "label": "Bloom noted",
+      "description": "A note about the blossoms (color, size, scent) that helps identify the tree."
+    },
+    {
+      "id": "fruit_observed",
+      "group": "condition",
+      "label": "Fruit noted",
+      "description": "A note about the fruit (size, color, flavor, yield, keeping) for identification and to judge quality."
+    },
+    {
+      "id": "bark_observed",
+      "group": "condition",
+      "label": "Bark noted",
+      "description": "A note about the bark (color, texture, peeling) that helps identify the tree."
+    },
+    {
+      "id": "leaf_observed",
+      "group": "condition",
+      "label": "Leaf noted",
+      "description": "A note about the leaves (shape, size, color, glands) that helps identify the tree."
+    },
+    {
+      "id": "habit_observed",
+      "group": "condition",
+      "label": "Habit noted",
+      "description": "A note about the tree's size, shape, and vigor."
+    },
+    {
+      "id": "note",
+      "group": "condition",
+      "label": "Other note",
+      "description": "Any other observation worth keeping."
+    }
+  ],
   "records": [
     {
       "id": "owner-2026-10-11-i64-1",
@@ -112,6 +280,62 @@
       "recorded_on": "2026-10-18",
       "occurred_on": null,
       "notes": "Owner update: a PM- It Lov plum was moved from R12-C7 to R12-C5, so R12-C7 is open. Exact event date not supplied."
+    },
+    {
+      "id": "owner-2026-10-18-i24-1-lost-before-planting",
+      "plant_id": "i24-1",
+      "event_type": "lost_before_planting",
+      "recorded_on": "2026-10-18",
+      "occurred_on": null,
+      "notes": "Owner clarification: this tree was in a pot at the Boise nursery and then at Prairie, and was never in the ground here. It died, or was judged too poor to plant, before planting; which of the two is not recorded."
+    },
+    {
+      "id": "owner-2026-10-18-i24-2-lost-before-planting",
+      "plant_id": "i24-2",
+      "event_type": "lost_before_planting",
+      "recorded_on": "2026-10-18",
+      "occurred_on": null,
+      "notes": "Owner clarification: this tree was in a pot at the Boise nursery and then at Prairie, and was never in the ground here. It died, or was judged too poor to plant, before planting; which of the two is not recorded."
+    },
+    {
+      "id": "owner-2026-10-18-i80-1-lost-before-planting",
+      "plant_id": "i80-1",
+      "event_type": "lost_before_planting",
+      "recorded_on": "2026-10-18",
+      "occurred_on": null,
+      "notes": "Owner clarification: this tree was in a pot at the Boise nursery and then at Prairie, and was never in the ground here. It died, or was judged too poor to plant, before planting; which of the two is not recorded."
+    },
+    {
+      "id": "owner-2026-10-18-i83-1-lost-before-planting",
+      "plant_id": "i83-1",
+      "event_type": "lost_before_planting",
+      "recorded_on": "2026-10-18",
+      "occurred_on": null,
+      "notes": "Owner clarification: this tree was in a pot at the Boise nursery and then at Prairie, and was never in the ground here. It died, or was judged too poor to plant, before planting; which of the two is not recorded."
+    },
+    {
+      "id": "owner-2026-10-18-i84-1-lost-before-planting",
+      "plant_id": "i84-1",
+      "event_type": "lost_before_planting",
+      "recorded_on": "2026-10-18",
+      "occurred_on": null,
+      "notes": "Owner clarification: this tree was in a pot at the Boise nursery and then at Prairie, and was never in the ground here. It died, or was judged too poor to plant, before planting; which of the two is not recorded."
+    },
+    {
+      "id": "owner-2026-10-18-i88-1-lost-before-planting",
+      "plant_id": "i88-1",
+      "event_type": "lost_before_planting",
+      "recorded_on": "2026-10-18",
+      "occurred_on": null,
+      "notes": "Owner clarification: this tree was in a pot at the Boise nursery and then at Prairie, and was never in the ground here. It died, or was judged too poor to plant, before planting; which of the two is not recorded."
+    },
+    {
+      "id": "owner-2026-10-18-i108-1-lost-before-planting",
+      "plant_id": "i108-1",
+      "event_type": "lost_before_planting",
+      "recorded_on": "2026-10-18",
+      "occurred_on": null,
+      "notes": "Owner clarification: this tree was in a pot at the Boise nursery and then at Prairie, and was never in the ground here. It died, or was judged too poor to plant, before planting; which of the two is not recorded."
     }
   ]
 }

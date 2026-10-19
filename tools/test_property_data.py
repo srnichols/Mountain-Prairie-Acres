@@ -121,7 +121,7 @@ class PropertyDataTest(unittest.TestCase):
         self.assertEqual((plan["year"], plan["covers_rows"]), (2027, 12))
         items = query("SELECT id, type, method, quantity, profile_id FROM planting_plan_items ORDER BY id", self.root)
         self.assertEqual(len(items), len(plan["items"]))
-        self.assertEqual(len(items), 26)
+        self.assertEqual(len(items), 29)
         self.assertEqual(sum(r["quantity"] for r in items), 49)
         spots = query("SELECT spot, state, type, method, cultivar FROM planned_spots ORDER BY orchard_row, orchard_column", self.root)
         self.assertEqual(len(spots), 49)
@@ -129,10 +129,12 @@ class PropertyDataTest(unittest.TestCase):
         by_type = {}
         for r in spots:
             by_type[r["type"]] = by_type.get(r["type"], 0) + 1
-        self.assertEqual(by_type, {"Apple": 26, "Pear": 2, "Cherry": 11, "Peach": 3, "Plum": 7})
-        self.assertEqual({r["spot"]: r["cultivar"] for r in spots if r["spot"] in ("R8-C1", "R8-C13", "R9-C2", "R11-C7", "R11-C10", "R12-C7", "R12-C8")},
-                         {"R8-C1": "Harrow Delight", "R8-C13": "Seckel", "R9-C2": "Black Gold", "R11-C7": "Mount Royal",
-                          "R11-C10": "Intrepid", "R12-C7": "Stanley", "R12-C8": "Damson"})
+        self.assertEqual(by_type, {"Apple": 26, "Pear": 2, "Cherry": 11, "Peach": 4, "Plum": 4, "Apricot": 2})
+        wanted = ("R8-C1", "R8-C13", "R9-C2", "R11-C4", "R11-C5", "R11-C7", "R11-C10", "R12-C3", "R12-C4", "R12-C7", "R12-C8")
+        self.assertEqual({r["spot"]: r["cultivar"] for r in spots if r["spot"] in wanted},
+                         {"R8-C1": "Harrow Delight", "R8-C13": "Seckel", "R9-C2": "Black Gold", "R11-C4": "Chinese (Mormon)", "R11-C5": "Harcot",
+                          "R11-C7": "Mount Royal", "R11-C10": "Intrepid", "R12-C3": "Stanley", "R12-C4": "Damson", "R12-C7": "Mount Royal",
+                          "R12-C8": "Reliance"})
         # The moved plums' new spots hold living trees, so the plan does not use them.
         self.assertFalse({r["spot"] for r in spots} & {"R11-C6", "R12-C5"})
         # Grafts go only in the 13 reserved spots of R1, and bought trees only in the others.
@@ -150,7 +152,7 @@ class PropertyDataTest(unittest.TestCase):
         self.assertTrue({r["name"] for r in held} <= {r["spot"] for r in spots}, "Every held replacement spot has a planned cultivar")
         linked = query("SELECT COUNT(*) AS n FROM planting_plan_items i JOIN cultivar_profiles p ON p.id = i.profile_id "
                        "WHERE p.type = i.type", self.root)[0]["n"]
-        self.assertEqual(linked, 26)
+        self.assertEqual(linked, 29)
         validate_data(self.data)
 
     def test_features_terrain_water_and_gps_are_queryable(self):
@@ -171,7 +173,7 @@ class PropertyDataTest(unittest.TestCase):
         self.assertAlmostEqual(sample["elevation_m"], 1444.52)
 
     def test_site_climate_is_queryable(self):
-        counts = {"climate_sources": 4, "temperature_months": 48, "frost_summary": 16, "frost_days": 48, "frost_years": 124,
+        counts = {"climate_sources": 4, "temperature_months": 48, "frost_summary": 16, "frost_days": 48, "frost_years": 124, "climate_checks": 4,
                   "frost_thresholds": 4, "daylight_months": 12, "daylight_crossings": 4, "sun_key_dates": 4, "climate_site": 1}
         for table, expected in counts.items():
             with self.subTest(table=table):
@@ -204,6 +206,26 @@ class PropertyDataTest(unittest.TestCase):
         self.assertEqual([r["label"] for r in sun], ["March equinox", "June solstice", "September equinox", "December solstice"])
         self.assertEqual((sun[1]["sunrise"], sun[1]["sunset"], sun[1]["day_length_hours"], sun[1]["noon_altitude_deg"]), ("06:02", "21:27", 15.42, 70.0))
 
+    def test_things_still_to_check_are_queryable_and_can_be_settled(self):
+        checks = query("SELECT id, status, resolved_on, result FROM climate_checks ORDER BY position", self.root)
+        self.assertEqual([r["id"] for r in checks], ["usda-zone-map", "bloom-dates", "cold-air-drainage", "minimum-thermometer"])
+        # The official USDA map was read on 2026-10-18; the other three need the lot's own seasons and stay open.
+        by_id = {r["id"]: r for r in checks}
+        self.assertEqual((by_id["usda-zone-map"]["status"], by_id["usda-zone-map"]["resolved_on"]), ("done", "2026-10-18"))
+        self.assertIn("zone 6a", by_id["usda-zone-map"]["result"])
+        self.assertIn("-6.6 F", by_id["usda-zone-map"]["result"])
+        self.assertTrue(all(r["status"] == "open" and r["resolved_on"] is None and r["result"] is None
+                            for r in checks if r["id"] != "usda-zone-map"))
+        # Settling a check means a status, a date, and what was found; the database follows the JSON.
+        path = self.root / "data" / "climate.json"
+        climate = json.loads(path.read_text(encoding="utf-8"))
+        climate["checks"][1].update(status="done", resolved_on="2027-05-10", result="First bloom was on April 29.")
+        path.write_text(json.dumps(climate), encoding="utf-8")
+        settled = query("SELECT id, status, resolved_on, result FROM climate_checks WHERE status = 'done' ORDER BY position", self.root)
+        self.assertEqual([r["id"] for r in settled], ["usda-zone-map", "bloom-dates"])
+        self.assertEqual(settled[1], {"id": "bloom-dates", "status": "done", "resolved_on": "2027-05-10", "result": "First bloom was on April 29."})
+        validate_data(load_data(self.root))
+
     def test_database_allows_only_one_primary_climate_source(self):
         database = build(self.root, web=False)
         with contextlib.closing(sqlite3.connect(database)) as connection:
@@ -216,6 +238,55 @@ class PropertyDataTest(unittest.TestCase):
         climate["site"]["retrieved_on"] = "2026-10-19"
         path.write_text(json.dumps(climate), encoding="utf-8")
         self.assertEqual(query("SELECT retrieved_on FROM climate_site", self.root)[0]["retrieved_on"], "2026-10-19")
+
+    def test_event_vocabulary_and_the_pot_losses_are_queryable(self):
+        groups = {r["event_group"]: r["n"] for r in query("SELECT event_group, COUNT(*) AS n FROM event_types GROUP BY event_group", self.root)}
+        self.assertEqual(groups, {"history": 6, "stage": 10, "condition": 10})
+        stages = query("SELECT id FROM event_types WHERE event_group = 'stage' ORDER BY stage_order", self.root)
+        self.assertEqual([r["id"] for r in stages][:5], ["bud_swell", "bud_break", "leaf_out", "first_bloom", "full_bloom"])
+        # Every tree recorded as dead died in its pot: none was ever in the ground at Prairie.
+        dead = {r["plant_id"] for r in query("SELECT id AS plant_id FROM plants WHERE health_status = 'dead'", self.root)}
+        lost = {r["plant_id"] for r in query("SELECT plant_id FROM plant_events WHERE event_type = 'lost_before_planting'", self.root)}
+        self.assertEqual(lost, dead)
+        self.assertEqual(len(dead), 7)
+        self.assertEqual(query("SELECT COUNT(*) AS n FROM plant_events WHERE event_type = 'lost_in_ground'", self.root)[0]["n"], 0)
+        self.assertEqual(query("SELECT COUNT(*) AS n FROM stage_observations", self.root)[0]["n"], 0, "No stage has been logged yet")
+
+    def test_logged_stages_roll_up_by_cultivar_and_meet_the_frost_record(self):
+        path = self.root / "data" / "plant_events.json"
+        events = json.loads(path.read_text(encoding="utf-8"))
+
+        def stage(plant, kind, date):
+            return {"id": f"test-{plant}-{kind}-{date}", "plant_id": plant, "event_type": kind, "recorded_on": date, "occurred_on": date,
+                    "notes": "Test fixture only"}
+        # Two Reliance peaches (i90-1 and i90-2) are planted; 2028 is a leap year, so May 4 is its 125th day but still day 124 here.
+        events["records"] += [stage("i90-1", "first_bloom", "2027-04-28"), stage("i90-2", "first_bloom", "2027-04-30"),
+                              stage("i90-1", "full_bloom", "2027-05-04"), stage("i90-2", "full_bloom", "2027-05-06"),
+                              stage("i90-1", "full_bloom", "2028-05-04")]
+        path.write_text(json.dumps(events), encoding="utf-8")
+        rows = query("SELECT stage, year, trees, observations, earliest, latest, earliest_day, latest_day, average_day FROM stage_by_cultivar "
+                     "WHERE cultivar = 'Reliance' ORDER BY year, stage_order", self.root)
+        self.assertEqual([(r["year"], r["stage"], r["trees"], r["observations"], r["earliest_day"], r["latest_day"], r["average_day"]) for r in rows],
+                         [(2027, "first_bloom", 2, 2, 118, 120, 119.0), (2027, "full_bloom", 2, 2, 124, 126, 125.0),
+                          (2028, "full_bloom", 1, 1, 124, 124, 124.0)])
+        observation = query("SELECT spot, day_number, year FROM stage_observations WHERE plant_id = 'i90-2' AND stage = 'full_bloom'", self.root)
+        self.assertEqual(observation, [{"spot": "R12-C9", "day_number": 126, "year": 2027}])
+        # The chance a freeze still followed each bloom date comes from the Prairie record, worked out here from the calendar dates.
+        climate = self.data["climate"]
+        primary = next(source for source in climate["sources"] if source["role"] == "primary")
+        first, last = climate["site"]["normals_period"]
+
+        def later_share(threshold, month, day):
+            dates = [y["last_spring"][str(threshold)] for y in primary["frost"]["years"] if first <= y["year"] <= last and y["last_spring"][str(threshold)]]
+            return int(100 * sum((int(d[5:7]), int(d[8:10])) > (month, day) for d in dates) / len(dates) + 0.5)
+        risk = query("SELECT plant_id, year, threshold_f, later_freeze_pct FROM bloom_frost_risk WHERE stage = 'full_bloom' AND plant_id = 'i90-1' "
+                     "ORDER BY year, threshold_f", self.root)
+        self.assertEqual(len(risk), 8, "Two full-bloom dates times four thresholds")
+        for row in risk:
+            self.assertEqual(row["later_freeze_pct"], later_share(row["threshold_f"], 5, 4), f"{row['year']} {row['threshold_f']} F")
+        by_threshold = {r["threshold_f"]: r["later_freeze_pct"] for r in risk if r["year"] == 2027}
+        self.assertEqual(by_threshold, {24: 48, 28: 88, 32: 100, 36: 100})
+        self.assertEqual(by_threshold, {r["threshold_f"]: r["later_freeze_pct"] for r in risk if r["year"] == 2028})
 
     def test_database_foreign_keys_and_integrity(self):
         database = build(self.root, web=False)
@@ -403,6 +474,32 @@ class PropertyDataTest(unittest.TestCase):
             ("climate", lambda d: d["daylight"]["key_dates"][1].update(clock="MST"), "the lot keeps Mountain Time"),
             ("climate", lambda d: d["notes"].pop(), "at least three notes"),
             ("climate", lambda d: d["notes"].__setitem__(2, "Plant nothing before June."), "about cold air"),
+            ("plant_events", lambda d: d["records"][0].update(event_type="bloom_obsrved"), "Unknown plant event type"),
+            ("plant_events", lambda d: d["records"].append({"id": "x", "plant_id": "i90-1", "event_type": "full_bloom", "recorded_on": "2027-05-04",
+                                                            "occurred_on": None, "notes": "No date given"}), "needs the date it happened"),
+            ("plant_events", lambda d: d["records"].append({"id": "x", "plant_id": "i90-1", "event_type": "lost_in_ground", "recorded_on": "2027-05-04",
+                                                            "occurred_on": None, "notes": "Still alive"}), "is for a dead plant"),
+            ("plant_events", lambda d: d["records"][-1].update(plant_id="i90-1"), "is for a dead plant"),
+            ("plant_events", lambda d: d.pop("event_types"), "needs an event_types list"),
+            ("plant_events", lambda d: d["event_types"].append(copy.deepcopy(d["event_types"][0])), "unique lowercase word"),
+            ("plant_events", lambda d: d["event_types"][0].update(id="Planting-Reported"), "unique lowercase word"),
+            ("plant_events", lambda d: d["event_types"][0].update(group="weather"), "group must be one of"),
+            ("plant_events", lambda d: d["event_types"][0].update(order=3), "only stage types have an order"),
+            ("plant_events", lambda d: d["event_types"][0].update(color="red"), "unknown fields"),
+            ("plant_events", lambda d: next(t for t in d["event_types"] if t["id"] == "bud_swell").pop("order"), "missing fields"),
+            ("plant_events", lambda d: next(t for t in d["event_types"] if t["id"] == "bud_break").update(order=1), "stage order 1 is used twice"),
+            ("climate", lambda d: d.pop("checks"), "missing fields"),
+            ("climate", lambda d: d.update(checks=[]), "checks must be a list"),
+            ("climate", lambda d: d["checks"][0].update(status="stuck"), "status must be one of"),
+            ("climate", lambda d: d["checks"][1].update(status="done"), "is done, so it needs resolved_on and a result"),
+            ("climate", lambda d: d["checks"][0].update(result=None), "is done, so it needs resolved_on and a result"),
+            ("climate", lambda d: d["checks"][1].update(resolved_on="2027-05-01", result="First bloom was April 29."), "is open, so resolved_on and result must be null"),
+            ("climate", lambda d: d["checks"][0].update(status="open"), "is open, so resolved_on and result must be null"),
+            ("climate", lambda d: d["checks"][1].update(status="done", resolved_on="yesterday", result="First bloom was April 29."), "must be an ISO date or null"),
+            ("climate", lambda d: d["checks"][1].update(id="usda-zone-map"), "unique lowercase slug"),
+            ("climate", lambda d: d["checks"][0].update(id="USDA Zone"), "unique lowercase slug"),
+            ("climate", lambda d: d["checks"][0].update(how=""), "nonempty text"),
+            ("climate", lambda d: d["checks"][0].update(color="red"), "unknown fields"),
             ("inventory", lambda d: d["records"][0].update(quantity=0), "quantity"),
             ("orchard", lambda d: d["rules"]["UNIDENTIFIED_APPLES"]["candidates"][2].update(slots=1), "slots disagree"),
             ("orchard", lambda d: d["rules"]["UNIDENTIFIED_APPLES"]["candidates"].pop(3), "omit"),
@@ -470,7 +567,7 @@ class PropertyDataTest(unittest.TestCase):
             ("orchard", lambda d: plan_item(d, "dayton").update(not_pollinated_by=["Kumquat"]), "matches no living or planned apple"),
             ("orchard", lambda d: plan_item(d, "dayton").update(not_pollinated_by=["Dayton"]), "matches no living or planned apple"),
             ("orchard", lambda d: plan_item(d, "seckel").update(not_pollinated_by=["Dayton"]), "matches no living or planned pear"),
-            ("orchard", lambda d: (plan_item(d, "stanley")["spots"].pop(), plan_item(d, "stanley").update(quantity=2)),
+            ("orchard", lambda d: (plan_item(d, "mount-royal")["spots"].pop(), plan_item(d, "mount-royal").update(quantity=1)),
              "have no planting plan item"),
             ("plants", lambda d: [p.update(health_status="dead") for p in d["records"] if p["id"] in ("i56-2", "i56-3")],
              "rootstocks are unplanted"),
@@ -485,9 +582,10 @@ class PropertyDataTest(unittest.TestCase):
             with self.subTest(collection=collection, message=message), self.assertRaisesRegex(ValueError, message):
                 validate_data(data)
 
-    def test_malformed_climate_records_fail_with_a_clear_error_not_a_crash(self):
+    def malformed_records_raise_value_errors(self, name, minimum, middle=False):
+        """Delete or mistype every sampled field of one collection; each must raise ValueError, never crash with another error."""
         def sampled_paths(node, prefix=()):
-            """Every field, keeping only the first and last of a long list or of numbered keys (thresholds, hours), which behave alike."""
+            """Every field, keeping only the first and last (and optionally the middle) of a long list or of numbered keys, which behave alike."""
             yield prefix
             if isinstance(node, dict):
                 keys = list(node)
@@ -495,38 +593,45 @@ class PropertyDataTest(unittest.TestCase):
                     keys = [keys[0], keys[-1]]
                 children = [(key, node[key]) for key in keys]
             elif isinstance(node, list):
-                indexes = range(len(node)) if len(node) <= 2 else (0, len(node) - 1)
+                indexes = range(len(node)) if len(node) <= 2 else (0, len(node) // 2, len(node) - 1) if middle else (0, len(node) - 1)
                 children = [(index, node[index]) for index in indexes]
             else:
                 return
             for key, child in children:
                 yield from sampled_paths(child, prefix + (key,))
 
-        def at(climate, path):
+        def at(document, path):
             for step in path:
-                climate = climate[step]
-            return climate
+                document = document[step]
+            return document
 
         replacements = {"null": None, "string": "x", "empty object": {}, "empty list": []}
         tried = 0
-        for path in sampled_paths(self.data["climate"]):
+        for path in sampled_paths(self.data[name]):
             if not path:
                 continue
-            container = isinstance(at(self.data["climate"], path), (dict, list))
-            for kind in (("delete", *replacements) if container else ("delete", "null")):
-                climate = copy.deepcopy(self.data["climate"])
-                parent = at(climate, path[:-1])
+            container = isinstance(at(self.data[name], path), (dict, list))
+            for kind in (("delete", *replacements) if container else ("delete", "null", "empty list")):
+                document = copy.deepcopy(self.data[name])
+                parent = at(document, path[:-1])
                 if kind == "delete":
                     parent.pop(path[-1])
                 else:
                     parent[path[-1]] = copy.deepcopy(replacements[kind])
                 tried += 1
-                with self.subTest(path=path, kind=kind):
+                with self.subTest(collection=name, path=path, kind=kind):
                     try:
-                        validate_data({**self.data, "climate": climate})
+                        validate_data({**self.data, name: document})
                     except ValueError:
                         pass
-        self.assertGreater(tried, 300, "The walk should reach most of the climate record")
+        self.assertGreater(tried, minimum, f"The walk should reach most of the {name} record")
+
+    def test_malformed_climate_records_fail_with_a_clear_error_not_a_crash(self):
+        self.malformed_records_raise_value_errors("climate", 300)
+
+    def test_malformed_plant_events_fail_with_a_clear_error_not_a_crash(self):
+        # The middle of the vocabulary is a growth stage, so its order field is exercised too.
+        self.malformed_records_raise_value_errors("plant_events", 50, middle=True)
 
     def test_not_pollinated_by_names_must_match_a_living_or_planned_cultivar(self):
         # The names the shipped plan relies on, in any letter case, and a planned cultivar's name all validate.

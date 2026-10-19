@@ -154,6 +154,8 @@ PLAN_TYPE_FIELDS = {"Apple": {"flowering_group", "ploidy", "not_pollinated_by"},
 # The pollination rules pair only apples, pears, and cherries, so these must not need a partner.
 PLAN_SELF_FERTILE_ONLY = ("Peach", "Plum", "Apricot")
 PEAR_BLOOM_PERIODS = ("early", "mid", "late")
+# Plant events: what happened to a tree (history), the yearly stages in calendar order, and notes on its condition.
+EVENT_GROUPS = ("history", "stage", "condition")
 LIBRARY_GROUPS = ("Apple", "Pear", "Cherry", "Peach", "Apricot", "Plum", "Berry", "Nut", "Evergreen", "Shade tree", "Perennial")
 LIBRARY_KINDS = ("cultivar", "species", "genus", "rootstock")
 LIBRARY_USES = ("fresh", "cooking", "cider", "perry", "juice", "jelly", "canning", "drying", "storage", "pollinizer",
@@ -319,6 +321,34 @@ def _living_donor_names(data):
         if name:
             names.setdefault(types[plant["inventory_row"]], set()).add(name)
     return names
+
+
+def _validate_event_types(types):
+    """Check the plant event vocabulary and return it by id. Every event must use one of these types, so a typo cannot hide data."""
+    if not isinstance(types, list) or not types:
+        raise ValueError("plant_events.json needs an event_types list")
+    result, orders = {}, set()
+    for item in types:
+        _require(item, ("id", "group", "label", "description"), "event type")
+        name = item["id"]
+        if not isinstance(name, str) or not re.fullmatch(r"[a-z]+(_[a-z]+)*", name) or name in result:
+            raise ValueError(f"Event type id must be a unique lowercase word, with underscores between words: {name!r}")
+        if item["group"] not in EVENT_GROUPS:
+            raise ValueError(f"Event type {name}: group must be one of {EVENT_GROUPS}")
+        _text(item["label"], f"event type {name} label", False)
+        _text(item["description"], f"event type {name} description", False)
+        if extra := set(item) - {"id", "group", "label", "description", "order"}:
+            raise ValueError(f"Event type {name} has unknown fields: {sorted(extra)}")
+        if item["group"] == "stage":
+            _require(item, ("order",), f"event type {name}")
+            _integer(item["order"], f"event type {name} order", 1)
+            if item["order"] in orders:
+                raise ValueError(f"Event type {name}: stage order {item['order']} is used twice")
+            orders.add(item["order"])
+        elif "order" in item:
+            raise ValueError(f"Event type {name}: only stage types have an order")
+        result[name] = item
+    return result
 
 
 def _validate_planting_plan(data, locations, active_spots):
@@ -571,6 +601,7 @@ CLIMATE_CHECK_SOURCES = ("prism-lot", "daymet-lot", "coop-prairie-historic")
 CLIMATE_KEY_DATES = ("march-equinox", "june-solstice", "september-equinox", "december-solstice")
 CLIMATE_CROSSINGS = ("10", "12", "14", "15")
 MOUNTAIN_CLOCKS = {"MST": -7, "MDT": -6}
+CHECK_STATUSES = ("open", "done")
 
 
 def _year_range(value, label):
@@ -763,7 +794,7 @@ def _validate_climate_source(source, thresholds, site):
 
 def _validate_climate(data, grid):
     climate = data["climate"]
-    _require(climate, ("source_page", "site", "frost", "sources", "daylight", "notes"), "climate")
+    _require(climate, ("source_page", "site", "frost", "sources", "daylight", "notes", "checks"), "climate")
     _text(climate["source_page"], "climate source_page", False)
     site = climate["site"]
     _require(site, ("name", "latitude", "longitude", "elevation_ft", "elevation_note", "time_zone", "normals_period", "retrieved_on"), "climate site")
@@ -878,6 +909,34 @@ def _validate_climate(data, grid):
         _text(note, "climate note", False)
     if "cold air" not in notes[2].lower():
         raise ValueError("The third climate note must be about cold air, which the site climate page quotes")
+    _validate_climate_checks(climate["checks"])
+
+
+def _validate_climate_checks(checks):
+    """The things still to verify about the climate record. Each stays open until someone settles it and writes the result down."""
+    if not isinstance(checks, list) or not checks:
+        raise ValueError("Climate checks must be a list")
+    seen = set()
+    for item in checks:
+        _require(item, ("id", "title", "status", "what", "why", "how", "timing", "resolved_on", "result"), "climate check")
+        name = item["id"]
+        if not isinstance(name, str) or not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", name) or name in seen:
+            raise ValueError(f"Climate check id must be a unique lowercase slug: {name!r}")
+        seen.add(name)
+        if extra := set(item) - {"id", "title", "status", "what", "why", "how", "timing", "resolved_on", "result"}:
+            raise ValueError(f"Climate check {name} has unknown fields: {sorted(extra)}")
+        if item["status"] not in CHECK_STATUSES:
+            raise ValueError(f"Climate check {name}: status must be one of {CHECK_STATUSES}")
+        for key in ("title", "what", "why", "how", "timing"):
+            _text(item[key], f"climate check {name} {key}", False)
+        _date(item["resolved_on"], f"climate check {name} resolved_on")
+        if item["result"] is not None:
+            _text(item["result"], f"climate check {name} result", False)
+        if item["status"] == "done":
+            if item["resolved_on"] is None or item["result"] is None:
+                raise ValueError(f"Climate check {name} is done, so it needs resolved_on and a result")
+        elif item["resolved_on"] is not None or item["result"] is not None:
+            raise ValueError(f"Climate check {name} is open, so resolved_on and result must be null")
 
 
 def validate_data(data):
@@ -1062,14 +1121,22 @@ def validate_data(data):
             raise ValueError("Death record disagrees with plant health")
         if planting["status"] == "outside-orchard" and plants[planting["plant_id"]]["group"] != "outside-orchard":
             raise ValueError("Outside-orchard record disagrees with plant group")
+    event_types = _validate_event_types(data["plant_events"].get("event_types"))
+    _require(data["plant_events"], ("records",), "plant_events")
     for event in _index(data["plant_events"]["records"], "plant event").values():
         _require(event, ("plant_id", "event_type", "recorded_on", "occurred_on", "notes"), "plant event")
-        if event["plant_id"] not in plants:
+        if not isinstance(event["plant_id"], str) or event["plant_id"] not in plants:
             raise ValueError("Plant event references missing plant")
         _text(event["event_type"], "event type", False)
+        if event["event_type"] not in event_types:
+            raise ValueError(f"Unknown plant event type {event['event_type']!r}; add it to event_types in plant_events.json")
         _text(event["notes"], "event notes")
         for key in ("recorded_on", "occurred_on"):
             _date(event[key], "event date")
+        if event_types[event["event_type"]]["group"] == "stage" and event["occurred_on"] is None:
+            raise ValueError(f"A {event['event_type']} event needs the date it happened (occurred_on)")
+        if event["event_type"] in ("lost_before_planting", "lost_in_ground") and plants[event["plant_id"]]["health_status"] != "dead":
+            raise ValueError(f"A {event['event_type']} event is for a dead plant; mark plant {event['plant_id']} dead too")
     _validate_planting_plan(data, locations, active_spots)
     _require(terrain, ("grid", "contours", "flows", "flows_fine", "split", "ridge", "ditch", "drainage_ac"), "terrain")
     mesh = terrain["grid"]
@@ -1214,6 +1281,8 @@ def _populate(connection, data, digest):
         plants.append((row["id"], row["inventory_row"], row["instance"],
                        f"fruit-{source_rows[0]}" if source_rows else None, row["group"], row["health_status"]))
     _insert(connection, "plants", ("id", "inventory_row", "instance", "cultivar_id", "plant_group", "health_status"), plants)
+    _insert(connection, "event_types", ("id", "event_group", "stage_order", "label", "description"),
+            [(t["id"], t["group"], t.get("order"), t["label"], t["description"]) for t in data["plant_events"]["event_types"]])
     for document, table, columns in [
         ("locations", "locations", ("id", "name", "x_ft", "y_ft", "orchard_row", "orchard_column", "reserved_for", "replacement_year", "replacement_type")),
         ("plantings", "plantings", ("id", "plant_id", "location_id", "status", "planted_on", "recorded_on", "notes")),
@@ -1350,6 +1419,9 @@ def _populate_climate(connection, climate):
     key_columns = ("id", "label", "date", "clock", "utc_offset_hours", "sunrise", "solar_noon", "sunset", "day_length_hours",
                    "noon_altitude_deg", "sunrise_azimuth_deg", "sunset_azimuth_deg")
     _insert(connection, "sun_key_dates", key_columns, [tuple(item[key] for key in key_columns) for item in daylight["key_dates"]])
+    _insert(connection, "climate_checks", ("id", "position", "title", "status", "what", "why", "how", "timing", "resolved_on", "result"),
+            [(item["id"], position, item["title"], item["status"], item["what"], item["why"], item["how"], item["timing"],
+              item["resolved_on"], item["result"]) for position, item in enumerate(climate["checks"], 1)])
 
 
 def orchard_constants(data):
@@ -1361,6 +1433,7 @@ def orchard_constants(data):
     plants = {r["id"]: r for r in data["plants"]["records"]}
     inventory = {r["source_row"]: r for r in data["inventory"]["records"]}
     updates, rootstocks, current = {}, [], {}
+    lost_before_planting = {event["plant_id"] for event in data["plant_events"]["records"] if event["event_type"] == "lost_before_planting"}
     grid = SiteGrid(data=data["site"], terrain=data["terrain"])
     for location in locations.values():
         if location["orchard_row"] is not None and location["reserved_for"] is not None:
@@ -1392,6 +1465,7 @@ def orchard_constants(data):
             updates[plant["id"]] = {
                 "r": r, "c": c, "status": planting["status"], "reported": date,
                 "replacementType": location["replacement_type"], "replacementYear": location["replacement_year"],
+                "lostBeforePlanting": plant["id"] in lost_before_planting,
             }
         if planting["status"] == "planted" and "rootstock" in inventory[plant["inventory_row"]]["variety"].lower():
             rootstocks.append({"invRow": plant["inventory_row"], "instance": plant["instance"], "r": r, "c": c})

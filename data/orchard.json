@@ -1201,7 +1201,7 @@
       "year": 2027,
       "covers_rows": 12,
       "status": "Recommended cultivars for every open spot in R1 to R12; nothing is bought or grafted yet",
-      "summary": "Chosen in October 2026 for a short-season U-pick orchard at about 4,750 ft with roughly 70 to 110 frost-free days. Disease-resistant apples that ripen early or in mid-season fill R4 to R6 and the grafted row R1; hardy tart and sweet cherries, European plums, a Seckel pear, and replacements for the dead pear, cherry and peaches fill the rest. R13 to R15 stay open for later.",
+      "summary": "Chosen in October 2026 for a short-season, frost-prone U-pick orchard at about 4,750 ft (the frost dates are on the site climate page). Disease-resistant apples that ripen early or in mid-season fill R4 to R6 and the grafted row R1; hardy tart and sweet cherries and a Seckel pear fill R8 to R10; and the shared stone-fruit rows R11 and R12 get four plums, two apricots, and four peaches, three of the peaches replacing ones that died in their pots. R13 to R15 stay open for later.",
       "rootstock_advice": "Ask nurseries for semi-dwarf trees (about 60 to 75 percent of standard; G.890, G.214 or M.7 for apples). The grid is 18 x 20 ft and the site is dry and windy, so dwarf stocks (M.27, M.9, B.9) would need permanent stakes and leave gaps.",
       "graft_advice": "The 13 grafts in R1 go onto rootstocks you already own: 11 M-111 (vigorous, semi-standard), 2 EMLA 7 (semi-dwarf) and 1 of unknown type, so one rootstock is left as a spare. Order scionwood in winter from a nursery that sells it for spring 2027 (some sell out early), keep it cold and damp until grafting, and graft in early spring as the rootstock buds begin to swell. Use the two EMLA 7 rootstocks for Redfree, a vigorous scion (its third tree goes on an M-111), and put lower-vigor scions such as Pixie Crunch on the vigorous M-111. Grafted trees take longer to bear than bought trees. Check that a cultivar may be propagated at home before ordering scionwood.",
       "shipping_note": "Confirm that each nursery ships the item to Idaho before ordering; some retailers exclude Idaho for some items.",
@@ -1402,6 +1402,22 @@
           "self_fertile": true,
           "role": "Early yellow freestone, ripe about 11 days before Redhaven, with good hardiness and bacterial spot resistance (University of Kentucky)",
           "caution": "The breeder's trial winters were -26 and -28 C, with 43 percent flower bud loss at -26 C, so zone 5a is a test. It sets a heavy crop that needs early thinning. No source rates bacterial canker (the breeder gives only moderate tolerance to the fungal perennial canker), and peaches here carry bacterial canker (untreated positives): prune only in dry weather, use dormant copper, and buy clean certified stock."
+        },
+        {
+          "id": "reliance",
+          "type": "Peach",
+          "method": "buy",
+          "cultivar": "Reliance",
+          "code": "RC",
+          "profile": "peach-reliance",
+          "quantity": 1,
+          "spots": [
+            "R12-C8"
+          ],
+          "rootstock": "Lovell or Bailey peach seedling stock (best survival in the NC-140 trials, per Penn State)",
+          "self_fertile": true,
+          "role": "Very cold-hardy early peach (zone 4 to 8) with very hardy fruit buds and late bloom, the safe early tree",
+          "caution": "A third Reliance, next to the one at R12-C9, so the same cultivar sits together for easy picking and comparison. The fruit is sweet and very juicy but soft, so it bruises and does not ship well, and Gurney's says newer hardy peaches such as Contender taste better. Ripening dates vary a lot by region (July to mid August in the sources), so track your own first harvest. Peaches here carry bacterial canker (untreated positives): prune only in dry weather, use dormant copper, and buy clean certified stock."
         },
         {
           "id": "redfree",
@@ -1612,16 +1628,15 @@
           "cultivar": "Mount Royal",
           "code": "MTR",
           "profile": "plum-mount-royal",
-          "quantity": 3,
+          "quantity": 2,
           "spots": [
-            "R11-C4",
-            "R11-C5",
-            "R11-C7"
+            "R11-C7",
+            "R12-C7"
           ],
           "rootstock": "Semi-dwarf tree (Raintree sells it as a semi-dwarf)",
           "self_fertile": true,
           "role": "Hardy blue European plum (zone 4 to 7) that ripens in August, before Italian plum",
-          "caution": "Bloom timing and black knot rating were not documented. The apricots beside it carry bacterial canker, so buy clean stock."
+          "caution": "Bloom timing and black knot rating were not documented (Penn State's black knot list does not name it). The two trees stand side by side at the east end of the plum block, in the highest plum spots. The peaches and apricots nearby carry bacterial canker, so buy clean stock."
         },
         {
           "id": "stanley",
@@ -1630,16 +1645,14 @@
           "cultivar": "Stanley",
           "code": "STN",
           "profile": "plum-stanley",
-          "quantity": 3,
+          "quantity": 1,
           "spots": [
-            "R12-C3",
-            "R12-C4",
-            "R12-C7"
+            "R12-C3"
           ],
           "rootstock": "Semi-dwarf tree",
           "self_fertile": true,
           "role": "Late-blooming prune plum (zone 5 to 7) that eats fresh and dries; ripe in early September",
-          "caution": "Penn State rates Stanley very susceptible to black knot, so prune knots out in winter. Early September is close to the limit in a 70-day season."
+          "caution": "Penn State rates Stanley very susceptible to black knot, so prune knots out in winter; that is why the plan has one Stanley, not three. It goes in the lowest plum spot because its late bloom (Stark Bro's) helps it miss spring frost. Early September ripening is close to the limit in a short season."
         },
         {
           "id": "damson",
@@ -1650,12 +1663,44 @@
           "profile": "plum-damson",
           "quantity": 1,
           "spots": [
-            "R12-C8"
+            "R12-C4"
           ],
           "rootstock": "Semi-dwarf tree",
           "self_fertile": true,
           "role": "Tart blue jam and baking plum (zone 4 to 8), ripe in September",
           "caution": "Sources disagree on its black knot resistance and on whether it ripens before or after Stanley."
+        },
+        {
+          "id": "chinese-mormon",
+          "type": "Apricot",
+          "method": "buy",
+          "cultivar": "Chinese (Mormon)",
+          "code": "CE",
+          "profile": "apricot-chinese-mormon",
+          "quantity": 1,
+          "spots": [
+            "R11-C4"
+          ],
+          "rootstock": "Semi-dwarf tree (your purchase sheet lists it as a semi-dwarf); ask the nursery which rootstock it uses",
+          "self_fertile": true,
+          "role": "Hardy apricot (zone 4 to 7) that blooms late, which avoids some late frost, and ripens in late June to July; a heavy producer with good flavor and texture (Utah State)",
+          "caution": "Apricots lose the most to spring frost: Utah State's frost table puts 10 percent bloom kill at 27 F and 90 percent at 22 F, and at the Prairie station a 28 F night still comes after the middle of May in most years, so expect only some crops (see the site climate page). The Chinese (Mormon) on your inventory is the one noted as girdled and kept in Boise, so this tree would be a second or replacement tree; if the Boise tree recovers, plant it here and skip this purchase. The apricots here carry bacterial canker (untreated positives): buy clean certified stock, prune only in dry weather, and use dormant copper."
+        },
+        {
+          "id": "harcot",
+          "type": "Apricot",
+          "method": "buy",
+          "cultivar": "Harcot",
+          "code": "HT",
+          "profile": "apricot-harcot",
+          "quantity": 1,
+          "spots": [
+            "R11-C5"
+          ],
+          "rootstock": "Semi-dwarf tree (your purchase sheet lists it as a semi-dwarf); ask the nursery which rootstock it uses",
+          "self_fertile": true,
+          "role": "Late-blooming, frost-hardy, self-pollinating apricot (zone 5 to 7) with sweet, juicy, rich fruit, ripe in mid July; Stark Bro's reports good tolerance to bacterial spot and perennial canker",
+          "caution": "A second Harcot, so you can compare it with the tree at R12-C1. Sources disagree on its hardiness (zone 5 to 7 at Utah State, 4 to 9 at Dave Wilson). Tolerance to bacterial spot and to perennial canker, a fungus, is not tolerance to bacterial canker, which the apricots here carry (untreated positives). The same frost and clean-stock cautions as the Chinese (Mormon) apply."
         },
         {
           "id": "seckel",

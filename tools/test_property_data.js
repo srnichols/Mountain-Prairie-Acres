@@ -241,6 +241,9 @@ test('Generated site climate data carries what the climate page draws', () => {
   assert.equal(days.indexOf(Math.max(...days)), 5, 'June has the longest days');
   assert.equal(days.indexOf(Math.min(...days)), 11, 'December has the shortest days');
   assert.equal(climate.daylight.key_dates.length, 4);
+  // The things still to check travel with the data, so the page lists them and the SQL table matches.
+  assert.deepEqual(Array.from(climate.checks, item => item.id), ['usda-zone-map', 'bloom-dates', 'cold-air-drainage', 'minimum-thermometer']);
+  assert.ok(climate.checks.every(item => ['open', 'done'].includes(item.status) && (item.status === 'done') === (item.result !== null)));
 });
 
 test('Generated browser records match the authoritative JSON', () => {
@@ -373,13 +376,20 @@ test('The 2027 planting plan fills every open spot in R1 to R12 and leaves livin
   assert.equal(new Set(spots.map(entry => entry.spot)).size, 49);
   const counts = {};
   spots.forEach(entry => { counts[entry.item.type] = (counts[entry.item.type] || 0) + 1; });
-  assert.deepEqual(counts, { Apple: 26, Pear: 2, Cherry: 11, Peach: 3, Plum: 7 });
+  assert.deepEqual(counts, { Apple: 26, Pear: 2, Cherry: 11, Peach: 4, Plum: 4, Apricot: 2 });
   spots.forEach(({ r, c, spot }) => assert.equal(rows[r - 1].trees[c - 1], null, `${spot} should be open`));
   rows.flatMap(row => row.held).forEach(tree => assert.ok(model.plannedAt(tree.r, tree.c), `R${tree.r}-C${tree.c} has no planned cultivar`));
   assert.equal(model.plannedAt(6, 4).item.cultivar, 'Dayton');
   // Spots left open by dead or moved trees are planned for the same fruit type; the moved plums' new spots are not planned.
   for (const [r, c, type] of [[11, 7, 'Plum'], [12, 7, 'Plum'], [11, 10, 'Peach'], [11, 12, 'Peach'], [12, 11, 'Peach'], [9, 2, 'Cherry'], [8, 1, 'Pear']]) {
     assert.equal(model.plannedAt(r, c).item.type, type, `R${r}-C${c}`);
+  }
+  // The other stone-fruit gap spots: two apricots in the higher spots of R11 beside the apricot block, plums beside the Italian plums,
+  // and one more peach beside the peach block.
+  for (const [r, c, type, cultivar] of [[11, 4, 'Apricot', 'Chinese (Mormon)'], [11, 5, 'Apricot', 'Harcot'], [12, 3, 'Plum', 'Stanley'],
+                                        [12, 4, 'Plum', 'Damson'], [12, 8, 'Peach', 'Reliance']]) {
+    const entry = model.plannedAt(r, c);
+    assert.deepEqual([entry.item.type, entry.item.cultivar], [type, cultivar], `R${r}-C${c}`);
   }
   assert.equal(model.plannedAt(11, 6), null);
   assert.equal(model.plannedAt(12, 5), null);
@@ -441,7 +451,7 @@ test('Planned apples have several pollination partners, even if a flowering grou
   assert.ok(shifted(['akane', 'novamac', 'sansa', 'pixie-crunch'], -1) >= 3, 'group-4 grafts one group earlier');
 });
 
-test('The planned pear, cherries, plums and peach follow the pollination rules', () => {
+test('The planned pear, cherries, plums, apricots and peaches follow the pollination rules', () => {
   const { records } = model.plan();
   const planned = name => model.plannedPollination(records).find(entry => entry.tree.name === name);
   const pear = planned('Harrow Delight');
@@ -461,11 +471,25 @@ test('The planned pear, cherries, plums and peach follow the pollination rules',
   const bing = records.find(tree => tree.name === 'Bing');
   assert.equal(model.compatiblePair(bing, cherry), null);
   assert.ok(model.compatiblePair(bing, { ...cherry, cherryChart: { group: null, bloom: 4 } }));
-  // The new sweet cherries are self-fertile and bloom a period after Bing, and tart cherries, plums and peaches need no partner.
+  // The new sweet cherries are self-fertile and bloom a period after Bing, and tart cherries, plums, apricots and peaches need no partner.
   for (const name of ['Skeena', 'WhiteGold']) assert.equal(planned(name).tree.selfFertile, true, name);
-  for (const name of ['Surefire', 'Meteor', 'Carmine Jewel', 'Mount Royal', 'Stanley', 'Damson', 'Contender', 'Harrow Diamond']) {
+  for (const name of ['Surefire', 'Meteor', 'Carmine Jewel', 'Mount Royal', 'Stanley', 'Damson', 'Chinese (Mormon)', 'Harcot', 'Contender', 'Harrow Diamond', 'Reliance']) {
     const entry = planned(name);
     assert.equal(entry.tree.selfFertile, true, name);
     assert.equal(entry.partners.length, 0, `${name} is self-fertile and nothing is counted as its partner`);
   }
+});
+
+test('Every tree recorded as dead was lost in its pot, and no other record is flagged that way', () => {
+  const updates = context.window.ORCHARD_DATA.ORCHARD_UPDATES;
+  const dead = Object.values(updates).filter(update => update.status === 'dead');
+  assert.equal(dead.length, 5, 'The pear, the cherry, and the three peaches');
+  assert.ok(dead.every(update => update.lostBeforePlanting === true));
+  const outside = Object.values(updates).filter(update => update.status === 'outside-orchard');
+  assert.equal(outside.length, 3, 'The three Urban apples');
+  assert.ok(outside.every(update => update.lostBeforePlanting === false));
+  const { records } = model.plan();
+  const lostInPots = records.filter(tree => tree.orchardUpdate && tree.orchardUpdate.status === 'dead');
+  assert.equal(lostInPots.length, 5);
+  assert.ok(lostInPots.every(tree => tree.orchardUpdate.lostBeforePlanting));
 });

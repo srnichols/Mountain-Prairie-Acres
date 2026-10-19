@@ -57,9 +57,15 @@ CREATE TABLE plantings (
 ) STRICT;
 CREATE UNIQUE INDEX one_active_plant_per_spot ON plantings(location_id) WHERE status IN ('planned', 'planted');
 CREATE UNIQUE INDEX one_active_spot_per_plant ON plantings(plant_id) WHERE status IN ('planned', 'planted');
+CREATE TABLE event_types (
+    id TEXT PRIMARY KEY, event_group TEXT NOT NULL CHECK (event_group IN ('history', 'stage', 'condition')),
+    stage_order INTEGER CHECK (stage_order >= 1), label TEXT NOT NULL, description TEXT NOT NULL,
+    CHECK ((event_group = 'stage') = (stage_order IS NOT NULL))
+) STRICT;
+CREATE UNIQUE INDEX one_event_type_per_stage_order ON event_types(stage_order) WHERE stage_order IS NOT NULL;
 CREATE TABLE plant_events (
     id TEXT PRIMARY KEY, plant_id TEXT NOT NULL REFERENCES plants(id),
-    event_type TEXT NOT NULL, recorded_on TEXT, occurred_on TEXT, notes TEXT NOT NULL
+    event_type TEXT NOT NULL REFERENCES event_types(id), recorded_on TEXT, occurred_on TEXT, notes TEXT NOT NULL
 ) STRICT;
 CREATE TABLE cultivar_profiles (
     id TEXT PRIMARY KEY, plant_group TEXT NOT NULL, type TEXT NOT NULL,
@@ -208,6 +214,12 @@ CREATE TABLE sun_key_dates (
     sunrise TEXT NOT NULL, solar_noon TEXT NOT NULL, sunset TEXT NOT NULL, day_length_hours REAL NOT NULL,
     noon_altitude_deg REAL NOT NULL, sunrise_azimuth_deg REAL NOT NULL, sunset_azimuth_deg REAL NOT NULL
 ) STRICT;
+CREATE TABLE climate_checks (
+    id TEXT PRIMARY KEY, position INTEGER NOT NULL UNIQUE, title TEXT NOT NULL, status TEXT NOT NULL CHECK (status IN ('open', 'done')),
+    what TEXT NOT NULL, why TEXT NOT NULL, how TEXT NOT NULL, timing TEXT NOT NULL, resolved_on TEXT, result TEXT,
+    CHECK ((status = 'done') = (resolved_on IS NOT NULL AND result IS NOT NULL)),
+    CHECK ((resolved_on IS NULL) = (result IS NULL))
+) STRICT;
 
 CREATE VIEW location_refs AS
 SELECT l.*, g.cell,
@@ -293,3 +305,42 @@ JOIN daylight_months d ON d.month = t.month
 JOIN climate_months c ON c.month = t.month
 LEFT JOIN frost_days f32 ON f32.source_id = t.source_id AND f32.month = t.month AND f32.threshold_f = 32
 LEFT JOIN frost_days f28 ON f28.source_id = t.source_id AND f28.month = t.month AND f28.threshold_f = 28;
+
+-- Yearly stage dates the owner logs (bud swell, leaf out, bloom, harvest, and so on), one row per tree and stage, with the
+-- day number counted as in a non-leap year so the years line up and match frost_years.
+CREATE VIEW stage_observations AS
+SELECT e.id AS event_id, e.plant_id, pp.metal_tag, pp.profile_id, coalesce(pp.profile_name, pp.inventory_name) AS cultivar, pp.type,
+       l.name AS spot, l.orchard_row, l.orchard_column,
+       t.id AS stage, t.label AS stage_label, t.stage_order,
+       e.occurred_on, CAST(substr(e.occurred_on, 1, 4) AS INTEGER) AS year,
+       CAST(strftime('%j', e.occurred_on) AS INTEGER)
+         - CASE WHEN strftime('%j', substr(e.occurred_on, 1, 4) || '-12-31') = '366' AND substr(e.occurred_on, 6, 2) > '02' THEN 1 ELSE 0 END
+         AS day_number,
+       e.notes
+FROM plant_events e
+JOIN event_types t ON t.id = e.event_type AND t.event_group = 'stage'
+JOIN plant_profiles pp ON pp.plant_id = e.plant_id
+LEFT JOIN plantings a ON a.plant_id = e.plant_id AND a.status IN ('planned', 'planted')
+LEFT JOIN locations l ON l.id = a.location_id;
+
+-- How each cultivar's stages fall each year across its trees: the spread of dates tells how much the spot matters.
+CREATE VIEW stage_by_cultivar AS
+SELECT coalesce(profile_id, cultivar) AS cultivar_key, cultivar, type, year, stage, stage_label, stage_order,
+       count(DISTINCT plant_id) AS trees, count(*) AS observations,
+       min(occurred_on) AS earliest, max(occurred_on) AS latest,
+       min(day_number) AS earliest_day, max(day_number) AS latest_day, round(avg(day_number), 1) AS average_day
+FROM stage_observations
+GROUP BY coalesce(profile_id, cultivar), cultivar, type, year, stage, stage_label, stage_order;
+
+-- For each bloom date, the share of years (in the climate normals period) when a freeze at or below each threshold still came
+-- after that date at the Prairie station: the chance this tree's blossoms met a freeze. Station numbers, not readings on the lot.
+CREATE VIEW bloom_frost_risk AS
+SELECT o.event_id, o.plant_id, o.cultivar, o.spot, o.year, o.stage, o.occurred_on, o.day_number, th.threshold_f,
+       (SELECT CAST(round(100.0 * sum(f.last_spring_day > o.day_number) / count(*)) AS INTEGER)
+        FROM frost_years f
+        JOIN climate_sources s ON s.id = f.source_id AND s.role = 'primary'
+        JOIN climate_site c ON f.year BETWEEN c.normals_start AND c.normals_end
+        WHERE f.threshold_f = th.threshold_f AND f.last_spring_day IS NOT NULL) AS later_freeze_pct
+FROM stage_observations o
+JOIN frost_thresholds th
+WHERE o.stage IN ('first_bloom', 'full_bloom');

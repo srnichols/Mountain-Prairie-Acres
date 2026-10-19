@@ -28,14 +28,14 @@
       "role": "primary",
       "kind": "station",
       "label": "Prairie SNOTEL, NRCS station 704 (ACIS ID USS0015F06S)",
-      "latitude": 43.51,
-      "longitude": -115.57,
+      "latitude": 43.5051,
+      "longitude": -115.573,
       "elevation_ft": 4800,
-      "distance_from_site_mi": 2.8,
+      "distance_from_site_mi": 2.4,
       "period": [1991, 2020],
       "url": "https://wcc.sc.egov.usda.gov/nwcc/site?sitenum=704",
       "retrieved_from": "NOAA Regional Climate Centers ACIS web service (StnData, elements mint and maxt, 1988 to 2026), retrieved 2026-10-18",
-      "note": "Measured daily lows and highs from an NRCS weather station about 2.8 miles from the lot and 50 ft higher than the orchard. Daily values come from hourly readings, so they can miss the very coldest or hottest moment. The years 1989 to 1993 and 2022 have too many missing days to date both freezes.",
+      "note": "Measured daily lows and highs from an NRCS weather station about 2.4 miles from the lot (43.5051 N, 115.573 W, from the NRCS station record) and 50 ft higher than the orchard. Daily values come from hourly readings, so they can miss the very coldest or hottest moment. The years 1989 to 1993 and 2022 have too many missing days to date both freezes.",
       "temperature": {
         "high_f": [34.6, 38.6, 46.5, 54.4, 64.5, 73.9, 86.4, 85.3, 74.6, 58.8, 43.4, 33.8],
         "low_f": [14.9, 17.6, 24.0, 29.3, 35.9, 41.7, 49.0, 48.4, 40.1, 30.6, 22.8, 15.4]
@@ -292,5 +292,51 @@
     "Plan on the measured Prairie record first. The model estimates for the lot's own grid cell are milder at night, and the orchard's slope may drain cold air better than the station's spot, but nothing measured on the lot has shown that. A minimum thermometer at tree height from March to October would settle it.",
     "A 36 F night can still put frost on leaves under a clear, calm sky, which is why the table starts there. A 32 F night is a freeze, and 28 F and 24 F are the hard and severe freezes that damage open blossoms, young fruit and soft growth.",
     "The orchard sits on a slope that falls to the northwest. Cold air drains the same way water does and pools in the low northwest corner by the road, so that corner is the frost pocket and the upper rows are the safest."
+  ],
+  "checks": [
+    {
+      "id": "usda-zone-map",
+      "title": "Look up the official USDA hardiness zone for the lot",
+      "status": "done",
+      "what": "The zones on this page (5b from the Prairie SNOTEL, 6a from the PRISM model at the lot, 6b from Daymet) are worked out from temperature readings. The USDA Plant Hardiness Zone Map itself had not been read for the lot's own spot.",
+      "why": "Nursery tags and cultivar zone ratings (such as zone 4 to 7) are written against that map. If the map and the station disagree, you need to know which one a rating really matches.",
+      "how": "Look up 43.4737 N, 115.5942 W on the USDA map (planthardiness.ars.usda.gov), or sample its downloadable grid for that cell. Record the zone and its temperature range here and compare it with the 5b from the station.",
+      "timing": "Any time; it needs no growing season.",
+      "resolved_on": "2026-10-18",
+      "result": "Read from the official 2023 grid file (phzm_us_grid_2023, 1991 to 2020, 30 arc-second or 800 m cells). The lot's cell has an average coldest night of -6.6 F, zone 6a (-6.5 F interpolated to the exact point; the 7 by 7 cells around it run from -8.2 to -3.6 F). That agrees with the PRISM sample on this page (-6.3 F, 6a), the same family of model, and not with the measured Prairie SNOTEL: the map's cell at the station reads -7.8 F against the -10.9 F the station recorded (zone 5b), about 3 F colder. Nursery zone ratings are written against the map, so where a rating is borderline, use the station's 5b rather than the map's 6a until a thermometer on the lot says otherwise."
+    },
+    {
+      "id": "bloom-dates",
+      "title": "Record when each kind of tree blooms at the lot",
+      "status": "open",
+      "what": "Bloom dates at the lot are unknown. The risk tables on this page say how often a freeze follows a date, but not which date matters for each tree.",
+      "why": "A freeze hurts when it meets open blossoms (Utah State's table puts the first losses at 27 F for apricots and 28 F for apples), so each tree's risk depends on its own bloom date at your elevation.",
+      "how": "Log first bloom and full bloom for every tree as plant events (the first_bloom and full_bloom stages), then read the bloom_frost_risk view to see how often a freeze followed each date.",
+      "timing": "March to June 2027, then every spring.",
+      "resolved_on": null,
+      "result": null
+    },
+    {
+      "id": "cold-air-drainage",
+      "title": "Find out how cold air behaves on the orchard slope",
+      "status": "open",
+      "what": "The orchard slope may drain cold air better than the station's spot does, or the low northwest corner by the road may pool it. Nothing measured on the lot shows how much.",
+      "why": "It decides which rows are safest for frost-tender trees such as apricots and peaches, and whether the station's frost dates are too cautious or too hopeful for the orchard.",
+      "how": "Compare minimum temperatures at an upper row and in the low northwest corner on clear, calm nights (see the thermometer check), and note where frost lies on the grass and leaves each morning.",
+      "timing": "March to October 2027, especially clear, calm nights in spring and fall.",
+      "resolved_on": null,
+      "result": null
+    },
+    {
+      "id": "minimum-thermometer",
+      "title": "Put a minimum thermometer in the orchard from March to October",
+      "status": "open",
+      "what": "The lot has no thermometer, so every temperature on this page is a station or model estimate, not a reading on the ground.",
+      "why": "A minimum thermometer at tree height would settle how the lot compares with the station, and it supplies the readings the cold log and the cold-air check need.",
+      "how": "Mount one at about tree height in the orchard, shaded and away from buildings, and a second in the low northwest corner. Read and reset them each morning and write the lows in the cold log on this page.",
+      "timing": "March to October 2027.",
+      "resolved_on": null,
+      "result": null
+    }
   ]
 }

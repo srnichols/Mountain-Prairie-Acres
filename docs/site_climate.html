@@ -237,6 +237,16 @@
 </div>
 </section>
 
+<section class="page-break" aria-labelledby="checks-heading">
+<h2 id="checks-heading">Still to Check</h2>
+<p class="source-note" id="checks-lead"></p>
+<table class="detail" id="checks-table">
+<colgroup><col style="width:30%"><col style="width:22%"><col style="width:28%"><col style="width:12%"><col style="width:8%"></colgroup>
+<thead><tr><th>What to check</th><th>Why it matters</th><th>How to settle it</th><th>When</th><th class="center">Status</th></tr></thead>
+<tbody></tbody></table>
+<p class="source-note" id="checks-note"></p>
+</section>
+
 <section class="page-break" aria-labelledby="log-heading">
 <h2 id="log-heading">Frost and Cold Log</h2>
 <p class="source-note">The lot has no thermometer record yet. A minimum thermometer at tree height, plus one in the low northwest corner by the road, read each morning from March through October, would show how the orchard really compares with the station. Note when each tree type blooms, so the date can be checked against the risk tables.</p>
@@ -247,13 +257,13 @@
 
 <h2>Sources and Method</h2>
 <ul class="source-list">
-  <li>USDA NRCS National Water and Climate Center, <a href="https://wcc.sc.egov.usda.gov/nwcc/site?sitenum=704">Prairie SNOTEL, site 704</a> (Elmore County, 4,800 ft, 43.51° N, 115.57° W): daily minimum and maximum air temperature, 1988 to 2026. This is the measured record behind every frost date, monthly average, and coldest night above.</li>
+  <li>USDA NRCS National Water and Climate Center, <a href="https://wcc.sc.egov.usda.gov/nwcc/site?sitenum=704">Prairie SNOTEL, site 704</a> (Elmore County, 4,800 ft, 43.505° N, 115.573° W): daily minimum and maximum air temperature, 1988 to 2026. This is the measured record behind every frost date, monthly average, and coldest night above.</li>
   <li>NOAA Regional Climate Centers, <a href="https://www.rcc-acis.org/">ACIS web services</a>: the SNOTEL record, the old Prairie weather station (NOAA cooperative observer 107327, 1925 to 1942, <a href="https://www.ncei.noaa.gov/products/land-based-station/cooperative-observer-network">cooperative observer network</a>), and the PRISM grid, all retrieved October 18, 2026.</li>
   <li><a href="https://prism.oregonstate.edu/">PRISM Climate Group</a>, Oregon State University: daily minimum and maximum temperature on a 4 km grid, sampled in the cell around the lot (43.458° N, 115.583° W, 4,688 ft). A model, not a measurement.</li>
   <li><a href="https://daymet.ornl.gov/">Daymet</a>, Oak Ridge National Laboratory: daily temperature on a 1 km grid (Thornton, Shrestha, Wei, Thornton, Kao, and Wilson, 2022, Daymet version 4 R1, <a href="https://doi.org/10.3334/ORNLDAAC/2129">doi:10.3334/ORNLDAAC/2129</a>), sampled at the lot center. A model, not a measurement.</li>
   <li>USDA NRCS <a href="https://websoilsurvey.nrcs.usda.gov/">Web Soil Survey</a> report for the property (soil folder): frost-free period of 60 to 100 days for map unit 149, Simonton loam, 2 to 12 percent slopes.</li>
   <li>Utah State University Extension, <a href="https://extension.usu.edu/productionhort/files/CriticalTemperaturesFrostDamageFruitTrees.pdf">Critical Temperatures for Frost Damage on Fruit Trees</a> (IPM-012-11, 2020): the blossom-kill temperatures above. UC IPM, <a href="https://ipm.ucanr.edu/agriculture/cherry/bacterial-canker/">Bacterial Canker (cherry)</a>: the disease is worse after spring freezes.</li>
-  <li>USDA <a href="https://planthardiness.ars.usda.gov/">Plant Hardiness Zone Map</a>: the 5 °F half-zone bands used to turn the average coldest night into a zone. The map itself was not checked for this exact point, so the zones here are estimates from the readings, not the map's answer.</li>
+  <li>USDA <a href="https://planthardiness.ars.usda.gov/">Plant Hardiness Zone Map</a> (2023 edition, built by the PRISM Group at Oregon State University, <a href="https://prism.oregonstate.edu/phzm/">data and terms</a>): the 5 °F half-zone bands used to turn the average coldest night into a zone. The official grid was also read for the lot's own cell on October 18, 2026; the result is under Still to Check. The zones in the tables above are worked out from the readings, so they can differ from the map's answer.</li>
   <li>Daylight: the NOAA <a href="https://gml.noaa.gov/grad/solcalc/calcdetails.html">solar position formulas</a> (Meeus, <em>Astronomical Algorithms</em>) at the lot's latitude and longitude, with sunrise and sunset at the sun's upper edge after standard refraction over a flat horizon. Checked against the <a href="https://aa.usno.navy.mil/data/RS_OneDay">U.S. Naval Observatory</a> sunrise and sunset service for 12 dates, all within one minute. Hills, trees, and the windbreak shorten the direct sun on the ground.</li>
   <li>Method: the last spring freeze is the last day from January 1 to July 31 whose lowest temperature was at or below the threshold, and the first fall freeze is the first such day from August 1 to December 31. Percentiles are interpolated across the years from 1991 to 2020 with usable records (the year-by-year dates are in <code>data/climate.json</code>). A year's spring or fall date is left out when a missing day could be hiding a later or earlier freeze: the SNOTEL record has too many gaps in 1989 to 1993 and 2022 to date both freezes. Daily values come from hourly readings, so they can miss the coldest moment.</li>
 </ul>
@@ -590,7 +600,7 @@ function renderTemperatureText() {
   const note = document.getElementById('winter-note');
   note.innerHTML = '';
   note.append(element('strong', 'Winter cold. '));
-  note.append(`The coldest night of the year averages ${degF(cold2.mean_f)} over ${cold2.years} winters, which is USDA zone ${cold2.zone}. The coldest of those winters bottomed out at ${degF(cold2.coldest_f)} (${longDate(cold2.coldest_on)}), and the station's lowest reading since 1988 is ${degF(cold2.record_low_f)} (${longDate(cold2.record_low_on)}). The old Prairie weather station, from 1926 to 1941, averaged ${degF(old.mean_f)} (zone ${old.zone}) and recorded ${degF(old.coldest_f)} on ${longDate(old.coldest_on)}, so the recent record is not a ceiling on how cold a bad winter can get. The PRISM model, which runs warmer at night, puts the lot at ${degF(prism.mean_f)} (zone ${prism.zone}); zone numbers here are estimates from these readings.`);
+  note.append(`The coldest night of the year averages ${degF(cold2.mean_f)} over ${cold2.years} winters, which is USDA zone ${cold2.zone}. The coldest of those winters bottomed out at ${degF(cold2.coldest_f)} (${longDate(cold2.coldest_on)}), and the station's lowest reading since 1988 is ${degF(cold2.record_low_f)} (${longDate(cold2.record_low_on)}). The old Prairie weather station, from 1926 to 1941, averaged ${degF(old.mean_f)} (zone ${old.zone}) and recorded ${degF(old.coldest_f)} on ${longDate(old.coldest_on)}, so the recent record is not a ceiling on how cold a bad winter can get. The PRISM model, which runs warmer at night, puts the lot at ${degF(prism.mean_f)} (zone ${prism.zone}). Zones here are worked out from these readings with the USDA's 5 °F bands; the official map's own answer for the lot is recorded under Still to Check.`);
 }
 
 function drawDaylight() {
@@ -688,6 +698,26 @@ function renderAgreement() {
         `Typical means the median: the middle date, or the middle season length, of the years in each record. The season length is counted year by year, so it is not always the exact gap between the two typical dates. The coldest night is the average, over the winters in each record, of the lowest reading of the year; zones use the USDA 5 °F half-zone bands. The models are built from weather-station data and smooth over mountain valleys, where clear, calm nights let cold air pool, so they understate frost here.`;
 }
 
+function renderChecks() {
+  const checks = CLIMATE.checks;
+  const open = checks.filter(item => item.status === 'open').length;
+  const settled = checks.length - open;
+  const state = open === checks.length ? `All ${checks.length} checks below are still open`
+    : open === 0 ? `All ${checks.length} checks below are settled`
+    : `${open} of the ${checks.length} checks below are still open and ${settled} ${settled === 1 ? 'is' : 'are'} settled`;
+  document.getElementById('checks-lead').textContent =
+    `The lot has no weather station of its own, so some of what this page says rests on estimates and assumptions. ${state}. Each says what is unverified, why it matters, and how to settle it; a settled check keeps its result.`;
+  const tbody = document.querySelector('#checks-table tbody');
+  [...checks].sort((a, b) => (a.status === 'done') - (b.status === 'done')).forEach(item => {
+    const first = element('div');
+    first.append(element('strong', item.title), element('div', item.what, 'source-note'));
+    if (item.status === 'done') first.append(element('div', `Result, ${longDate(item.resolved_on)}: ${item.result}`, 'source-note'));
+    addRow(tbody, [first, item.why, item.how, item.timing, item.status === 'done' ? 'Done' : 'Open'], [null, null, null, null, 'center']);
+  });
+  document.getElementById('checks-note').textContent =
+    'When you settle a check, set its status to done in data/climate.json with the date and the result; the SQL table climate_checks and this page follow. Bloom dates and survival go in as plant events (see the data guide).';
+}
+
 function renderLog() {
   const tbody = document.getElementById('log-body');
   for (let row = 0; row < 10; row++) addRow(tbody, ['', '', '', '', '']);
@@ -707,6 +737,7 @@ drawDaylight();
 renderDaylightText();
 renderMonthTable();
 renderAgreement();
+renderChecks();
 renderLog();
 </script>
 </body>

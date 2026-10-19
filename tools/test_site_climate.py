@@ -117,8 +117,8 @@ class FrostStatisticsTest(unittest.TestCase):
         self.assertAlmostEqual(sc.distance_miles(43.0, -115.0, 44.0, -115.0), 69.09, places=2)
         self.assertAlmostEqual(sc.distance_miles(43.0, -115.0, 43.0, -114.0), 69.09 * 0.7314, places=1)
         self.assertAlmostEqual(sc.distance_miles(43.0, -115.0, 44.0, -116.0), sc.distance_miles(44.0, -116.0, 43.0, -115.0))
-        # The Prairie SNOTEL is about 2.8 miles from the lot center.
-        self.assertAlmostEqual(sc.distance_miles(LATITUDE, LONGITUDE, 43.51, -115.57), 2.79, places=2)
+        # The Prairie SNOTEL, at the NRCS station coordinates, is about 2.4 miles from the lot center.
+        self.assertAlmostEqual(sc.distance_miles(LATITUDE, LONGITUDE, 43.50513, -115.573), 2.4, places=1)
 
     def test_frost_summary_percentiles_counts_and_period(self):
         springs = ["2000-05-10", "2001-05-20", "2002-05-30", "2003-06-09", "2004-06-19"]
