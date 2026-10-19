@@ -108,7 +108,7 @@
 
 <section class="keep">
 <h2 id="map-heading"></h2>
-<p>Rows are listed south to north as in the planting map. C1 is the west end of each row and C13 the east end by the driveway; every other row is staggered half a spot. Where it works, same-cultivar trees sit side by side for signage and easy picking. The west end of R1 holds the Chestnut crabapple because that end has the fewest pollen partners, and the east end of the apple rows holds three different apples for the same reason.</p>
+<p>Rows are listed south to north and columns east to west, as in the planting map: C1, the west end of each row beside the windbreak, is on the right, and C13, the east end by the driveway, is on the left. Every other row is staggered half a spot. Where it works, same-cultivar trees sit side by side for signage and easy picking. The west end of R1 (on the right) holds the Chestnut crabapple because that end has the fewest pollen partners, and the east end of the apple rows (on the left) holds three different apples for the same reason.</p>
 <div id="map"></div>
 <p class="small"><span class="key"></span> planned 2027 cultivar code &nbsp; <span class="key graft"></span> a graft onto a rootstock you own (R1) &nbsp; <span class="key held"></span> a spot held for a dead or relocated tree &nbsp; <span class="key tree"></span> tree already on hand, by its code. <span id="map-note"></span></p>
 <p class="small">Codes: <span id="codes"></span>.</p>
@@ -317,13 +317,14 @@ document.getElementById('map-heading').textContent = `Every spot in R1 to R${COV
 const mapTable = element('table', undefined, 'map');
 const mapHead = element('tr');
 mapHead.append(element('th', 'Row'));
-for (let c = 1; c <= GRID_COLUMNS; c++) mapHead.append(element('th', `C${c}`));
+// Columns run C13 to C1, so the table reads like the planting map: east (the driveway) on the left, west (the windbreak) on the right.
+for (let c = GRID_COLUMNS; c >= 1; c--) mapHead.append(element('th', `C${c}`));
 const mapBody = element('tbody');
 let holes = 0;
 for (let r = 1; r <= COVERS; r++) {
   const line = element('tr');
   line.append(element('th', `R${r}`));
-  for (let c = 1; c <= GRID_COLUMNS; c++) {
+  for (let c = GRID_COLUMNS; c >= 1; c--) {
     const cell = element('td');
     const planned = plannedAt(r, c);
     const tree = rows[r - 1].trees[c - 1];
