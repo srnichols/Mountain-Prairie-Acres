@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weather Station and Micro-Climate Sensor Plan — Prairie Plants</title>
+<style>
+  :root {
+    --bg: #ffffff; --bg2: #f5f4f0; --bg3: #eae8e1;
+    --text: #2C2C2A; --text2: #5F5E5A; --text3: #888780;
+    --border: #d3d1c7; --link: #185FA5;
+    --ok: #2E7D5B; --test: #D9822B; --beyond: #C2412F; --gate: #6C5BA7;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text);
+    padding: 24px; max-width: 1100px; margin: 0 auto; line-height: 1.6;
+  }
+  h1 { font-size: 22px; font-weight: 500; margin-bottom: 2px; }
+  h2 { font-size: 16px; font-weight: 500; margin: 24px 0 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+  h3 { font-size: 13px; font-weight: 600; margin: 12px 0 4px; color: var(--text2); }
+  p { margin: 6px 0; }
+  a { color: var(--link); }
+  code { font-family: Consolas, "SF Mono", Menlo, monospace; font-size: 0.92em; }
+  .subtitle { font-size: 13px; color: var(--text2); margin-bottom: 8px; }
+  .source-note { font-size: 11px; color: var(--text2); }
+  .lead { font-size: 13px; line-height: 1.65; }
+  .notice { background: var(--bg2); border-left: 4px solid #BA7517; border-radius: 4px; padding: 10px 12px; margin: 12px 0; font-size: 12px; }
+  .notice.cold { border-left-color: #6C5BA7; }
+  .notice.error { border-left-color: #E24B4A; }
+  ul.points { font-size: 12.5px; padding-left: 20px; margin: 6px 0; }
+  ul.points li { margin: 4px 0; }
+
+  table.detail { width: 100%; border-collapse: collapse; font-size: 11px; margin: 8px 0 16px; }
+  table.detail caption { caption-side: top; text-align: left; font-size: 11px; font-weight: 600; color: var(--text2); padding: 0 0 3px; }
+  table.detail th { background: var(--bg3); text-align: left; padding: 5px 8px; font-weight: 500; border: 1px solid var(--border); }
+  table.detail td { padding: 4px 8px; border: 1px solid var(--border); vertical-align: top; }
+  table.detail tr:nth-child(even) td { background: var(--bg2); }
+  table.detail td.num, table.detail th.num { text-align: right; white-space: nowrap; }
+  table.detail td.center, table.detail th.center { text-align: center; white-space: nowrap; }
+  table.detail td.mono { font-family: Consolas, "SF Mono", Menlo, monospace; font-size: 0.95em; white-space: nowrap; }
+  table.detail tbody tr td.within { background: #E3F1E8; }
+  table.detail tbody tr td.test { background: #FAE2B8; }
+  table.detail tbody tr td.beyond { background: #F4CFC7; }
+  table.detail tfoot td { font-weight: 600; background: var(--bg3); }
+  .where { display: block; font-size: 0.9em; font-weight: 400; color: var(--text3); }
+  table.detail td .where { margin-top: 1px; }
+
+  .map-layout { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 16px; align-items: start; }
+  .diagram { display: block; width: 100%; height: auto; }
+  .diagram text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: #2C2C2A; }
+  .diagram .t-note { fill: #5F5E5A; }
+  .diagram .t-ring { fill: #4A3F86; }
+  .diagram .t-g2 { fill: #185FA5; }
+  .diagram .halo { paint-order: stroke; stroke: #fff; stroke-width: 3px; stroke-linejoin: round; }
+  .diagram .m-num { fill: #fff; font-size: 13px; font-weight: 700; }
+  .m-lot { fill: #FBFAF6; stroke: #6B5A45; stroke-width: 2.4; }
+  .m-grid { stroke: #E2E0D8; stroke-width: 0.8; }
+  .m-road { fill: none; stroke: #E4E1D7; }
+  .m-drive { fill: none; stroke: #E6E4DC; stroke-linejoin: round; }
+  .m-orchard { fill: #EEF5E8; stroke: #888780; stroke-width: 1; stroke-dasharray: 5 3; }
+  .m-wind { fill: #CFE3C0; stroke: #7BA15A; stroke-width: 0.8; }
+  .m-shed { fill: #F0D5CF; stroke: #A5483A; stroke-width: 1.2; }
+  .m-pump { fill: #D8DEE8; stroke: #5C6F8A; stroke-width: 1.2; }
+  .m-tank { fill: #D3EDF5; stroke: #0F86AE; stroke-width: 1.2; }
+  .m-box { fill: #E5E3DC; stroke: #888780; stroke-width: 0.8; }
+  .m-ring { fill: rgba(108, 91, 167, 0.05); stroke: #6C5BA7; stroke-width: 1.6; }
+  .m-ring2 { fill: none; stroke: #6C5BA7; stroke-width: 1.2; stroke-dasharray: 6 4; }
+  .m-ring-g2 { fill: rgba(24, 95, 165, 0.04); stroke: #185FA5; stroke-width: 1.3; stroke-dasharray: 2 4; }
+  .m-dot { stroke: #fff; stroke-width: 2; }
+  .m-dot.within { fill: #2E7D5B; }
+  .m-dot.test { fill: #D9822B; }
+  .m-dot.beyond { fill: #C2412F; }
+  .m-ws { fill: #185FA5; stroke: #fff; stroke-width: 2; }
+  .m-g2 { fill: #fff; stroke: #185FA5; stroke-width: 2; stroke-dasharray: 3 2; }
+  .m-scale { stroke: #2C2C2A; stroke-width: 1.5; fill: none; }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 11px; color: var(--text2); margin: 8px 0; }
+  .legend div { display: flex; align-items: center; gap: 6px; }
+  .sw { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; font-size: 8px; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .sw.within { background: var(--ok); }
+  .sw.test { background: var(--test); }
+  .sw.beyond { background: var(--beyond); }
+  .sw.ws { background: var(--link); border-radius: 3px; transform: rotate(45deg) scale(0.8); }
+  .sw.ws span { transform: rotate(-45deg); }
+  .sw.g2 { background: #fff; color: var(--link); border: 1.5px dashed var(--link); }
+  .sw.in { background: var(--ok); border-radius: 3px; }
+  .m-lead { stroke: #2C2C2A; stroke-width: 1.2; }
+  table.detail tbody tr td.yes { background: #E3F1E8; }
+  table.detail tbody tr td.unknown { background: #FAE2B8; }
+  .cards { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; margin: 8px 0 12px; align-items: start; }
+  .card { border: 1px solid var(--border); border-top: 3px solid var(--ok); border-radius: 4px; background: var(--bg2); padding: 8px 12px 6px; font-size: 12px; }
+  .card.fallback { border-top-color: #BA7517; }
+  .card h3 { margin: 0 0 4px; font-size: 13px; color: var(--text); }
+  .card .when { display: block; font-size: 11px; font-weight: 400; color: var(--text2); }
+  .card ol { padding-left: 18px; margin: 4px 0; }
+  .card li { margin: 4px 0; }
+  .source-list { padding-left: 20px; font-size: 12px; }
+  .source-list li { margin: 5px 0; }
+  .footer { margin-top: 24px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text3); }
+
+  @media (max-width: 760px) {
+    .map-layout { grid-template-columns: 1fr; }
+    .cards { grid-template-columns: 1fr; }
+    .diagram { max-width: 420px; margin: 0 auto; }
+    table.detail { display: block; overflow-x: auto; }
+  }
+
+  @page {
+    size: 8.5in 11in;
+    margin: 10mm 10mm 12mm;
+    @bottom-left { content: "Prairie Plants - Weather station and micro-climate sensor plan"; font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+  }
+  @media print {
+    body { padding: 0; margin: 0; max-width: none; font-size: 9pt; line-height: 1.3; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    .print-help, .screen-only { display: none; }
+    .page-break { break-before: page; }
+    .keep { break-inside: avoid; }
+    h1 { font-size: 16pt; line-height: 1.15; }
+    h2 { font-size: 12pt; margin: 3mm 0 1.5mm; padding-bottom: 1mm; }
+    h3 { font-size: 10pt; margin: 2mm 0 1mm; }
+    h1, h2, h3 { break-after: avoid; }
+    p { orphans: 3; widows: 3; }
+    .subtitle { font-size: 9pt; margin-bottom: 1.5mm; }
+    .source-note { font-size: 7.5pt; line-height: 1.3; }
+    .lead { font-size: 9pt; line-height: 1.35; }
+    .notice { font-size: 8pt; padding: 1.5mm 2mm; margin: 2mm 0; }
+    ul.points { font-size: 8.5pt; line-height: 1.3; padding-left: 5mm; }
+    ul.points li { margin: 0.6mm 0; }
+    table.detail { table-layout: fixed; font-size: 7.8pt; line-height: 1.25; margin: 2mm 0 3mm; }
+    table.detail caption { font-size: 8pt; }
+    table.detail th, table.detail td { padding: 0.8mm 1.5mm; overflow-wrap: anywhere; }
+    table.detail tr { break-inside: avoid; }
+    thead { display: table-header-group; }
+    .map-layout { grid-template-columns: 3.05in minmax(0, 1fr); gap: 5mm; }
+    .diagram { max-height: 8.3in; width: auto; max-width: 100%; }
+    .legend { font-size: 7.5pt; gap: 1mm 4mm; margin: 1.5mm 0; }
+    .cards { gap: 3mm; margin: 2mm 0 3mm; }
+    .card { padding: 1.5mm 2.5mm 1mm; font-size: 8.2pt; line-height: 1.3; break-inside: avoid; }
+    .card h3 { font-size: 9.5pt; margin: 0 0 1mm; }
+    .card .when { font-size: 7.5pt; }
+    .card ol { padding-left: 4.5mm; margin: 1mm 0; }
+    .card li { margin: 0.8mm 0; }
+    .source-list { font-size: 7.5pt; padding-left: 5mm; }
+    .source-list li { margin: 0.6mm 0; }
+    a { text-decoration: none; color: inherit; }
+    .footer { font-size: 7.5pt; margin-top: 3mm; padding-top: 2mm; }
+  }
+  .home-link { margin: 0 0 0.1in; font-size: 9.5pt; }
+  @media print { .home-link { display: none; } }
+</style>
+</head>
+<body>
+<nav class="home-link" aria-label="Back to the home page"><a href="index.html">← Mountain Prairie Acres — Orchard and Ranch Projects</a></nav>
+
+<div class="notice print-help" role="note"><strong>Print setup:</strong> Letter (8.5 × 11 in), portrait, 100% scale. Turn on background graphics and turn off the browser's headers and footers.</div>
+<noscript><div class="notice error">JavaScript is required to draw the map, the sensor-site table, and the order totals.</div></noscript>
+<div class="notice error" id="render-error" hidden></div>
+
+<section aria-labelledby="page-title">
+<h1 id="page-title">Weather Station and Micro-Climate Sensor Plan</h1>
+<p class="subtitle">Prairie Plants · An <a href="https://shop.ecowitt.com/collections/starter-product">Ecowitt</a> Wi-Fi station with frost, soil, and rain sensors for the orchard, freeze alerts for the red shed and pump house, and an auto-fill plan for the irrigation tank · prices and specifications checked October 18–19, 2026</p>
+<p class="source-note">Companion to the <a href="site_climate.html">site climate page</a>, which notes that the lot has no thermometer yet, and the <a href="orchard_water_harvesting_plan.html">water-harvesting plan</a>, which calls for a rain gauge. Prices, specifications, and range figures come from Ecowitt's store pages and manuals and from the other sellers' pages linked below, and they will drift, so follow the links before ordering. This page summarizes them in its own words and links to the sellers; it does not copy their catalogs. Sensor sites are proposals placed with the <a href="site_master_grid.html">site master grid</a> and the <a href="orchard_pollination_grid.html">planting layout</a>, and every distance is measured on that grid.</p>
+
+<h2>The Pick in Brief</h2>
+<p class="lead">Buy the <strong><a href="https://shop.ecowitt.com/products/gw3001">Wittboy GW3001</a></strong> kit (<strong>$204.99</strong>): a <a href="https://shop.ecowitt.com/products/gw3000">GW3000</a> gateway and a <a href="https://shop.ecowitt.com/products/ws90">WS90</a> outdoor array. It suits a remote, Starlink-connected site better than anything else in <a href="https://shop.ecowitt.com/collections/starter-product">Ecowitt's lineup</a>. It costs $5 more than the older <a href="https://shop.ecowitt.com/products/wittboy-gw2001">GW2001</a> kit ($199.99), whose gateway lacks the SD slot.</p>
+<ul class="points">
+  <li><strong>Gateway (<a href="https://shop.ecowitt.com/products/gw3000">GW3000</a>).</strong> Wi-Fi and Ethernet, a microSD slot that logs readings as CSV files you can download from its web page or API, a replaceable external radio antenna, and USB-C power. The GW2000 in the GW2001 kit lists no SD slot. A local copy means a Starlink or Wi-Fi outage does not leave a hole in the frost record.</li>
+  <li><strong>Array (<a href="https://shop.ecowitt.com/products/ws90">WS90</a>).</strong> Wind speed, wind direction, rain, temperature, humidity, light, and UV in one solar-powered unit with no moving parts.</li>
+  <li><strong>Room to grow.</strong> One gateway takes up to 8 <a href="https://shop.ecowitt.com/products/wn31">temperature/humidity sensors</a>, 8 <a href="https://shop.ecowitt.com/products/wn34s">temperature probes</a>, 8 <a href="https://shop.ecowitt.com/products/wn35">leaf-wetness</a>, 16 <a href="https://shop.ecowitt.com/products/wh52">soil</a>, 4 <a href="https://shop.ecowitt.com/products/wh55">leak</a>, 4 <a href="https://shop.ecowitt.com/products/lds01">laser-distance</a>, and 4 <a href="https://shop.ecowitt.com/products/wh41">PM2.5</a> sensors, a <a href="https://shop.ecowitt.com/products/wh57">lightning sensor</a>, and 16 <a href="https://shop.ecowitt.com/collections/iot-actuator">water timers, valves, or smart plugs</a>.</li>
+  <li><strong>Pricier units add a screen or a modem, not capability.</strong> The <a href="https://shop.ecowitt.com/products/wittboy-pro-hp2564">Wittboy Pro HP2564</a> ($299.99) is the same WS90 with a 7-inch touchscreen console and a shorter add-on list (no irrigation timers). The <a href="https://shop.ecowitt.com/products/wittfield-ws6210-ws6210s">WittField WS6210</a> (from $329.99) is a 4G and Wi-Fi receiver for sites without Wi-Fi and needs its own sensors; Starlink makes it unnecessary.</li>
+  <li><strong>Nothing to port-forward.</strong> The gateway sends its readings out to <a href="https://www.ecowitt.net/">ecowitt.net</a>, so Starlink's lack of inbound connections does not matter.</li>
+</ul>
+
+<h2>Reading the Ecowitt Product Names</h2>
+<p class="source-note">Ecowitt's store sorts them into <a href="https://shop.ecowitt.com/collections/starter-product">Starter Product</a> (complete stations), <a href="https://shop.ecowitt.com/collections/console-or-gateway">Console / Gateway</a>, <a href="https://shop.ecowitt.com/collections/wifi-sensor">Sensor</a>, and <a href="https://shop.ecowitt.com/collections/iot-actuator">IoT Actuator</a>. The letters in a name tell you which kind of thing it is.</p>
+<table class="detail">
+<colgroup><col style="width:17%"><col style="width:38%"><col style="width:45%"></colgroup>
+<thead><tr><th>Name</th><th>What it is</th><th>Examples</th></tr></thead>
+<tbody>
+  <tr><td><strong>GW</strong> + 4 digits</td><td>Gateway: the radio receiver and the Wi-Fi or Ethernet link. No screen, and no outdoor sensors of its own, only indoor temperature, humidity, and pressure. A kit bundles an outdoor array.</td><td><a href="https://shop.ecowitt.com/products/gw3000">GW3000</a> alone ($54.99); <a href="https://shop.ecowitt.com/products/gw3001">GW3001</a> = GW3000 + <a href="https://shop.ecowitt.com/products/ws90">WS90</a>; <a href="https://shop.ecowitt.com/products/gw3002">GW3002</a> = GW3000 + <a href="https://shop.ecowitt.com/products/ws69">WS69</a>; <a href="https://shop.ecowitt.com/products/wittboy-gw2001">GW2001</a> = GW2000 + WS90.</td></tr>
+  <tr><td><strong>WS</strong>, <strong>HP</strong>, or <strong>WN</strong> + 4 digits</td><td>Console: a gateway with a display screen, often sold in a kit with an array.</td><td><a href="https://shop.ecowitt.com/products/ws3900_c">WS3900</a>, <a href="https://shop.ecowitt.com/products/wittboy-pro-hp2564">HP2564</a> (<a href="https://shop.ecowitt.com/products/hp2560_c">HP2560</a> console + WS90).</td></tr>
+  <tr><td><strong>WS</strong> + 2 digits</td><td>Outdoor sensor array. This is where wind is measured.</td><td><a href="https://shop.ecowitt.com/products/ws90">WS90</a>: wind, rain, temperature, humidity, light, UV ($149.99). <a href="https://shop.ecowitt.com/products/ws85">WS85</a>: wind and rain only ($99.99). <a href="https://shop.ecowitt.com/products/ws80">WS80</a>: wind, temperature, humidity, light, UV, no rain ($109.99); its page says there is no 915 MHz version for sale in the U.S. <a href="https://shop.ecowitt.com/products/ws69">WS69</a>: cups, vane, and tipping bucket ($63.99). <a href="https://shop.ecowitt.com/products/ws68">WS68</a>: wind plus light and UV ($53.99).</td></tr>
+  <tr><td><strong>WH</strong> or <strong>WN</strong> + 2 digits</td><td>Add-on sensors that report to the gateway by radio.</td><td><a href="https://shop.ecowitt.com/products/wh52">WH52</a> soil, <a href="https://shop.ecowitt.com/products/wn31">WN31</a> temperature and humidity, <a href="https://shop.ecowitt.com/products/wh40h">WH40H</a> rain gauge, <a href="https://shop.ecowitt.com/products/wn35">WN35</a> leaf wetness.</td></tr>
+</tbody></table>
+
+<h2>How It Measures Wind and Direction</h2>
+<p class="lead">The gateway has no wind sensor. It receives readings by radio from the array outdoors (915 MHz, about every 9 seconds) and passes them along: <strong><a href="https://shop.ecowitt.com/products/ws90">WS90</a> → <a href="https://shop.ecowitt.com/products/gw3000">GW3000</a> → Wi-Fi or Ethernet → Starlink → <a href="https://www.ecowitt.net/">Ecowitt app and website</a></strong>, with a copy on the SD card.</p>
+<ul class="points">
+  <li><strong>No cups, no vane.</strong> The <a href="https://shop.ecowitt.com/products/ws90">WS90</a>'s ultrasonic anemometer sends sound pulses between transducers. Wind speeds up or slows the pulses, and the electronics work out speed and direction from the timing.</li>
+  <li><strong>What it reports.</strong> 0 to 89 mph (40 m/s), within ±2 mph below 22 mph and ±10% above, starting at about 1 mph; direction within ±15° in 1° steps; gust is the highest speed in the last 28 seconds.</li>
+  <li><strong>Aim it.</strong> Point the array's NORTH arrow due north (<a href="https://osswww.ecowitt.net/uploads/20220829/WS90%20Manual.pdf">WS90 manual</a>), keep the pole vertical and the array level, and check the arrow again as the last step before tightening the bolts. The fences run within 0.2° of true north, so sight along the west fence; a phone compass reads magnetic north, which is well off true north here.</li>
+  <li><strong>Winter.</strong> Use lithium AAs; the <a href="https://osswww.ecowitt.net/uploads/20220829/WS90%20Manual.pdf">manual</a> warns against alkaline cells, especially with the heater on. The optional <a href="https://shop.ecowitt.com/products/extension-cord">12 V heater cord</a> (10 or 20 m) warms only the wind-measurement area. The rain sensor on top is not heated, and the pole must be within reach of 12 V power.</li>
+  <li><strong>Cups and a vane instead.</strong> The <a href="https://shop.ecowitt.com/products/gw3002">GW3002</a> kit ($118.99) pairs the <a href="https://shop.ecowitt.com/products/gw3000">GW3000</a> with the <a href="https://shop.ecowitt.com/products/ws69">WS69</a>: moving parts, no heater cord, but a listed ±0.3 °C temperature accuracy against ±1 °C for the WS90. The WS90 is still the better fit here.</li>
+</ul>
+</section>
+
+<section class="page-break" aria-labelledby="buy-heading">
+<h2 id="buy-heading">Shopping List: Buy Now</h2>
+<p class="source-note">Choose the <strong>915 MHz (US)</strong> option on every Ecowitt page; sensors and gateway must match. Ecowitt prices are from its store on the dates above. The Amazon links are searches, not specific listings. Ecowitt also sells through <a href="https://www.amazon.com/ECOWITT/s?k=ECOWITT">its Amazon storefront</a>, but Amazon's prices were not checked.</p>
+<table class="detail" id="buy-now" data-gauge="48">
+<colgroup><col style="width:24%"><col style="width:5%"><col style="width:8%"><col style="width:37%"><col style="width:26%"></colgroup>
+<thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Each</th><th>Use</th><th>Link</th></tr></thead>
+<tbody>
+  <tr data-qty="1" data-each="204.99"><td><strong><a href="https://shop.ecowitt.com/products/gw3001">Wittboy GW3001</a></strong> (<a href="https://shop.ecowitt.com/products/gw3000">GW3000</a> gateway + <a href="https://shop.ecowitt.com/products/ws90">WS90</a>)</td><td class="num">1</td><td class="num">$204.99</td><td>Base station for wind, rain, temperature, humidity, sun, and UV. The gateway goes in the red shed.</td><td><a href="https://shop.ecowitt.com/products/gw3001">shop.ecowitt.com/products/gw3001</a></td></tr>
+  <tr data-qty="6" data-lean-qty="4" data-each="10.99"><td><strong><a href="https://shop.ecowitt.com/products/wn31">WN31</a></strong> temperature/humidity sensor</td><td class="num">6</td><td class="num">$10.99</td><td>The outdoor frost network, at sites 1 to 6 below. It measures to −40 °F, but its own screen blanks below 14 °F.</td><td><a href="https://shop.ecowitt.com/products/wn31">shop.ecowitt.com/products/wn31</a></td></tr>
+  <tr data-qty="6" data-lean-qty="4" data-each="18.99"><td><strong><a href="https://shop.ecowitt.com/products/shelter">Rain Shield</a></strong> for WN31</td><td class="num">6</td><td class="num">$18.99</td><td>One per WN31. The WN31 listing gives no waterproof rating, and this is Ecowitt's weather cover. It fits a 1 to 1.5 in pole.</td><td><a href="https://shop.ecowitt.com/products/shelter">shop.ecowitt.com/products/shelter</a></td></tr>
+  <tr data-qty="2" data-lean-qty="2" data-each="10.99"><td><strong><a href="https://shop.ecowitt.com/products/wn31">WN31</a></strong> for the buildings</td><td class="num">2</td><td class="num">$10.99</td><td>Indoor freeze sensors: one in the red shed, one in the pump house (S and P below). No shield needed. With sites 1 to 6 they fill the gateway's 8 WN31 channels, so site 7 goes on the second gateway.</td><td><a href="https://shop.ecowitt.com/products/wn31">shop.ecowitt.com/products/wn31</a></td></tr>
+  <tr data-qty="4" data-lean-qty="2" data-each="27.99"><td><strong><a href="https://shop.ecowitt.com/products/wh52">WH52</a></strong> soil moisture, temperature, and EC</td><td class="num">4</td><td class="num">$27.99</td><td>Tree basins at sites 1 to 4. IP66, 1 AA. The <a href="https://shop.ecowitt.com/products/wh51">WH51</a> ($17.99) measures moisture only.</td><td><a href="https://shop.ecowitt.com/products/wh52">shop.ecowitt.com/products/wh52</a></td></tr>
+  <tr data-qty="1" data-lean-qty="0" data-each="39.99"><td><strong><a href="https://shop.ecowitt.com/products/wh40h">WH40H</a></strong> rain gauge</td><td class="num">1</td><td class="num">$39.99</td><td>Rain totals beside the WS90; Ecowitt recommends the pairing for accurate rain. Rain only, no snow.</td><td><a href="https://shop.ecowitt.com/products/wh40h">shop.ecowitt.com/products/wh40h</a></td></tr>
+  <tr><td><strong><a href="https://weatheryourway.com/products/official-cocorahs-gauge">CoCoRaHS gauge</a></strong> (4 in rain and snow)</td><td class="num">1</td><td class="num">about $42–48</td><td>Manual reference for rain and snow, and the official gauge for the <a href="https://www.cocorahs.org/">CoCoRaHS</a> volunteer network. Ships with a post bracket.</td><td><a href="https://weatheryourway.com/products/official-cocorahs-gauge">weatheryourway.com/products/official-cocorahs-gauge</a></td></tr>
+  <tr><td><strong><a href="https://www.amazon.com/s?k=SanDisk+High+Endurance+32GB+microSD">microSD card</a></strong>, 32 GB, high-endurance</td><td class="num">1</td><td class="num">—</td><td>Local logging. The gateway reads FAT32 only; larger cards need reformatting.</td><td><a href="https://www.amazon.com/s?k=SanDisk+High+Endurance+32GB+microSD">Amazon search</a></td></tr>
+  <tr><td><strong><a href="https://www.amazon.com/s?k=Energizer+Ultimate+Lithium+AA">Lithium AA</a></strong> batteries</td><td class="num">24+</td><td class="num">—</td><td>WS90 2, each WN31 2, WH52 and WH40H 1 each. Lithium for your winters, and for the unheated buildings.</td><td><a href="https://www.amazon.com/s?k=Energizer+Ultimate+Lithium+AA">Amazon search</a></td></tr>
+  <tr><td><strong><a href="https://www.amazon.com/s?k=1+inch+OD+aluminum+round+tube+72+inch">1 in OD aluminum tube</a></strong>, about 6 ft, and <strong><a href="https://www.amazon.com/s?k=stainless+steel+pipe+clamps+1+inch">pipe clamps</a></strong></td><td class="num">1</td><td class="num">—</td><td>WS90 pole. Its mounting hole fits a 1.0 in pole.</td><td><a href="https://www.amazon.com/s?k=1+inch+OD+aluminum+round+tube+72+inch">Amazon search: tube</a>, <a href="https://www.amazon.com/s?k=stainless+steel+pipe+clamps+1+inch">clamps</a></td></tr>
+  <tr><td><strong>1 in PVC pipe</strong> (1.315 in OD) or <strong>1 in EMT conduit</strong> (1.163 in OD), 5 to 6 ft</td><td class="num">6</td><td class="num">—</td><td>Poles for the shields; their mounting hole is 1 to 1.5 in.</td><td>Hardware store</td></tr>
+</tbody></table>
+<div class="notice keep">The Ecowitt items total <strong id="total-ecowitt">…</strong>, or about <strong id="total-with-gauge">…</strong> with the CoCoRaHS gauge. Allow roughly $60 more for the card, batteries, and poles (an estimate, not a quote). To spend less, order 4 outdoor WN31s with shields and 2 WH52s and skip the WH40H (the two indoor WN31s stay in): the Ecowitt total drops to <strong id="total-lean">…</strong>, a saving of <strong id="total-saved">…</strong>.</div>
+
+<h2 class="page-break">Handy Add-Ons</h2>
+<table class="detail">
+<colgroup><col style="width:22%"><col style="width:9%"><col style="width:41%"><col style="width:28%"></colgroup>
+<thead><tr><th>Item</th><th class="num">Each</th><th>Use</th><th>Link</th></tr></thead>
+<tbody>
+  <tr><td><strong><a href="https://shop.ecowitt.com/products/wn35">WN35</a></strong> leaf wetness sensor</td><td class="num">$54.99</td><td>Wet hours for scab and fire-blight timing; one or two in a susceptible apple.</td><td><a href="https://shop.ecowitt.com/products/wn35">shop.ecowitt.com/products/wn35</a></td></tr>
+  <tr><td><strong><a href="https://shop.ecowitt.com/products/wh57">WH57</a></strong> lightning detector</td><td class="num">$55.99</td><td>Storm alerts. Fits the <a href="https://shop.ecowitt.com/products/shelter">Rain Shield</a>. If it reports false strikes, check the batteries: Ecowitt says lithium AAs can cause that and suggests alkaline or low-voltage rechargeable cells.</td><td><a href="https://shop.ecowitt.com/products/wh57">shop.ecowitt.com/products/wh57</a></td></tr>
+  <tr><td><strong><a href="https://shop.ecowitt.com/products/wh55">WH55</a></strong> leak detector</td><td class="num">$15.99</td><td>Pump house floor and tank base; loud alarm.</td><td><a href="https://shop.ecowitt.com/products/wh55">shop.ecowitt.com/products/wh55</a></td></tr>
+  <tr><td><strong><a href="https://shop.ecowitt.com/products/lds01">LDS01</a></strong> laser distance sensor</td><td class="num">from $99.99</td><td>Tank level or snow depth, 4 cm to 4 m. Buy the single unit; the $129.99 kit adds a GW1200 gateway you will not need. Rated −4 to 122 °F, so it will miss your coldest nights. 8 AA.</td><td><a href="https://shop.ecowitt.com/products/lds01">shop.ecowitt.com/products/lds01</a></td></tr>
+  <tr><td><strong><a href="https://shop.ecowitt.com/products/wh41">WH41</a></strong> PM2.5 air-quality sensor, solar</td><td class="num">$71.99</td><td>Wildfire smoke.</td><td><a href="https://shop.ecowitt.com/products/wh41">shop.ecowitt.com/products/wh41</a></td></tr>
+  <tr><td><strong><a href="https://shop.ecowitt.com/products/wittflow-wfc01">WFC01</a></strong> WittFlow water timer</td><td class="num">from $59.99</td><td>Timer with a built-in flow meter and water temperature, for one zone.</td><td><a href="https://shop.ecowitt.com/products/wittflow-wfc01">shop.ecowitt.com/products/wittflow-wfc01</a></td></tr>
+  <tr><td><strong><a href="https://shop.ecowitt.com/products/wfc02">WFC02</a></strong> smart ball valve</td><td class="num">from $119.99</td><td>Motorized brass ball valve: 1 in with flow meter $129.99, 1 in without $119.99, or 2 in $139.99 (the meter is 1 in only). BSP threads, so US plumbing needs NPT adapters. It works above 32 °F only: drain it for winter. 8 AA.</td><td><a href="https://shop.ecowitt.com/products/wfc02">shop.ecowitt.com/products/wfc02</a></td></tr>
+  <tr><td><strong>Tank auto-fill:</strong> <a href="https://shop.ecowitt.com/products/lds01">LDS01</a> + <a href="https://shop.ecowitt.com/products/wfc02">WFC02</a></td><td class="num">$229.98</td><td>Valve on the tank's supply line, laser in the tank lid, both on the gateway's 915 MHz radio rather than Wi-Fi. Whether the laser can stop the valve is unconfirmed: see <a href="#tank-heading">Irrigation Tank: Auto-Fill and Level Management</a> for two plans, the parts, and the question to ask Ecowitt first.</td><td><a href="https://oss.ecowitt.net/uploads/20250418/FG-WFC02A.pdf">WFC02 manual</a>, <a href="https://oss.ecowitt.net/uploads/20251103/LDS01C-ECO1MANUAL1103.pdf">LDS01 manual</a></td></tr>
+  <tr><td><strong><a href="https://shop.ecowitt.com/products/wittswitch-ac1100">AC1100</a></strong> smart plug</td><td class="num">$29.99</td><td>A pump, fan, or heater on a schedule or a sensor trigger.</td><td><a href="https://shop.ecowitt.com/products/wittswitch-ac1100">shop.ecowitt.com/products/wittswitch-ac1100</a></td></tr>
+  <tr><td><strong><a href="https://shop.ecowitt.com/products/extension-cord">12 V heater cord</a></strong>, 10 or 20 m</td><td class="num">see page</td><td>Clears snow and ice from the WS90's wind sensor. The pole must be near 12 V power.</td><td><a href="https://shop.ecowitt.com/products/extension-cord">shop.ecowitt.com/products/extension-cord</a></td></tr>
+  <tr><td><strong><a href="https://shop.ecowitt.com/products/gw3000">GW3000</a></strong> second gateway</td><td class="num">$54.99</td><td>For the north rows and the northwest frost pocket; it needs power and Wi-Fi there. Add a <a href="https://shop.ecowitt.com/products/wn31">WN31</a> ($10.99) and <a href="https://shop.ecowitt.com/products/shelter">shield</a> ($18.99) for the pocket, since the first gateway's 8 WN31 channels will be full.</td><td><a href="https://shop.ecowitt.com/products/gw3000">shop.ecowitt.com/products/gw3000</a></td></tr>
+</tbody></table>
+</section>
+
+<section class="page-break" aria-labelledby="sites-heading">
+<h2 id="sites-heading">Where the Sensors Go</h2>
+<p class="source-note">Proposed sites, to scale with north up and the 50 ft grid. The gateway goes in the <a href="homestead_plot_map.html">red shed</a>, where there is power. S and P are the indoor freeze sensors, inside the shed and the pump house. Distances are straight lines from the shed's center. Ecowitt lists 300 ft (100 m) of open-air range for the <a href="https://shop.ecowitt.com/products/wn31">WN31</a> and <a href="https://shop.ecowitt.com/products/wh52">WH52</a> and about 328 ft (100 m) for the <a href="https://shop.ecowitt.com/products/gw3000">GW3000</a>'s receiver; the <a href="https://shop.ecowitt.com/products/ws90">WS90</a> transmits farther (500 ft). Flat, quiet ground like yours may do better, so treat the colors as a list of what to test, not a verdict.</p>
+<div class="map-layout">
+  <div>
+    <div id="map-host"></div>
+    <div class="legend" id="map-legend" aria-label="Map key">
+      <div><span class="sw within"></span>Within 300 ft of the shed</div>
+      <div><span class="sw test"></span>300 to 328 ft: at the limit</div>
+      <div><span class="sw beyond"></span>Beyond 328 ft</div>
+      <div><span class="sw ws"><span>W</span></span>WS90 pole</div>
+      <div><span class="sw g2">G2</span>Second gateway, if needed</div>
+      <div><span class="sw in">S</span>Indoor freeze sensors (S, P)</div>
+      <div>Purple rings: 300 and 328 ft from the shed. Dotted blue ring: 300 ft from G2.</div>
+    </div>
+  </div>
+  <div>
+    <table class="detail" id="sites">
+    <colgroup><col style="width:7%"><col style="width:28%"><col style="width:19%"><col style="width:10%"><col style="width:15%"><col style="width:21%"></colgroup>
+    <thead><tr><th class="center">#</th><th>Site</th><th><a href="site_master_grid.html">SiteRef</a></th><th class="num">Elev., ft</th><th class="num">From shed</th><th>Sensors</th></tr></thead>
+    <tbody></tbody></table>
+    <ul class="points">
+      <li><strong>Cold air.</strong> The northwest pocket (7) is the lowest ground and the high point (6) the highest. The <a href="site_climate.html">climate page</a> expects cold air to drain to the pocket, so the gap between the two is the number to learn.</li>
+      <li><strong>Freeze check in the buildings.</strong> Hang each indoor <a href="https://shop.ecowitt.com/products/wn31">WN31</a> (S, P) on an inside wall a couple of feet off the floor, near the water pipes and away from the inverters and any heater, and name the channels in the app. The <a href="https://shop.ecowitt.com/products/wn31">WN31 listing</a> says <a href="https://www.ecowitt.net/">ecowitt.net</a> can e-mail alerts for its sensors, and <a href="https://www.ecowitt.com/shop/forum/forumDetails/188">Ecowitt's announcement</a> says the e-mails come from alert@notifications.ecowitt.net, so add that address to your safe senders. The sensor is good to ±1 °C (about ±2 °F), so set the low alert near 35 °F to be warned before 32 °F, and test it once with the sensor in a bag of ice. Test P's signal first, since it passes through two buildings' walls.</li>
+      <li><strong>Test the range first.</strong> Before burying anything, run each <a href="https://shop.ecowitt.com/products/wn31">WN31</a> at its site for a day and read its signal and battery on the gateway's Sensors ID page (<a href="https://oss.ecowitt.net/uploads/20260320/GW3000Manual.pdf">GW3000 manual</a>). The <a href="https://osswww.ecowitt.net/uploads/20220829/WS90%20Manual.pdf">WS90 manual</a> also says to run the WS90 for a week at a temporary spot before mounting it for good.</li>
+      <li><strong>Second gateway.</strong> If sites 3, 5, and 7 fail the test, a second <a href="https://shop.ecowitt.com/products/gw3000">GW3000</a> at G2 would be within 300 ft of sites <span id="gw2-covers">…</span>. It needs power and Wi-Fi there, and G2 is about <span id="gw2-router">…</span> ft from the <a href="homestead_plot_map.html">pump house</a>,       where the Starlink router is.</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<section class="page-break" aria-labelledby="tank-heading">
+<h2 id="tank-heading">Irrigation Tank: Auto-Fill and Level Management</h2>
+<p class="source-note">The site data lists a 3,000 gal black poly tank beside the pump house, about <span id="tank-width">8</span> ft across and 8 ft tall, so each inch of depth holds about <span id="tank-galin">31</span> gal. A straight-sided tank that size holds about <span id="tank-brim">3,008</span> gal brim-full, so the level at the overflow fitting is a little lower: measure it. The site data does not say how the tank is filled today (the pump, the pipe size, the inlet and overflow heights); check those before buying. The <a href="https://shop.ecowitt.com/products/lds01">LDS01</a> laser and the <a href="https://shop.ecowitt.com/products/wfc02">WFC02</a> valve reach the gateway by 915 MHz radio, not Wi-Fi. The tank is about <span id="tank-dist">164</span> ft from the shed, inside the 328 ft rating, but it sits beside the pump house and the steel solar container, so test the signal at the valve's real spot.</p>
+<p class="lead">Your idea works on paper: <strong>a daily timer opens the valve, the laser stops it when the tank is full, and the same rule shuts it again if the tank is still full the next day.</strong> The timer and a stop-on-sensor rule are documented. What Ecowitt does not say is whether the laser's level can be the trigger that stops the valve, so there is a plan for each answer.</p>
+
+<table class="detail">
+<colgroup><col style="width:27%"><col style="width:53%"><col style="width:20%"></colgroup>
+<caption>What Ecowitt's manuals confirm, and what they leave open</caption>
+<thead><tr><th>The idea</th><th>What the manual says</th><th>Source</th></tr></thead>
+<tbody>
+  <tr><td>A daily timer that keeps running if the gateway link drops</td><td class="yes"><strong>Confirmed.</strong> A Plan is saved on the valve itself.</td><td><a href="https://oss.ecowitt.net/uploads/20250418/FG-WFC02A.pdf">WFC02 manual</a> §5.1.2.3</td></tr>
+  <tr><td>A rule that closes the valve while the timer is running</td><td class="yes"><strong>Confirmed,</strong> with a temperature rule as the example: the valve shuts at once, and the Plan resumes at its next scheduled time.</td><td>WFC02 manual §5.2</td></tr>
+  <tr><td>Rules that work with Starlink down</td><td class="yes"><strong>Confirmed.</strong> Once downloaded, the gateway runs them on its own sensor data and logs to Ecowitt later.</td><td>WFC02 manual §5.1.2.4</td></tr>
+  <tr><td>The laser's level as the rule's trigger</td><td class="unknown"><strong>Not stated.</strong> The manual says only "supported parameters in the gateway," and its example trigger list shows no laser. The <a href="https://oss.ecowitt.net/uploads/20251103/LDS01C-ECO1MANUAL1103.pdf">LDS01 manual</a> says only that it works with a "smart plug, water timer, and leak sensors."</td><td>WFC02 manual Fig. 22; LDS01 manual §7</td></tr>
+  <tr><td>The rule firing again while the tank stays full</td><td class="unknown"><strong>Not stated.</strong> The manual's sample log shows one always-true rule logged three times within 20 minutes (18:01, 18:02, 18:20), a hint that it can.</td><td>WFC02 manual Fig. 26</td></tr>
+  <tr><td>The laser's own low and high "alerts"</td><td><strong>Notifications.</strong> The manual describes alert notifications and does not tie them to the valve, so the valve's rule has to read the level itself.</td><td>LDS01 manual §5.1.5</td></tr>
+</tbody></table>
+
+<div class="cards">
+  <div class="card">
+    <h3>Plan A: the laser stops the valve <span class="when">If the app offers the laser as a trigger</span></h3>
+    <ol>
+      <li><strong>Timer.</strong> In the valve's Plan screen, open it at 100% every day, at a time the well pump can run, for a capped time (see Values to set).</li>
+      <li><strong>Stop rule.</strong> In Smart, add the trigger "laser depth is at least FULL" (or "air gap is at most …," whichever the app lists) with the action Water Valve: Off. Set the effective period to all day, every day.</li>
+      <li><strong>Still full the next day.</strong> The timer opens the valve and the rule should shut it again within about 90 seconds (one laser report, about 80 seconds, plus the 7 seconds the valve takes to close), costing up to about <span id="tank-lag">19</span> gal at 13 gpm.</li>
+      <li><strong>Prove it once.</strong> With the tank at FULL, start a 3-minute manual run (Duration) in the app. If the valve shuts within about 90 seconds, the rule fires again and Plan A works; the Smart log lists each firing. If it runs the full 3 minutes, the rule fires only when the level crosses FULL, so use Plan B's cap.</li>
+    </ol>
+  </div>
+  <div class="card fallback">
+    <h3>Plan B: timer and meter only <span class="when">Works whatever the app allows</span></h3>
+    <ol>
+      <li><strong>Timer by volume.</strong> The 1 in valve with the flow meter can run a Plan by volume: your daily use plus about 20%, with a time cap as the second limit. The manual's screens enter volume in liters (1 gal = 3.8 L).</li>
+      <li><strong>Laser as the gauge.</strong> Its low and high alerts tell you when the numbers are wrong, and the valve's log reports each day's gallons, so retune the volume monthly.</li>
+      <li><strong>Float valve as the stop.</strong> A mechanical float valve on the inlet is the final shut-off whatever the electronics do.</li>
+      <li><strong>A script is a project, not a plan.</strong> A program on your network could read the laser and command the valve, but Ecowitt's <a href="https://oss.ecowitt.net/uploads/20240827/Local%C2%A0IOT%C2%A0API%C2%A020240828.pdf">local API document</a> (August 2024) covers only the WFC01 and AC1100.</li>
+    </ol>
+  </div>
+</div>
+
+<table class="detail">
+<colgroup><col style="width:21%"><col style="width:79%"></colgroup>
+<caption>Where you manage it</caption>
+<tbody>
+  <tr><td><strong>Ecowitt app</strong> (phone)</td><td>The main control: pair the devices, open or close the valve, edit the timer and Smart rules, read the valve log (runs, gallons, alerts) and the Smart log, and set the laser's Total Height, calibration, and level alerts. Timers and rules are set through Ecowitt's server, then run in the gateway.</td></tr>
+    <tr><td><strong>Gateway web page</strong> (the GW3000's address)</td><td>The laser's Total Height, offset, and data filter, as an alternative to the app, and the SD card files. The manual puts the level alerts in the app only.</td></tr>
+  <tr><td><strong><a href="https://www.ecowitt.net/">ecowitt.net</a></strong> (browser)</td><td>Level history graphs, and e-mail alerts for sensors (check that the laser appears in its alert list). I found no valve controls there; the manuals describe valve control only in the app.</td></tr>
+  <tr><td><strong>Alerts to expect</strong></td><td>Valve: no water, leak after closing, communication unstable (Smart rules disabled), control failed, low battery, valve abnormal, flow meter disconnected. Laser: low and high level.</td></tr>
+</tbody></table>
+
+<table class="detail keep">
+<colgroup><col style="width:15%"><col style="width:21%"><col style="width:64%"></colgroup>
+<caption>Values to set (measure the real tank first)</caption>
+<thead><tr><th>Setting</th><th>Where</th><th>Value and why</th></tr></thead>
+<tbody>
+  <tr><td><strong>Total Height</strong></td><td>Laser: app or gateway web page</td><td>Tape-measure from the laser's lower edge to the tank floor (close to the tank's 8 ft). The laser then reports Depth = Total Height − Air. Left unset, it shows only the air gap.</td></tr>
+  <tr><td><strong>Overflow depth</strong></td><td>Measure once</td><td>Fill to the overflow fitting and note the Depth reading. Every level below keys off it.</td></tr>
+  <tr><td><strong>FULL</strong></td><td>Smart rule and the laser's high alert</td><td>Overflow depth minus 4 in, which leaves about <span id="tank-head">125</span> gal of headroom for the laser's reporting delay and the valve's closing time.</td></tr>
+  <tr><td><strong>LOW</strong></td><td>The laser's low alert</td><td>At least 12 in of water (about <span id="tank-min12">376</span> gal): Ecowitt advises more than 0.3 m, and under 8 in (about <span id="tank-min8">251</span> gal) the beam may read the tank floor. Raise it if the irrigation pump needs more.</td></tr>
+  <tr><td><strong>Timer start</strong></td><td>Valve: Plan</td><td>Daily, when the well pump can run, such as midday if it runs off the solar system.</td></tr>
+  <tr><td><strong>Timer cap</strong></td><td>Valve: Plan duration, and volume with the meter</td><td>Minutes = gallons to add ÷ gpm; 1,000 gal at 8 gpm takes about 2 hours. Time the first fill, then adjust. Keep it tight under Plan B and generous under Plan A. Give every open command a duration or volume, never "always on."</td></tr>
+  <tr><td><strong>Opening</strong></td><td>Valve</td><td>100%. The meter reads 1 to 13 gpm, so if the pump delivers more, step the opening down in 10% steps.</td></tr>
+  <tr><td><strong>Data filter</strong></td><td>Laser calibration</td><td>If the reading jumps while water runs in, raise the Data Filter Factor (0 to 4; 2 uses the median of the last 5 readings).</td></tr>
+</tbody></table>
+
+<h3>Install and protect</h3>
+<ul class="points">
+  <li><strong>Laser.</strong> A 45 to 50 mm hole in the lid on a level surface (a flat hatch or a level plate, if the lid is domed), the bubble level centered, 40 mm of clear space in front of the lens, and at least <span id="tank-wall">3.4</span> in from the tank wall (Ecowitt's rule is 3.5 cm per 100 cm of height). Keep the beam clear of the inlet stream, pipes, and any float arm. Ecowitt notes extra jitter when the air gap is about 1.1 to 1.5 m, which centering the bubble usually cures. The display and battery box connect by 1.5 m cables, so they need not sit on the lid; the sensor is rated to 122 °F and a black tank in summer sun can run hotter than the air.</li>
+  <li><strong>Valve.</strong> On the supply line with the meter's arrow along the flow, thread tape on every joint, and the actuator upright. End the inlet above the water line (an air gap, so the tank cannot siphon back) and fit an overflow at least as large as the inlet, aimed away from the pump house and containers. If the fill line comes straight off the well pump, check that the pump has pressure control so a closed valve cannot dead-head it.</li>
+  <li><strong>Backstops.</strong> The timer keeps running if the radio link drops, but the stop rule does not: "communication unstable" disables Smart rules. A low battery locks the valve and closes it if it is open. Keep the float valve and overflow as the last line of defense.</li>
+  <li><strong>Keeping it running.</strong> Both devices take 8 AA alkaline cells; change them each spring (the valve lasts over 10 months at one cycle a day). Compare the laser's Depth with a tape reading each month, and watch its heater counter: more than about 30 a day means a dirty or fogging lens. In fall, close the supply, drain the valve and meter (rated above 32 °F), and take the batteries out of both.</li>
+</ul>
+
+<table class="detail">
+<colgroup><col style="width:42%"><col style="width:10%"><col style="width:48%"></colgroup>
+<caption>Tank parts</caption>
+<thead><tr><th>Item</th><th class="num">Price</th><th>Link and note</th></tr></thead>
+<tbody>
+  <tr><td><strong><a href="https://shop.ecowitt.com/products/lds01">LDS01</a></strong> laser distance sensor, single unit, 915 MHz</td><td class="num">$99.99</td><td>The $129.99 kit adds a gateway you already have.</td></tr>
+  <tr><td><strong><a href="https://shop.ecowitt.com/products/wfc02">WFC02</a></strong> valve, 1 in with flow meter, 915 MHz</td><td class="num">$129.99</td><td>1 in without the meter $119.99; 2 in without a meter $139.99. Only the 1 in kit can meter volume. The two Ecowitt parts total $229.98.</td></tr>
+  <tr><td>Thread adapters (BSP to your pipe), not included</td><td class="num">—</td><td>Ecowitt's picks on its WFC02 page: <a href="https://www.amazon.com/dp/B099ZC6YNW">1 in universal</a>, <a href="https://www.amazon.com/dp/B0BVQFWGSG">1 in valve</a>, <a href="https://www.amazon.com/dp/B0DSBFDHHK">1 in meter</a>, <a href="https://www.amazon.com/dp/B09GNKP6HP">2 in valve</a> (Amazon; availability not checked).</td></tr>
+  <tr><td>16 alkaline AA batteries</td><td class="num">—</td><td>8 per device. The valve manual says no rechargeables.</td></tr>
+  <tr><td>Float valve, overflow fitting, thread tape, 1-7/8 in hole saw</td><td class="num">—</td><td>Hardware store. A 1-7/8 in (48 mm) saw fits the laser's 45 to 50 mm lid hole; a 2 in saw cuts just over it.</td></tr>
+</tbody></table>
+<div class="notice keep"><strong>Settle the open question before spending $230.</strong> Ask <a href="mailto:support@ecowitt.com">support@ecowitt.com</a>: (1) In the Ecowitt app, can the LDS01's depth or air gap be the trigger of a WFC02 Smart rule on a GW3000? (2) If the level is already above the trigger when the timer opens the valve, does the rule close it again, or only when the level crosses the trigger? Or buy both, pair them, and look in the valve's Smart screen on arrival: Ecowitt's own store takes change-of-mind returns only within 14 days of delivery, at your cost (<a href="https://shop.ecowitt.com/policies/refund-policy">returns policy</a>). Either way, Plan B works.</div>
+</section>
+
+<section class="page-break" aria-labelledby="order-heading">
+<h2 id="order-heading">Before You Order</h2>
+<ul class="points">
+  <li><strong>Cold.</strong> The <a href="https://shop.ecowitt.com/products/gw3000">GW3000</a> is rated down to 14 °F (−10 °C). The coldest nights average −11 °F, and the record is −32 °F (<code>data/climate.json</code>, <a href="https://wcc.sc.egov.usda.gov/nwcc/site?sitenum=704">Prairie SNOTEL</a>). Unless the shed stays above 14 °F, keep the gateway in a heated spot or an insulated box with a small thermostat-controlled heater, and run its antenna outside. The freeze alerts for the buildings depend on this gateway, Wi-Fi, and power, and the gateway's own indoor reading stops at 14 °F. The <a href="https://shop.ecowitt.com/products/ws90">WS90</a>, <a href="https://shop.ecowitt.com/products/wh52">WH52</a>, and <a href="https://shop.ecowitt.com/products/wn31">WN31</a> transmit down to −40 °F; the <a href="https://shop.ecowitt.com/products/lds01">LDS01</a> is rated only to −4 °F.</li>
+  <li><strong>Data.</strong> <a href="https://www.ecowitt.net/">ecowitt.net</a> keeps day-by-day detail for 3 months, weekly data for 1 year, monthly for 2 years, and yearly for 4. The SD card writes CSV files in its root folder. It must be FAT32 (cards over 32 GB need reformatting with a tool such as <a href="https://rufus.ie/en/">Rufus</a>), can be swapped without a restart, and is managed from the gateway's web page (<a href="https://oss.ecowitt.net/uploads/20260320/GW3000Manual.pdf">GW3000 manual</a>). Back up the CSV files monthly. The repository only needs the daily lows and highs, kept apart from the SNOTEL record, since on-site readings are not station readings.</li>
+  <li><strong>Setup.</strong> Use two lithium AAs in the WS90, run it for a week at a temporary spot, and aim its north arrow. In the gateway's Device Settings (<a href="https://oss.ecowitt.net/uploads/20260320/GW3000Manual.pdf">GW3000 manual</a>), turn on Temperature Compensation to reduce sun heating of the WS90's temperature. Check each temperature sensor in an ice bath (32 °F) before it goes outside, and note any offset.</li>
+  <li><strong>Soil sensors and rain gauges.</strong> The <a href="https://shop.ecowitt.com/products/wh52">WH52</a> (sites 1 to 4) goes in the basin of the nearest tree, ideally one used for the <a href="orchard_water_harvesting_plan.html">perc tests</a>. Put the <a href="https://weatheryourway.com/products/official-cocorahs-gauge">CoCoRaHS gauge</a> and the <a href="https://shop.ecowitt.com/products/wh40h">WH40H</a> on separate posts a few feet from the WS90, clear of the trees.</li>
+  <li><strong>Accuracy.</strong> The WS90's temperature sensor is not fan-ventilated, so it can read warm at midday in calm sun; that matters less on frost nights. The WN31 and WS90 are both listed at ±1 °C. Neither the WS90's rain sensor nor the WH40H measures snow, so use the <a href="https://weatheryourway.com/products/official-cocorahs-gauge">CoCoRaHS gauge</a> and the <a href="https://wcc.sc.egov.usda.gov/nwcc/site?sitenum=704">Prairie SNOTEL</a> for winter precipitation.</li>
+  <li><strong>Starlink.</strong> The gateway joins 2.4 GHz Wi-Fi only. If it will not connect, temporarily split the 2.4 and 5 GHz networks in the Starlink app (<a href="https://starlink-tips.com/guides/tips-tricks/connect-2-4-ghz-smart-home-devices-starlink">a third-party how-to</a>), or use the Ethernet port.</li>
+  <li><strong>Wi-Fi at the shed.</strong> The shed is about <span id="shed-router">…</span> ft from the <a href="homestead_plot_map.html">pump house</a>. The <a href="https://shop.ecowitt.com/products/gw3000">GW3000</a> lists 30 m (98 ft) of Wi-Fi range, so check the signal at the shed with a phone, and use the gateway's Ethernet port or a mesh node if it is weak. The <a href="https://oss.ecowitt.net/uploads/20260320/GW3000Manual.pdf">GW3000 manual</a> also describes moving the antenna on an extension cable to the best-signal spot; check that the cable is in the box.</li>
+  <li><strong>Still unknown.</strong> Whether the shed and pump house stay above freezing, and the shed above 14 °F (the indoor sensors will show it), whether Wi-Fi reaches the north orchard, how far the radio really carries on this ground and through the pump house walls, how the tank is filled today, and whether the laser's level can stop the valve (the Ecowitt question in the tank section). The range test settles the radio question.</li>
+</ul>
+
+<h2>Alternatives Considered</h2>
+<table class="detail">
+<colgroup><col style="width:34%"><col style="width:11%"><col style="width:55%"></colgroup>
+<thead><tr><th>Option</th><th class="num">Price</th><th>Trade-off</th></tr></thead>
+<tbody>
+  <tr><td><a href="https://shop.ecowitt.com/products/gw1210">Ecowitt GW1210</a> (<a href="https://shop.ecowitt.com/products/gw1200">GW1200</a> gateway + WS90)</td><td class="num">$183.99</td><td>Same array and about $16 less than the GW2001, but a Wi-Fi-only gateway with no Ethernet port. Price from <a href="https://localsmarthomeguide.com/products/ecowitt-gw1210-ws90/">a price tracker</a> (Amazon), October 8.</td></tr>
+  <tr><td><a href="https://shop.ecowitt.com/products/wittboy-gw2001">Ecowitt GW2001</a> (GW2000 gateway + WS90)</td><td class="num">$199.99</td><td>The older gateway lists no SD slot.</td></tr>
+  <tr><td><a href="https://shop.tempest.earth/products/tempest">Tempest Weather System</a></td><td class="num">$349</td><td>Easiest and fully sealed, with lightning detection. No soil, leaf-wetness, or extra temperature add-ons.</td></tr>
+  <tr><td><a href="https://ambientweather.com/ws-2902-smart-weather-station">Ambient Weather WS-2902</a></td><td class="num">about $200</td><td>Popular console station with wind cups and a tipping bucket. No soil sensors, and text alerts need the paid <a href="https://ambientweather.net/">AWN+</a> plan.</td></tr>
+  <tr><td><a href="https://ambientweather.com/ws-5000-ultrasonic-smart-weather-station">Ambient Weather WS-5000</a></td><td class="num">$449.99</td><td>Ultrasonic wind and a color console; about twice the Ecowitt price.</td></tr>
+  <tr><td><a href="https://www.davisinstruments.com/products/vantage-vue-weather-station-with-weatherlink-console">Davis Vantage Vue + WeatherLink Console</a></td><td class="num">$725</td><td>The most rugged, with a 1,000 ft radio range. No solar-radiation or UV measurements listed; about 3.5 times the cost.</td></tr>
+</tbody></table>
+
+<h2>Sources</h2>
+<ul class="source-list">
+  <li>Ecowitt store pages for each item linked above (shop.ecowitt.com): prices, specifications, compatible-sensor lists, and range figures, checked October 18–19, 2026. The <a href="https://shop.ecowitt.com/products/gw3001">GW3001</a> page gives the GW3000 and WS90 specifications.</li>
+  <li>Ecowitt <a href="https://oss.ecowitt.net/uploads/20260320/GW3000Manual.pdf">GW3000 manual</a> (SD card, antenna extension, sensor signal page, Temperature Compensation, history retention) and <a href="https://osswww.ecowitt.net/uploads/20220829/WS90%20Manual.pdf">WS90 manual</a> (mounting, north alignment, batteries, one-week trial); the <a href="https://oss.ecowitt.net/uploads/20250418/FG-WFC02A.pdf">WFC02 manual</a> and <a href="https://oss.ecowitt.net/uploads/20251103/LDS01C-ECO1MANUAL1103.pdf">LDS01 manual</a> (radio link, valve modes and limits, tank-sensor setup and level alerts).</li>
+  <li>Ecowitt help pages: the <a href="https://www.ecowitt.com/shop/forum/forumDetails/188">alert e-mail announcement</a>, the <a href="https://oss.ecowitt.net/uploads/20240827/Local%C2%A0IOT%C2%A0API%C2%A020240828.pdf">local IoT API document</a>, the <a href="https://shop.ecowitt.com/policies/refund-policy">returns policy</a>, and the <a href="https://shop.ecowitt.com/pages/contact-us">contact page</a>, which lists support@ecowitt.com. WFC02 prices are from its store page (1 in with meter, 1 in without, and 2 in).</li>
+  <li>CoCoRaHS gauge: <a href="https://weatheryourway.com/products/official-cocorahs-gauge">WeatherYourWay</a>. Alternatives: the Tempest, Ambient Weather, and Davis pages linked in the table, and a price tracker (localsmarthomeguide.com) for the <a href="https://localsmarthomeguide.com/products/ecowitt-wittboy-gw2001/">GW2001</a>, <a href="https://localsmarthomeguide.com/products/ecowitt-gw1210-ws90/">GW1210</a>, and <a href="https://localsmarthomeguide.com/products/weatherflow-tempest/">Tempest</a>.</li>
+  <li>Cold record: <a href="https://wcc.sc.egov.usda.gov/nwcc/site?sitenum=704">Prairie SNOTEL</a>, in <code>data/climate.json</code> (see the <a href="site_climate.html">site climate page</a>). Sites, distances, and elevations: <code>data/site.json</code>, the planting layout, and the USGS lidar terrain, through the shared grid helpers (see the <a href="site_master_grid.html">site master grid</a> and <a href="homestead_plot_map.html">homestead plot map</a>).</li>
+</ul>
+</section>
+<div class="footer">Prairie Plants · Weather station and micro-climate sensor plan · created October 19, 2026 · sites, distances, and elevations are calculated from <code>data/site.json</code> and the lidar terrain; prices were checked October 18–19, 2026 and will drift.</div>
+
+<script src="data/site_grid.js"></script>
+<script src="data/site_terrain.js"></script>
+<script>
+(function () {
+  'use strict';
+  var SG = window.SiteGrid;
+  var errorBox = document.getElementById('render-error');
+  function fail(message) {
+    errorBox.textContent = 'This page could not finish drawing: ' + message;
+    errorBox.hidden = false;
+  }
+  window.addEventListener('error', function (event) { fail(event.message); });
+
+  var LISTED_FT = 300;   // range on the WN31 and WH52 listings
+  var GATEWAY_FT = 328;  // 100 m, the GW3000 receiver rating
+  var TANK_HEIGHT_IN = 96;  // "about 8 ft tall" in the site data
+  var LASER_REPORT_S = 80;  // LDS01 radio report interval (79.75 s in its manual)
+  var VALVE_CLOSE_S = 7;    // WFC02 time to open or close
+  var METER_TOP_GPM = 13;   // WFC02 flow meter range tops out at 50 L/min
+
+  function money(n) { return '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+  function whole(n) { return Math.round(n).toLocaleString('en-US'); }
+  function dist(a, b) { return Math.hypot(a[0] - b[0], a[1] - b[1]); }
+  function rangeClass(d) { return d <= LISTED_FT ? 'within' : d <= GATEWAY_FT ? 'test' : 'beyond'; }
+  var RANGE_WORD = { within: 'within range', test: 'at the limit', beyond: 'beyond range' };
+  var LINKS = {
+    'WN31': 'https://shop.ecowitt.com/products/wn31',
+    'WH52': 'https://shop.ecowitt.com/products/wh52',
+    'WH40H': 'https://shop.ecowitt.com/products/wh40h',
+    'WS90': 'https://shop.ecowitt.com/products/ws90',
+    'GW3000': 'https://shop.ecowitt.com/products/gw3000',
+    'CoCoRaHS gauge': 'https://weatheryourway.com/products/official-cocorahs-gauge'
+  };
+  function linkify(text) {
+    return text.replace(/WN31|WH52|WH40H|WS90|GW3000|CoCoRaHS gauge/g, function (name) { return '<a href="' + LINKS[name] + '">' + name + '</a>'; });
+  }
+  function andList(items) {
+    if (items.length < 2) return items.join('');
+    if (items.length === 2) return items.join(' and ');
+    return items.slice(0, -1).join(', ') + ', and ' + items[items.length - 1];
+  }
+
+  function orderTotals() {
+    var table = document.getElementById('buy-now'), full = 0, lean = 0;
+    table.querySelectorAll('tbody tr[data-each]').forEach(function (row) {
+      var each = Number(row.dataset.each), qty = Number(row.dataset.qty);
+      var leanQty = row.dataset.leanQty === undefined ? qty : Number(row.dataset.leanQty);
+      full += each * qty;
+      lean += each * leanQty;
+    });
+    document.getElementById('total-ecowitt').textContent = money(full);
+    document.getElementById('total-with-gauge').textContent = money(full + Number(table.dataset.gauge));
+    document.getElementById('total-lean').textContent = money(lean);
+    document.getElementById('total-saved').textContent = money(full - lean);
+  }
+
+  function tankFacts() {
+    var tank = SG.feature('irrigation_tank');
+    var galPerIn = Math.PI * tank.r * tank.r / 12 * 7.48052;
+    var lagGal = (LASER_REPORT_S + VALVE_CLOSE_S) / 60 * METER_TOP_GPM;
+    var text = {
+      'tank-width': whole(tank.r * 2),
+      'tank-galin': whole(galPerIn),
+      'tank-brim': whole(galPerIn * TANK_HEIGHT_IN),
+      'tank-dist': whole(dist(SG.center('shed'), [tank.cx, tank.cy])),
+      'tank-lag': whole(lagGal),
+      'tank-head': whole(galPerIn * 4),
+      'tank-min12': whole(galPerIn * 12),
+      'tank-min8': whole(galPerIn * 8),
+      'tank-wall': (TANK_HEIGHT_IN * 0.035).toFixed(1)
+    };
+    Object.keys(text).forEach(function (id) { document.getElementById(id).textContent = text[id]; });
+  }
+
+  function sensorSites() {
+    var gate = SG.center('shed'), router = SG.center('pump_house');
+    var row8 = SG.treeXY(8, 7)[1];
+    var sites = [
+      { id: '1', name: 'South orchard', at: 'beside tree R2-C7', xy: SG.treeXY(2, 7), kit: 'WN31, WH52' },
+      { id: '2', name: 'Mid orchard', at: 'beside tree R8-C7', xy: SG.treeXY(8, 7), kit: 'WN31, WH52' },
+      { id: '3', name: 'North orchard', at: 'beside tree R15-C7', xy: SG.treeXY(15, 7), kit: 'WN31, WH52' },
+      { id: '4', name: 'West edge', at: 'between the windbreak and column C1, level with R8', xy: [30, row8], kit: 'WN31, WH52' },
+      { id: '5', name: 'East edge', at: 'east of column C13, level with R8', xy: [285, row8], kit: 'WN31' },
+      { id: '6', name: 'High point', at: 'inside the east fence', xy: [325, SG.feature('high_point').y], kit: 'WN31' },
+      { id: '7', name: 'Northwest frost pocket', at: 'low corner by the road', xy: [15, 70], kit: 'WN31 (second gateway)' }
+    ];
+    var ws90 = { id: 'W', name: 'WS90 pole', at: 'open ground south of the orchard', xy: [SG.treeXY(1, 7)[0], 640], kit: 'WS90, WH40H, CoCoRaHS gauge' };
+    var shed = { id: 'G', name: 'Gateway', at: 'red shed, power here', xy: gate, kit: 'GW3000 (in the kit)' };
+    var gw2 = { id: 'G2', name: 'Second gateway, if needed', at: 'near tree R14-C4', xy: SG.treeXY(14, 4) };
+    var indoor = [
+      { id: 'S', name: 'Red shed, inside', at: 'inside wall, a couple of feet off the floor', xy: gate, kit: 'WN31 (indoor)', d: null, cls: 'within', box: SG.feature('shed') },
+      { id: 'P', name: 'Pump house, inside', at: 'inside wall, near the water pipes', xy: router, kit: 'WN31 (indoor)', d: dist(router, gate), cls: rangeClass(dist(router, gate)), box: SG.feature('pump_house') }
+    ];
+
+    sites.forEach(function (s) { s.d = dist(s.xy, gate); s.cls = rangeClass(s.d); });
+    ws90.d = dist(ws90.xy, gate);
+    gw2.d = dist(gw2.xy, gate);
+
+    function cells(s, d, cls) {
+      var elev = SG.elevationFt(s.xy[0], s.xy[1]);
+      return '<td class="center"><strong>' + s.id + '</strong></td>' +
+        '<td>' + s.name + '<span class="where">' + s.at + '</span></td>' +
+        '<td class="mono">' + SG.siteRef(s.xy[0], s.xy[1]) + '</td>' +
+        '<td class="num">' + (Number.isFinite(elev) ? whole(elev) : '—') + '</td>' +
+        (d === null ? '<td class="num">—</td>' : '<td class="num ' + (cls || '') + '">' + whole(d) + ' ft' + (cls ? '<span class="where">' + RANGE_WORD[cls] + '</span>' : '') + '</td>') +
+        '<td>' + linkify(s.kit || '') + '</td>';
+    }
+    var html = sites.map(function (s) { return '<tr>' + cells(s, s.d, s.cls) + '</tr>'; });
+    html.push('<tr>' + cells(ws90, ws90.d, rangeClass(ws90.d)).replace(/<td class="num [a-z]+">/, '<td class="num">') + '</tr>');
+    html.push('<tr>' + cells(shed, null) + '</tr>');
+    indoor.forEach(function (s) { html.push('<tr>' + cells(s, s.d, s.cls) + '</tr>'); });
+    html.push('<tr>' + cells(Object.assign({}, gw2, { kit: 'needs power and Wi-Fi: ' + whole(dist(gw2.xy, router)) + ' ft from the router' }), gw2.d, '').replace(/<td class="num ">/, '<td class="num">') + '</tr>');
+    document.querySelector('#sites tbody').innerHTML = html.join('');
+
+    document.getElementById('gw2-covers').textContent = andList(sites.filter(function (s) { return dist(s.xy, gw2.xy) <= LISTED_FT; }).map(function (s) { return s.id; }));
+    document.getElementById('gw2-router').textContent = whole(dist(gw2.xy, router));
+    document.getElementById('shed-router').textContent = whole(dist(gate, router));
+    drawMap(sites, ws90, gw2, gate, indoor);
+  }
+
+  function drawMap(sites, ws90, gw2, gate, indoor) {
+    var F = SG.feature, G = SG.data, lot = G.lot.fence;
+    var vb = { x: -34, y: -44, w: 400, h: 1000 }, bottom = vb.y + vb.h;
+    function pts(list) { return list.map(function (p) { return p[0] + ',' + p[1]; }).join(' '); }
+    function rect(f, cls) { return '<rect class="' + cls + '" x="' + f.x0 + '" y="' + f.y0 + '" width="' + (f.x1 - f.x0) + '" height="' + (f.y1 - f.y0) + '"/>'; }
+    function label(x, y, text, cls, extra) { return '<text class="' + cls + ' halo" x="' + x + '" y="' + y + '" font-size="10" ' + (extra || '') + '>' + text + '</text>'; }
+    function ringY(center, r, x) { return center[1] - Math.sqrt(r * r - Math.pow(x - center[0], 2)); }
+    var fence = pts(F('fence').pts), road = F('road_north'), drive = F('driveway');
+    var out = ['<defs><clipPath id="lot-clip"><polygon points="' + fence + '"/></clipPath></defs>'];
+
+    out.push('<polyline class="m-road" stroke-width="' + road.width + '" points="' + pts(road.pts) + '"/>');
+    out.push(label(150, -14.5, 'North road', 't-note', 'text-anchor="middle"'));
+    out.push('<polygon class="m-lot" points="' + fence + '"/>');
+    out.push('<polyline class="m-drive" stroke-width="' + drive.width + '" points="' + pts(drive.pts) + '"/>');
+    for (var gx = 50; gx < lot.width; gx += 50) out.push('<line class="m-grid" x1="' + gx + '" y1="0" x2="' + gx + '" y2="' + bottom + '"/>');
+    for (var gy = 50; gy < bottom; gy += 50) out.push('<line class="m-grid" x1="0" y1="' + gy + '" x2="' + lot.width + '" y2="' + gy + '"/>');
+    G.grid.columns.split('').forEach(function (letter, i) {
+      out.push('<text class="t-note" x="' + Math.min(i * 50 + 25, lot.width - 15) + '" y="11" font-size="9" text-anchor="middle">' + letter + '</text>');
+    });
+    for (var row = 1; (row - 1) * 50 < bottom - 30; row++) {
+      out.push('<text class="t-note" x="-5" y="' + ((row - 1) * 50 + 28) + '" font-size="9" text-anchor="end">' + row + '</text>');
+    }
+
+    out.push(rect(F('orchard_block'), 'm-orchard'), rect(F('windbreak'), 'm-wind'));
+    out.push(rect(F('container_solar'), 'm-box'), rect(F('container_storage'), 'm-box'));
+    out.push(rect(F('shed'), 'm-shed'), rect(F('pump_house'), 'm-pump'));
+    var tank = F('irrigation_tank');
+    out.push('<circle class="m-tank" cx="' + tank.cx + '" cy="' + tank.cy + '" r="' + tank.r + '"/>');
+
+    out.push('<g clip-path="url(#lot-clip)">');
+    out.push('<circle class="m-ring-g2" cx="' + gw2.xy[0] + '" cy="' + gw2.xy[1] + '" r="' + LISTED_FT + '"/>');
+    out.push('<circle class="m-ring" cx="' + gate[0] + '" cy="' + gate[1] + '" r="' + LISTED_FT + '"/>');
+    out.push('<circle class="m-ring2" cx="' + gate[0] + '" cy="' + gate[1] + '" r="' + GATEWAY_FT + '"/>');
+    out.push('</g>');
+
+    out.push(label(153, 289, 'Orchard', 't-note', 'text-anchor="middle"'));
+    out.push(label(14, 540, 'Windbreak', 't-note', 'transform="rotate(-90 14 540)" text-anchor="middle"'));
+    out.push(label(106, 766, 'Red shed: gateway', 't-note'));
+    out.push(label(85, 916, 'Pump house: router', 't-note'));
+    out.push(label(322, ringY(gate, LISTED_FT, 322) + 12, '300 ft', 't-ring', 'text-anchor="end"'));
+    out.push(label(322, ringY(gate, GATEWAY_FT, 322) - 4, '328 ft', 't-ring', 'text-anchor="end"'));
+    out.push(label(322, ringY(gw2.xy, LISTED_FT, 322) - 4, '300 ft from G2', 't-g2', 'text-anchor="end"'));
+
+    sites.forEach(function (s) {
+      out.push('<circle class="m-dot ' + s.cls + '" cx="' + s.xy[0] + '" cy="' + s.xy[1] + '" r="11"/>');
+      out.push('<text class="m-num" x="' + s.xy[0] + '" y="' + (s.xy[1] + 4.6) + '" text-anchor="middle">' + s.id + '</text>');
+    });
+    var w = ws90.xy;
+    out.push('<polygon class="m-ws" points="' + pts([[w[0], w[1] - 14], [w[0] + 14, w[1]], [w[0], w[1] + 14], [w[0] - 14, w[1]]]) + '"/>');
+    out.push('<text class="m-num" x="' + w[0] + '" y="' + (w[1] + 4.6) + '" text-anchor="middle">W</text>');
+    out.push('<circle class="m-g2" cx="' + gw2.xy[0] + '" cy="' + gw2.xy[1] + '" r="11"/>');
+    out.push('<text class="t-g2" x="' + gw2.xy[0] + '" y="' + (gw2.xy[1] + 3.6) + '" font-size="9.5" font-weight="700" text-anchor="middle">G2</text>');
+    indoor.forEach(function (s) {
+      var px = (s.box.x0 + s.box.x1) / 2, py = s.box.y0 - 17;
+      out.push('<line class="m-lead" x1="' + px + '" y1="' + (py + 9) + '" x2="' + px + '" y2="' + s.box.y0 + '"/>');
+      out.push('<rect class="m-dot ' + s.cls + '" x="' + (px - 9) + '" y="' + (py - 9) + '" width="18" height="18" rx="4"/>');
+      out.push('<text class="m-num" x="' + px + '" y="' + (py + 4.6) + '" text-anchor="middle">' + s.id + '</text>');
+    });
+
+    out.push('<path class="m-scale" d="M225,' + (bottom - 22) + ' H325 M225,' + (bottom - 27) + ' V' + (bottom - 17) + ' M325,' + (bottom - 27) + ' V' + (bottom - 17) + '"/>');
+    out.push('<text class="t-note" x="275" y="' + (bottom - 31) + '" font-size="9" text-anchor="middle">100 ft</text>');
+    out.push('<text class="t-note" x="120" y="' + (bottom - 6) + '" font-size="9" text-anchor="middle">the lot continues south</text>');
+    out.push('<path class="m-scale" d="M350,-6 V-30 M344,-22 L350,-30 L356,-22"/>');
+    out.push('<text class="t-note" x="350" y="-33" font-size="10" font-weight="600" text-anchor="middle">N</text>');
+
+    document.getElementById('map-host').innerHTML = '<svg class="diagram" role="img" aria-label="Map of the lot with the proposed weather station and sensor sites" viewBox="' + [vb.x, vb.y, vb.w, vb.h].join(' ') + '"><title>Proposed weather station and sensor sites, north up</title>' + out.join('') + '</svg>';
+  }
+
+  try {
+    document.querySelectorAll('table.detail td a').forEach(function (a) {
+      if (a.textContent.indexOf('/products/') > -1) a.innerHTML = a.textContent.replace('/products/', '/products/<wbr>');
+    });
+    orderTotals();
+    sensorSites();
+    tankFacts();
+  } catch (error) { fail(error.message); }
+})();
+</script>
+</body>
+</html>

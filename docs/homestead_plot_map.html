@@ -151,7 +151,7 @@ const ITEMS = [
   { key: '2', ids: ['outhouse'], label: 'Outhouse', at: [74, 822] },
   { key: '3', ids: ['container_solar', 'container_storage'], label: 'Two 8 × 40 containers (L)', at: [27, 960] },
   { key: '4', ids: ['house_pad', 'house', 'garage'], label: 'House pad', at: [104, 958] },
-  { key: '5', ids: ['irrigation_tank'], label: '3,500 gal irrigation tank', at: [55, 903] },
+  { key: '5', ids: ['irrigation_tank'], label: '3,000 gal irrigation tank', at: [55, 903] },
   { key: '6', ids: ['pump_house'], label: 'Pump house', at: [86, 897] },
   { key: '7', ids: ['workshop_pad', 'workshop'], label: 'Workshop pad', at: [26, 838] },
   { key: '8', ids: ['rv_pad', 'rv'], label: 'RV camper on its pad', at: [123, 885] },
@@ -366,7 +366,7 @@ function renderLegend() {
   row(rect({ fill: COLOR.outhouse, x: 11, width: 8 }), 'Outhouse');
   row(rect({ fill: COLOR.solar, stroke: COLOR.containerEdge }), 'Solar container');
   row(rect({ fill: COLOR.container, stroke: COLOR.containerEdge }), 'Storage container');
-  row(s => s.append(svgNode('circle', { cx: 15, cy: 7, r: 5.5, fill: COLOR.tank })), 'Irrigation tank, 3,500 gal');
+  row(s => s.append(svgNode('circle', { cx: 15, cy: 7, r: 5.5, fill: COLOR.tank })), 'Irrigation tank, 3,000 gal');
   row(rect({ fill: COLOR.pump, x: 9, width: 12 }), 'Pump house');
   row(rect({ fill: COLOR.rv, stroke: '#5F5E5A' }), 'RV camper');
   row(rect({ fill: 'rgba(122,92,165,0.10)', stroke: COLOR.planned, 'stroke-width': 1.4, 'stroke-dasharray': '4 2' }), 'Planned building');

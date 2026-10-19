@@ -1,6 +1,6 @@
 {
   "name": "Mountain Prairie Acres",
-  "updated": "2026-10-06",
+  "updated": "2026-10-19",
   "units": "ft",
   "frame": {
     "origin": "NW fence corner",
@@ -952,8 +952,8 @@
       "shape": "circle",
       "cx": 63,
       "cy": 921,
-      "r": 4.5,
-      "notes": "3,500 gal black poly tank, about 9 ft across, beside the pump house.",
+      "r": 4,
+      "notes": "3,000 gal black poly tank, about 8 ft across and 8 ft tall, beside the pump house.",
       "accuracy_ft": 3
     },
     {

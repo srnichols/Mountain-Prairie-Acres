@@ -240,7 +240,7 @@ class SiteGridTest(unittest.TestCase):
                 g.tree_xy(*bad)
 
     def test_cli(self):
-        cases = [(["cell", "63", "921"], "B19"), (["where", "b19"], "pump_house"), (["feature", "irrigation_tank"], "3,500 gal"),
+        cases = [(["cell", "63", "921"], "B19"), (["where", "b19"], "pump_house"), (["feature", "irrigation_tank"], "3,000 gal"),
                  (["latlon", "0", "0"], "43.475452"), (["fromlatlon", "43.473383", "-115.594507"], "B16"),
                  (["dist", "irrigation_tank", "house"], "ft"), (["list", "planned"], "garage"), (["tree", "5", "3"], "B11"),
                  (["list", "utility"], "hydrant_north"), (["where", "G17"], "hydrant_east"),
