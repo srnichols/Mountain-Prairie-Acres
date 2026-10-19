@@ -18,6 +18,7 @@ Orchard and ranch projects for our property in Prairie, Idaho: plans, field chec
 | Unidentified apples (AL-UnKn) | Ongoing | [Possibility list and ID log](https://srnichols.github.io/Mountain-Prairie-Acres/unidentified_apple_id_sheet.html) ([PDF](docs/downloads/unidentified_apple_id_sheet.pdf)) | Number the six planted trees; log bloom, fruit, bark, and leaves; narrow the possibilities as each tree identifies itself | 2026-10-18 |
 | Unidentified stone fruit (CR-Sweet, PC-Unk, AT-Unk) | Ongoing | [Possibility lists and ID logs](https://srnichols.github.io/Mountain-Prairie-Acres/unidentified_stone_fruit_id_sheet.html) ([PDF](docs/downloads/unidentified_stone_fruit_id_sheet.pdf)) | Confirm whether every purchased cherry, peach, and apricot arrived; number the six planted trees; log bloom, fruit, bark, and leaves; compare the two Moorpark-tagged apricots with the unidentified one | 2026-10-18 |
 | Rain and snowmelt harvesting | Planned | [Water-harvesting plan](https://srnichols.github.io/Mountain-Prairie-Acres/orchard_water_harvesting_plan.html) ([PDF](docs/downloads/orchard_water_harvesting_plan.pdf)) | Perc tests in three spots before freeze-up; shape a crescent basin at each tree now that all are planted; set up a rain gauge; gutters, spreader, and driveway basins in 2027 | 2026-10-18 |
+| Site climate: frost, temperature, daylight | Reference | [Site climate](https://srnichols.github.io/Mountain-Prairie-Acres/site_climate.html) ([PDF](docs/downloads/site_climate.pdf)) · [`data/climate.json`](data/climate.json) · [`tools/site_climate.py`](tools/site_climate.py) | Put a minimum thermometer in the orchard (one in the low northwest corner) and log freezes and bloom dates in the cold log; compare with the station; refresh the numbers as new SNOTEL years come in | 2026-10-18 |
 | Whole-site terrain and water maps | Reference | [Site terrain and water maps](https://srnichols.github.io/Mountain-Prairie-Acres/site_terrain_water_map.html) ([PDF](docs/downloads/site_terrain_water_map.pdf)) | Use to site future projects (tank, pond, basins, outbuildings); check key spots with a level | 2026-10-06 |
 | Homestead plot map | Reference | [Homestead plot map](https://srnichols.github.io/Mountain-Prairie-Acres/homestead_plot_map.html) ([PDF](docs/downloads/homestead_plot_map.pdf)) | Stake the planned house, garage, and workshop; check the hydrant spots on the ground | 2026-10-07 |
 | Site master grid and code helpers | Reference | [Site master grid](https://srnichols.github.io/Mountain-Prairie-Acres/site_master_grid.html) ([PDF](docs/downloads/site_master_grid.pdf)) · [`docs/data/`](docs/data/) · [`tools/site_grid.py`](tools/site_grid.py) | Use SiteRef codes for individual planting locations; add new features to the grid data as projects start | 2026-10-11 |
@@ -29,6 +30,8 @@ Status key: **In progress** (work under way), **Planned** (designed, not started
 
 ## Project log
 
+- **2026-10-18**: Added site climate data and a page. [`data/climate.json`](data/climate.json) holds frost, temperature, and daylight records for the lot, the browser data is generated into `docs/data/site_climate.js`, and the SQLite build adds `climate_site`, `frost_thresholds`, `climate_sources`, `temperature_months`, `frost_summary`, `frost_days`, `frost_years`, `daylight_months`, `daylight_crossings`, `sun_key_dates`, and the `site_climate_months` view. The primary source is the NRCS Prairie SNOTEL (site 704, 4,800 ft, 2.8 miles from the lot), whose daily minimum and maximum temperatures give the last spring and first fall freeze at 36, 32, 28, and 24 °F for every usable year (31 years from 1994 to 2025; the early years and 2022 have too many gaps), the 1991–2020 percentile summary, freeze days by month, and average highs and lows. The validator recomputes every summary from the yearly dates, so a hand edit that disagrees fails the build. A typical year has its last freeze about Jun 17 and its first about Sep 9, and counted year by year (each year from its own last spring freeze to its first fall freeze) the middle year has 90 frost-free days at 32 °F (1 year in 10 has fewer than 74); the coldest nights average −11 °F (USDA zone 5b). PRISM and Daymet at the lot and the old Prairie weather station (1926 to 1941) are stored as cross-checks: the models run 2 to 4 °F warmer at night and show 4 to 6 weeks more frost-free days, so they understate frost in this valley. Daylight and sun position are computed from the lot's latitude with the NOAA solar formulas (`tools/site_climate.py`) and were checked against the U.S. Naval Observatory for 12 dates. The lot has no thermometer, so these are estimates, not readings on the ground; the page has a cold log for your own.
+- **2026-10-18**: The "every spot in R1 to R12" table on the 2027 planting plan now runs from C13 on the left to C1 on the right, matching the layout on the ground and the pollination grid; the PDF is refreshed.
 - **2026-10-18**: The last block is planted, so all 106 living orchard fruit trees are recorded as planted in October 2026 (the M-111 rootstock was already planted). The owner gave only the month, so `planted_on` is `2026-10`, a month-only form the validator now accepts beside `YYYY-MM-DD`, and each planting carries a note; no day is invented. The dead trees and the three Urban apples (outside the orchard, location pending) are unchanged. The pollination grid, planting checklist, and both ID sheets now summarize the planting date instead of listing each tree, and the ID sheets tell you to number the six planted trees.
 - **2026-10-18**: Two more peaches died, the PC-Can Harm (Canadian Harmony, inventory row 84) at R11-C12 and the PC-Blaz Star (Blazing Star, row 83) at R12-C11. Both are recorded as dead with a plant event, and the spots are open for 2027 peaches. Two of the three Italian plums moved west (R11-C7 to R11-C6 and R12-C7 to R12-C5), so those old spots are open for 2027 plums. The plum block in `SHARED_ROWS` now lists its exact `columns`, and the browser model checks that the assignments and the block agree. The orchard holds 107 living trees: 106 fruit trees plus the planted M-111 rootstock.
 - **2026-10-18**: Chose the peaches for the two open peach spots in the 2027 plan: Harrow Diamond at R12-C11 (an early peach, about 11 days before Redhaven, with Good winter hardiness; the release paper says it appears resistant to bacterial spot and brown rot) and Contender at R11-C12 (the hardiest in the Kentucky ratings, ripening late); Veteran is the alternate. All four dead stone fruit were canker-flagged, so the plan now recommends Lovell or Bailey peach seedling rootstock, not the hybrid Krymsk 86 (Penn State's summary of the NC-140 trials found hybrid stocks had more cold injury and canker). The plan covers 49 spots with 26 cultivars (36 trees to buy and 13 grafts), and the cultivar library grows to 162 profiles with a new Harrow Diamond profile.
@@ -68,7 +71,8 @@ Mountain-Prairie-Acres/
 │   ├── plantings.json                     Planned/planted/vacated assignments
 │   ├── plant_events.json                  Owner reports and history
 │   ├── orchard.json                       Pollination and windbreak/guild design rules
-│   └── water_harvesting.json              Climate, soil, techniques, catchments, observations
+│   ├── water_harvesting.json              Climate, soil, techniques, catchments, observations
+│   └── climate.json                       Frost dates, temperatures, and daylight for the site (SNOTEL, with cross-checks)
 ├── database/
 │   ├── schema.sql                         Typed SQLite tables, relationships, and query views
 │   └── queries/                           Reusable orchard, terrain, and water SQL
@@ -77,9 +81,11 @@ Mountain-Prairie-Acres/
 ├── tools/
 │   ├── property_data.py                   Validate/build/check/read-only query command
 │   ├── site_grid.py                       Master-grid helper and command line (reads data/)
+│   ├── site_climate.py                    Sun geometry and frost-date statistics used by the validator and tests
 │   ├── test_property_data.py              Data, database, integrity, freshness tests
 │   ├── test_property_cli.py               Isolated end-to-end command-line workflows
 │   ├── test_property_data.js              Generated browser-model parity tests
+│   ├── test_site_climate.py               Tests for the frost and sun calculations
 │   ├── test_site_grid.py                  Tests for the Python helper and the grid data
 │   └── test_site_grid.js                  Tests for the JavaScript SiteRef helpers
 └── docs/                                  Website root for GitHub Pages
@@ -91,6 +97,7 @@ Mountain-Prairie-Acres/
     ├── unidentified_apple_id_sheet.html   Possibility list and ID log for the AL-UnKn apples
     ├── unidentified_stone_fruit_id_sheet.html Possibility lists and ID logs for the unlabeled cherries, peaches, and apricot
     ├── orchard_water_harvesting_plan.html Rain and snowmelt harvesting plan
+    ├── site_climate.html                  Frost dates, temperatures, and daylight hours for the site
     ├── site_terrain_water_map.html        Whole-site elevation, runoff, and slope maps
     ├── homestead_plot_map.html            Homestead buildings, pads, and drives to scale
     ├── site_master_grid.html              The master grid, feature coordinates, code usage
@@ -101,6 +108,7 @@ Mountain-Prairie-Acres/
     │   ├── cultivar_library.js            Generated plant profiles and shared lookup helper
     │   ├── planting_checklist.js          Generated shared field-sheet renderer
     │   ├── water_harvesting.js            Generated climate, soil, techniques, catchments
+    │   ├── site_climate.js                Generated frost, temperature, and daylight data and the SiteClimate helper
     │   └── manifest.json                 Source fingerprint and generated record counts
     ├── Inventory_PrairiePlants.xlsx       Original inventory source workbook
     ├── Trees.xlsx                         Original purchase/cultivar source workbook
@@ -161,7 +169,7 @@ Keep vendor catalogs, e-books, and text copied from nursery websites out of this
 
 ## Printing
 
-Each page has its own print setup at the top. The pollination grid, the whole-site maps, and the homestead plot map print on Tabloid (11 × 17 in) landscape, and the site master grid on Tabloid portrait (two pages: the map and coordinates, then the code examples); the checklist and the water-harvesting plan print on Letter portrait. Turn on background graphics and turn off the browser's headers and footers.
+Each page has its own print setup at the top. The pollination grid, the whole-site maps, and the homestead plot map print on Tabloid (11 × 17 in) landscape, and the site master grid on Tabloid portrait (two pages: the map and coordinates, then the code examples); the checklist, the water-harvesting plan, and the site-climate page print on Letter portrait. Turn on background graphics and turn off the browser's headers and footers.
 
 ## Sources and credits
 
@@ -170,5 +178,6 @@ Each page has its own print setup at the top. The pollination grid, the whole-si
 - Lot frame and homestead: USGS NAIP aerial imagery, fitted to the fence lines; the owner's drone photos (October 2026).
 - Water lines and hydrants: the owner's hand-drawn map on a printed aerial (October 2026), registered to the mapped buildings.
 - Climate: PRISM Climate Group, Oregon State University (1991–2020 normals); ERA5 reanalysis via Open-Meteo.
+- Frost, temperature, and daylight: USDA NRCS National Water and Climate Center (Prairie SNOTEL, site 704); NOAA Regional Climate Centers' ACIS service (the SNOTEL record, the old Prairie weather station, and the PRISM daily grid); Daymet version 4 (Oak Ridge National Laboratory); Utah State University Extension (blossom-kill temperatures); the USDA Plant Hardiness Zone Map's 5 °F bands; NOAA solar position formulas, checked against the U.S. Naval Observatory.
 - Water harvesting: Brad Lancaster, *Rainwater Harvesting for Drylands and Beyond*, Volumes 1 and 2.
 - Fruit-tree site and disease guidance: UC Statewide IPM Program; windbreak and plant sources are cited on each page.

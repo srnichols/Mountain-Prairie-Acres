@@ -129,7 +129,7 @@
 <h3>The site</h3>
 <ul>
   <li>About 4,750 ft, nearly flat; Simonton loam with soil pH about 6.2; 12 to 16 in of precipitation, with July and August almost dry (see the <a href="orchard_water_harvesting_plan.html">water-harvesting plan</a>).</li>
-  <li>NRCS lists only <strong>60 to 100 frost-free days</strong> for this soil's setting. The four NOAA stations serving Elmore County share an 80-day season, and the longest single station allows 160 days; the nearest similar-elevation station (Hill City, 5,100 ft) has a median season of 111 days. Best estimate here: 70 to 110 days and USDA zone 5a to 5b. Sources disagree and the USDA map was not checked for this exact point, so treat these as estimates, not readings.</li>
+  <li id="frost-site"></li>
   <li>In general, bloom-frost risk runs worst to best from apricot to peach, sweet cherry, pear, and apple (a general horticultural ranking, not something measured here). That is why apples carry the plan and the stone-fruit and pear picks are chosen for hardiness: late bloom, frost-tolerant buds, or a hardy species.</li>
 </ul>
 <h3>What a U-pick orchard needs</h3>
@@ -185,13 +185,14 @@
 <p class="small">Not planned: R13 to R15 (39 positions) are future rows. Not checked yet: Spartan, SnowSweet, and other apples you could graft later.</p>
 
 <h2>Ripening watch: apples you already have</h2>
-<p>These apples ripen very late, after about Oct 25 in a cool northern climate. With 70 to 110 frost-free days they may not ripen reliably here. Watch them for the first few crops; any that cannot ripen before the hard freeze can be top-worked (grafted over) to an early or mid-season cultivar.</p>
+<p id="watch-text"></p>
 <div id="watch"></div>
 <p class="small">Braeburn at R2-C2 belongs on this watch list too: its band is Late, but it is disease-susceptible and wants a long warm fall. Golden Delicious, Idared, Red Delicious, and Mutsu are less likely to be a problem: the Intermountain Tree Fruit Production Guide's apple table, written for Utah, lists them as cold hardy with September to October harvests. Prairie has a shorter season than most of Utah, so treat that as encouraging, not proof.</p>
 
 <h2>Sources and caveats</h2>
 <ul class="small">
   <li>Site: <a href="soil/WebSoilSurvey_PrairieID.pdf">NRCS Web Soil Survey report</a> (soil pH, frost-free period); <a href="https://usgrowersguide.com/county/elmore-county-id">US Growers Guide: Planting zones in Elmore County, Idaho</a> (zones 5a to 7a; last spring freeze May 1 to June 16 and first fall freeze Sept 4 to Oct 8 across four NOAA stations); <a href="https://bield.app/farm/frost-dates/idaho/elmore-county">Bield: Elmore County frost dates</a> (Hill City 1 W, 5,100 ft: median last frost May 30, first fall frost Sept 18, 111 days, zone 5b); <a href="https://www.uidaho.edu/extension/publications/bul-0867">University of Idaho Extension: backyard tree fruit in harsher climates</a> (apples, apricots, cherries, pears, and plums can be grown in short-season zones with the right cultivars).</li>
+  <li>Measured frost: the Prairie SNOTEL record, with the PRISM and Daymet models and the old Prairie weather station as cross-checks, on the <a href="site_climate.html">site climate page</a>; the numbers are in <code>data/climate.json</code>.</li>
   <li>Cherries: <a href="https://extension.oregonstate.edu/catalog/em-9484-sweet-cherry-compatibility-bloom-timing-chart-commercial-growers">Oregon State Extension: sweet cherry compatibility and bloom timing chart</a> (Black Gold in pollination period IV; Skeena and WhiteGold in III; Bing and Stella in II; Lapins in I); <a href="https://intermountainfruit.org/dbm/bac-canker">Intermountain Tree Fruit Production Guide: bacterial canker</a> (rootstocks and copper sprays); <a href="https://treefruit.wsu.edu/bacterial-canker-in-washington-sweet-cherries/">WSU Extension: bacterial canker in Washington sweet cherries</a> (susceptible and resistant cultivars and rootstocks).</li>
   <li>Plums and pears: <a href="https://intermountainfruit.org/fruit-tables/plum">Intermountain Tree Fruit Production Guide: plum varieties for Utah</a> (harvest times, hardiness, and self-pollination); <a href="https://extension.psu.edu/stone-fruit-disease-black-knot">Penn State Extension: black knot of stone fruit</a> (cultivar susceptibility and sanitation); <a href="https://mytexas.ag.tamu.edu/wp-content/uploads/2026/02/bacterial-canker-of-stone-fruits-1.pdf">Texas A&amp;M AgriLife: bacterial canker in stone fruit</a>.</li>
   <li>Apples: <a href="https://intermountainfruit.org/fruit-tables/apple">Intermountain Tree Fruit Production Guide: apple varieties for Utah</a> (harvest times and hardiness for Golden Delicious, Idared, Red Delicious, Mutsu, and Haralson).</li>
@@ -208,6 +209,7 @@ window.addEventListener('error', event => {
 </script>
 <script src="data/orchard_model.js"></script>
 <script src="data/cultivar_library.js"></script>
+<script src="data/site_climate.js"></script>
 <script>
 const element = (tag, text, className) => {
   const node = document.createElement(tag);
@@ -398,8 +400,26 @@ const plannedApples = spots.filter(({ item }) => item.type === 'Apple');
 const added = tally(plannedApples.map(({ item }) => profileOf(item).ripening));
 const after = Object.fromEntries(Object.keys(now).map(key => [key, now[key] + added[key]]));
 const lateNew = [...new Set(plannedApples.filter(({ item }) => profileOf(item).ripening === 'Late').map(({ item }) => item.cultivar))];
+// Frost facts from the measured Prairie station, so this text follows data/climate.json.
+const station = SiteClimate.primary;
+const frost32 = SiteClimate.planningDates(32);
+const frost28 = SiteClimate.planningDates(28);
+const frost24 = SiteClimate.planningDates(24);
+const monthDay = SiteClimate.monthDay;
+const degrees = value => `${value < 0 ? '−' : ''}${Math.abs(value).toFixed(0)} °F`;
+const climateLink = element('a', 'site climate page');
+climateLink.href = 'site_climate.html';
+document.getElementById('frost-site').append(
+  `Frost is measured at the nearest weather station, the Prairie SNOTEL, ${station.distance_from_site_mi} miles away and about ${Math.round(station.elevation_ft - SiteClimate.data.site.elevation_ft)} ft higher. In a typical year its last 32 °F freeze comes about ${monthDay(frost32.springMedian)} and its first about ${monthDay(frost32.fallMedian)}. Counted year by year, from each year's own last spring freeze to its first fall freeze, the middle year has `,
+  element('strong', `${frost32.freeDays.p50} frost-free days`),
+  ` (1 year in 10 has fewer than ${frost32.freeDays.p10}), and its coldest nights average ${degrees(station.annual_extreme_min.mean_f)}, USDA zone ${station.annual_extreme_min.zone}. A night at 28 °F or colder still comes after May 20 in ${Math.round(SiteClimate.springRiskAfter(28, '05-20') * 100)}% of years, so bloom frost is a real risk. ` +
+  `NRCS lists 60 to 100 frost-free days for this soil's setting. The four NOAA stations serving Elmore County share an 80-day season, and the longest single station allows 160 days; the nearest similar-elevation station (Hill City, 5,100 ft) has a median season of 111 days. ` +
+  'The lot has no thermometer, so treat all of these as estimates, not readings on the ground (details on the ',
+  climateLink, ').');
+document.getElementById('watch-text').textContent =
+  `These apples ripen very late, after about Oct 25 in a cool northern climate. At the Prairie station the first 28 °F night of fall comes about ${monthDay(frost28.fallMedian)} in a typical year (before ${monthDay(frost28.fallRisk10)} in 1 year in 10) and the first 24 °F night about ${monthDay(frost24.fallMedian)}, so they may not ripen reliably here. Watch them for the first few crops; any that cannot ripen before the hard freeze can be top-worked (grafted over) to an early or mid-season cultivar.`;
 document.getElementById('season-text').textContent =
-  `Only ${now.Early} of the ${livingApples.length} apples you already have ripen early, and ${now.Late + now['Very late']} ripen late or very late, which is a gamble with 60 to 100 frost-free days. ` +
+  `Only ${now.Early} of the ${livingApples.length} apples you already have ripen early, and ${now.Late + now['Very late']} ripen late or very late, which is a gamble with about ${frost32.freeDays.p50} frost-free days and a first 28 °F night around ${monthDay(frost28.fallMedian)}. ` +
   `The ${plannedApples.length} new apples add ${added.Early} early, ${added.Mid} mid-season, and ${added.Late} late trees` +
   `${lateNew.length ? `; the late ones (${lateNew.join(' and ')}) are the riskiest of the new picks, so the plan adds no more` : ''}.`;
 document.getElementById('season').append(table(bandHeaders.map((label, index) => index ? label : 'Apples'),

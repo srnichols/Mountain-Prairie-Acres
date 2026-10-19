@@ -10,12 +10,14 @@ import sqlite3
 import sys
 import tempfile
 
+from site_climate import (FALL_FIRST_DAY, SPRING_LAST_DAY, clock_time, day_of_year, daylight_crossings, daylight_months, distance_miles,
+                          frost_summary, hardiness_zone, parse_month_day, sun_day)
 from site_grid import M_TO_FT, SiteGrid
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 DOCUMENTS = (
     "site", "terrain", "inventory", "catalog", "orchard", "plants", "locations",
-    "plantings", "plant_events", "water_harvesting", "cultivar_library",
+    "plantings", "plant_events", "water_harvesting", "cultivar_library", "climate",
 )
 INVENTORY_FIELDS = (
     "source_row", "quantity", "category", "subcategory", "type", "variety", "metal_tag",
@@ -119,9 +121,18 @@ def _index(records, label, key="id"):
 
 
 def _require(record, keys, label):
+    if not isinstance(record, dict):
+        raise ValueError(f"{label} must be an object")
     missing = set(keys) - record.keys()
     if missing:
         raise ValueError(f"{label} missing fields: {sorted(missing)}")
+
+
+def _keys(value, label):
+    """The key names of a JSON object, with a clear error when the value is not one."""
+    if not isinstance(value, dict):
+        raise ValueError(f"{label} must be an object")
+    return set(value)
 
 
 def _point(point, label):
@@ -552,6 +563,323 @@ def _validate_unidentified_line(info, fruit_type, rules, inventory, fruit, workb
         raise ValueError(f"Unidentified {noun} candidates cannot cover every unidentified tree")
 
 
+FROST_DATE_STATS = ("earliest", "p10", "p50", "p90", "latest")
+FREE_DAY_STATS = ("shortest", "p10", "p50", "p90", "longest")
+LONGEST_MONTHS = (31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+# What the site climate page looks up by name, so the data cannot drop it without breaking the page.
+CLIMATE_CHECK_SOURCES = ("prism-lot", "daymet-lot", "coop-prairie-historic")
+CLIMATE_KEY_DATES = ("march-equinox", "june-solstice", "september-equinox", "december-solstice")
+CLIMATE_CROSSINGS = ("10", "12", "14", "15")
+MOUNTAIN_CLOCKS = {"MST": -7, "MDT": -6}
+
+
+def _year_range(value, label):
+    if not isinstance(value, list) or len(value) != 2:
+        raise ValueError(f"{label} must be [first year, last year]")
+    for year in value:
+        _integer(year, label + " year", 1800)
+    if value[0] > value[1]:
+        raise ValueError(f"{label} must not end before it starts")
+    return value[0], value[1]
+
+
+def _twelve(values, label, minimum=None):
+    if not isinstance(values, list) or len(values) != 12:
+        raise ValueError(f"{label} needs 12 monthly values")
+    for value in values:
+        _number(value, label, minimum)
+
+
+def _clock_minutes(text, label):
+    match = re.fullmatch(r"([01][0-9]|2[0-3]):([0-5][0-9])", text) if isinstance(text, str) else None
+    if not match:
+        raise ValueError(f"{label} must be HH:MM")
+    return int(match.group(1)) * 60 + int(match.group(2))
+
+
+def _required_date(value, label):
+    _date(value, label)
+    if value is None:
+        raise ValueError(f"{label} is required")
+    return datetime.date.fromisoformat(value)
+
+
+def _validate_frost_summary(item, label, span):
+    """Check one threshold's summary; span is the number of years in the source's period."""
+    _require(item, ("last_spring", "first_fall", "frost_free_days", "years_spring", "years_fall", "years_both"), label)
+    days = {}
+    for season in ("last_spring", "first_fall"):
+        if _keys(item[season], f"{label}: {season}") != set(FROST_DATE_STATS):
+            raise ValueError(f"{label}: {season} needs {', '.join(FROST_DATE_STATS)}")
+        days[season] = [parse_month_day(item[season][name]) for name in FROST_DATE_STATS]
+        if days[season] != sorted(days[season]):
+            raise ValueError(f"{label}: {season} dates must run from earliest to latest")
+    if days["last_spring"][-1] > SPRING_LAST_DAY:
+        raise ValueError(f"{label}: last spring freeze dates must fall on or before Jul 31")
+    if days["first_fall"][0] < FALL_FIRST_DAY:
+        raise ValueError(f"{label}: first fall freeze dates must fall on or after Aug 1")
+    if _keys(item["frost_free_days"], f"{label}: frost_free_days") != set(FREE_DAY_STATS):
+        raise ValueError(f"{label}: frost_free_days needs {', '.join(FREE_DAY_STATS)}")
+    counts = [item["frost_free_days"][name] for name in FREE_DAY_STATS]
+    for count in counts:
+        _integer(count, label + " frost-free days", 0)
+    if counts != sorted(counts):
+        raise ValueError(f"{label}: frost-free days must run from shortest to longest")
+    # A year's frost-free days are its first fall freeze less its last spring freeze, so no year can lie outside the dates.
+    if counts[0] < days["first_fall"][0] - days["last_spring"][-1] or counts[-1] > days["first_fall"][-1] - days["last_spring"][0]:
+        raise ValueError(f"{label}: frost-free days must fit between the spring and fall dates")
+    for key in ("years_spring", "years_fall", "years_both"):
+        _integer(item[key], f"{label} {key}", 1)
+    if item["years_both"] > min(item["years_spring"], item["years_fall"]):
+        raise ValueError(f"{label}: years_both cannot exceed the years with a spring or a fall date")
+    if max(item["years_spring"], item["years_fall"]) > span:
+        raise ValueError(f"{label}: more years with a freeze date than the source's period has")
+    if item["years_both"] < item["years_spring"] + item["years_fall"] - span:
+        raise ValueError(f"{label}: too few years with both dates for the years with each")
+
+
+def _validate_frost_years(years, thresholds, label):
+    if not isinstance(years, list) or not years:
+        raise ValueError(f"{label}: needs yearly frost dates")
+    keys = {str(threshold) for threshold in thresholds}
+    previous = None
+    for record in years:
+        _require(record, ("year", "last_spring", "first_fall"), label + " year")
+        year = record["year"]
+        _integer(year, label + " year", 1800)
+        if previous is not None and year <= previous:
+            raise ValueError(f"{label}: years must be listed once each, oldest first")
+        previous = year
+        windows = (("last_spring", datetime.date(year, 1, 1), datetime.date(year, 7, 31), True),
+                   ("first_fall", datetime.date(year, 8, 1), datetime.date(year, 12, 31), False))
+        for season, first, last, falling in windows:
+            if _keys(record[season], f"{label} {year}: {season}") != keys:
+                raise ValueError(f"{label} {year}: {season} needs every threshold")
+            dates = []
+            for threshold in thresholds:
+                text = record[season][str(threshold)]
+                if text is None:
+                    continue
+                date = _required_date(text, f"{label} {year} {season}")
+                if not first <= date <= last:
+                    raise ValueError(f"{label} {year}: {season} {text} must fall from {first} to {last}")
+                dates.append(date)
+            # Colder thresholds end spring earlier and begin fall later, so the dates must be ordered along the list.
+            for earlier, later in zip(dates, dates[1:]):
+                if (falling and earlier < later) or (not falling and earlier > later):
+                    raise ValueError(f"{label} {year}: {season} dates disagree between thresholds")
+    return years
+
+
+def _validate_monthly_frost_days(monthly, thresholds, label):
+    if _keys(monthly, f"{label}: monthly_days") != {str(threshold) for threshold in thresholds}:
+        raise ValueError(f"{label}: monthly_days needs every threshold")
+    warmer = None
+    for threshold in thresholds:
+        item = monthly[str(threshold)]
+        _require(item, ("avg_days", "years_with_pct"), f"{label} {threshold} F monthly days")
+        _twelve(item["avg_days"], f"{label} frost days", 0)
+        _twelve(item["years_with_pct"], f"{label} share of years", 0)
+        for month in range(12):
+            days, share = item["avg_days"][month], item["years_with_pct"][month]
+            _integer(share, f"{label} share of years", 0)
+            if days > LONGEST_MONTHS[month] or share > 100:
+                raise ValueError(f"{label}: month {month + 1} has more frost days or years than it can")
+            if days > 0 and share == 0:
+                raise ValueError(f"{label}: month {month + 1} has frost days but no year with one")
+            if warmer and (days > warmer["avg_days"][month] or share > warmer["years_with_pct"][month]):
+                raise ValueError(f"{label}: a colder threshold cannot have more frost days than a warmer one")
+        warmer = item
+
+
+def _validate_climate_source(source, thresholds, site):
+    label = f"climate source {source['id']}"
+    _require(source, ("role", "kind", "label", "latitude", "longitude", "elevation_ft", "distance_from_site_mi", "period", "url",
+                      "retrieved_from", "note", "temperature", "annual_extreme_min", "frost"), label)
+    if source["role"] not in ("primary", "check"):
+        raise ValueError(f"{label}: role must be primary or check")
+    if source["kind"] not in ("station", "model"):
+        raise ValueError(f"{label}: kind must be station or model")
+    for key in ("label", "retrieved_from", "note"):
+        _text(source[key], f"{label} {key}", False)
+    if not isinstance(source["url"], str) or not source["url"].startswith("https://"):
+        raise ValueError(f"{label}: url must use https")
+    for key in ("latitude", "longitude"):
+        _number(source[key], f"{label} {key}")
+    _number(source["elevation_ft"], label + " elevation", 0)
+    _number(source["distance_from_site_mi"], label + " distance", 0)
+    away = distance_miles(site["latitude"], site["longitude"], source["latitude"], source["longitude"])
+    if abs(away - source["distance_from_site_mi"]) > 0.1:
+        raise ValueError(f"{label}: distance_from_site_mi should be about {away:.1f} miles from its coordinates")
+    start, end = _year_range(source["period"], label + " period")
+    span = end - start + 1
+    temperature = source["temperature"]
+    _require(temperature, ("high_f", "low_f"), label + " temperature")
+    _twelve(temperature["high_f"], label + " average highs")
+    _twelve(temperature["low_f"], label + " average lows")
+    if any(low >= high for low, high in zip(temperature["low_f"], temperature["high_f"])):
+        raise ValueError(f"{label}: every month's average low must be below its average high")
+    extremes = source["annual_extreme_min"]
+    _require(extremes, ("years", "mean_f", "zone", "coldest_f", "coldest_on", "mildest_f"), label + " coldest nights")
+    _integer(extremes["years"], label + " coldest-night years", 1)
+    if extremes["years"] > span:
+        raise ValueError(f"{label}: more coldest-night years than the source's period has")
+    for key in ("mean_f", "coldest_f", "mildest_f"):
+        _number(extremes[key], f"{label} {key}")
+    if not extremes["coldest_f"] <= extremes["mean_f"] <= extremes["mildest_f"]:
+        raise ValueError(f"{label}: the average coldest night must lie between the coldest and mildest years")
+    if extremes["zone"] != hardiness_zone(extremes["mean_f"]):
+        raise ValueError(f"{label}: hardiness zone does not match the average coldest night")
+    coldest = _required_date(extremes["coldest_on"], label + " coldest night date")
+    if not start <= coldest.year <= end:
+        raise ValueError(f"{label}: the coldest night must fall inside the source period")
+    if ("record_low_f" in extremes) != ("record_low_on" in extremes):
+        raise ValueError(f"{label}: record_low_f and record_low_on go together")
+    if "record_low_f" in extremes:
+        _number(extremes["record_low_f"], label + " record low")
+        _required_date(extremes["record_low_on"], label + " record low date")
+        if extremes["record_low_f"] > extremes["coldest_f"]:
+            raise ValueError(f"{label}: the record low cannot be warmer than the coldest year")
+    frost = source["frost"]
+    _require(frost, ("summary",), label + " frost")
+    keys = {str(threshold) for threshold in thresholds}
+    if _keys(frost["summary"], label + " frost summary") != keys:
+        raise ValueError(f"{label}: the frost summary needs every threshold")
+    for threshold in thresholds:
+        _validate_frost_summary(frost["summary"][str(threshold)], f"{label} {threshold} F", span)
+    for season, colder_is_later in (("last_spring", False), ("first_fall", True)):
+        medians = [parse_month_day(frost["summary"][str(threshold)][season]["p50"]) for threshold in thresholds]
+        if any((a > b) if colder_is_later else (a < b) for a, b in zip(medians, medians[1:])):
+            raise ValueError(f"{label}: median {season} dates must move with the threshold (colder is earlier in spring, later in fall)")
+    if source["role"] == "primary":
+        _require(frost, ("monthly_days", "years"), label + " frost")
+    if "monthly_days" in frost:
+        _validate_monthly_frost_days(frost["monthly_days"], thresholds, label)
+    if "years" in frost:
+        years = _validate_frost_years(frost["years"], thresholds, label)
+        if frost_summary(years, thresholds, start, end) != frost["summary"]:
+            raise ValueError(f"{label}: the frost summary does not match the yearly dates")
+
+
+def _validate_climate(data, grid):
+    climate = data["climate"]
+    _require(climate, ("source_page", "site", "frost", "sources", "daylight", "notes"), "climate")
+    _text(climate["source_page"], "climate source_page", False)
+    site = climate["site"]
+    _require(site, ("name", "latitude", "longitude", "elevation_ft", "elevation_note", "time_zone", "normals_period", "retrieved_on"), "climate site")
+    for key in ("name", "elevation_note", "time_zone"):
+        _text(site[key], "climate site " + key, False)
+    for key in ("latitude", "longitude"):
+        _number(site[key], "climate site " + key)
+    _number(site["elevation_ft"], "climate site elevation", 0)
+    _required_date(site["retrieved_on"], "climate retrieval date")
+    normals = _year_range(site["normals_period"], "climate normals period")
+    fence = grid.data["lot"]["fence"]
+    lot_latitude, lot_longitude = grid.to_latlon(fence["width"] / 2, fence["depth"] / 2)
+    if abs(site["latitude"] - lot_latitude) > 0.001 or abs(site["longitude"] - lot_longitude) > 0.001:
+        raise ValueError("Climate site coordinates must match the lot center")
+    lot_elevation = grid.elevation_ft(fence["width"] / 2, fence["depth"] / 2)
+    if abs(site["elevation_ft"] - lot_elevation) > 30:
+        raise ValueError(f"Climate site elevation must be within 30 ft of the lot center's lidar elevation ({lot_elevation:.0f} ft)")
+
+    frost = climate["frost"]
+    _require(frost, ("thresholds_f", "labels", "definitions"), "climate frost")
+    thresholds = frost["thresholds_f"]
+    if not isinstance(thresholds, list) or not thresholds:
+        raise ValueError("Frost thresholds must be a list")
+    for threshold in thresholds:
+        _integer(threshold, "frost threshold", -50)
+    if sorted(set(thresholds), reverse=True) != thresholds:
+        raise ValueError("Frost thresholds must be different and listed from warmest to coldest")
+    if _keys(frost["labels"], "frost labels") != {str(threshold) for threshold in thresholds}:
+        raise ValueError("Every frost threshold needs one label")
+    for text in frost["labels"].values():
+        _text(text, "frost label", False)
+    definition_keys = ("last_spring", "first_fall", "frost_free_days", "dates", "incomplete_years")
+    _require(frost["definitions"], definition_keys, "frost definitions")
+    for key in definition_keys:
+        _text(frost["definitions"][key], "frost definition " + key, False)
+
+    sources = _index(climate["sources"], "climate source")
+    if sum(1 for source in sources.values() if source.get("role") == "primary") != 1:
+        raise ValueError("Climate needs exactly one primary source")
+    missing = [name for name in CLIMATE_CHECK_SOURCES if name not in sources]
+    if missing:
+        raise ValueError(f"Climate sources need {', '.join(missing)}, which the site climate page compares")
+    for source in sources.values():
+        _validate_climate_source(source, thresholds, site)
+    primary = next(source for source in sources.values() if source["role"] == "primary")
+    if tuple(primary["period"]) != normals:
+        raise ValueError("The primary climate source's period must match the site's normals period")
+
+    daylight = climate["daylight"]
+    _require(daylight, ("method", "reference_year", "months", "crossings", "key_dates"), "climate daylight")
+    _text(daylight["method"], "daylight method", False)
+    year = daylight["reference_year"]
+    _integer(year, "daylight reference year", 1900)
+    latitude, longitude = site["latitude"], site["longitude"]
+    months = daylight["months"]
+    if not isinstance(months, list) or not all(isinstance(month, dict) for month in months):
+        raise ValueError("Daylight months must be a list of records")
+    if [month.get("month") for month in months] != list(range(1, 13)):
+        raise ValueError("Daylight needs all 12 months in January-to-December order")
+    for stored, computed in zip(months, daylight_months(latitude, longitude, year)):
+        _require(stored, ("mean_hours", "shortest_hours", "longest_hours"), f"daylight month {stored['month']}")
+        for key in ("mean_hours", "shortest_hours", "longest_hours"):
+            _number(stored[key], f"daylight {key}", 0)
+            if abs(stored[key] - computed[key]) > 0.006:
+                raise ValueError(f"Daylight {key} for month {stored['month']} does not match the site latitude")
+    crossings = daylight["crossings"]
+    missing = [hours for hours in CLIMATE_CROSSINGS if hours not in _keys(crossings, "Daylight crossings")]
+    if missing:
+        raise ValueError(f"Daylight crossings need {', '.join(missing)} hours, which the site climate page quotes")
+    for hours_text, dates in crossings.items():
+        try:
+            hours = int(hours_text)
+        except ValueError as error:
+            raise ValueError(f"Daylight crossing {hours_text!r} must be a whole number of hours") from error
+        if dates != daylight_crossings(latitude, longitude, year, hours):
+            raise ValueError(f"Daylight crossing dates for {hours} hours do not match the site latitude")
+    if not isinstance(daylight["key_dates"], list):
+        raise ValueError("Daylight key dates must be a list")
+    key_ids = set()
+    for item in daylight["key_dates"]:
+        _require(item, ("id", "label", "date", "clock", "utc_offset_hours", "sunrise", "solar_noon", "sunset", "day_length_hours",
+                        "noon_altitude_deg", "sunrise_azimuth_deg", "sunset_azimuth_deg"), "daylight key date")
+        for key in ("id", "label", "clock"):
+            _text(item[key], "daylight key date " + key, False)
+        if item["id"] in key_ids:
+            raise ValueError(f"duplicate daylight key date: {item['id']}")
+        key_ids.add(item["id"])
+        _number(item["utc_offset_hours"], "daylight UTC offset")
+        if MOUNTAIN_CLOCKS.get(item["clock"]) != item["utc_offset_hours"]:
+            raise ValueError(f"Daylight key date {item['id']}: the lot keeps Mountain Time, so the clock must be MST (-7) or MDT (-6) to match its UTC offset")
+        date = _required_date(item["date"], "daylight key date")
+        if date.year != year:
+            raise ValueError("Daylight key dates must fall in the reference year")
+        sun = sun_day(latitude, longitude, date)
+        for key, field in (("sunrise", "sunrise_utc_minutes"), ("solar_noon", "solar_noon_utc_minutes"), ("sunset", "sunset_utc_minutes")):
+            stored = _clock_minutes(item[key], f"daylight {key}")
+            expected = _clock_minutes(clock_time(sun[field], item["utc_offset_hours"]), key)
+            if min(abs(stored - expected), 1440 - abs(stored - expected)) > 1:
+                raise ValueError(f"Daylight {key} on {item['date']} does not match the site location")
+        for key, value, tolerance in (("day_length_hours", sun["day_length_hours"], 0.006), ("noon_altitude_deg", sun["noon_altitude_deg"], 0.06),
+                                      ("sunrise_azimuth_deg", sun["sunrise_azimuth_deg"], 0.06), ("sunset_azimuth_deg", sun["sunset_azimuth_deg"], 0.06)):
+            _number(item[key], "daylight " + key)
+            if abs(item[key] - value) > tolerance:
+                raise ValueError(f"Daylight {key} on {item['date']} does not match the site location")
+    missing = [name for name in CLIMATE_KEY_DATES if name not in key_ids]
+    if missing:
+        raise ValueError(f"Daylight key dates need {', '.join(missing)}, which the site climate page quotes")
+    notes = climate["notes"]
+    if not isinstance(notes, list) or len(notes) < 3:
+        raise ValueError("Climate notes must be a list of at least three notes")
+    for note in notes:
+        _text(note, "climate note", False)
+    if "cold air" not in notes[2].lower():
+        raise ValueError("The third climate note must be about cold air, which the site climate page quotes")
+
+
 def validate_data(data):
     if set(data) != set(DOCUMENTS):
         raise ValueError("Missing or unexpected canonical collections")
@@ -816,6 +1144,7 @@ def validate_data(data):
             _text(observation["unit"], "observation unit", False)
         _text(observation["observation_type"], "observation type", False)
         _text(observation["notes"], "observation notes")
+    _validate_climate(data, grid)
 
 
 def _json(value):
@@ -827,7 +1156,8 @@ def source_digest(root):
     sources = [(f"data/{name}.json", root / "data" / (name + ".json")) for name in DOCUMENTS]
     sources.append(("database/schema.sql", root / "database" / "schema.sql"))
     sources += [(f"web/{p.name}", p) for p in sorted((root / "web").glob("*.js"))]
-    sources += [("compiler/property_data.py", pathlib.Path(__file__)), ("compiler/site_grid.py", pathlib.Path(__file__).with_name("site_grid.py"))]
+    sources += [("compiler/property_data.py", pathlib.Path(__file__)), ("compiler/site_grid.py", pathlib.Path(__file__).with_name("site_grid.py")),
+                ("compiler/site_climate.py", pathlib.Path(__file__).with_name("site_climate.py"))]
     digest = hashlib.sha256()
     for name, path in sources:
         digest.update(name.encode("utf-8") + b"\0" + path.read_bytes().replace(b"\r\n", b"\n") + b"\0")
@@ -964,6 +1294,62 @@ def _populate(connection, data, digest):
         ("observations", "water_observations", ("id", "location_id", "observed_on", "observation_type", "value", "unit", "notes")),
     ]:
         _insert(connection, table, columns, [tuple(r[key] for key in columns) for r in water[section]])
+    _populate_climate(connection, data["climate"])
+
+
+def _populate_climate(connection, climate):
+    site = climate["site"]
+    _insert(connection, "climate_site", ("name", "latitude", "longitude", "elevation_ft", "elevation_note", "time_zone",
+                                         "normals_start", "normals_end", "retrieved_on"),
+            [(site["name"], site["latitude"], site["longitude"], site["elevation_ft"], site["elevation_note"], site["time_zone"],
+              *site["normals_period"], site["retrieved_on"])])
+    thresholds = climate["frost"]["thresholds_f"]
+    _insert(connection, "frost_thresholds", ("threshold_f", "label"), [(t, climate["frost"]["labels"][str(t)]) for t in thresholds])
+    sources, temperatures, summaries, days, years = [], [], [], [], []
+    for source in climate["sources"]:
+        extremes, frost = source["annual_extreme_min"], source["frost"]
+        sources.append((source["id"], source["role"], source["kind"], source["label"], source["latitude"], source["longitude"],
+                        source["elevation_ft"], source["distance_from_site_mi"], *source["period"], source["url"], source["retrieved_from"],
+                        source["note"], extremes["years"], extremes["mean_f"], extremes["zone"], extremes["coldest_f"], extremes["coldest_on"],
+                        extremes["mildest_f"], extremes.get("record_low_f"), extremes.get("record_low_on")))
+        temperatures += [(source["id"], month + 1, source["temperature"]["high_f"][month], source["temperature"]["low_f"][month])
+                         for month in range(12)]
+        for threshold in thresholds:
+            item = frost["summary"][str(threshold)]
+            summaries.append((source["id"], threshold, *(item["last_spring"][name] for name in FROST_DATE_STATS),
+                              *(item["first_fall"][name] for name in FROST_DATE_STATS),
+                              *(item["frost_free_days"][name] for name in FREE_DAY_STATS),
+                              item["years_spring"], item["years_fall"], item["years_both"]))
+            if "monthly_days" in frost:
+                monthly = frost["monthly_days"][str(threshold)]
+                days += [(source["id"], threshold, month + 1, monthly["avg_days"][month], monthly["years_with_pct"][month]) for month in range(12)]
+        for record in frost.get("years", []):
+            for threshold in thresholds:
+                spring, fall = record["last_spring"][str(threshold)], record["first_fall"][str(threshold)]
+                # Day numbers count as in a non-leap year, so they compare across years and give the frost-free days.
+                spring_day = day_of_year(datetime.date.fromisoformat(spring)) if spring else None
+                fall_day = day_of_year(datetime.date.fromisoformat(fall)) if fall else None
+                free = fall_day - spring_day if spring_day is not None and fall_day is not None else None
+                years.append((source["id"], record["year"], threshold, spring, fall, spring_day, fall_day, free))
+    _insert(connection, "climate_sources", ("id", "role", "kind", "label", "latitude", "longitude", "elevation_ft", "distance_from_site_mi",
+                                            "period_start", "period_end", "url", "retrieved_from", "note", "coldest_night_years",
+                                            "mean_annual_extreme_min_f", "hardiness_zone", "coldest_f", "coldest_on", "mildest_f",
+                                            "record_low_f", "record_low_on"), sources)
+    _insert(connection, "temperature_months", ("source_id", "month", "high_f", "low_f"), temperatures)
+    _insert(connection, "frost_summary",
+            ("source_id", "threshold_f", *(f"spring_{name}" for name in FROST_DATE_STATS), *(f"fall_{name}" for name in FROST_DATE_STATS),
+             *(f"free_days_{name}" for name in FREE_DAY_STATS), "years_spring", "years_fall", "years_both"), summaries)
+    _insert(connection, "frost_days", ("source_id", "threshold_f", "month", "avg_days", "years_with_pct"), days)
+    _insert(connection, "frost_years", ("source_id", "year", "threshold_f", "last_spring", "first_fall", "last_spring_day", "first_fall_day",
+                                        "frost_free_days"), years)
+    daylight = climate["daylight"]
+    _insert(connection, "daylight_months", ("month", "mean_hours", "shortest_hours", "longest_hours"),
+            [(m["month"], m["mean_hours"], m["shortest_hours"], m["longest_hours"]) for m in daylight["months"]])
+    _insert(connection, "daylight_crossings", ("hours", "first_date", "last_date"),
+            [(int(hours), dates[0], dates[1]) for hours, dates in daylight["crossings"].items() if dates])
+    key_columns = ("id", "label", "date", "clock", "utc_offset_hours", "sunrise", "solar_noon", "sunset", "day_length_hours",
+                   "noon_altitude_deg", "sunrise_azimuth_deg", "sunset_azimuth_deg")
+    _insert(connection, "sun_key_dates", key_columns, [tuple(item[key] for key in key_columns) for item in daylight["key_dates"]])
 
 
 def orchard_constants(data):
@@ -1027,6 +1413,8 @@ def generated_outputs(data, root, digest):
     library = heading + "window.CULTIVAR_LIBRARY = " + _json(data["cultivar_library"]) + ";\n"
     library += (root / "web" / "cultivar_library.js").read_text(encoding="utf-8")
     water = heading + "window.WATER_HARVESTING = " + _json(data["water_harvesting"]) + ";\n"
+    climate = heading + "window.SITE_CLIMATE = " + _json(data["climate"]) + ";\n"
+    climate += (root / "web" / "site_climate.js").read_text(encoding="utf-8")
     checklist = heading + (root / "web" / "planting_checklist.js").read_text(encoding="utf-8")
     manifest = json.dumps({"schema_version": 1, "source_digest": digest,
                            "plants": len(data["plants"]["records"]), "orchard_spots": len(data["locations"]["records"]),
@@ -1034,7 +1422,7 @@ def generated_outputs(data, root, digest):
                            "cultivar_profiles": len(data["cultivar_library"]["records"])}, indent=2) + "\n"
     return {name: text.encode("utf-8") for name, text in {
         "site_grid.js": site, "site_terrain.js": terrain, "orchard_model.js": orchard,
-        "water_harvesting.js": water, "planting_checklist.js": checklist, "cultivar_library.js": library, "manifest.json": manifest,
+        "water_harvesting.js": water, "site_climate.js": climate, "planting_checklist.js": checklist, "cultivar_library.js": library, "manifest.json": manifest,
     }.items()}
 
 

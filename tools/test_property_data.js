@@ -6,7 +6,7 @@ const test = require('node:test');
 
 const root = path.join(__dirname, '..');
 const context = { window: {} };
-for (const name of ['site_grid', 'site_terrain', 'cultivar_library', 'orchard_model', 'water_harvesting']) {
+for (const name of ['site_grid', 'site_terrain', 'cultivar_library', 'orchard_model', 'water_harvesting', 'site_climate']) {
   vm.runInNewContext(fs.readFileSync(path.join(root, 'docs', 'data', name + '.js'), 'utf8'), context);
 }
 const model = context.window.OrchardModel;
@@ -150,11 +150,105 @@ test('Generated orchard model retains every windbreak, hedge, and guild rule', (
   assert.equal(model.C1_GUILDS.groups.length, 5);
 });
 
+test('Site climate helpers format dates and times and expose the dates to plan around', () => {
+  const climate = context.window.SiteClimate;
+  assert.equal(climate.monthDay('06-17'), 'Jun 17');
+  assert.equal(climate.monthDay('12-01'), 'Dec 1');
+  for (const bad of ['6-17', '13-01', '02-29', '04-31', '00-10', 'June 17', '']) assert.throws(() => climate.monthDay(bad), /calendar day/, bad);
+  assert.equal(climate.dayNumber('01-01'), 1);
+  assert.equal(climate.dayNumber('03-01'), 60);
+  assert.equal(climate.dayNumber('06-17'), 168);
+  assert.equal(climate.dayNumber('12-31'), 365);
+  assert.equal(climate.hoursText(15.42), '15 h 25 m');
+  assert.equal(climate.hoursText(8.95), '8 h 57 m');
+  assert.equal(climate.hoursText(12), '12 h 0 m');
+  assert.equal(climate.clock12('21:27'), '9:27 pm');
+  assert.equal(climate.clock12('00:05'), '12:05 am');
+  assert.equal(climate.clock12('12:30'), '12:30 pm');
+  assert.equal(climate.clock12('06:02'), '6:02 am');
+  assert.throws(() => climate.clock12('24:00'), /HH:MM/);
+
+  const freeze = climate.planningDates(32);
+  assert.deepEqual(
+    [freeze.springRisk10, freeze.springMedian, freeze.fallRisk10, freeze.fallMedian, freeze.freeDays.p50],
+    ['06-24', '06-17', '08-31', '09-09', 90]);
+  // A colder threshold ends spring sooner and begins fall later.
+  const hard = climate.planningDates(28);
+  assert.ok(climate.dayNumber(hard.springMedian) < climate.dayNumber(freeze.springMedian));
+  assert.ok(climate.dayNumber(hard.fallMedian) > climate.dayNumber(freeze.fallMedian));
+  assert.throws(() => climate.summary(10), /No frost summary/);
+  assert.throws(() => climate.source('nowhere'), /No climate source/);
+  assert.equal(climate.source('snotel-prairie'), climate.primary);
+
+  const months = climate.months();
+  assert.equal(months.length, 12);
+  assert.deepEqual(Array.from(months.map(month => month.name).slice(0, 3)), ['Jan', 'Feb', 'Mar']);
+  assert.equal(months[6].high, 86.4);
+  assert.equal(months[6].mean, 67.7);
+  assert.equal(months[5].frostDays[32].yearsPct, 89);
+  assert.equal(months[5].daylight.mean_hours, 15.36);
+  assert.ok(months.every(month => month.high > month.low && month.mean > month.low && month.mean < month.high));
+
+  // Risk lookups come straight from the yearly dates: a freeze after a spring date, or a first freeze before a fall date.
+  // The expected counts were worked out separately in Python from the same yearly records.
+  assert.equal(climate.springRiskAfter(32, '06-24'), 2 / 25);
+  assert.equal(climate.springRiskAfter(32, '06-17'), 12 / 25);
+  assert.equal(climate.springRiskAfter(28, '05-20'), 15 / 24);
+  assert.equal(climate.springRiskAfter(24, '05-13'), 2 / 23);
+  assert.equal(climate.springRiskAfter(32, '05-01'), 1);
+  assert.equal(climate.fallRiskBefore(32, '09-01'), 4 / 26);
+  assert.equal(climate.fallRiskBefore(28, '09-15'), 3 / 25);
+  assert.equal(climate.fallRiskBefore(24, '10-10'), 11 / 23);
+  // A freeze exactly on the date is not after it, in a leap year too. A plain day-of-year count would put 2000-06-20 (36 F),
+  // 2012-06-20 (32 F), and 2016-05-10 (28 F) one day late and count each of them as after the date.
+  assert.equal(climate.springRiskAfter(36, '06-20'), 20 / 25);
+  assert.equal(climate.springRiskAfter(32, '06-20'), 6 / 25);
+  assert.equal(climate.springRiskAfter(28, '05-10'), 17 / 24);
+  assert.throws(() => climate.springRiskAfter(10, '06-01'), /No last_spring dates/);
+  assert.throws(() => climate.fallRiskBefore(32, '13-01'), /calendar day/);
+  // Years outside the summary period (2021 to 2025) are not counted.
+  assert.equal(climate.summaryYears().length, 27);
+  assert.deepEqual({ ...climate.extremeYear(32, 'last_spring', 'latest') }, { year: 2016, date: '07-11' });
+  assert.deepEqual({ ...climate.extremeYear(32, 'last_spring', 'earliest') }, { year: 2015, date: '05-10' });
+  assert.deepEqual({ ...climate.extremeYear(32, 'first_fall', 'earliest') }, { year: 1995, date: '08-09' });
+  assert.deepEqual({ ...climate.extremeYear(24, 'first_fall', 'latest') }, { year: 2004, date: '10-31' });
+  assert.equal(climate.isoDayNumber('2023-03-01'), 60);
+  assert.equal(climate.isoDayNumber('2024-03-01'), 60);
+  assert.equal(climate.isoDayNumber('2024-02-29'), 60);
+  assert.equal(climate.isoDayNumber('2024-12-31'), 365);
+  assert.throws(() => climate.isoDayNumber('6/17/2024'), /YYYY-MM-DD/);
+});
+
+test('Generated site climate data carries what the climate page draws', () => {
+  const climate = context.window.SITE_CLIMATE;
+  assert.equal(climate.sources.filter(source => source.role === 'primary').length, 1);
+  assert.deepEqual(Array.from(climate.frost.thresholds_f), [36, 32, 28, 24]);
+  for (const source of climate.sources) {
+    assert.equal(source.temperature.high_f.length, 12, source.id);
+    for (const threshold of climate.frost.thresholds_f) {
+      const item = source.frost.summary[threshold];
+      assert.ok(item.last_spring.earliest <= item.last_spring.p10 && item.last_spring.p10 <= item.last_spring.p50, `${source.id} ${threshold}`);
+      assert.ok(item.last_spring.p50 <= item.last_spring.p90 && item.last_spring.p90 <= item.last_spring.latest, `${source.id} ${threshold}`);
+      assert.ok(item.first_fall.earliest <= item.first_fall.p10 && item.first_fall.p90 <= item.first_fall.latest, `${source.id} ${threshold}`);
+    }
+  }
+  // The measured season sits inside the NRCS range for this soil's setting, and the model estimates run longer.
+  const [nrcsLow, nrcsHigh] = context.window.WATER_HARVESTING.soil.frostFree;
+  const measured = context.window.SiteClimate.planningDates(32).freeDays;
+  assert.ok(measured.p50 >= nrcsLow && measured.p50 <= nrcsHigh);
+  assert.ok(context.window.SiteClimate.planningDates(32, context.window.SiteClimate.source('prism-lot')).freeDays.p50 > nrcsHigh);
+  const days = climate.daylight.months.map(month => month.mean_hours);
+  assert.equal(days.indexOf(Math.max(...days)), 5, 'June has the longest days');
+  assert.equal(days.indexOf(Math.min(...days)), 11, 'December has the shortest days');
+  assert.equal(climate.daylight.key_dates.length, 4);
+});
+
 test('Generated browser records match the authoritative JSON', () => {
   const data = name => JSON.parse(fs.readFileSync(path.join(root, 'data', name + '.json'), 'utf8'));
   assert.deepEqual(JSON.parse(JSON.stringify(context.window.SITE_GRID)), data('site'));
   assert.deepEqual(JSON.parse(JSON.stringify(context.window.SITE_TERRAIN)), data('terrain'));
   assert.deepEqual(JSON.parse(JSON.stringify(context.window.WATER_HARVESTING)), data('water_harvesting'));
+  assert.deepEqual(JSON.parse(JSON.stringify(context.window.SITE_CLIMATE)), data('climate'));
   assert.equal(context.window.ORCHARD_DATA.INVENTORY.length, data('inventory').records.length);
   assert.equal(context.window.ORCHARD_DATA.FRUIT_SHEET.length, data('catalog').fruit_records.length);
 });

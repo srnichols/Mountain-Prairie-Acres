@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Site Climate: Frost, Temperature, and Daylight — Prairie Plants</title>
+<style>
+  :root {
+    --bg: #ffffff; --bg2: #f5f4f0; --bg3: #eae8e1;
+    --text: #2C2C2A; --text2: #5F5E5A; --text3: #888780;
+    --border: #d3d1c7; --link: #185FA5;
+    --cold: #6C5BA7; --free: #2E7D5B;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text);
+    padding: 24px; max-width: 1100px; margin: 0 auto; line-height: 1.6;
+  }
+  h1 { font-size: 22px; font-weight: 500; margin-bottom: 2px; }
+  h2 { font-size: 16px; font-weight: 500; margin: 24px 0 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+  h3 { font-size: 13px; font-weight: 600; margin: 12px 0 4px; color: var(--text2); }
+  p { margin: 6px 0; }
+  a { color: var(--link); }
+  .subtitle { font-size: 13px; color: var(--text2); margin-bottom: 8px; }
+  .source-note { font-size: 11px; color: var(--text2); }
+  .lead { font-size: 13px; line-height: 1.65; }
+  .notice { background: var(--bg2); border-left: 4px solid #BA7517; border-radius: 4px; padding: 10px 12px; margin: 12px 0; font-size: 12px; }
+  .notice.cold { border-left-color: var(--cold); }
+  .notice.error { border-left-color: #E24B4A; }
+  ul.points { font-size: 12.5px; padding-left: 20px; margin: 6px 0; }
+  ul.points li { margin: 4px 0; }
+  .specs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 12px 0; }
+  .spec { background: var(--bg2); border-radius: 8px; padding: 10px 12px; }
+  .spec .label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
+  .spec .value { font-size: 16px; font-weight: 500; }
+  .spec .hint { font-size: 10px; color: var(--text2); line-height: 1.3; }
+
+  .diagram { display: block; width: 100%; height: auto; margin: 8px 0 12px; }
+  .diagram text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: #2C2C2A; }
+  .diagram .t-note { fill: #5F5E5A; }
+  .diagram .t-free { fill: #1F6045; font-weight: 600; }
+  .diagram .t-cold { fill: #4A3F86; }
+  .diagram .t-sun { fill: #7A5A08; }
+  .diagram .halo { paint-order: stroke; stroke: #fff; stroke-width: 3px; stroke-linejoin: round; }
+  .c-grid { stroke: #e2e0d8; stroke-width: 1; }
+  .c-axis { stroke: #888780; stroke-width: 1; }
+  .c-dormant { fill: #EEF2F7; }
+  .c-free-band { fill: #E3F1E8; }
+  .c-f36 { fill: #A9CBEA; }
+  .c-f32 { fill: #5B9BD5; }
+  .c-f28 { fill: #3F73B3; }
+  .c-f24 { fill: #6C5BA7; }
+  .c-whisker { stroke: #5F5E5A; stroke-width: 1.2; fill: none; }
+  .c-median { fill: #fff; stroke: #2C2C2A; stroke-width: 1.6; }
+  .c-free { fill: #2E7D5B; }
+  .c-range { fill: #F3EFE6; }
+  .c-high { fill: none; stroke: #D9822B; stroke-width: 2.5; }
+  .c-high-dot { fill: #D9822B; stroke: #fff; stroke-width: 1; }
+  .c-low { fill: none; stroke: #5B9BD5; stroke-width: 2.5; }
+  .c-low-dot { fill: #5B9BD5; stroke: #fff; stroke-width: 1; }
+  .c-freezeline { stroke: #6C5BA7; stroke-width: 1.3; stroke-dasharray: 5 4; }
+  .c-daylight { fill: #F0C24B; }
+
+  table.detail { width: 100%; border-collapse: collapse; font-size: 11px; margin: 8px 0 16px; }
+  table.detail caption { caption-side: top; text-align: left; font-size: 11px; font-weight: 600; color: var(--text2); padding: 0 0 3px; }
+  table.detail th { background: var(--bg3); text-align: left; padding: 5px 8px; font-weight: 500; border: 1px solid var(--border); }
+  table.detail td { padding: 4px 8px; border: 1px solid var(--border); vertical-align: top; }
+  table.detail tr:nth-child(even) td { background: var(--bg2); }
+  table.detail td.num, table.detail th.num { text-align: right; white-space: nowrap; }
+  table.detail th.num { white-space: normal; }
+  table.detail th.center, table.detail td.center { text-align: center; }
+  table.detail tbody tr td.risk-high { background: #F4CFC7; }
+  table.detail tbody tr td.risk-mid { background: #FAE2B8; }
+  table.detail tbody tr td.risk-low { background: #FFF3CF; }
+  table.detail.narrow { width: 62%; }
+  .log td { height: 30px; }
+  .two-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .source-list { padding-left: 20px; font-size: 12px; }
+  .source-list li { margin: 5px 0; }
+  .footer { margin-top: 24px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text3); }
+
+  @page {
+    size: 8.5in 11in;
+    margin: 10mm 10mm 12mm;
+    @bottom-left { content: "Prairie Plants - Site climate: frost, temperature, and daylight"; font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+  }
+  @media print {
+    body { padding: 0; margin: 0; max-width: none; font-size: 9pt; line-height: 1.3; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    .print-help, .screen-only { display: none; }
+    .page-break { break-before: page; }
+    .keep { break-inside: avoid; }
+    h1 { font-size: 16pt; line-height: 1.15; }
+    h2 { font-size: 12pt; margin: 3mm 0 1.5mm; padding-bottom: 1mm; }
+    h3 { font-size: 10pt; margin: 2mm 0 1mm; }
+    h1, h2, h3 { break-after: avoid; }
+    p { orphans: 3; widows: 3; }
+    .subtitle { font-size: 9pt; margin-bottom: 1.5mm; }
+    .source-note { font-size: 7.5pt; line-height: 1.3; }
+    .lead { font-size: 9pt; line-height: 1.35; }
+    ul.points { font-size: 8.5pt; line-height: 1.3; padding-left: 5mm; }
+    ul.points li { margin: 0.6mm 0; }
+    .specs { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 2mm; margin: 2mm 0; }
+    .spec { padding: 1.5mm 2mm; border-radius: 1mm; }
+    .spec .label { font-size: 6.5pt; letter-spacing: 0; }
+    .spec .value { font-size: 10.5pt; }
+    .spec .hint { font-size: 6.5pt; }
+    .notice { font-size: 8pt; padding: 1.5mm 2mm; margin: 2mm 0; }
+    .chart { max-height: 2.6in; }
+    .chart.tall { max-height: 3.3in; }
+    table.detail { table-layout: fixed; font-size: 7.8pt; line-height: 1.25; margin: 2mm 0 3mm; }
+    table.detail caption { font-size: 8pt; }
+    table.detail th, table.detail td { padding: 1mm 1.5mm; overflow-wrap: anywhere; }
+    table.detail tr { break-inside: avoid; }
+    thead { display: table-header-group; }
+    .two-col { gap: 5mm; }
+    .log td { height: 8mm; }
+    .source-list { font-size: 7.5pt; padding-left: 5mm; }
+    .source-list li { margin: 0.6mm 0; }
+    a { text-decoration: none; color: inherit; }
+    .footer { font-size: 7.5pt; margin-top: 3mm; padding-top: 2mm; }
+  }
+  .home-link { margin: 0 0 0.1in; font-size: 9.5pt; }
+  @media print { .home-link { display: none; } }
+</style>
+</head>
+<body>
+<nav class="home-link" aria-label="Back to the home page"><a href="index.html">← Mountain Prairie Acres — Orchard and Ranch Projects</a></nav>
+
+<div class="notice print-help" role="note"><strong>Print setup:</strong> Letter (8.5 × 11 in), portrait, 100% scale. Turn on background graphics and turn off the browser's headers and footers.</div>
+<noscript><div class="notice error">JavaScript is required to draw the charts and the calculated tables.</div></noscript>
+<div class="notice error" id="render-error" hidden></div>
+
+<section aria-labelledby="page-title">
+<h1 id="page-title">Site Climate: Frost, Temperature, and Daylight</h1>
+<p class="subtitle" id="subtitle"></p>
+<p class="source-note">Companion to the <a href="orchard_water_harvesting_plan.html">rain and snowmelt harvesting plan</a> and the <a href="fy27_planting_plan.html">2027 planting plan</a>. The numbers live in <code>data/climate.json</code> and the SQLite tables built from it, so they can be queried and corrected. The lot has no weather station of its own yet, so these are the nearest measured record and two models, not readings on the ground (see How Well the Sources Agree).</p>
+<div class="specs" id="specs"></div>
+
+<div class="keep">
+<h2>Frost at Both Ends of the Season</h2>
+<p class="lead" id="frost-lead"></p>
+<div id="calendar-host"></div>
+<p class="source-note" id="calendar-note"></p>
+</div>
+<div class="keep">
+<table class="detail" id="frost-table">
+<colgroup><col style="width:15%"><col span="10" style="width:6.9%"><col style="width:16%"></colgroup>
+<thead></thead><tbody></tbody></table>
+<p class="source-note" id="frost-table-note"></p>
+</div>
+</section>
+
+<section aria-labelledby="risk-heading">
+<div class="keep">
+<h2 id="risk-heading">Chance of a Freeze, Date by Date</h2>
+<p class="lead" id="risk-lead"></p>
+<div class="two-col">
+  <table class="detail" id="spring-risk"><caption>Spring: chance of a freeze after this date</caption><thead></thead><tbody></tbody></table>
+  <table class="detail" id="fall-risk"><caption>Fall: chance the first freeze has already come by this date</caption><thead></thead><tbody></tbody></table>
+</div>
+<p class="source-note" id="risk-note"></p>
+</div>
+
+<div class="keep">
+<h2>What a Cold Night Does to Open Blossoms</h2>
+<p class="lead" id="bloom-lead"></p>
+<table class="detail narrow" id="bloom-table">
+<colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup>
+<thead><tr><th>At full bloom</th><th class="num">10% of blossoms killed at</th><th class="num">90% of blossoms killed at</th></tr></thead>
+<tbody>
+<tr><td>Apple</td><td class="num">28 °F</td><td class="num">25 °F</td></tr>
+<tr><td>Pear</td><td class="num">28 °F</td><td class="num">24 °F</td></tr>
+<tr><td>Sweet cherry</td><td class="num">28 °F</td><td class="num">25 °F</td></tr>
+<tr><td>Plum</td><td class="num">28 °F</td><td class="num">23 °F</td></tr>
+<tr><td>Peach</td><td class="num">27 °F</td><td class="num">24 °F</td></tr>
+<tr><td>Apricot</td><td class="num">27 °F</td><td class="num">22 °F</td></tr>
+</tbody></table>
+<p class="source-note">Utah State University Extension, <a href="https://extension.usu.edu/productionhort/files/CriticalTemperaturesFrostDamageFruitTrees.pdf">Critical Temperatures for Frost Damage on Fruit Trees</a> (Marion Murray, IPM-012-11, March 2020), a table developed by Washington State University: the temperature that kills that share of blossom buds after 30 minutes. Buds are hardier before they open (an apple at green tip is hurt at 18 °F, not 28 °F) and tolerate less as they develop. The table notes that a full crop needs well over half the cherry buds to survive, but only 10 to 15% of the apple, pear, and peach buds.</p>
+</div>
+
+<div class="keep">
+<h2>What It Means for the Orchard</h2>
+<ul class="points" id="meaning"></ul>
+</div>
+
+<div class="keep">
+<h2>Freezes Month by Month</h2>
+<div id="frost-days-host"></div>
+<p class="source-note" id="frost-days-note"></p>
+</div>
+</section>
+
+<section aria-labelledby="temperature-heading">
+<div class="keep">
+<h2 id="temperature-heading">Temperature by Month</h2>
+<p class="lead" id="temperature-lead"></p>
+<div id="temperature-host"></div>
+<p class="source-note" id="temperature-note"></p>
+<div class="notice cold" id="winter-note"></div>
+</div>
+
+<div class="keep">
+<h2>Daylight by Month</h2>
+<p class="lead" id="daylight-lead"></p>
+<div id="daylight-host"></div>
+<p class="source-note" id="daylight-note"></p>
+</div>
+<div class="keep">
+<table class="detail" id="sun-table">
+<colgroup><col style="width:22%"><col style="width:13%"><col style="width:11%"><col style="width:11%"><col style="width:13%"><col style="width:12%"><col style="width:18%"></colgroup>
+<thead><tr><th>Date</th><th class="num">Sunrise</th><th class="num">Solar noon</th><th class="num">Sunset</th><th class="num">Day length</th><th class="num">Noon sun height</th><th>Sunrise / sunset direction</th></tr></thead>
+<tbody></tbody></table>
+<p class="source-note" id="sun-note"></p>
+</div>
+</section>
+
+<section aria-labelledby="months-heading">
+<div class="keep">
+<h2 id="months-heading">Month by Month at Prairie</h2>
+<table class="detail" id="month-table">
+<colgroup><col style="width:9%"><col style="width:10%"><col style="width:10%"><col style="width:12%"><col style="width:15%"><col style="width:12%"><col style="width:11%"><col style="width:11%"><col style="width:10%"></colgroup>
+<thead><tr><th>Month</th><th class="num">Average high, °F</th><th class="num">Average low, °F</th><th class="num">Days at or below 32 °F</th><th class="num">Years with a night at or below 32 °F</th><th class="num">Days at or below 28 °F</th><th class="num">Daylight, hours</th><th class="num">Precipitation, in</th><th class="num">ET₀, in</th></tr></thead>
+<tbody></tbody><tfoot></tfoot></table>
+<p class="source-note" id="month-note"></p>
+</div>
+
+<div class="keep">
+<h2>How Well the Sources Agree</h2>
+<p class="lead" id="agree-lead"></p>
+<table class="detail" id="agree-table">
+<colgroup><col style="width:34%"><col style="width:11%"><col style="width:11%"><col style="width:16%"><col style="width:14%"><col style="width:14%"></colgroup>
+<thead><tr><th>Source</th><th class="num">Last 32 °F, typical</th><th class="num">First 32 °F, typical</th><th class="num">Frost-free days, typical (1 in 10 under – over)</th><th class="num">Average coldest night</th><th class="num">Hardiness zone</th></tr></thead>
+<tbody></tbody></table>
+<p class="source-note" id="agree-note"></p>
+</div>
+</section>
+
+<section class="page-break" aria-labelledby="log-heading">
+<h2 id="log-heading">Frost and Cold Log</h2>
+<p class="source-note">The lot has no thermometer record yet. A minimum thermometer at tree height, plus one in the low northwest corner by the road, read each morning from March through October, would show how the orchard really compares with the station. Note when each tree type blooms, so the date can be checked against the risk tables.</p>
+<table class="detail log">
+<colgroup><col style="width:11%"><col style="width:20%"><col style="width:17%"><col style="width:26%"><col style="width:26%"></colgroup>
+<thead><tr><th>Date</th><th>Lowest temperature (°F) and where</th><th>Bloom stage or growth</th><th>Damage seen (trees, buds, blossoms, fruit)</th><th>What you did, or would do next time</th></tr></thead>
+<tbody id="log-body"></tbody></table>
+
+<h2>Sources and Method</h2>
+<ul class="source-list">
+  <li>USDA NRCS National Water and Climate Center, <a href="https://wcc.sc.egov.usda.gov/nwcc/site?sitenum=704">Prairie SNOTEL, site 704</a> (Elmore County, 4,800 ft, 43.51° N, 115.57° W): daily minimum and maximum air temperature, 1988 to 2026. This is the measured record behind every frost date, monthly average, and coldest night above.</li>
+  <li>NOAA Regional Climate Centers, <a href="https://www.rcc-acis.org/">ACIS web services</a>: the SNOTEL record, the old Prairie weather station (NOAA cooperative observer 107327, 1925 to 1942, <a href="https://www.ncei.noaa.gov/products/land-based-station/cooperative-observer-network">cooperative observer network</a>), and the PRISM grid, all retrieved October 18, 2026.</li>
+  <li><a href="https://prism.oregonstate.edu/">PRISM Climate Group</a>, Oregon State University: daily minimum and maximum temperature on a 4 km grid, sampled in the cell around the lot (43.458° N, 115.583° W, 4,688 ft). A model, not a measurement.</li>
+  <li><a href="https://daymet.ornl.gov/">Daymet</a>, Oak Ridge National Laboratory: daily temperature on a 1 km grid (Thornton, Shrestha, Wei, Thornton, Kao, and Wilson, 2022, Daymet version 4 R1, <a href="https://doi.org/10.3334/ORNLDAAC/2129">doi:10.3334/ORNLDAAC/2129</a>), sampled at the lot center. A model, not a measurement.</li>
+  <li>USDA NRCS <a href="https://websoilsurvey.nrcs.usda.gov/">Web Soil Survey</a> report for the property (soil folder): frost-free period of 60 to 100 days for map unit 149, Simonton loam, 2 to 12 percent slopes.</li>
+  <li>Utah State University Extension, <a href="https://extension.usu.edu/productionhort/files/CriticalTemperaturesFrostDamageFruitTrees.pdf">Critical Temperatures for Frost Damage on Fruit Trees</a> (IPM-012-11, 2020): the blossom-kill temperatures above. UC IPM, <a href="https://ipm.ucanr.edu/agriculture/cherry/bacterial-canker/">Bacterial Canker (cherry)</a>: the disease is worse after spring freezes.</li>
+  <li>USDA <a href="https://planthardiness.ars.usda.gov/">Plant Hardiness Zone Map</a>: the 5 °F half-zone bands used to turn the average coldest night into a zone. The map itself was not checked for this exact point, so the zones here are estimates from the readings, not the map's answer.</li>
+  <li>Daylight: the NOAA <a href="https://gml.noaa.gov/grad/solcalc/calcdetails.html">solar position formulas</a> (Meeus, <em>Astronomical Algorithms</em>) at the lot's latitude and longitude, with sunrise and sunset at the sun's upper edge after standard refraction over a flat horizon. Checked against the <a href="https://aa.usno.navy.mil/data/RS_OneDay">U.S. Naval Observatory</a> sunrise and sunset service for 12 dates, all within one minute. Hills, trees, and the windbreak shorten the direct sun on the ground.</li>
+  <li>Method: the last spring freeze is the last day from January 1 to July 31 whose lowest temperature was at or below the threshold, and the first fall freeze is the first such day from August 1 to December 31. Percentiles are interpolated across the years from 1991 to 2020 with usable records (the year-by-year dates are in <code>data/climate.json</code>). A year's spring or fall date is left out when a missing day could be hiding a later or earlier freeze: the SNOTEL record has too many gaps in 1989 to 1993 and 2022 to date both freezes. Daily values come from hourly readings, so they can miss the coldest moment.</li>
+</ul>
+</section>
+
+<div class="footer">Prairie Plants · Site climate: frost, temperature, and daylight · created October 18, 2026 · data in <code>data/climate.json</code>, shared with the SQLite database (<code>frost_summary</code>, <code>frost_years</code>, <code>site_climate_months</code>, and related tables).</div>
+
+<script src="data/water_harvesting.js"></script>
+<script src="data/site_climate.js"></script>
+<script>
+'use strict';
+if (!window.SiteClimate || !window.WATER_HARVESTING) {
+  const box = document.getElementById('render-error');
+  box.hidden = false;
+  box.textContent = 'Could not build the page: the generated climate or water data did not load. Rebuild with tools/property_data.py build.';
+  throw new Error('site climate data files missing');
+}
+const C = window.SiteClimate;
+const CLIMATE = C.data;
+const WATER = window.WATER_HARVESTING;
+const P = C.primary;
+const MONTHS = C.MONTH_NAMES;
+const DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+const NAMES = CLIMATE.frost.labels;
+const MONTH_ROWS = C.months();
+const FREEZING_MONTHS = MONTH_ROWS.filter(month => month.low <= 32);
+const F36 = C.planningDates(36), F32 = C.planningDates(32), F28 = C.planningDates(28), F24 = C.planningDates(24);
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+/* Formatting and DOM helpers */
+const deg = value => `${value < 0 ? '\u2212' : ''}${Math.abs(Math.round(value))}`;
+const degF = value => `${deg(value)} °F`;
+const percent = share => `${Math.round(share * 100)}%`;
+const fmt = (value, digits = 0) => Number(value).toLocaleString('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits });
+const longDate = iso => { const [year, month, day] = iso.split('-').map(Number); return `${MONTHS[month - 1]} ${day}, ${year}`; };
+const weeks = days => { const count = Math.round(days / 7); return `${count} ${count === 1 ? 'week' : 'weeks'}`; };
+function svgNode(tag, attrs = {}, text) {
+  const node = document.createElementNS(SVG_NS, tag);
+  Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+function element(tag, text, className) {
+  const node = document.createElement(tag);
+  if (text !== undefined && text !== null) node.textContent = text;
+  if (className) node.className = className;
+  return node;
+}
+function addRow(tbody, cells, classes = []) {
+  const tr = element('tr');
+  cells.forEach((cell, index) => {
+    const td = element('td');
+    if (cell instanceof Node) td.append(cell); else td.textContent = cell;
+    if (classes[index]) td.className = classes[index];
+    tr.append(td);
+  });
+  tbody.append(tr);
+  return tr;
+}
+function headRow(thead, cells) {
+  const tr = element('tr');
+  cells.forEach(cell => {
+    const [text, className, span] = Array.isArray(cell) ? cell : [cell];
+    const th = element('th', text, className);
+    if (span) th.colSpan = span;
+    tr.append(th);
+  });
+  thead.append(tr);
+}
+function chartFrame(id, width, height, title, className = 'chart') {
+  const svg = svgNode('svg', { viewBox: `0 0 ${width} ${height}`, class: `diagram ${className}`, role: 'img', 'aria-labelledby': `${id}-title` });
+  svg.append(svgNode('title', { id: `${id}-title` }, title));
+  return svg;
+}
+const text = (svg, x, y, str, attrs = {}) => svg.append(svgNode('text', { x, y, 'font-size': 11, ...attrs }, str));
+// A position along a chart whose 12 columns are the months: the 1st of a month sits at its left edge.
+const monthPosition = (left, step, monthDay) => {
+  const [month, day] = monthDay.split('-').map(Number);
+  return left + ((month - 1) + (day - 1) / DAYS[month - 1]) * step;
+};
+
+/* Text that quotes the data */
+const springLatest = C.extremeYear(32, 'last_spring', 'latest');
+const fallEarliest = C.extremeYear(32, 'first_fall', 'earliest');
+const monthShare = (index, threshold = 32) => MONTH_ROWS[index].frostDays[threshold].yearsPct / 100;
+const siteElevation = CLIMATE.site.elevation_ft;
+const springDates = [['05-10'], ['05-20'], ['05-31'], ['06-10'], ['06-20'], ['06-30'], ['07-10']];
+const fallDates = [['08-20'], ['08-31'], ['09-10'], ['09-20'], ['09-30'], ['10-10'], ['10-20']];
+
+document.getElementById('subtitle').textContent =
+  `Prairie Plants · ${CLIMATE.site.name} · about ${fmt(siteElevation)} ft · measured at the Prairie SNOTEL weather station, ${P.period[0]} to ${P.period[1]}`;
+
+function renderSpecs() {
+  const cold = P.annual_extreme_min;
+  const june = CLIMATE.daylight.key_dates.find(item => item.id === 'june-solstice');
+  const december = CLIMATE.daylight.key_dates.find(item => item.id === 'december-solstice');
+  [
+    ['Frost-free days', fmt(F32.freeDays.p50), `between 32 °F nights in a typical year; 1 year in 10 has fewer than ${F32.freeDays.p10}, 1 in 10 more than ${F32.freeDays.p90}`],
+    ['Last spring freeze', C.monthDay(F32.springMedian), `32 °F, typical year; 1 year in 10 has one after ${C.monthDay(F32.springRisk10)}`],
+    ['First fall freeze', C.monthDay(F32.fallMedian), `32 °F, typical year; 1 year in 10 has one before ${C.monthDay(F32.fallRisk10)}`],
+    ['Coldest night, average year', degF(cold.mean_f), `USDA zone ${cold.zone}; the station's lowest was ${degF(cold.record_low_f)} (${longDate(cold.record_low_on)})`],
+    ['Warmest month', `${Math.round(MONTH_ROWS[6].high)} °F`, `July average high; the average low is ${Math.round(MONTH_ROWS[6].low)} °F`],
+    ['Longest day', C.hoursText(june.day_length_hours), `June 21; the shortest, ${C.hoursText(december.day_length_hours)}, is December 21`]
+  ].forEach(([label, value, hint]) => {
+    const card = element('div', null, 'spec');
+    card.append(element('div', label, 'label'), element('div', value, 'value'), element('div', hint, 'hint'));
+    document.getElementById('specs').append(card);
+  });
+}
+
+function renderFrostText() {
+  const away = P.elevation_ft - siteElevation;
+  const between = C.dayNumber(F32.fallMedian) - C.dayNumber(F32.springMedian);
+  document.getElementById('frost-lead').textContent =
+    `Measured at the Prairie SNOTEL, ${fmt(P.distance_from_site_mi, 1)} miles from the lot and ${fmt(away)} ft higher, the typical year has its last 32 °F freeze about ${C.monthDay(F32.springMedian)} and its first about ${C.monthDay(F32.fallMedian)}. Counted year by year, from each year's own last spring freeze to its first fall freeze, the middle year has about ${F32.freeDays.p50} frost-free days (the two typical dates alone are ${between} days apart), and the worst year of the record had only ${F32.freeDays.shortest}. Both ends are risky: in 1 spring in 10 a 32 °F freeze still comes after ${C.monthDay(F32.springRisk10)} (the latest was ${C.monthDay(springLatest.date)}, ${springLatest.year}), and in 1 fall in 10 the first one arrives before ${C.monthDay(F32.fallRisk10)} (the earliest was ${C.monthDay(fallEarliest.date)}, ${fallEarliest.year}). A freeze is not just a winter event: ${percent(monthShare(5))} of years have a 32 °F night in June, ${percent(monthShare(7))} in August, and ${percent(monthShare(8))} in September.`;
+  document.getElementById('calendar-note').textContent =
+    `Each bar covers the middle 80% of years (1 year in 10 falls before it and 1 in 10 after it), the dot is the median year, and the thin line runs from the earliest to the latest year, ${P.period[0]} to ${P.period[1]}. The number on each green bar is the middle of the yearly frost-free counts, each counted from that year's own last spring freeze to its first fall freeze, so it can differ by a few days from the distance between the two dots. 32 °F is a freeze; 28 °F and 24 °F are hard and severe freezes; at 36 °F, frost can still form on leaves under a clear, calm sky. Spring is the last such night before August, and fall is the first one after July.`;
+}
+
+function drawFrostCalendar() {
+  const W = 720, H = 292, m = { l: 132, r: 16, t: 56, b: 28 };
+  const first = C.dayNumber('03-01'), last = C.dayNumber('11-30');
+  const iw = W - m.l - m.r, rowH = (H - m.t - m.b) / C.thresholds.length;
+  const x = monthDay => m.l + (C.dayNumber(monthDay) - first) / (last - first) * iw;
+  const svg = chartFrame('calendar', W, H,
+    `Frost calendar for Prairie. At 32 °F the last spring freeze is typically ${C.monthDay(F32.springMedian)} and the first fall freeze ${C.monthDay(F32.fallMedian)}, and the middle year has about ${F32.freeDays.p50} frost-free days. At 28 °F the dates are ${C.monthDay(F28.springMedian)} and ${C.monthDay(F28.fallMedian)}, and at 24 °F they are ${C.monthDay(F24.springMedian)} and ${C.monthDay(F24.fallMedian)}.`, 'chart tall');
+  // Month gridlines and labels, March through November.
+  for (let month = 3; month <= 12; month++) {
+    const key = `${String(month).padStart(2, '0')}-01`;
+    const gx = month === 12 ? m.l + iw : x(key);
+    svg.append(svgNode('line', { x1: gx, x2: gx, y1: m.t, y2: H - m.b, class: 'c-grid' }));
+    if (month < 12) {
+      const next = month === 11 ? m.l + iw : x(`${String(month + 1).padStart(2, '0')}-01`);
+      text(svg, (gx + next) / 2, H - 10, MONTHS[month - 1], { 'text-anchor': 'middle' });
+    }
+  }
+  svg.append(svgNode('line', { x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b, class: 'c-axis' }));
+  text(svg, x('06-05'), m.t - 6, 'Last freeze in spring', { 'font-size': 10.5, class: 't-note', 'text-anchor': 'middle' });
+  text(svg, x('09-22'), m.t - 6, 'First freeze in fall', { 'font-size': 10.5, class: 't-note', 'text-anchor': 'middle' });
+  const range = (dates, yc, className) => {
+    const cap = (monthDay, half) => svg.append(svgNode('line', { x1: x(monthDay), x2: x(monthDay), y1: yc - half, y2: yc + half, class: 'c-whisker' }));
+    svg.append(svgNode('line', { x1: x(dates.earliest), x2: x(dates.latest), y1: yc, y2: yc, class: 'c-whisker' }));
+    cap(dates.earliest, 4); cap(dates.latest, 4);
+    svg.append(svgNode('rect', { x: x(dates.p10), y: yc - 7, width: x(dates.p90) - x(dates.p10), height: 14, rx: 2, class: className }));
+  };
+  C.thresholds.forEach((threshold, index) => {
+    const yc = m.t + index * rowH + rowH / 2;
+    const summary = C.summary(threshold);
+    const className = `c-f${threshold}`;
+    if (index) svg.append(svgNode('line', { x1: 6, x2: W - m.r, y1: m.t + index * rowH, y2: m.t + index * rowH, class: 'c-grid' }));
+    text(svg, m.l - 10, yc - 1, `≤ ${threshold} °F`, { 'text-anchor': 'end', 'font-size': 12.5, 'font-weight': 600 });
+    text(svg, m.l - 10, yc + 12, NAMES[threshold], { 'text-anchor': 'end', 'font-size': 10, class: 't-note' });
+    range(summary.last_spring, yc, className);
+    range(summary.first_fall, yc, className);
+    const a = x(summary.last_spring.p50), b = x(summary.first_fall.p50);
+    svg.append(svgNode('rect', { x: a, y: yc - 2.5, width: b - a, height: 5, rx: 2.5, class: 'c-free' }));
+    text(svg, (a + b) / 2, yc + 19, `${summary.frost_free_days.p50} frost-free days`, { 'text-anchor': 'middle', 'font-size': 10.5, class: 't-free' });
+    [summary.last_spring.p50, summary.first_fall.p50].forEach(monthDay => {
+      svg.append(svgNode('circle', { cx: x(monthDay), cy: yc, r: 4.5, class: 'c-median' }));
+      text(svg, x(monthDay), yc - 12, C.monthDay(monthDay), { 'text-anchor': 'middle', 'font-size': 10.5, class: 'halo' });
+    });
+  });
+  // Legend
+  svg.append(svgNode('rect', { x: m.l, y: 7, width: 16, height: 9, rx: 2, class: 'c-f32' }));
+  text(svg, m.l + 22, 15, 'Bar: the middle 80% of years', { 'font-size': 10.5 });
+  svg.append(svgNode('line', { x1: m.l + 190, x2: m.l + 214, y1: 11, y2: 11, class: 'c-whisker' }));
+  text(svg, m.l + 220, 15, 'Line: earliest to latest year', { 'font-size': 10.5 });
+  svg.append(svgNode('circle', { cx: m.l + 8, cy: 28, r: 4.5, class: 'c-median' }));
+  text(svg, m.l + 22, 32, 'Dot: median year', { 'font-size': 10.5 });
+  svg.append(svgNode('rect', { x: m.l + 190, y: 25.5, width: 24, height: 5, rx: 2.5, class: 'c-free' }));
+  text(svg, m.l + 220, 32, 'Green: between the two median dates', { 'font-size': 10.5 });
+  document.getElementById('calendar-host').append(svg);
+}
+
+function renderFrostTable() {
+  const table = document.getElementById('frost-table');
+  const thead = table.querySelector('thead');
+  headRow(thead, [['Threshold', null], ['Last freeze in spring', 'center', 5], ['First freeze in fall', 'center', 5], ['Frost-free days', 'center']]);
+  const labels = ['Earliest', '1 in 10 before', 'Median', '1 in 10 after', 'Latest'];
+  headRow(thead, ['', ...labels.map(label => [label, 'num']), ...labels.map(label => [label, 'num']), ['1 in 10 under / median / 1 in 10 over', 'num']]);
+  const tbody = table.querySelector('tbody');
+  C.thresholds.forEach(threshold => {
+    const item = C.summary(threshold);
+    const seasonDates = season => ['earliest', 'p10', 'p50', 'p90', 'latest'].map(key => C.monthDay(item[season][key]));
+    const row = addRow(tbody, [`≤ ${threshold} °F ${NAMES[threshold].toLowerCase()}`, ...seasonDates('last_spring'), ...seasonDates('first_fall'),
+      `${item.frost_free_days.p10} / ${item.frost_free_days.p50} / ${item.frost_free_days.p90}`], [null, ...Array(11).fill('num')]);
+    row.children[3].style.fontWeight = '600';
+    row.children[8].style.fontWeight = '600';
+  });
+  document.getElementById('frost-table-note').textContent =
+    `Based on ${F32.years.spring} springs and ${F32.years.fall} falls at 32 °F (${F28.years.spring} and ${F28.years.fall} at 28 °F, ${F24.years.spring} and ${F24.years.fall} at 24 °F), between ${P.period[0]} and ${P.period[1]}; years with too many missing readings are left out. The percentiles are the same dates as the 1 in 10 risk: 32 °F freezes after ${C.monthDay(F32.springRisk10)} in spring and before ${C.monthDay(F32.fallRisk10)} in fall each come in about 1 year of 10. The 28 °F and 24 °F rows run on the same dates for blossom damage and for the end of the growing season.`;
+}
+
+function renderRiskTables() {
+  const build = (id, dates, riskOf) => {
+    const table = document.getElementById(id);
+    headRow(table.querySelector('thead'), [['Date', null], ...C.thresholds.map(threshold => [`≤ ${threshold} °F`, 'num'])]);
+    const tbody = table.querySelector('tbody');
+    dates.forEach(([monthDay]) => {
+      const shares = C.thresholds.map(threshold => riskOf(threshold, monthDay));
+      const classes = shares.map(share => share >= 0.5 ? 'num risk-high' : share >= 0.25 ? 'num risk-mid' : share >= 0.1 ? 'num risk-low' : 'num');
+      addRow(tbody, [C.monthDay(monthDay), ...shares.map(percent)], [null, ...classes]);
+    });
+  };
+  build('spring-risk', springDates, (threshold, monthDay) => C.springRiskAfter(threshold, monthDay));
+  build('fall-risk', fallDates, (threshold, monthDay) => C.fallRiskBefore(threshold, monthDay));
+  document.getElementById('risk-lead').textContent =
+    `These tables turn the year-by-year dates into odds. Plant something that a 32 °F night would kill on ${C.monthDay('06-10')}, and a freeze follows in ${percent(C.springRiskAfter(32, '06-10'))} of years; wait until ${C.monthDay('06-30')} and it is ${percent(C.springRiskAfter(32, '06-30'))}. In fall, a 32 °F freeze has already come by ${C.monthDay('09-10')} in ${percent(C.fallRiskBefore(32, '09-10'))} of years and by ${C.monthDay('09-30')} in ${percent(C.fallRiskBefore(32, '09-30'))}. Shading marks 10% or more (yellow), 25% or more (orange), and 50% or more (red).`;
+  document.getElementById('risk-note').textContent =
+    `Each percentage is the share of the ${F32.years.spring} springs and ${F32.years.fall} falls (at 32 °F) between ${P.period[0]} and ${P.period[1]} with a usable record, counted from the year-by-year dates in the data, so every step is about 4%. Spring counts years whose last freeze at or below the temperature came after the date; fall counts years whose first one came before it.`;
+}
+
+function renderBloomText() {
+  document.getElementById('bloom-lead').textContent =
+    `The frost table's 28 °F and 24 °F rows are the ones that matter for fruit. At full bloom, 10% of the blossoms are killed at about 28 °F and nearly all at 22 to 25 °F. At Prairie the last 28 °F night is typically ${C.monthDay(F28.springMedian)} and 1 year in 10 has one after ${C.monthDay(F28.springRisk10)}; the last 24 °F night is typically ${C.monthDay(F24.springMedian)}, and 1 year in 10 has one after ${C.monthDay(F24.springRisk10)}. The date your trees reach full bloom is not recorded yet; read the 28 °F and 24 °F columns of the spring table at that date.`;
+}
+
+function renderMeaning() {
+  const list = document.getElementById('meaning');
+  const items = [
+    [`Bloom frost is the biggest orchard risk. `, `A night at 28 °F or colder comes after ${C.monthDay('05-20')} in ${percent(C.springRiskAfter(28, '05-20'))} of years, and after ${C.monthDay('06-10')} in ${percent(C.springRiskAfter(28, '06-10'))}, so some blossoms will meet a hard freeze in most years. Favor the later-blooming cultivars where there is a choice, and keep frost cloth or row cover on hand for the years it matters. <a href="https://ipm.ucanr.edu/agriculture/cherry/bacterial-canker/">UC IPM</a> also notes that bacterial canker is worse after spring freezes, and the inventory flags canker on many of the stone-fruit trees.`],
+    [`The late apples are a gamble. `, `The first 28 °F night arrives on ${C.monthDay(F28.fallMedian)} in a typical year and before ${C.monthDay(F28.fallRisk10)} in 1 year in 10; the first 24 °F night arrives on ${C.monthDay(F24.fallMedian)} in a typical year. Apples that ripen after about Oct 25 will often meet a hard freeze on the tree. See the ripening watch in the <a href="fy27_planting_plan.html">2027 planting plan</a>.`],
+    [`Tender garden plants need protection at both ends. `, `Wait until ${C.monthDay(F32.springRisk10)} to set out frost-tender plants (a 10% chance of a freeze afterward), and choose kinds that finish in about ${F32.freeDays.p10} days or less, since 1 year in 10 has a season that short. A freeze before ${C.monthDay(F32.fallRisk10)} comes in about 1 year of 10.`],
+    [`Summer freezes happen. `, `${percent(monthShare(5))} of years have a 32 °F night in June, ${percent(monthShare(7))} in August (${percent(monthShare(6))} in July), and ${percent(monthShare(8))} in September, so cover is not just a spring chore.`],
+    [`Cold air runs downhill. `, CLIMATE.notes[2]],
+    [`These are the cautious numbers. `, `They come from a measured station about ${fmt(P.distance_from_site_mi, 1)} miles away at nearly the same elevation. Nothing measured on the lot itself has shown it to be milder, so plan on them until your own log says otherwise.`]
+  ];
+  items.forEach(([lead, body]) => {
+    const li = element('li');
+    li.append(element('strong', lead));
+    const span = element('span');
+    span.innerHTML = body;
+    li.append(span);
+    list.append(li);
+  });
+}
+
+function drawFrostDays() {
+  const W = 720, H = 250, m = { l: 46, r: 12, t: 34, b: 26 };
+  const iw = W - m.l - m.r, ih = H - m.t - m.b, step = iw / 12, maxY = 31;
+  const x = index => m.l + (index + 0.5) * step, y = value => m.t + ih - value / maxY * ih;
+  const svg = chartFrame('frost-days', W, H,
+    `Average days a month with a low at or below 32 °F and 28 °F. In the months whose average night is at or below freezing (${monthRun(FREEZING_MONTHS, true)}), every month averages ${fmt(Math.min(...FREEZING_MONTHS.map(month => month.frostDays[32].days)), 0)} or more days at or below 32 °F, and freezes also occur in ${percent(monthShare(5))} of Junes, ${percent(monthShare(7))} of Augusts, and ${percent(monthShare(8))} of Septembers.`);
+  const a = monthPosition(m.l, step, F32.springMedian), b = monthPosition(m.l, step, F32.fallMedian);
+  svg.append(svgNode('rect', { x: a, y: m.t, width: b - a, height: ih, class: 'c-free-band' }));
+  for (let value = 0; value <= 30; value += 10) {
+    svg.append(svgNode('line', { x1: m.l, x2: W - m.r, y1: y(value), y2: y(value), class: value ? 'c-grid' : 'c-axis' }));
+    text(svg, m.l - 6, y(value) + 4, `${value}`, { 'text-anchor': 'end', class: 't-note' });
+  }
+  MONTH_ROWS.forEach((month, index) => {
+    const d32 = month.frostDays[32].days, d28 = month.frostDays[28].days;
+    svg.append(svgNode('rect', { x: x(index) - step * 0.28, y: y(d32), width: step * 0.56, height: y(0) - y(d32), class: 'c-f32' }));
+    svg.append(svgNode('rect', { x: x(index) - step * 0.14, y: y(d28), width: step * 0.28, height: y(0) - y(d28), class: 'c-f28' }));
+    text(svg, x(index), y(d32) - 4, d32 ? fmt(d32, 1) : '0', { 'text-anchor': 'middle', 'font-size': 10, class: 't-cold' });
+    text(svg, x(index), H - 8, month.name, { 'text-anchor': 'middle' });
+  });
+  text(svg, (a + b) / 2, m.t + 14, 'typical frost-free stretch', { 'text-anchor': 'middle', 'font-size': 10.5, class: 't-free' });
+  text(svg, (a + b) / 2, m.t + 27, `${C.monthDay(F32.springMedian)} to ${C.monthDay(F32.fallMedian)}`, { 'text-anchor': 'middle', 'font-size': 10.5, class: 't-free' });
+  svg.append(svgNode('rect', { x: m.l + 6, y: 6, width: 10, height: 10, class: 'c-f32' }));
+  text(svg, m.l + 21, 15, 'Days a month at or below 32 °F');
+  svg.append(svgNode('rect', { x: m.l + 230, y: 6, width: 10, height: 10, class: 'c-f28' }));
+  text(svg, m.l + 245, 15, 'at or below 28 °F');
+  document.getElementById('frost-days-host').append(svg);
+  document.getElementById('frost-days-note').textContent =
+    `Average number of nights a month with a low at or below the temperature, ${P.period[0]} to ${P.period[1]}, measured at the Prairie SNOTEL. The green band is the median frost-free stretch at 32 °F. The month table below also gives the share of years with at least one such night.`;
+}
+
+function drawTemperature() {
+  const W = 720, H = 262, m = { l: 46, r: 12, t: 32, b: 26 };
+  const iw = W - m.l - m.r, ih = H - m.t - m.b, step = iw / 12, maxY = 100;
+  const x = index => m.l + (index + 0.5) * step, y = value => m.t + ih - value / maxY * ih;
+  const svg = chartFrame('temperature', W, H,
+    `Average high and low temperature by month at Prairie. July is the warmest month, with an average high of ${Math.round(MONTH_ROWS[6].high)} °F and a low of ${Math.round(MONTH_ROWS[6].low)} °F. January is the coldest, with an average high of ${Math.round(MONTH_ROWS[0].high)} °F and a low of ${Math.round(MONTH_ROWS[0].low)} °F. The average night is at or below freezing in ${monthRun(FREEZING_MONTHS, true)}.`);
+  // Shade the runs of months whose average night is at or below freezing.
+  let run = null;
+  MONTH_ROWS.forEach((month, index) => {
+    if (month.low <= 32) { if (run === null) run = index; }
+    if ((month.low > 32 || index === 11) && run !== null) {
+      const end = month.low > 32 ? index : 12;
+      svg.append(svgNode('rect', { x: m.l + run * step, y: m.t, width: (end - run) * step, height: ih, class: 'c-dormant' }));
+      run = null;
+    }
+  });
+  for (let value = 0; value <= maxY; value += 20) {
+    svg.append(svgNode('line', { x1: m.l, x2: W - m.r, y1: y(value), y2: y(value), class: value ? 'c-grid' : 'c-axis' }));
+    text(svg, m.l - 6, y(value) + 4, `${value} °F`, { 'text-anchor': 'end', class: 't-note' });
+  }
+  svg.append(svgNode('line', { x1: m.l, x2: W - m.r, y1: y(32), y2: y(32), class: 'c-freezeline' }));
+  text(svg, x(6), y(32) + 15, 'freezing, 32 °F', { 'text-anchor': 'middle', 'font-size': 10.5, class: 't-cold halo' });
+  const top = MONTH_ROWS.map((month, index) => `${x(index).toFixed(1)},${y(month.high).toFixed(1)}`);
+  const bottom = MONTH_ROWS.map((month, index) => `${x(index).toFixed(1)},${y(month.low).toFixed(1)}`).reverse();
+  svg.append(svgNode('polygon', { points: [...top, ...bottom].join(' '), class: 'c-range' }));
+  const line = (key, className) => svg.append(svgNode('path', { d: MONTH_ROWS.map((month, index) => `${index ? 'L' : 'M'}${x(index).toFixed(1)},${y(month[key]).toFixed(1)}`).join(' '), class: className }));
+  line('high', 'c-high');
+  line('low', 'c-low');
+  MONTH_ROWS.forEach((month, index) => {
+    svg.append(svgNode('circle', { cx: x(index), cy: y(month.high), r: 3.5, class: 'c-high-dot' }));
+    svg.append(svgNode('circle', { cx: x(index), cy: y(month.low), r: 3.5, class: 'c-low-dot' }));
+    text(svg, x(index), y(month.high) - 7, `${Math.round(month.high)}`, { 'text-anchor': 'middle', 'font-size': 10, class: 'halo' });
+    text(svg, x(index), y(month.low) + 16, `${Math.round(month.low)}`, { 'text-anchor': 'middle', 'font-size': 10, class: 'halo' });
+    text(svg, x(index), H - 8, month.name, { 'text-anchor': 'middle' });
+  });
+  svg.append(svgNode('line', { x1: W - 330, x2: W - 310, y1: 11, y2: 11, class: 'c-high' }));
+  svg.append(svgNode('circle', { cx: W - 320, cy: 11, r: 3.5, class: 'c-high-dot' }));
+  text(svg, W - 304, 15, 'Average high (day)');
+  svg.append(svgNode('line', { x1: W - 170, x2: W - 150, y1: 11, y2: 11, class: 'c-low' }));
+  svg.append(svgNode('circle', { cx: W - 160, cy: 11, r: 3.5, class: 'c-low-dot' }));
+  text(svg, W - 144, 15, 'Average low (night)');
+  document.getElementById('temperature-host').append(svg);
+}
+
+const LONG_MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+// "Oct to Apr" (or "October through April" when long) for a run of months that may wrap past December.
+function monthRun(rows, long = false) {
+  const present = new Set(rows.map(month => month.month));
+  if (present.size === 12) return 'all year';
+  const name = month => long ? LONG_MONTHS[month.month - 1] : month.name;
+  const starts = rows.filter(month => !present.has((month.month + 10) % 12 + 1));
+  const ends = rows.filter(month => !present.has(month.month % 12 + 1));
+  return starts.length === 1 && starts[0] !== ends[0] ? `${name(starts[0])} ${long ? 'through' : 'to'} ${name(ends[0])}` : rows.map(name).join(', ');
+}
+function renderTemperatureText() {
+  const warm = MONTH_ROWS.reduce((best, month) => month.high > best.high ? month : best);
+  const cold = MONTH_ROWS.reduce((best, month) => month.low < best.low ? month : best);
+  const freezing = FREEZING_MONTHS;
+  const swing = MONTH_ROWS.slice(5, 9).map(month => month.high - month.low);
+  document.getElementById('temperature-lead').textContent =
+    `${LONG_MONTHS[warm.month - 1]} is the warmest month, with days averaging ${Math.round(warm.high)} °F and nights ${Math.round(warm.low)} °F, and ${LONG_MONTHS[cold.month - 1]} the coldest, at ${Math.round(cold.high)} °F by day and ${Math.round(cold.low)} °F by night. The average night is at or below freezing in ${freezing.length} months of the year (${monthRun(freezing)}), and even from June to September the nights run ${Math.round(Math.min(...swing))} to ${Math.round(Math.max(...swing))} degrees below the days.`;
+  document.getElementById('temperature-note').textContent =
+    `Average of the daily highs and lows, ${P.period[0]} to ${P.period[1]}, measured at the Prairie SNOTEL. The shaded months are the ones whose average night is at or below 32 °F. Compare the rainfall chart in the water-harvesting plan, which uses the same months.`;
+  const cold2 = P.annual_extreme_min;
+  const old = C.source('coop-prairie-historic').annual_extreme_min;
+  const prism = C.source('prism-lot').annual_extreme_min;
+  const note = document.getElementById('winter-note');
+  note.innerHTML = '';
+  note.append(element('strong', 'Winter cold. '));
+  note.append(`The coldest night of the year averages ${degF(cold2.mean_f)} over ${cold2.years} winters, which is USDA zone ${cold2.zone}. The coldest of those winters bottomed out at ${degF(cold2.coldest_f)} (${longDate(cold2.coldest_on)}), and the station's lowest reading since 1988 is ${degF(cold2.record_low_f)} (${longDate(cold2.record_low_on)}). The old Prairie weather station, from 1926 to 1941, averaged ${degF(old.mean_f)} (zone ${old.zone}) and recorded ${degF(old.coldest_f)} on ${longDate(old.coldest_on)}, so the recent record is not a ceiling on how cold a bad winter can get. The PRISM model, which runs warmer at night, puts the lot at ${degF(prism.mean_f)} (zone ${prism.zone}); zone numbers here are estimates from these readings.`);
+}
+
+function drawDaylight() {
+  const W = 720, H = 250, m = { l: 46, r: 12, t: 32, b: 26 };
+  const iw = W - m.l - m.r, ih = H - m.t - m.b, step = iw / 12, maxY = 16;
+  const x = index => m.l + (index + 0.5) * step, y = value => m.t + ih - value / maxY * ih;
+  const days = CLIMATE.daylight.months;
+  const june = days[5], december = days[11];
+  const svg = chartFrame('daylight', W, H,
+    `Average hours of daylight by month at Prairie, from ${fmt(december.mean_hours, 1)} hours in December to ${fmt(june.mean_hours, 1)} hours in June. The typical frost-free stretch at 32 °F, ${C.monthDay(F32.springMedian)} to ${C.monthDay(F32.fallMedian)}, falls in the long days.`);
+  const a = monthPosition(m.l, step, F32.springMedian), b = monthPosition(m.l, step, F32.fallMedian);
+  svg.append(svgNode('rect', { x: a, y: m.t, width: b - a, height: ih, class: 'c-free-band' }));
+  for (let value = 0; value <= maxY; value += 4) {
+    svg.append(svgNode('line', { x1: m.l, x2: W - m.r, y1: y(value), y2: y(value), class: value ? 'c-grid' : 'c-axis' }));
+    text(svg, m.l - 6, y(value) + 4, `${value} h`, { 'text-anchor': 'end', class: 't-note' });
+  }
+  days.forEach((month, index) => {
+    svg.append(svgNode('rect', { x: x(index) - step * 0.28, y: y(month.mean_hours), width: step * 0.56, height: y(0) - y(month.mean_hours), class: 'c-daylight' }));
+    text(svg, x(index), y(month.mean_hours) - 4, fmt(month.mean_hours, 1), { 'text-anchor': 'middle', 'font-size': 10, class: 't-sun' });
+    text(svg, x(index), H - 8, MONTHS[index], { 'text-anchor': 'middle' });
+  });
+  text(svg, (a + b) / 2, y(6.6), 'typical frost-free stretch', { 'text-anchor': 'middle', 'font-size': 10.5, class: 't-free halo' });
+  text(svg, (a + b) / 2, y(5.2), `${C.monthDay(F32.springMedian)} to ${C.monthDay(F32.fallMedian)}`, { 'text-anchor': 'middle', 'font-size': 10.5, class: 't-free halo' });
+  svg.append(svgNode('rect', { x: m.l + 6, y: 6, width: 10, height: 10, class: 'c-daylight' }));
+  text(svg, m.l + 21, 15, 'Average hours of daylight, sunrise to sunset');
+  document.getElementById('daylight-host').append(svg);
+}
+
+function renderDaylightText() {
+  const days = CLIMATE.daylight.months;
+  const cross = CLIMATE.daylight.crossings;
+  const key = id => CLIMATE.daylight.key_dates.find(item => item.id === id);
+  const juneDay = C.hoursText(key('june-solstice').day_length_hours), decDay = C.hoursText(key('december-solstice').day_length_hours);
+  document.getElementById('daylight-lead').textContent =
+    `The sun is up ${juneDay} at the June solstice and ${decDay} at the December solstice. Days are at least 10 hours long from ${C.monthDay(cross[10][0])} to ${C.monthDay(cross[10][1])}, at least 12 hours from ${C.monthDay(cross[12][0])} to ${C.monthDay(cross[12][1])}, at least 14 hours from ${C.monthDay(cross[14][0])} to ${C.monthDay(cross[14][1])}, and at least 15 hours from ${C.monthDay(cross[15][0])} to ${C.monthDay(cross[15][1])}. The typical frost-free stretch at 32 °F (${C.monthDay(F32.springMedian)} to ${C.monthDay(F32.fallMedian)}) opens on the longest days of the year, and days average ${fmt(days[5].mean_hours, 1)} hours in June but ${fmt(days[8].mean_hours, 1)} in September, so the growing season runs mostly on long days and ends as they shrink.`;
+  document.getElementById('daylight-note').textContent =
+    `Average of the day lengths (sunrise to sunset) for every day of each month, computed for the lot's latitude (${fmt(CLIMATE.site.latitude, 4)}° N). The green band is the typical frost-free stretch at 32 °F. Day length also tells many plants when to flower, bulb, and go dormant.`;
+  const tbody = document.querySelector('#sun-table tbody');
+  const COMPASS = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+  const direction = azimuth => `${COMPASS[Math.round(azimuth / 22.5) % 16]} ${Math.round(azimuth)}°`;
+  CLIMATE.daylight.key_dates.forEach(item => {
+    addRow(tbody, [
+      `${item.label}, ${longDate(item.date)}`, `${C.clock12(item.sunrise)} ${item.clock}`, C.clock12(item.solar_noon), C.clock12(item.sunset),
+      C.hoursText(item.day_length_hours), `${fmt(item.noon_altitude_deg, 1)}°`,
+      `${direction(item.sunrise_azimuth_deg)} / ${direction(item.sunset_azimuth_deg)}`
+    ], [null, 'num', 'num', 'num', 'num', 'num', null]);
+  });
+  document.getElementById('sun-note').textContent =
+    `Clock times are local (Mountain Daylight Time from March through October, Mountain Standard Time in December) for the lot center. Noon sun height is the angle above the horizon, and the directions are compass bearings from north (90° is due east, 270° due west). A flat horizon is assumed; the real sun clears the hills and trees later and sets behind them sooner. The December noon sun stands only ${fmt(key('december-solstice').noon_altitude_deg, 0)}° up, so a 10 ft tree casts a shadow about ${fmt(10 / Math.tan(key('december-solstice').noon_altitude_deg * Math.PI / 180), 0)} ft long at midday then, against about ${fmt(10 / Math.tan(key('june-solstice').noon_altitude_deg * Math.PI / 180), 0)} ft in June.`;
+}
+
+function renderMonthTable() {
+  const tbody = document.querySelector('#month-table tbody');
+  MONTH_ROWS.forEach((month, index) => {
+    const water = WATER.months[index];
+    addRow(tbody, [month.name, fmt(month.high, 1), fmt(month.low, 1), fmt(month.frostDays[32].days, 1), `${month.frostDays[32].yearsPct}%`,
+      fmt(month.frostDays[28].days, 1), fmt(month.daylight.mean_hours, 2), fmt(water.precipitation_in, 2), fmt(water.et0_in, 2)],
+      [null, 'num', 'num', 'num', 'num', 'num', 'num', 'num', 'num']);
+  });
+  const meanHigh = MONTH_ROWS.reduce((sum, month) => sum + month.high, 0) / 12;
+  const meanLow = MONTH_ROWS.reduce((sum, month) => sum + month.low, 0) / 12;
+  const sum = key => MONTH_ROWS.reduce((total, month) => total + month.frostDays[key].days, 0);
+  const tfoot = document.querySelector('#month-table tfoot');
+  const row = addRow(tfoot, ['Year', fmt(meanHigh, 1), fmt(meanLow, 1), fmt(sum(32), 0), '', fmt(sum(28), 0),
+    fmt(CLIMATE.daylight.months.reduce((total, month) => total + month.mean_hours, 0) / 12, 2),
+    fmt(WATER.months.reduce((total, month) => total + month.precipitation_in, 0), 1), fmt(WATER.months.reduce((total, month) => total + month.et0_in, 0), 1)],
+    [null, 'num', 'num', 'num', 'num', 'num', 'num', 'num', 'num']);
+  [...row.children].forEach(cell => { cell.style.fontWeight = '600'; });
+  document.getElementById('month-note').textContent =
+    `Temperatures and frost days are measured at the Prairie SNOTEL, ${P.period[0]} to ${P.period[1]}. The Year row averages the temperatures and daylight and adds up the frost days, precipitation, and ET₀. Precipitation is the PRISM 1991–2020 normal and ET₀ is ERA5 reference evapotranspiration, both from the water-harvesting plan and sampled near the SNOTEL (43.50° N, 115.57° W). The same table is the SQL view site_climate_months.`;
+}
+
+function renderAgreement() {
+  const tbody = document.querySelector('#agree-table tbody');
+  const kindText = source => source.kind === 'station' ? 'measured' : 'model';
+  CLIMATE.sources.forEach(source => {
+    const item = C.summary(32, source);
+    const label = element('div');
+    label.append(element('strong', source.id === P.id ? 'Prairie SNOTEL (used on this page)' : source.id === 'prism-lot' ? 'PRISM model at the lot' : source.id === 'daymet-lot' ? 'Daymet model at the lot' : source.id === 'coop-prairie-historic' ? 'Prairie weather station, 1926 to 1941' : source.label));
+    label.append(element('div', `${kindText(source)}, ${fmt(source.elevation_ft)} ft, ${source.period[0]} to ${source.period[1]}`, 'source-note'));
+    addRow(tbody, [label, C.monthDay(item.last_spring.p50), C.monthDay(item.first_fall.p50),
+      `${item.frost_free_days.p50} (${item.frost_free_days.p10} – ${item.frost_free_days.p90})`,
+      degF(source.annual_extreme_min.mean_f), source.annual_extreme_min.zone], [null, 'num', 'num', 'num', 'num', 'num']);
+  });
+  const [soilLow, soilHigh] = WATER.soil.frostFree;
+  const nrcs = element('div');
+  nrcs.append(element('strong', 'NRCS soil survey for this soil'), element('div', `Simonton loam, map unit 149; a range, not dates`, 'source-note'));
+  addRow(tbody, [nrcs, '—', '—', `${soilLow} – ${soilHigh}`, '—', '—'], [null, 'num', 'num', 'num', 'num', 'num']);
+  const prism = C.summary(32, C.source('prism-lot')).frost_free_days.p50 - F32.freeDays.p50;
+  const daymet = C.summary(32, C.source('daymet-lot')).frost_free_days.p50 - F32.freeDays.p50;
+  const inside = F32.freeDays.p50 >= soilLow && F32.freeDays.p50 <= soilHigh;
+  document.getElementById('agree-lead').textContent =
+    `The measured record and the soil survey agree: a typical season of ${F32.freeDays.p50} days is ${inside ? 'inside' : 'outside'} the survey's ${soilLow} to ${soilHigh}. The two climate models, which smooth over mountain valleys where cold air pools on clear calm nights, put the season ${weeks(prism)} (PRISM) and ${weeks(daymet)} (Daymet) longer, and warmer nights by 2 to 4 °F. The 1926 to 1941 station is colder than all of them. That spread is the real uncertainty about the orchard itself: it stands ${fmt(P.elevation_ft - siteElevation)} ft below the station on a slope that drains cold air northwest, so it may do better than the station; how much better, only a thermometer on the lot can say.`;
+  document.getElementById('agree-note').textContent =
+        `Typical means the median: the middle date, or the middle season length, of the years in each record. The season length is counted year by year, so it is not always the exact gap between the two typical dates. The coldest night is the average, over the winters in each record, of the lowest reading of the year; zones use the USDA 5 °F half-zone bands. The models are built from weather-station data and smooth over mountain valleys, where clear, calm nights let cold air pool, so they understate frost here.`;
+}
+
+function renderLog() {
+  const tbody = document.getElementById('log-body');
+  for (let row = 0; row < 10; row++) addRow(tbody, ['', '', '', '', '']);
+}
+
+renderSpecs();
+renderFrostText();
+drawFrostCalendar();
+renderFrostTable();
+renderRiskTables();
+renderBloomText();
+renderMeaning();
+drawFrostDays();
+drawTemperature();
+renderTemperatureText();
+drawDaylight();
+renderDaylightText();
+renderMonthTable();
+renderAgreement();
+renderLog();
+</script>
+</body>
+</html>

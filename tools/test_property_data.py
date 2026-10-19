@@ -9,6 +9,7 @@ import tempfile
 import unittest
 
 from property_data import build, check, load_data, query, source_digest, validate_data
+from site_climate import parse_month_day
 from site_grid import SiteGrid
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -22,6 +23,15 @@ def add_plan_item_with_dayton_profile(orchard):
     item = copy.deepcopy(plan_item(orchard, "dayton"))
     item.update(id="dayton-two", code="DYT", quantity=1, spots=["R13-C1"])
     orchard["rules"]["PLANTING_PLAN"]["items"].append(item)
+
+
+def late_spring_at_24_f(climate):
+    """Put every 24 F spring date on Jun 30, keeping the frost-free days consistent so only the order between thresholds is wrong."""
+    summary = climate["sources"][0]["frost"]["summary"]["24"]
+    summary["last_spring"].update(earliest="06-30", p10="06-30", p50="06-30", p90="06-30", latest="06-30")
+    shortest = parse_month_day(summary["first_fall"]["earliest"]) - parse_month_day("06-30")
+    longest = parse_month_day(summary["first_fall"]["latest"]) - parse_month_day("06-30")
+    summary["frost_free_days"].update(shortest=shortest, p10=shortest, p50=shortest, p90=longest, longest=longest)
 
 
 class PropertyDataTest(unittest.TestCase):
@@ -160,6 +170,53 @@ class PropertyDataTest(unittest.TestCase):
         sample = query("SELECT * FROM terrain_samples WHERE x_ft = 0 AND y_ft = 50", self.root)[0]
         self.assertAlmostEqual(sample["elevation_m"], 1444.52)
 
+    def test_site_climate_is_queryable(self):
+        counts = {"climate_sources": 4, "temperature_months": 48, "frost_summary": 16, "frost_days": 48, "frost_years": 124,
+                  "frost_thresholds": 4, "daylight_months": 12, "daylight_crossings": 4, "sun_key_dates": 4, "climate_site": 1}
+        for table, expected in counts.items():
+            with self.subTest(table=table):
+                self.assertEqual(query(f"SELECT COUNT(*) AS n FROM {table}", self.root)[0]["n"], expected)
+        primary = query("SELECT id, kind, hardiness_zone, mean_annual_extreme_min_f, record_low_f, period_start, period_end "
+                        "FROM climate_sources WHERE role = 'primary'", self.root)
+        self.assertEqual(primary, [{"id": "snotel-prairie", "kind": "station", "hardiness_zone": "5b", "mean_annual_extreme_min_f": -10.9,
+                                    "record_low_f": -32.0, "period_start": 1991, "period_end": 2020}])
+        months = query("SELECT * FROM site_climate_months ORDER BY month", self.root)
+        self.assertEqual([m["month"] for m in months], list(range(1, 13)))
+        july = months[6]
+        self.assertEqual((july["high_f"], july["low_f"], july["daylight_hours"], july["precipitation_in"]), (86.4, 49.0, 15.03, 0.31))
+        self.assertEqual(months[4]["frost_days_32f"], 10.0)
+        # Freezes come in nearly every June and September, and in some Augusts, but almost never in July.
+        self.assertEqual([m["years_with_32f_pct"] for m in months[5:9]], [89, 3, 15, 89])
+        freeze = query("SELECT spring_p50, spring_p90, fall_p10, fall_p50, free_days_p10, free_days_p50, free_days_p90 FROM frost_summary "
+                       "WHERE source_id = 'snotel-prairie' AND threshold_f = 32", self.root)[0]
+        self.assertEqual(freeze, {"spring_p50": "06-17", "spring_p90": "06-24", "fall_p10": "08-31", "fall_p50": "09-09",
+                                  "free_days_p10": 74, "free_days_p50": 90, "free_days_p90": 113})
+        latest = query("SELECT year, last_spring, frost_free_days FROM frost_years WHERE source_id = 'snotel-prairie' AND threshold_f = 32 "
+                       "ORDER BY last_spring_day DESC LIMIT 1", self.root)[0]
+        self.assertEqual(latest, {"year": 2016, "last_spring": "2016-07-11", "frost_free_days": 64})
+        shortest = query("SELECT MIN(frost_free_days) AS days, COUNT(frost_free_days) AS years FROM frost_years "
+                         "WHERE source_id = 'snotel-prairie' AND threshold_f = 32", self.root)[0]
+        self.assertEqual(shortest, {"days": 50, "years": 27})
+        # The gridded models run warmer at night than the measured station, and the 1930s record runs colder.
+        nights = query("SELECT source_id FROM temperature_months WHERE month = 1 ORDER BY low_f", self.root)
+        self.assertEqual([r["source_id"] for r in nights], ["coop-prairie-historic", "snotel-prairie", "prism-lot", "daymet-lot"])
+        sun = query("SELECT label, sunrise, sunset, day_length_hours, noon_altitude_deg FROM sun_key_dates ORDER BY date", self.root)
+        self.assertEqual([r["label"] for r in sun], ["March equinox", "June solstice", "September equinox", "December solstice"])
+        self.assertEqual((sun[1]["sunrise"], sun[1]["sunset"], sun[1]["day_length_hours"], sun[1]["noon_altitude_deg"]), ("06:02", "21:27", 15.42, 70.0))
+
+    def test_database_allows_only_one_primary_climate_source(self):
+        database = build(self.root, web=False)
+        with contextlib.closing(sqlite3.connect(database)) as connection:
+            with self.assertRaises(sqlite3.IntegrityError):
+                connection.execute("UPDATE climate_sources SET role = 'primary' WHERE id = 'prism-lot'")
+
+    def test_query_rebuilds_after_a_climate_change(self):
+        path = self.root / "data" / "climate.json"
+        climate = json.loads(path.read_text(encoding="utf-8"))
+        climate["site"]["retrieved_on"] = "2026-10-19"
+        path.write_text(json.dumps(climate), encoding="utf-8")
+        self.assertEqual(query("SELECT retrieved_on FROM climate_site", self.root)[0]["retrieved_on"], "2026-10-19")
+
     def test_database_foreign_keys_and_integrity(self):
         database = build(self.root, web=False)
         with contextlib.closing(sqlite3.connect(database)) as connection:
@@ -281,6 +338,71 @@ class PropertyDataTest(unittest.TestCase):
             ("water_harvesting", lambda d: d["months"].pop(), "12"),
             ("water_harvesting", lambda d: d["months"].reverse(), "order"),
             ("water_harvesting", lambda d: d["catchments"][0].update(runoff_factor=1.5), "runoff"),
+            ("climate", lambda d: d["site"].update(latitude=44.0), "match the lot center"),
+            ("climate", lambda d: d["site"].update(normals_period=[2020, 1991]), "must not end before it starts"),
+            ("climate", lambda d: d["frost"].update(thresholds_f=[32, 36, 28, 24]), "warmest to coldest"),
+            ("climate", lambda d: d["frost"]["labels"].pop("24"), "one label"),
+            ("climate", lambda d: d["sources"][1].update(role="primary"), "exactly one primary"),
+            ("climate", lambda d: d["sources"][0].update(role="check"), "exactly one primary"),
+            ("climate", lambda d: d["sources"][0].update(url="http://example.com"), "url must use https"),
+            ("climate", lambda d: d["sources"][0].update(kind="guess"), "kind must be station or model"),
+            ("climate", lambda d: d["sources"][3].update(period=[1941, 1926]), "must not end before it starts"),
+            ("climate", lambda d: d["sources"][0]["temperature"]["low_f"].__setitem__(0, 90), "average low must be below"),
+            ("climate", lambda d: d["sources"][0]["temperature"]["high_f"].pop(), "12 monthly values"),
+            ("climate", lambda d: d["sources"][0]["annual_extreme_min"].update(zone="6a"), "hardiness zone does not match"),
+            ("climate", lambda d: d["sources"][0]["annual_extreme_min"].update(coldest_on="2025-01-01"), "inside the source period"),
+            ("climate", lambda d: d["sources"][0]["annual_extreme_min"].update(record_low_f=-5), "cannot be warmer"),
+            ("climate", lambda d: d["sources"][0]["annual_extreme_min"].pop("record_low_on"), "go together"),
+            ("climate", lambda d: d["sources"][1]["frost"]["summary"].pop("24"), "needs every threshold"),
+            ("climate", lambda d: d["sources"][0]["frost"]["summary"]["32"]["first_fall"].update(p10="08-01"), "earliest to latest"),
+            ("climate", lambda d: d["sources"][0]["frost"]["summary"]["32"]["last_spring"].update(p50="02-30"), "must be MM-DD"),
+            ("climate", lambda d: d["sources"][0]["frost"]["summary"]["32"]["frost_free_days"].update(p50=10), "shortest to longest"),
+            ("climate", lambda d: d["sources"][0]["frost"]["summary"]["32"]["last_spring"].update(p50="06-18"), "does not match the yearly dates"),
+            ("climate", lambda d: d["sources"][0]["frost"]["summary"]["28"].update(years_both=99), "years_both cannot exceed"),
+            ("climate", late_spring_at_24_f, "median last_spring dates must move"),
+            ("climate", lambda d: d["sources"][0]["frost"]["years"][0]["last_spring"].update({"32": "1994-08-01"}), "must fall from"),
+            ("climate", lambda d: d["sources"][0]["frost"]["years"][0]["first_fall"].update({"32": "1994-09-01"}), "disagree between thresholds"),
+            ("climate", lambda d: d["sources"][0]["frost"]["years"][1].update(year=1994), "oldest first"),
+            ("climate", lambda d: d["sources"][0]["frost"]["years"][0]["last_spring"].pop("24"), "needs every threshold"),
+            ("climate", lambda d: d["sources"][0]["frost"].pop("years"), "missing fields"),
+            ("climate", lambda d: d["sources"][0]["frost"]["monthly_days"]["28"]["avg_days"].__setitem__(0, 31.0), "colder threshold cannot have more"),
+            ("climate", lambda d: d["sources"][0]["frost"]["monthly_days"]["32"]["avg_days"].__setitem__(6, 31.5), "more frost days or years than it can"),
+            ("climate", lambda d: d["sources"][0]["frost"]["monthly_days"]["32"]["years_with_pct"].__setitem__(7, 0), "frost days but no year with one"),
+            ("climate", lambda d: d["daylight"]["months"][5].update(mean_hours=14.0), "does not match the site latitude"),
+            ("climate", lambda d: d["daylight"]["months"].reverse(), "January-to-December order"),
+            ("climate", lambda d: d["daylight"]["crossings"].update({"14": ["04-01", "08-14"]}), "do not match the site latitude"),
+            ("climate", lambda d: d["daylight"]["key_dates"][1].update(sunrise="07:30"), "does not match the site location"),
+            ("climate", lambda d: d["daylight"]["key_dates"][1].update(day_length_hours=16.5), "does not match the site location"),
+            ("climate", lambda d: d["daylight"]["key_dates"][1].update(date="2027-06-21"), "reference year"),
+            ("climate", lambda d: d["daylight"]["key_dates"][1].update(sunrise="6:02"), "must be HH:MM"),
+            ("climate", lambda d: d.update(notes=[]), "notes must be a list"),
+            ("climate", lambda d: d.update(source_page=None), "source_page must be nonempty text"),
+            ("climate", lambda d: d.update(site=None), "climate site must be an object"),
+            ("climate", lambda d: d["site"].update(elevation_ft=47), "within 30 ft"),
+            ("climate", lambda d: d["site"].update(normals_period=[1990, 2020]), "must match the site's normals period"),
+            ("climate", lambda d: d["frost"].update(labels=None), "frost labels must be an object"),
+            ("climate", lambda d: d["frost"].update(definitions=None), "frost definitions must be an object"),
+            ("climate", lambda d: d["sources"].pop(1), "need prism-lot"),
+            ("climate", lambda d: d["sources"][3].update(id="old-station"), "need coop-prairie-historic"),
+            ("climate", lambda d: d["sources"][1].update(distance_from_site_mi=9.9), "distance_from_site_mi should be about"),
+            ("climate", lambda d: d["sources"][0]["annual_extreme_min"].update(years=31), "more coldest-night years"),
+            ("climate", lambda d: d["sources"][0]["frost"].update(summary=None), "frost summary must be an object"),
+            ("climate", lambda d: d["sources"][1]["frost"]["summary"]["32"]["first_fall"].update(earliest="06-17"), "on or after Aug 1"),
+            ("climate", lambda d: d["sources"][1]["frost"]["summary"]["32"]["last_spring"].update(latest="12-31"), "on or before Jul 31"),
+            ("climate", lambda d: d["sources"][1]["frost"]["summary"]["32"]["frost_free_days"].update(longest=9999), "fit between the spring and fall dates"),
+            ("climate", lambda d: d["sources"][1]["frost"]["summary"]["32"]["frost_free_days"].update(shortest=7), "fit between the spring and fall dates"),
+            ("climate", lambda d: d["sources"][1]["frost"]["summary"]["32"].update(years_spring=99, years_fall=99, years_both=99), "more years with a freeze date"),
+            ("climate", lambda d: d["sources"][1]["frost"]["summary"]["32"].update(years_both=7), "too few years with both dates"),
+            ("climate", lambda d: d["daylight"].update(months=None), "months must be a list of records"),
+            ("climate", lambda d: d["daylight"]["months"][3].pop("mean_hours"), "missing fields"),
+            ("climate", lambda d: d["daylight"].update(crossings=None), "crossings must be an object"),
+            ("climate", lambda d: d["daylight"]["crossings"].pop("15"), "need 15 hours"),
+            ("climate", lambda d: d["daylight"].update(key_dates=None), "key dates must be a list"),
+            ("climate", lambda d: d["daylight"]["key_dates"].pop(1), "need june-solstice"),
+            ("climate", lambda d: d["daylight"]["key_dates"][3].update(id="midwinter"), "need december-solstice"),
+            ("climate", lambda d: d["daylight"]["key_dates"][1].update(clock="MST"), "the lot keeps Mountain Time"),
+            ("climate", lambda d: d["notes"].pop(), "at least three notes"),
+            ("climate", lambda d: d["notes"].__setitem__(2, "Plant nothing before June."), "about cold air"),
             ("inventory", lambda d: d["records"][0].update(quantity=0), "quantity"),
             ("orchard", lambda d: d["rules"]["UNIDENTIFIED_APPLES"]["candidates"][2].update(slots=1), "slots disagree"),
             ("orchard", lambda d: d["rules"]["UNIDENTIFIED_APPLES"]["candidates"].pop(3), "omit"),
@@ -362,6 +484,49 @@ class PropertyDataTest(unittest.TestCase):
             change(data[collection])
             with self.subTest(collection=collection, message=message), self.assertRaisesRegex(ValueError, message):
                 validate_data(data)
+
+    def test_malformed_climate_records_fail_with_a_clear_error_not_a_crash(self):
+        def sampled_paths(node, prefix=()):
+            """Every field, keeping only the first and last of a long list or of numbered keys (thresholds, hours), which behave alike."""
+            yield prefix
+            if isinstance(node, dict):
+                keys = list(node)
+                if len(keys) > 3 and all(key.isdigit() for key in keys):
+                    keys = [keys[0], keys[-1]]
+                children = [(key, node[key]) for key in keys]
+            elif isinstance(node, list):
+                indexes = range(len(node)) if len(node) <= 2 else (0, len(node) - 1)
+                children = [(index, node[index]) for index in indexes]
+            else:
+                return
+            for key, child in children:
+                yield from sampled_paths(child, prefix + (key,))
+
+        def at(climate, path):
+            for step in path:
+                climate = climate[step]
+            return climate
+
+        replacements = {"null": None, "string": "x", "empty object": {}, "empty list": []}
+        tried = 0
+        for path in sampled_paths(self.data["climate"]):
+            if not path:
+                continue
+            container = isinstance(at(self.data["climate"], path), (dict, list))
+            for kind in (("delete", *replacements) if container else ("delete", "null")):
+                climate = copy.deepcopy(self.data["climate"])
+                parent = at(climate, path[:-1])
+                if kind == "delete":
+                    parent.pop(path[-1])
+                else:
+                    parent[path[-1]] = copy.deepcopy(replacements[kind])
+                tried += 1
+                with self.subTest(path=path, kind=kind):
+                    try:
+                        validate_data({**self.data, "climate": climate})
+                    except ValueError:
+                        pass
+        self.assertGreater(tried, 300, "The walk should reach most of the climate record")
 
     def test_not_pollinated_by_names_must_match_a_living_or_planned_cultivar(self):
         # The names the shipped plan relies on, in any letter case, and a planned cultivar's name all validate.

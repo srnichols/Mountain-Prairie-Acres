@@ -158,6 +158,56 @@ CREATE TABLE water_observations (
     observed_on TEXT NOT NULL, observation_type TEXT NOT NULL,
     value REAL, unit TEXT, notes TEXT NOT NULL
 ) STRICT;
+CREATE TABLE climate_site (
+    name TEXT PRIMARY KEY, latitude REAL NOT NULL, longitude REAL NOT NULL, elevation_ft REAL NOT NULL,
+    elevation_note TEXT NOT NULL, time_zone TEXT NOT NULL, normals_start INTEGER NOT NULL, normals_end INTEGER NOT NULL,
+    retrieved_on TEXT NOT NULL, CHECK (normals_end >= normals_start)
+) STRICT;
+CREATE TABLE frost_thresholds (threshold_f INTEGER PRIMARY KEY, label TEXT NOT NULL) STRICT;
+CREATE TABLE climate_sources (
+    id TEXT PRIMARY KEY, role TEXT NOT NULL CHECK (role IN ('primary', 'check')),
+    kind TEXT NOT NULL CHECK (kind IN ('station', 'model')), label TEXT NOT NULL,
+    latitude REAL NOT NULL, longitude REAL NOT NULL, elevation_ft REAL NOT NULL, distance_from_site_mi REAL NOT NULL,
+    period_start INTEGER NOT NULL, period_end INTEGER NOT NULL, url TEXT NOT NULL, retrieved_from TEXT NOT NULL, note TEXT NOT NULL,
+    coldest_night_years INTEGER NOT NULL, mean_annual_extreme_min_f REAL NOT NULL, hardiness_zone TEXT NOT NULL,
+    coldest_f REAL NOT NULL, coldest_on TEXT NOT NULL, mildest_f REAL NOT NULL, record_low_f REAL, record_low_on TEXT,
+    CHECK (period_end >= period_start)
+) STRICT;
+CREATE UNIQUE INDEX one_primary_climate_source ON climate_sources (role) WHERE role = 'primary';
+CREATE TABLE temperature_months (
+    source_id TEXT NOT NULL REFERENCES climate_sources(id), month INTEGER NOT NULL CHECK (month BETWEEN 1 AND 12),
+    high_f REAL NOT NULL, low_f REAL NOT NULL, PRIMARY KEY (source_id, month), CHECK (low_f < high_f)
+) STRICT;
+CREATE TABLE frost_summary (
+    source_id TEXT NOT NULL REFERENCES climate_sources(id), threshold_f INTEGER NOT NULL REFERENCES frost_thresholds(threshold_f),
+    spring_earliest TEXT NOT NULL, spring_p10 TEXT NOT NULL, spring_p50 TEXT NOT NULL, spring_p90 TEXT NOT NULL, spring_latest TEXT NOT NULL,
+    fall_earliest TEXT NOT NULL, fall_p10 TEXT NOT NULL, fall_p50 TEXT NOT NULL, fall_p90 TEXT NOT NULL, fall_latest TEXT NOT NULL,
+    free_days_shortest INTEGER NOT NULL, free_days_p10 INTEGER NOT NULL, free_days_p50 INTEGER NOT NULL,
+    free_days_p90 INTEGER NOT NULL, free_days_longest INTEGER NOT NULL,
+    years_spring INTEGER NOT NULL, years_fall INTEGER NOT NULL, years_both INTEGER NOT NULL,
+    PRIMARY KEY (source_id, threshold_f)
+) STRICT;
+CREATE TABLE frost_days (
+    source_id TEXT NOT NULL REFERENCES climate_sources(id), threshold_f INTEGER NOT NULL REFERENCES frost_thresholds(threshold_f),
+    month INTEGER NOT NULL CHECK (month BETWEEN 1 AND 12), avg_days REAL NOT NULL CHECK (avg_days BETWEEN 0 AND 31),
+    years_with_pct INTEGER NOT NULL CHECK (years_with_pct BETWEEN 0 AND 100), PRIMARY KEY (source_id, threshold_f, month)
+) STRICT;
+CREATE TABLE frost_years (
+    source_id TEXT NOT NULL REFERENCES climate_sources(id), year INTEGER NOT NULL,
+    threshold_f INTEGER NOT NULL REFERENCES frost_thresholds(threshold_f), last_spring TEXT, first_fall TEXT,
+    last_spring_day INTEGER, first_fall_day INTEGER, frost_free_days INTEGER CHECK (frost_free_days >= 0),
+    PRIMARY KEY (source_id, year, threshold_f)
+) STRICT;
+CREATE TABLE daylight_months (
+    month INTEGER PRIMARY KEY CHECK (month BETWEEN 1 AND 12), mean_hours REAL NOT NULL,
+    shortest_hours REAL NOT NULL, longest_hours REAL NOT NULL, CHECK (shortest_hours <= mean_hours AND mean_hours <= longest_hours)
+) STRICT;
+CREATE TABLE daylight_crossings (hours INTEGER PRIMARY KEY, first_date TEXT NOT NULL, last_date TEXT NOT NULL) STRICT;
+CREATE TABLE sun_key_dates (
+    id TEXT PRIMARY KEY, label TEXT NOT NULL, date TEXT NOT NULL, clock TEXT NOT NULL, utc_offset_hours INTEGER NOT NULL,
+    sunrise TEXT NOT NULL, solar_noon TEXT NOT NULL, sunset TEXT NOT NULL, day_length_hours REAL NOT NULL,
+    noon_altitude_deg REAL NOT NULL, sunrise_azimuth_deg REAL NOT NULL, sunset_azimuth_deg REAL NOT NULL
+) STRICT;
 
 CREATE VIEW location_refs AS
 SELECT l.*, g.cell,
@@ -232,3 +282,14 @@ SELECT c.*, c.area_sqft * c.runoff_factor *
        json_extract((SELECT data_json FROM source_documents WHERE name = 'water_harvesting'), '$.assumptions.gallons_per_sqft_in') *
        (SELECT sum(precipitation_in) FROM climate_months WHERE month BETWEEN 3 AND 6) AS march_june_gallons
 FROM water_catchments c;
+
+CREATE VIEW site_climate_months AS
+SELECT t.month, t.high_f, t.low_f, round((t.high_f + t.low_f) / 2.0, 1) AS mean_f,
+       f32.avg_days AS frost_days_32f, f32.years_with_pct AS years_with_32f_pct, f28.avg_days AS frost_days_28f,
+       d.mean_hours AS daylight_hours, c.precipitation_in, c.et0_in
+FROM temperature_months t
+JOIN climate_sources s ON s.id = t.source_id AND s.role = 'primary'
+JOIN daylight_months d ON d.month = t.month
+JOIN climate_months c ON c.month = t.month
+LEFT JOIN frost_days f32 ON f32.source_id = t.source_id AND f32.month = t.month AND f32.threshold_f = 32
+LEFT JOIN frost_days f28 ON f28.source_id = t.source_id AND f28.month = t.month AND f28.threshold_f = 28;
