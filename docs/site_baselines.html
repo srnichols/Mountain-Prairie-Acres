@@ -382,11 +382,16 @@ function drawRose(svg, cx, cy, radius, values, maxShare) {
 
 /* ---------- Header ---------- */
 set('subtitle', `Prairie Plants · ${SITE.name} · about ${fmt(SITE.elevation_ft)} ft · reference numbers from the nearest stations, models, and county documents`);
-set('purpose', `${D.purpose} Open questions about these numbers are under Still to Check on the `);
+// The words "weather station" in the purpose text link to the plan that describes it.
 const purpose = document.getElementById('purpose');
+const stationAt = D.purpose.indexOf('weather station');
+const stationLink = element('a', 'weather station');
+stationLink.href = 'weather_station_plan.html';
 const climateLink = element('a', 'site climate page');
 climateLink.href = 'site_climate.html';
-purpose.append(climateLink, '.');
+if (stationAt >= 0) purpose.append(D.purpose.slice(0, stationAt), stationLink, D.purpose.slice(stationAt + stationLink.textContent.length));
+else purpose.append(D.purpose);
+purpose.append(' Open questions about these numbers are under Still to Check on the ', climateLink, '.');
 
 const SNOW = D.snow, NORMALS = SNOW.normals_period, SNOW_YEARS = SNOW.years;
 const SUMMARY = SNOW.summary;
