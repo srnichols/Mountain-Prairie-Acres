@@ -221,6 +221,78 @@ CREATE TABLE climate_checks (
     CHECK ((resolved_on IS NULL) = (result IS NULL))
 ) STRICT;
 
+-- Reference baselines for the site (data/site_baselines.json): snow and rain, design storms, heat and chill, wind, sun and humidity,
+-- county building values, and hail. baseline_sources lists every source once per topic, measured or modeled.
+CREATE TABLE baseline_sources (
+    topic TEXT NOT NULL CHECK (topic IN ('snow', 'storms', 'growth', 'wind', 'sun', 'humidity', 'hail')),
+    id TEXT NOT NULL, kind TEXT NOT NULL CHECK (kind IN ('station', 'model', 'report')), label TEXT NOT NULL, url TEXT NOT NULL,
+    retrieved_from TEXT NOT NULL, note TEXT NOT NULL, period_start INTEGER, period_end INTEGER,
+    is_primary INTEGER NOT NULL CHECK (is_primary IN (0, 1)), PRIMARY KEY (topic, id)
+) STRICT;
+-- One row per topic, source, and calendar month: precip_in, gdd_50, gdd_43, solar_mj, rh_pct, wind_mph.
+CREATE TABLE baseline_months (
+    topic TEXT NOT NULL, source_id TEXT NOT NULL, month INTEGER NOT NULL CHECK (month BETWEEN 1 AND 12),
+    value REAL NOT NULL CHECK (value >= 0), PRIMARY KEY (topic, source_id, month)
+) STRICT;
+CREATE TABLE baseline_summary (
+    topic TEXT NOT NULL CHECK (topic IN ('snow', 'gdd', 'chill')), measure TEXT NOT NULL, unit TEXT NOT NULL,
+    years INTEGER NOT NULL CHECK (years > 0), minimum REAL NOT NULL, p10 REAL NOT NULL, p50 REAL NOT NULL, p90 REAL NOT NULL,
+    maximum REAL NOT NULL, mean REAL NOT NULL, PRIMARY KEY (topic, measure),
+    CHECK (minimum <= p10 AND p10 <= p50 AND p50 <= p90 AND p90 <= maximum)
+) STRICT;
+CREATE TABLE baseline_notes (topic TEXT NOT NULL, key TEXT NOT NULL, text TEXT NOT NULL, PRIMARY KEY (topic, key)) STRICT;
+-- Day numbers count from Oct 1 as in a non-leap year, so a leap year's Feb 29 and Mar 1 share a number; melt-out can therefore equal the
+-- peak's day number. The JSON validator compares the dates themselves.
+CREATE TABLE snow_years (
+    water_year INTEGER PRIMARY KEY, in_normals INTEGER NOT NULL CHECK (in_normals IN (0, 1)),
+    peak_swe_in REAL NOT NULL CHECK (peak_swe_in >= 0), peak_on TEXT NOT NULL, peak_day INTEGER NOT NULL,
+    melt_out_on TEXT NOT NULL, melt_out_day INTEGER NOT NULL, last_snow_on TEXT NOT NULL, last_snow_day INTEGER NOT NULL,
+    apr1_swe_in REAL NOT NULL CHECK (apr1_swe_in >= 0), precip_in REAL NOT NULL CHECK (precip_in >= 0),
+    CHECK (melt_out_day >= peak_day AND apr1_swe_in <= peak_swe_in)
+) STRICT;
+CREATE TABLE snow_date_summary (
+    measure TEXT PRIMARY KEY, years INTEGER NOT NULL, earliest TEXT NOT NULL, p10 TEXT NOT NULL, p50 TEXT NOT NULL, p90 TEXT NOT NULL,
+    latest TEXT NOT NULL
+) STRICT;
+CREATE TABLE design_storms (
+    duration TEXT NOT NULL, duration_hours REAL NOT NULL CHECK (duration_hours > 0), return_years INTEGER NOT NULL CHECK (return_years > 0),
+    depth_in REAL NOT NULL CHECK (depth_in > 0), lower_in REAL NOT NULL, upper_in REAL NOT NULL,
+    PRIMARY KEY (duration, return_years), CHECK (lower_in <= depth_in AND depth_in <= upper_in)
+) STRICT;
+CREATE TABLE gdd_years (
+    year INTEGER NOT NULL, method TEXT NOT NULL CHECK (method IN ('hourly', 'daily_average')), base_f INTEGER NOT NULL,
+    degree_days INTEGER NOT NULL CHECK (degree_days >= 0), hours_recorded INTEGER NOT NULL, PRIMARY KEY (year, method, base_f)
+) STRICT;
+CREATE TABLE chill_winters (
+    winter INTEGER PRIMARY KEY, hours_32_45 INTEGER NOT NULL, hours_45 INTEGER NOT NULL, hours_recorded INTEGER NOT NULL,
+    CHECK (hours_32_45 <= hours_45 AND hours_45 <= hours_recorded)
+) STRICT;
+CREATE TABLE wind_stats (
+    source_id TEXT PRIMARY KEY, latitude REAL NOT NULL, longitude REAL NOT NULL, elevation_ft REAL NOT NULL,
+    distance_mi REAL NOT NULL, bearing_deg INTEGER NOT NULL, hours INTEGER NOT NULL, mean_mph REAL NOT NULL, calm_pct REAL NOT NULL,
+    pct_hours_10_mph REAL NOT NULL, pct_hours_15_mph REAL NOT NULL, pct_hours_25_mph REAL NOT NULL,
+    CHECK (pct_hours_10_mph >= pct_hours_15_mph AND pct_hours_15_mph >= pct_hours_25_mph)
+) STRICT;
+-- Share of non-calm hours that the wind blew from each of 16 directions (sector_index 0 is north, counting clockwise).
+CREATE TABLE wind_rose (
+    source_id TEXT NOT NULL REFERENCES wind_stats(source_id),
+    season TEXT NOT NULL CHECK (season IN ('winter', 'spring', 'summer', 'fall')),
+    sector_index INTEGER NOT NULL CHECK (sector_index BETWEEN 0 AND 15), sector TEXT NOT NULL,
+    pct REAL NOT NULL CHECK (pct BETWEEN 0 AND 100), season_hours INTEGER NOT NULL, PRIMARY KEY (source_id, season, sector_index)
+) STRICT;
+CREATE TABLE building_sources (id TEXT PRIMARY KEY, label TEXT NOT NULL, url TEXT NOT NULL, quote TEXT NOT NULL) STRICT;
+CREATE TABLE building_values (
+    id TEXT PRIMARY KEY, label TEXT NOT NULL, value TEXT NOT NULL, numeric_value REAL, unit TEXT NOT NULL, note TEXT NOT NULL
+) STRICT;
+CREATE TABLE building_value_sources (
+    value_id TEXT NOT NULL REFERENCES building_values(id), source_id TEXT NOT NULL REFERENCES building_sources(id),
+    PRIMARY KEY (value_id, source_id)
+) STRICT;
+CREATE TABLE hail_events (
+    event_id INTEGER PRIMARY KEY, date TEXT NOT NULL, county TEXT NOT NULL, place TEXT NOT NULL, size_in REAL NOT NULL CHECK (size_in >= 0),
+    latitude REAL NOT NULL, longitude REAL NOT NULL, distance_mi REAL NOT NULL CHECK (distance_mi >= 0), reported_by TEXT, narrative TEXT
+) STRICT;
+
 CREATE VIEW location_refs AS
 SELECT l.*, g.cell,
        rounded.x_ft - g.x0_ft AS east_offset_ft,
@@ -305,6 +377,24 @@ JOIN daylight_months d ON d.month = t.month
 JOIN climate_months c ON c.month = t.month
 LEFT JOIN frost_days f32 ON f32.source_id = t.source_id AND f32.month = t.month AND f32.threshold_f = 32
 LEFT JOIN frost_days f28 ON f28.source_id = t.source_id AND f28.month = t.month AND f28.threshold_f = 28;
+
+-- One row per calendar month of the baselines that a weather station's own monthly averages can be compared with: the station's measured
+-- precipitation beside the PRISM model's, degree days from the hourly method, solar radiation and humidity from the primary sources,
+-- and monthly mean wind speed from the model at the lot and the two measured stations.
+CREATE VIEW site_baseline_months AS
+SELECT c.month,
+       (SELECT value FROM baseline_months WHERE topic = 'precip_in' AND month = c.month) AS snotel_precip_in,
+       c.precipitation_in AS prism_precip_in, c.et0_in,
+       (SELECT value FROM baseline_months WHERE topic = 'gdd_50' AND month = c.month) AS gdd_50,
+       (SELECT value FROM baseline_months WHERE topic = 'gdd_43' AND month = c.month) AS gdd_43,
+       (SELECT b.value FROM baseline_months b JOIN baseline_sources s ON s.topic = 'sun' AND s.id = b.source_id AND s.is_primary = 1
+         WHERE b.topic = 'solar_mj' AND b.month = c.month) AS solar_mj,
+       (SELECT b.value FROM baseline_months b JOIN baseline_sources s ON s.topic = 'humidity' AND s.id = b.source_id AND s.is_primary = 1
+         WHERE b.topic = 'rh_pct' AND b.month = c.month) AS humidity_pct,
+       (SELECT value FROM baseline_months WHERE topic = 'wind_mph' AND source_id = 'hrrr-lot' AND month = c.month) AS wind_mph_model_at_lot,
+       (SELECT value FROM baseline_months WHERE topic = 'wind_mph' AND source_id = 'pine-turnoff-rwis' AND month = c.month) AS wind_mph_pine_turnoff,
+       (SELECT value FROM baseline_months WHERE topic = 'wind_mph' AND source_id = 'muo-asos' AND month = c.month) AS wind_mph_mountain_home
+FROM climate_months c;
 
 -- Yearly stage dates the owner logs (bud swell, leaf out, bloom, harvest, and so on), one row per tree and stage, with the
 -- day number counted as in a non-leap year so the years line up and match frost_years.

@@ -1,5 +1,6 @@
 """Validate canonical JSON, rebuild local SQLite, generate browser data, and run read-only SQL."""
 import argparse
+import calendar
 import datetime
 import hashlib
 import json
@@ -10,14 +11,15 @@ import sqlite3
 import sys
 import tempfile
 
-from site_climate import (FALL_FIRST_DAY, SPRING_LAST_DAY, clock_time, day_of_year, daylight_crossings, daylight_months, distance_miles,
-                          frost_summary, hardiness_zone, parse_month_day, sun_day)
+from site_climate import (FALL_FIRST_DAY, SPRING_LAST_DAY, bearing_degrees, clock_time, date_summary, day_of_year, daylight_crossings,
+                          daylight_months, distance_miles, extraterrestrial_months, frost_summary, hardiness_zone, parse_month_day,
+                          series_summary, sun_day, water_year_day, water_year_month_day)
 from site_grid import M_TO_FT, SiteGrid
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 DOCUMENTS = (
     "site", "terrain", "inventory", "catalog", "orchard", "plants", "locations",
-    "plantings", "plant_events", "water_harvesting", "cultivar_library", "climate",
+    "plantings", "plant_events", "water_harvesting", "cultivar_library", "climate", "site_baselines",
 )
 INVENTORY_FIELDS = (
     "source_row", "quantity", "category", "subcategory", "type", "variety", "metal_tag",
@@ -60,9 +62,15 @@ def load_data(root=ROOT):
     return documents
 
 
+LARGEST_NUMBER = 10 ** 12
+
+
 def _number(value, name, minimum=None):
-    if not isinstance(value, (int, float)) or isinstance(value, bool) or not math.isfinite(value):
+    if not isinstance(value, (int, float)) or isinstance(value, bool):
         raise ValueError(f"{name} must be a finite number")
+    # The size test comes first: math.isfinite cannot take an integer that is too large for a float.
+    if abs(value) > LARGEST_NUMBER or not math.isfinite(value):
+        raise ValueError(f"{name} must be a finite number, no larger than one trillion")
     if minimum is not None and value < minimum:
         raise ValueError(f"{name} must be at least {minimum}")
 
@@ -602,13 +610,21 @@ CLIMATE_KEY_DATES = ("march-equinox", "june-solstice", "september-equinox", "dec
 CLIMATE_CROSSINGS = ("10", "12", "14", "15")
 MOUNTAIN_CLOCKS = {"MST": -7, "MDT": -6}
 CHECK_STATUSES = ("open", "done")
+LATEST_YEAR = 2200
+
+
+def _calendar_year(value, name, minimum):
+    """A year that the date arithmetic below can handle; no record for this site reaches past LATEST_YEAR."""
+    _integer(value, name, minimum)
+    if value > LATEST_YEAR:
+        raise ValueError(f"{name} must be no later than {LATEST_YEAR}")
 
 
 def _year_range(value, label):
     if not isinstance(value, list) or len(value) != 2:
         raise ValueError(f"{label} must be [first year, last year]")
     for year in value:
-        _integer(year, label + " year", 1800)
+        _calendar_year(year, label + " year", 1800)
     if value[0] > value[1]:
         raise ValueError(f"{label} must not end before it starts")
     return value[0], value[1]
@@ -939,6 +955,476 @@ def _validate_climate_checks(checks):
             raise ValueError(f"Climate check {name} is open, so resolved_on and result must be null")
 
 
+BASELINE_SEASONS = ("winter", "spring", "summer", "fall")
+COMPASS_SECTORS = ("N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW")
+# What the baselines page looks up by name, so the data cannot drop it without breaking the page.
+BASELINE_WIND_SOURCES = ("hrrr-lot", "pine-turnoff-rwis", "muo-asos")
+BASELINE_SOLAR_SOURCES = ("nasa-power", "daymet", "pvgis-nsrdb")
+BASELINE_HUMIDITY_SOURCES = ("nasa-power", "pine-turnoff-rwis")
+BASELINE_BUILDING_VALUES = ("frost-depth", "ground-snow-load", "wind-speed", "seismic-zone")
+BASELINE_STORM_DURATIONS = ("60-min", "3-hr", "6-hr", "12-hr", "24-hr", "2-day", "10-day")
+BASELINE_STORM_RETURN_PERIODS = (2, 5, 10, 25, 50, 100)
+BASELINE_DEGREE_DAY_BASES = (50, 43)
+MONTH_WEIGHTS = (31, 28.25, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+
+
+def _baseline_source(source, label, extra=()):
+    _require(source, ("id", "label", "url", "retrieved_from", "note") + tuple(extra), label)
+    for key in ("id", "label", "retrieved_from", "note"):
+        _text(source[key], f"{label} {key}", False)
+    if not isinstance(source["url"], str) or not source["url"].startswith("https://"):
+        raise ValueError(f"{label}: url must use https")
+
+
+def _baseline_table(table, rows, columns, label):
+    if not isinstance(table, list) or len(table) != rows:
+        raise ValueError(f"{label} needs {rows} rows")
+    for row in table:
+        if not isinstance(row, list) or len(row) != columns:
+            raise ValueError(f"{label} rows need {columns} values")
+        for value in row:
+            _number(value, label, 0)
+
+
+def _validate_snow(snow, normals, prism_months):
+    _require(snow, ("source", "normals_period", "definitions", "years", "summary", "monthly_precip_in"), "snow")
+    _baseline_source(snow["source"], "snow source")
+    if _year_range(snow["normals_period"], "snow normals period") != normals:
+        raise ValueError("The snow normals period must match the site's normals period")
+    definition_keys = ("water_year", "peak_swe", "peak_on", "melt_out", "last_snow", "apr1", "precip", "monthly")
+    _require(snow["definitions"], definition_keys, "snow definitions")
+    for key in definition_keys:
+        _text(snow["definitions"][key], "snow definition " + key, False)
+    years = snow["years"]
+    if not isinstance(years, list) or not years:
+        raise ValueError("Snow needs yearly records")
+    previous = None
+    for row in years:
+        _require(row, ("water_year", "peak_swe_in", "peak_on", "melt_out_on", "last_snow_on", "apr1_swe_in", "precip_in"), "snow year")
+        year = row["water_year"]
+        _calendar_year(year, "snow water year", 1900)
+        if previous is not None and year != previous + 1:
+            raise ValueError("Snow water years must be consecutive, oldest first")
+        previous = year
+        label = f"snow water year {year}"
+        for key in ("peak_swe_in", "apr1_swe_in", "precip_in"):
+            _number(row[key], f"{label} {key}", 0)
+        first, last = datetime.date(year - 1, 10, 1), datetime.date(year, 7, 31)
+        dates = {key: _required_date(row[key], f"{label} {key}") for key in ("peak_on", "melt_out_on", "last_snow_on")}
+        for key, date in dates.items():
+            if not first <= date <= last:
+                raise ValueError(f"{label}: {key} must fall from {first} to {last}")
+        if dates["melt_out_on"] <= dates["peak_on"] or dates["last_snow_on"] < dates["peak_on"]:
+            raise ValueError(f"{label}: melt-out and the last snow must come after the peak")
+        if dates["last_snow_on"] == dates["melt_out_on"]:
+            raise ValueError(f"{label}: the melt-out day reads zero, so it cannot be the last day with snow")
+        if row["apr1_swe_in"] > row["peak_swe_in"] or row["peak_swe_in"] > row["precip_in"]:
+            raise ValueError(f"{label}: April 1 snow cannot exceed the peak, and the peak cannot exceed the year's precipitation")
+    selected = [row for row in years if normals[0] <= row["water_year"] <= normals[1]]
+    if len(selected) != normals[1] - normals[0] + 1:
+        raise ValueError("Snow years must cover every water year of the normals period")
+    expected = {"years": len(selected)}
+    for key in ("peak_swe_in", "apr1_swe_in", "precip_in"):
+        expected[key] = series_summary([row[key] for row in selected], 1)
+    for key in ("peak_on", "melt_out_on", "last_snow_on"):
+        expected[key] = date_summary([water_year_day(datetime.date.fromisoformat(row[key])) for row in selected], water_year_month_day)
+    if snow["summary"] != expected:
+        raise ValueError("The snow summary does not match the yearly records")
+    monthly = snow["monthly_precip_in"]
+    _twelve(monthly, "snow monthly precipitation", 0)
+    if abs(sum(monthly) - expected["precip_in"]["mean"]) > 0.3:
+        raise ValueError("The monthly precipitation must add up to the average water-year total")
+    if abs(sum(monthly) - sum(prism_months)) > 0.1 * sum(prism_months) or any(abs(a - b) > 0.5 for a, b in zip(monthly, prism_months)):
+        raise ValueError("The station's monthly precipitation disagrees with the PRISM months in the water-harvesting data")
+
+
+def _validate_storms(storms, site):
+    _require(storms, ("source", "latitude", "longitude", "series", "return_periods_years", "durations", "duration_hours",
+                      "depth_in", "lower_in", "upper_in"), "storms")
+    _baseline_source(storms["source"], "storms source")
+    for key in ("latitude", "longitude"):
+        _number(storms[key], "storms " + key)
+        if abs(storms[key] - site[key]) > 0.001:
+            raise ValueError("Design storms must be for the lot center")
+    _text(storms["series"], "storms series", False)
+    periods, names, hours = storms["return_periods_years"], storms["durations"], storms["duration_hours"]
+    if not all(isinstance(value, list) and value for value in (periods, names, hours)):
+        raise ValueError("Storms need return periods, durations, and duration hours")
+    for period in periods:
+        _integer(period, "storm return period", 1)
+    if periods != sorted(set(periods)):
+        raise ValueError("Storm return periods must be different and rise")
+    for name in names:
+        _text(name, "storm duration", False)
+    if len(set(names)) != len(names) or len(hours) != len(names):
+        raise ValueError("Every storm duration needs one name and one length in hours")
+    for value in hours:
+        _number(value, "storm duration hours", 0)
+    if hours[0] <= 0 or any(a >= b for a, b in zip(hours, hours[1:])):
+        raise ValueError("Storm durations must run from shortest to longest")
+    missing = [name for name in BASELINE_STORM_DURATIONS if name not in names]
+    missing += [f"{period}-year" for period in BASELINE_STORM_RETURN_PERIODS if period not in periods]
+    if missing:
+        raise ValueError(f"Storms need {', '.join(missing)}, which the baselines page quotes")
+    for key in ("depth_in", "lower_in", "upper_in"):
+        table = storms[key]
+        _baseline_table(table, len(names), len(periods), "storm " + key)
+        for row in table:
+            if row[0] <= 0 or any(a >= b for a, b in zip(row, row[1:])):
+                raise ValueError(f"storm {key}: depths must be positive and rise with the return period")
+        for column in range(len(periods)):
+            depths = [row[column] for row in table]
+            if any(a >= b for a, b in zip(depths, depths[1:])):
+                raise ValueError(f"storm {key}: depths must rise with the duration")
+            rates = [depth / length for depth, length in zip(depths, hours)]
+            if any(a <= b for a, b in zip(rates, rates[1:])):
+                raise ValueError(f"storm {key}: the rate of rain in inches per hour must fall as the duration grows")
+    for lower, depth, upper in zip(storms["lower_in"], storms["depth_in"], storms["upper_in"]):
+        if any(not low <= mid <= high for low, mid, high in zip(lower, depth, upper)):
+            raise ValueError("Each storm depth must lie between its lower and upper bound")
+
+
+def _expected_hours(first_day, last_day):
+    return 24 * ((last_day - first_day).days + 1)
+
+
+def _validate_gdd(gdd):
+    _require(gdd, ("definitions", "bases_f", "upper_cutoff_f", "period", "min_hours_share", "years", "monthly_mean", "summary"), "degree days")
+    definition_keys = ("hourly", "daily_average", "bases", "monthly_mean")
+    _require(gdd["definitions"], definition_keys, "degree-day definitions")
+    for key in definition_keys:
+        _text(gdd["definitions"][key], "degree-day definition " + key, False)
+    bases = gdd["bases_f"]
+    if not isinstance(bases, list) or not bases:
+        raise ValueError("Degree days need a list of base temperatures")
+    for base in bases:
+        _integer(base, "degree-day base", 0)
+    if bases != sorted(set(bases), reverse=True):
+        raise ValueError("Degree-day bases must be different and listed from the highest to the lowest")
+    missing = [str(base) for base in BASELINE_DEGREE_DAY_BASES if base not in bases]
+    if missing:
+        raise ValueError(f"Degree days need bases {' and '.join(missing)}, which the baselines page and the database view quote")
+    keys = {str(base) for base in bases}
+    _number(gdd["upper_cutoff_f"], "degree-day cutoff", 0)
+    if gdd["upper_cutoff_f"] <= bases[0]:
+        raise ValueError("The degree-day cutoff must be above every base")
+    first, last = _year_range(gdd["period"], "degree-day period")
+    share = gdd["min_hours_share"]
+    _number(share, "degree-day minimum share of hours", 0)
+    if not 0.9 <= share <= 1:
+        raise ValueError("The degree-day minimum share of hours must be from 0.9 to 1")
+    rows = gdd["years"]
+    if not isinstance(rows, list) or not rows:
+        raise ValueError("Degree days need yearly records")
+    previous = None
+    for row in rows:
+        _require(row, ("year", "hourly", "daily_average", "hours_recorded"), "degree-day year")
+        year = row["year"]
+        _calendar_year(year, "degree-day year", 1900)
+        if not first <= year <= last or (previous is not None and year <= previous):
+            raise ValueError("Degree-day years must lie inside the period, once each, oldest first")
+        previous = year
+        for method in ("hourly", "daily_average"):
+            if _keys(row[method], f"degree days {year} {method}") != keys:
+                raise ValueError(f"Degree days {year}: {method} needs every base")
+            values = [row[method][str(base)] for base in bases]
+            for value in values:
+                _integer(value, f"degree days {year} {method}", 0)
+            if values != sorted(values):
+                raise ValueError(f"Degree days {year}: a lower base cannot have fewer degree days than a higher one")
+        every_hour = _expected_hours(datetime.date(year, 1, 1), datetime.date(year, 12, 31))
+        _integer(row["hours_recorded"], f"degree days {year} hours recorded", 1)
+        if not share * every_hour <= row["hours_recorded"] <= every_hour:
+            raise ValueError(f"Degree days {year}: at least {share:.0%} of the year's hours must be recorded, and no more than it has")
+    monthly = gdd["monthly_mean"]
+    if _keys(monthly, "degree-day monthly means") != keys:
+        raise ValueError("Degree-day monthly means need every base")
+    for base in bases:
+        _twelve(monthly[str(base)], f"degree-day monthly means at base {base}", 0)
+        annual = sum(row["hourly"][str(base)] for row in rows) / len(rows)
+        if abs(sum(monthly[str(base)]) - annual) > 6:
+            raise ValueError(f"The monthly degree days at base {base} must add up to the average year")
+    expected = {method: {str(base): series_summary([row[method][str(base)] for row in rows], 0) for base in bases}
+                for method in ("hourly", "daily_average")}
+    if gdd["summary"] != expected:
+        raise ValueError("The degree-day summary does not match the yearly records")
+
+
+def _validate_chill(chill):
+    _require(chill, ("definitions", "min_hours_share", "winters", "summary"), "chill")
+    _require(chill["definitions"], ("hours_32_45", "hours_45", "winter"), "chill definitions")
+    for key in ("hours_32_45", "hours_45", "winter"):
+        _text(chill["definitions"][key], "chill definition " + key, False)
+    share = chill["min_hours_share"]
+    _number(share, "chill minimum share of hours", 0)
+    if not 0.9 <= share <= 1:
+        raise ValueError("The chill minimum share of hours must be from 0.9 to 1")
+    rows = chill["winters"]
+    if not isinstance(rows, list) or not rows:
+        raise ValueError("Chill needs yearly records")
+    previous = None
+    for row in rows:
+        _require(row, ("winter", "hours_32_45", "hours_45", "hours_recorded"), "chill winter")
+        year = row["winter"]
+        _calendar_year(year, "chill winter", 1900)
+        if previous is not None and year <= previous:
+            raise ValueError("Chill winters must be listed once each, oldest first")
+        previous = year
+        for key in ("hours_32_45", "hours_45", "hours_recorded"):
+            _integer(row[key], f"chill winter {year} {key}", 0)
+        every_hour = _expected_hours(datetime.date(year, 11, 1), datetime.date(year + 1, 3, 1) - datetime.timedelta(days=1))
+        if not share * every_hour <= row["hours_recorded"] <= every_hour:
+            raise ValueError(f"Chill winter {year}: at least {share:.0%} of the winter's hours must be recorded, and no more than it has")
+        if not row["hours_32_45"] <= row["hours_45"] <= row["hours_recorded"]:
+            raise ValueError(f"Chill winter {year}: hours from 32 to 45 F cannot exceed hours at or below 45 F, which cannot exceed the hours recorded")
+    expected = {key: series_summary([row[key] for row in rows], 0) for key in ("hours_32_45", "hours_45")}
+    if chill["summary"] != expected:
+        raise ValueError("The chill summary does not match the yearly records")
+
+
+def _validate_wind_source(source, site):
+    label = f"wind source {source['id']}"
+    _baseline_source(source, label, ("kind", "latitude", "longitude", "elevation_ft", "distance_mi", "bearing_deg", "period", "hours",
+                                     "mean_mph", "calm_pct", "pct_hours_at_or_above_mph", "monthly_mean_mph", "rose_pct", "rose_hours"))
+    if source["kind"] not in ("station", "model"):
+        raise ValueError(f"{label}: kind must be station or model")
+    for key in ("latitude", "longitude"):
+        _number(source[key], f"{label} {key}")
+    _number(source["elevation_ft"], label + " elevation", 0)
+    _number(source["distance_mi"], label + " distance", 0)
+    away = distance_miles(site["latitude"], site["longitude"], source["latitude"], source["longitude"])
+    if abs(away - source["distance_mi"]) > 0.1:
+        raise ValueError(f"{label}: distance_mi should be about {away:.1f} miles from its coordinates")
+    _integer(source["bearing_deg"], label + " bearing", 0)
+    if source["bearing_deg"] > 359:
+        raise ValueError(f"{label}: bearing_deg must be a whole number of degrees from 0 to 359")
+    heading = bearing_degrees(site["latitude"], site["longitude"], source["latitude"], source["longitude"])
+    if abs((heading - source["bearing_deg"] + 180) % 360 - 180) > 1.5:
+        raise ValueError(f"{label}: bearing_deg should be about {heading:.0f} degrees from its coordinates")
+    start, end = _year_range(source["period"], label + " period")
+    _integer(source["hours"], label + " hours", 1)
+    if source["hours"] > (end - start + 1) * 8784:
+        raise ValueError(f"{label}: more hours than the period has")
+    _number(source["mean_mph"], label + " mean speed", 0)
+    _number(source["calm_pct"], label + " calm share", 0)
+    if source["calm_pct"] > 100:
+        raise ValueError(f"{label}: calm_pct cannot exceed 100")
+    over = source["pct_hours_at_or_above_mph"]
+    if _keys(over, label + " speed shares") != {"10", "15", "25"}:
+        raise ValueError(f"{label}: speed shares need 10, 15, and 25 mph")
+    shares = [over["10"], over["15"], over["25"]]
+    for share in shares:
+        _number(share, label + " speed share", 0)
+    if shares != sorted(shares, reverse=True) or shares[0] > 100:
+        raise ValueError(f"{label}: the share of hours at 10 mph must be at least the share at 15 mph, which must be at least the share at 25 mph")
+    _twelve(source["monthly_mean_mph"], label + " monthly mean speed", 0)
+    # The average of the months is a little off the all-hours mean (months differ in length and in missing hours), but a unit slip is far off.
+    if abs(sum(source["monthly_mean_mph"]) / 12 - source["mean_mph"]) > 0.3:
+        raise ValueError(f"{label}: the mean speed must be within 0.3 mph of the average of the monthly means")
+    rose, counts = source["rose_pct"], source["rose_hours"]
+    if _keys(rose, label + " rose") != set(BASELINE_SEASONS) or _keys(counts, label + " rose hours") != set(BASELINE_SEASONS):
+        raise ValueError(f"{label}: the rose and its hours need every season")
+    for season in BASELINE_SEASONS:
+        values = rose[season]
+        if not isinstance(values, list) or len(values) != len(COMPASS_SECTORS):
+            raise ValueError(f"{label}: the {season} rose needs {len(COMPASS_SECTORS)} directions")
+        for value in values:
+            _number(value, f"{label} {season} rose", 0)
+        if abs(sum(values) - 100) > 1:
+            raise ValueError(f"{label}: the {season} rose must add up to 100 percent")
+        _integer(counts[season], f"{label} {season} rose hours", 1)
+    windy = sum(counts.values())
+    if abs(windy - source["hours"] * (100 - source["calm_pct"]) / 100) > 0.002 * source["hours"] + 5:
+        raise ValueError(f"{label}: the rose hours must equal the hours that were not calm")
+
+
+def _validate_wind(wind, site):
+    _require(wind, ("status", "definitions", "sector_names", "calm_below_knots", "sources", "coarse_model"), "wind")
+    _text(wind["status"], "wind status", False)
+    _require(wind["definitions"], ("rose", "seasons"), "wind definitions")
+    for key in ("rose", "seasons"):
+        _text(wind["definitions"][key], "wind definition " + key, False)
+    if wind["sector_names"] != list(COMPASS_SECTORS):
+        raise ValueError("Wind sector names must be the 16 compass directions from N clockwise")
+    _number(wind["calm_below_knots"], "wind calm limit", 0)
+    sources = _index(wind["sources"], "wind source")
+    missing = [name for name in BASELINE_WIND_SOURCES if name not in sources]
+    if missing:
+        raise ValueError(f"Wind sources need {', '.join(missing)}, which the baselines page compares")
+    for source in sources.values():
+        _validate_wind_source(source, site)
+    if sources["hrrr-lot"]["kind"] != "model" or sources["hrrr-lot"]["distance_mi"] > 2:
+        raise ValueError("The hrrr-lot wind source must be a model cell within 2 miles of the lot")
+    if any(sources[name]["kind"] != "station" for name in ("pine-turnoff-rwis", "muo-asos")):
+        raise ValueError("The wind sources pine-turnoff-rwis and muo-asos must be measured stations, as the baselines page says")
+    coarse = wind["coarse_model"]
+    _baseline_source(coarse, "wind coarse model", ("period", "monthly_mean_mph"))
+    if coarse["id"] in sources:
+        raise ValueError("The coarse wind model needs an id of its own, different from every wind source")
+    _year_range(coarse["period"], "wind coarse model period")
+    _twelve(coarse["monthly_mean_mph"], "wind coarse model monthly mean speed", 0)
+    # Within a quarter of the model at the lot: loose enough for a 50 km grid, tight enough to catch meters per second or kilometers per hour.
+    average, reference = sum(coarse["monthly_mean_mph"]) / 12, sources["hrrr-lot"]["mean_mph"]
+    if not 0.75 * reference <= average <= 1.25 * reference:
+        raise ValueError("The coarse wind model's monthly means must average within 25 percent of the mean speed at the lot (hrrr-lot)")
+
+
+def _validate_sun(sun, site):
+    _require(sun, ("units", "primary", "sources"), "sun")
+    _text(sun["units"], "sun units", False)
+    sources = _index(sun["sources"], "solar source")
+    missing = [name for name in BASELINE_SOLAR_SOURCES if name not in sources]
+    if missing:
+        raise ValueError(f"Solar sources need {', '.join(missing)}, which the baselines page compares")
+    if not isinstance(sun["primary"], str) or sun["primary"] not in sources:
+        raise ValueError("The primary solar source must be one of the sources")
+    above = extraterrestrial_months(site["latitude"])
+    annual = []
+    for source in sources.values():
+        label = f"solar source {source['id']}"
+        _baseline_source(source, label, ("period", "monthly", "annual"))
+        _year_range(source["period"], label + " period")
+        _twelve(source["monthly"], label + " monthly radiation", 0)
+        _number(source["annual"], label + " annual radiation", 0)
+        average = sum(value * days for value, days in zip(source["monthly"], MONTH_WEIGHTS)) / sum(MONTH_WEIGHTS)
+        if abs(average - source["annual"]) > 0.1:
+            raise ValueError(f"{label}: the annual figure should be about {average:.2f}, the average of the months")
+        for month, (value, top) in enumerate(zip(source["monthly"], above), 1):
+            if not 0.25 <= value / top <= 0.8:
+                raise ValueError(f"{label}: month {month} is {value / top:.0%} of the sunshine above the atmosphere, "
+                                 "outside the 25 to 80 percent a flat site can receive")
+        annual.append(source["annual"])
+    if max(annual) > 1.15 * min(annual):
+        raise ValueError("The solar sources must agree within 15 percent on the annual average")
+
+
+def _validate_humidity(humidity):
+    _require(humidity, ("units", "primary", "sources"), "humidity")
+    _text(humidity["units"], "humidity units", False)
+    sources = _index(humidity["sources"], "humidity source")
+    missing = [name for name in BASELINE_HUMIDITY_SOURCES if name not in sources]
+    if missing:
+        raise ValueError(f"Humidity sources need {', '.join(missing)}, which the baselines page compares")
+    if not isinstance(humidity["primary"], str) or humidity["primary"] not in sources:
+        raise ValueError("The primary humidity source must be one of the sources")
+    for source in sources.values():
+        label = f"humidity source {source['id']}"
+        _baseline_source(source, label, ("kind", "period", "monthly"))
+        if source["kind"] not in ("station", "model"):
+            raise ValueError(f"{label}: kind must be station or model")
+        _year_range(source["period"], label + " period")
+        _twelve(source["monthly"], label + " monthly humidity", 0)
+        if any(value <= 0 or value > 100 for value in source["monthly"]):
+            raise ValueError(f"{label}: relative humidity must be above 0 and at most 100 percent")
+    if sources["nasa-power"]["kind"] != "model" or sources["pine-turnoff-rwis"]["kind"] != "station":
+        raise ValueError("The humidity source nasa-power must be a model and pine-turnoff-rwis a station, as the baselines page says")
+    if any(abs(a - b) > 15 for a, b in zip(sources["nasa-power"]["monthly"], sources["pine-turnoff-rwis"]["monthly"])):
+        raise ValueError("The model and the nearby station must agree within 15 points of humidity in every month")
+
+
+def _validate_building(building):
+    _require(building, ("authority", "retrieved_on", "note", "sources", "reading", "values"), "building")
+    for key in ("authority", "note", "reading"):
+        _text(building[key], "building " + key, False)
+    _required_date(building["retrieved_on"], "building retrieval date")
+    sources = _index(building["sources"], "building source")
+    for source in sources.values():
+        _require(source, ("label", "url", "quote"), f"building source {source['id']}")
+        for key in ("label", "quote"):
+            _text(source[key], f"building source {source['id']} {key}", False)
+        if not isinstance(source["url"], str) or not source["url"].startswith("https://"):
+            raise ValueError(f"building source {source['id']}: url must use https")
+    values = _index(building["values"], "building value")
+    missing = [name for name in BASELINE_BUILDING_VALUES if name not in values]
+    if missing:
+        raise ValueError(f"Building values need {', '.join(missing)}, which the baselines page quotes")
+    for item in values.values():
+        label = f"building value {item['id']}"
+        _require(item, ("label", "value", "unit", "source_ids", "note"), label)
+        for key in ("label", "unit", "note"):
+            _text(item[key], f"{label} {key}", False)
+        ids = item["source_ids"]
+        if (not isinstance(ids, list) or not ids or not all(isinstance(name, str) for name in ids) or len(set(ids)) != len(ids)
+                or any(name not in sources for name in ids)):
+            raise ValueError(f"{label}: source_ids must name one or more different building sources")
+    for name, low, high in (("frost-depth", 12, 72), ("ground-snow-load", 20, 300), ("wind-speed", 90, 200)):
+        _number(values[name]["value"], f"building value {name}", low)
+        if values[name]["value"] > high:
+            raise ValueError(f"building value {name}: {values[name]['value']} is outside the {low} to {high} range this site could use")
+    if values["seismic-zone"]["value"] not in ("A", "B", "C", "D", "E", "F"):
+        raise ValueError("The seismic design zone must be a letter from A to F")
+
+
+def _validate_hail(hail, site):
+    _require(hail, ("source", "radius_mi", "period", "events"), "hail")
+    _baseline_source(hail["source"], "hail source")
+    _number(hail["radius_mi"], "hail radius", 0)
+    if hail["radius_mi"] <= 0:
+        raise ValueError("The hail radius must be above zero")
+    start, end = _year_range(hail["period"], "hail period")
+    if not isinstance(hail["events"], list):
+        raise ValueError("Hail events must be a list")
+    seen, previous = set(), None
+    for event in hail["events"]:
+        _require(event, ("event_id", "date", "county", "place", "size_in", "latitude", "longitude", "distance_mi", "reported_by", "narrative"),
+                 "hail event")
+        name = event["event_id"]
+        _integer(name, "hail event id", 1)
+        if name in seen:
+            raise ValueError(f"duplicate hail event: {name}")
+        seen.add(name)
+        label = f"hail event {name}"
+        date = _required_date(event["date"], label + " date")
+        if not start <= date.year <= end:
+            raise ValueError(f"{label}: the date must fall inside the period")
+        if previous is not None and (event["date"], name) < previous:
+            raise ValueError("Hail events must be listed oldest first")
+        previous = (event["date"], name)
+        for key in ("county", "place"):
+            _text(event[key], f"{label} {key}", False)
+        _number(event["size_in"], label + " size", 0)
+        for key in ("latitude", "longitude"):
+            _number(event[key], f"{label} {key}")
+        _number(event["distance_mi"], label + " distance", 0)
+        away = distance_miles(site["latitude"], site["longitude"], event["latitude"], event["longitude"])
+        if abs(away - event["distance_mi"]) > 0.1:
+            raise ValueError(f"{label}: distance_mi should be about {away:.1f} miles from its coordinates")
+        if event["distance_mi"] > hail["radius_mi"]:
+            raise ValueError(f"{label}: farther than the {hail['radius_mi']} mile radius")
+        for key in ("reported_by", "narrative"):
+            if event[key] is not None:
+                _text(event[key], f"{label} {key}", False)
+
+
+def _validate_site_baselines(data):
+    document, climate = data["site_baselines"], data["climate"]
+    _require(document, ("source_page", "retrieved_on", "purpose", "snow", "storms", "growth", "wind", "sun", "humidity", "building", "hail"),
+             "site baselines")
+    _text(document["source_page"], "site baselines source_page", False)
+    _required_date(document["retrieved_on"], "site baselines retrieval date")
+    _text(document["purpose"], "site baselines purpose", False)
+    site = climate["site"]
+    normals = _year_range(site["normals_period"], "climate normals period")
+    months = {month["month"]: month["precipitation_in"] for month in data["water_harvesting"]["months"]}
+    if sorted(months) != list(range(1, 13)):
+        raise ValueError("The water-harvesting data needs all 12 months")
+    _validate_snow(document["snow"], normals, [months[month] for month in range(1, 13)])
+    _validate_storms(document["storms"], site)
+    growth = document["growth"]
+    _require(growth, ("source", "gdd", "chill"), "growth")
+    _baseline_source(growth["source"], "growth source")
+    _validate_gdd(growth["gdd"])
+    _validate_chill(growth["chill"])
+    primary = next(source["id"] for source in climate["sources"] if source["role"] == "primary")
+    if document["snow"]["source"]["id"] != primary or growth["source"]["id"] != primary:
+        raise ValueError("The snow and growth records must come from the same station as the climate record's primary source")
+    _validate_wind(document["wind"], site)
+    _validate_sun(document["sun"], site)
+    _validate_humidity(document["humidity"])
+    _validate_building(document["building"])
+    _validate_hail(document["hail"], site)
+
+
 def validate_data(data):
     if set(data) != set(DOCUMENTS):
         raise ValueError("Missing or unexpected canonical collections")
@@ -1212,6 +1698,7 @@ def validate_data(data):
         _text(observation["observation_type"], "observation type", False)
         _text(observation["notes"], "observation notes")
     _validate_climate(data, grid)
+    _validate_site_baselines(data)
 
 
 def _json(value):
@@ -1364,6 +1851,7 @@ def _populate(connection, data, digest):
     ]:
         _insert(connection, table, columns, [tuple(r[key] for key in columns) for r in water[section]])
     _populate_climate(connection, data["climate"])
+    _populate_baselines(connection, data["site_baselines"])
 
 
 def _populate_climate(connection, climate):
@@ -1422,6 +1910,104 @@ def _populate_climate(connection, climate):
     _insert(connection, "climate_checks", ("id", "position", "title", "status", "what", "why", "how", "timing", "resolved_on", "result"),
             [(item["id"], position, item["title"], item["status"], item["what"], item["why"], item["how"], item["timing"],
               item["resolved_on"], item["result"]) for position, item in enumerate(climate["checks"], 1)])
+
+
+def _populate_baselines(connection, document):
+    snow, storms, growth, wind, sun, humidity = (document[key] for key in ("snow", "storms", "growth", "wind", "sun", "humidity"))
+    building, hail = document["building"], document["hail"]
+    gdd, chill = growth["gdd"], growth["chill"]
+    sources, months, summaries, notes = [], [], [], [("site", "purpose", document["purpose"])]
+
+    def source(topic, item, kind, period, primary):
+        sources.append((topic, item["id"], kind, item["label"], item["url"], item["retrieved_from"], item["note"], *period, int(primary)))
+
+    first_snow, last_snow = snow["years"][0]["water_year"], snow["years"][-1]["water_year"]
+    source("snow", snow["source"], "station", (first_snow, last_snow), True)
+    source("storms", storms["source"], "model", (None, None), True)
+    source("growth", growth["source"], "station", tuple(gdd["period"]), True)
+    for item in wind["sources"]:
+        source("wind", item, item["kind"], tuple(item["period"]), False)
+    source("wind", wind["coarse_model"], "model", tuple(wind["coarse_model"]["period"]), False)
+    for item in sun["sources"]:
+        source("sun", item, "model", tuple(item["period"]), item["id"] == sun["primary"])
+    for item in humidity["sources"]:
+        source("humidity", item, item["kind"], tuple(item["period"]), item["id"] == humidity["primary"])
+    source("hail", hail["source"], "report", tuple(hail["period"]), True)
+    _insert(connection, "baseline_sources", ("topic", "id", "kind", "label", "url", "retrieved_from", "note", "period_start", "period_end",
+                                             "is_primary"), sources)
+
+    def monthly(topic, source_id, values):
+        months.extend((topic, source_id, month, value) for month, value in enumerate(values, 1))
+
+    monthly("precip_in", snow["source"]["id"], snow["monthly_precip_in"])
+    for base, values in gdd["monthly_mean"].items():
+        monthly(f"gdd_{base}", growth["source"]["id"], values)
+    for item in sun["sources"]:
+        monthly("solar_mj", item["id"], item["monthly"])
+    for item in humidity["sources"]:
+        monthly("rh_pct", item["id"], item["monthly"])
+    for item in wind["sources"]:
+        monthly("wind_mph", item["id"], item["monthly_mean_mph"])
+    monthly("wind_mph", wind["coarse_model"]["id"], wind["coarse_model"]["monthly_mean_mph"])
+    _insert(connection, "baseline_months", ("topic", "source_id", "month", "value"), months)
+
+    def summary(topic, measure, unit, years, item):
+        summaries.append((topic, measure, unit, years, item["min"], item["p10"], item["p50"], item["p90"], item["max"], item["mean"]))
+
+    for measure in ("peak_swe_in", "apr1_swe_in", "precip_in"):
+        summary("snow", measure, "in", snow["summary"]["years"], snow["summary"][measure])
+    for method in ("hourly", "daily_average"):
+        for base in gdd["bases_f"]:
+            summary("gdd", f"{method}_{base}", "degree days", len(gdd["years"]), gdd["summary"][method][str(base)])
+    for measure in ("hours_32_45", "hours_45"):
+        summary("chill", measure, "hours", len(chill["winters"]), chill["summary"][measure])
+    _insert(connection, "baseline_summary", ("topic", "measure", "unit", "years", "minimum", "p10", "p50", "p90", "maximum", "mean"), summaries)
+    _insert(connection, "snow_date_summary", ("measure", "years", "earliest", "p10", "p50", "p90", "latest"),
+            [(measure, snow["summary"]["years"], *(snow["summary"][measure][name] for name in FROST_DATE_STATS))
+             for measure in ("peak_on", "melt_out_on", "last_snow_on")])
+    normals = snow["normals_period"]
+    _insert(connection, "snow_years", ("water_year", "in_normals", "peak_swe_in", "peak_on", "peak_day", "melt_out_on", "melt_out_day",
+                                       "last_snow_on", "last_snow_day", "apr1_swe_in", "precip_in"),
+            [(row["water_year"], int(normals[0] <= row["water_year"] <= normals[1]), row["peak_swe_in"],
+              row["peak_on"], water_year_day(datetime.date.fromisoformat(row["peak_on"])),
+              row["melt_out_on"], water_year_day(datetime.date.fromisoformat(row["melt_out_on"])),
+              row["last_snow_on"], water_year_day(datetime.date.fromisoformat(row["last_snow_on"])),
+              row["apr1_swe_in"], row["precip_in"]) for row in snow["years"]])
+    _insert(connection, "design_storms", ("duration", "duration_hours", "return_years", "depth_in", "lower_in", "upper_in"),
+            [(name, storms["duration_hours"][row], period, storms["depth_in"][row][column], storms["lower_in"][row][column],
+              storms["upper_in"][row][column])
+             for row, name in enumerate(storms["durations"]) for column, period in enumerate(storms["return_periods_years"])])
+    _insert(connection, "gdd_years", ("year", "method", "base_f", "degree_days", "hours_recorded"),
+            [(row["year"], method, base, row[method][str(base)], row["hours_recorded"])
+             for row in gdd["years"] for method in ("hourly", "daily_average") for base in gdd["bases_f"]])
+    _insert(connection, "chill_winters", ("winter", "hours_32_45", "hours_45", "hours_recorded"),
+            [(row["winter"], row["hours_32_45"], row["hours_45"], row["hours_recorded"]) for row in chill["winters"]])
+    _insert(connection, "wind_stats", ("source_id", "latitude", "longitude", "elevation_ft", "distance_mi", "bearing_deg", "hours", "mean_mph",
+                                       "calm_pct", "pct_hours_10_mph", "pct_hours_15_mph", "pct_hours_25_mph"),
+            [(item["id"], item["latitude"], item["longitude"], item["elevation_ft"], item["distance_mi"], item["bearing_deg"], item["hours"],
+              item["mean_mph"], item["calm_pct"], *(item["pct_hours_at_or_above_mph"][speed] for speed in ("10", "15", "25")))
+             for item in wind["sources"]])
+    _insert(connection, "wind_rose", ("source_id", "season", "sector_index", "sector", "pct", "season_hours"),
+            [(item["id"], season, index, name, item["rose_pct"][season][index], item["rose_hours"][season])
+             for item in wind["sources"] for season in BASELINE_SEASONS for index, name in enumerate(wind["sector_names"])])
+    _insert(connection, "building_sources", ("id", "label", "url", "quote"),
+            [(item["id"], item["label"], item["url"], item["quote"]) for item in building["sources"]])
+    _insert(connection, "building_values", ("id", "label", "value", "numeric_value", "unit", "note"),
+            [(item["id"], item["label"], str(item["value"]), item["value"] if isinstance(item["value"], (int, float)) else None, item["unit"],
+              item["note"]) for item in building["values"]])
+    _insert(connection, "building_value_sources", ("value_id", "source_id"),
+            [(item["id"], name) for item in building["values"] for name in item["source_ids"]])
+    _insert(connection, "hail_events", ("event_id", "date", "county", "place", "size_in", "latitude", "longitude", "distance_mi", "reported_by",
+                                        "narrative"),
+            [tuple(event[key] for key in ("event_id", "date", "county", "place", "size_in", "latitude", "longitude", "distance_mi",
+                                          "reported_by", "narrative")) for event in hail["events"]])
+    notes += [("snow", key, text) for key, text in snow["definitions"].items()]
+    notes += [("gdd", key, text) for key, text in gdd["definitions"].items()]
+    notes += [("chill", key, text) for key, text in chill["definitions"].items()]
+    notes += [("wind", "status", wind["status"])] + [("wind", key, text) for key, text in wind["definitions"].items()]
+    notes += [("building", "note", building["note"]), ("building", "reading", building["reading"]),
+              ("sun", "units", sun["units"]), ("humidity", "units", humidity["units"])]
+    _insert(connection, "baseline_notes", ("topic", "key", "text"), notes)
 
 
 def orchard_constants(data):
@@ -1489,6 +2075,8 @@ def generated_outputs(data, root, digest):
     water = heading + "window.WATER_HARVESTING = " + _json(data["water_harvesting"]) + ";\n"
     climate = heading + "window.SITE_CLIMATE = " + _json(data["climate"]) + ";\n"
     climate += (root / "web" / "site_climate.js").read_text(encoding="utf-8")
+    baselines = heading + "window.SITE_BASELINES = " + _json(data["site_baselines"]) + ";\n"
+    baselines += (root / "web" / "site_baselines.js").read_text(encoding="utf-8")
     checklist = heading + (root / "web" / "planting_checklist.js").read_text(encoding="utf-8")
     manifest = json.dumps({"schema_version": 1, "source_digest": digest,
                            "plants": len(data["plants"]["records"]), "orchard_spots": len(data["locations"]["records"]),
@@ -1496,7 +2084,8 @@ def generated_outputs(data, root, digest):
                            "cultivar_profiles": len(data["cultivar_library"]["records"])}, indent=2) + "\n"
     return {name: text.encode("utf-8") for name, text in {
         "site_grid.js": site, "site_terrain.js": terrain, "orchard_model.js": orchard,
-        "water_harvesting.js": water, "site_climate.js": climate, "planting_checklist.js": checklist, "cultivar_library.js": library, "manifest.json": manifest,
+        "water_harvesting.js": water, "site_climate.js": climate, "site_baselines.js": baselines, "planting_checklist.js": checklist,
+        "cultivar_library.js": library, "manifest.json": manifest,
     }.items()}
 
 

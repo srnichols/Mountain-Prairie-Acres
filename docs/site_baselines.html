@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Site Baselines: Snow, Storms, Heat, Wind, Sun, and Building Values — Prairie Plants</title>
+<style>
+  :root {
+    --bg: #ffffff; --bg2: #f5f4f0; --bg3: #eae8e1;
+    --text: #2C2C2A; --text2: #5F5E5A; --text3: #888780;
+    --border: #d3d1c7; --link: #185FA5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text);
+    padding: 24px; max-width: 1100px; margin: 0 auto; line-height: 1.6;
+  }
+  h1 { font-size: 22px; font-weight: 500; margin-bottom: 2px; }
+  h2 { font-size: 16px; font-weight: 500; margin: 24px 0 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+  h3 { font-size: 13px; font-weight: 600; margin: 12px 0 4px; color: var(--text2); }
+  p { margin: 6px 0; }
+  a { color: var(--link); }
+  code { font-family: Consolas, "SF Mono", Menlo, monospace; font-size: 0.92em; }
+  .subtitle { font-size: 13px; color: var(--text2); margin-bottom: 8px; }
+  .source-note { font-size: 11px; color: var(--text2); }
+  .lead { font-size: 13px; line-height: 1.65; }
+  .notice { background: var(--bg2); border-left: 4px solid #BA7517; border-radius: 4px; padding: 10px 12px; margin: 12px 0; font-size: 12px; }
+  .notice.error { border-left-color: #E24B4A; }
+  .notice.caution { border-left-color: #C2412F; }
+  ul.points { font-size: 12.5px; padding-left: 20px; margin: 6px 0; }
+  ul.points li { margin: 4px 0; }
+  .specs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 12px 0; }
+  .spec { background: var(--bg2); border-radius: 8px; padding: 10px 12px; }
+  .spec .label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
+  .spec .value { font-size: 16px; font-weight: 500; }
+  .spec .hint { font-size: 10px; color: var(--text2); line-height: 1.3; }
+
+  .diagram { display: block; width: 100%; height: auto; margin: 8px 0 12px; }
+  .diagram text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: #2C2C2A; }
+  .diagram .t-note { fill: #5F5E5A; }
+  .diagram .t-strong { font-weight: 600; }
+  .diagram .halo { paint-order: stroke; stroke: #fff; stroke-width: 3px; stroke-linejoin: round; }
+  .c-grid { stroke: #e2e0d8; stroke-width: 1; }
+  .c-axis { stroke: #888780; stroke-width: 1; }
+  .c-median { stroke: #2C2C2A; stroke-width: 1.3; stroke-dasharray: 5 4; }
+  .bar-a { fill: #5B9BD5; }
+  .bar-out { fill: #B9D4EC; }
+  .bar-now { fill: #D9822B; }
+  .bar-b { fill: #C9A77F; }
+  .bar-chill { fill: #6C5BA7; }
+  .bar-chill-out { fill: #C3BBE0; }
+  .line-a { fill: none; stroke: #D9822B; stroke-width: 2.4; }
+  .line-b { fill: none; stroke: #5B9BD5; stroke-width: 2.4; }
+  .line-c { fill: none; stroke: #2E7D5B; stroke-width: 2.4; }
+  .line-d { fill: none; stroke: #6C5BA7; stroke-width: 2.4; }
+  .dot-a { fill: #D9822B; stroke: #fff; stroke-width: 1; }
+  .dot-b { fill: #5B9BD5; stroke: #fff; stroke-width: 1; }
+  .dot-c { fill: #2E7D5B; stroke: #fff; stroke-width: 1; }
+  .dot-d { fill: #6C5BA7; stroke: #fff; stroke-width: 1; }
+  .leg-a { fill: #D9822B; } .leg-b { fill: #5B9BD5; } .leg-c { fill: #2E7D5B; } .leg-d { fill: #6C5BA7; }
+  .rose-ring { fill: none; stroke: #d3d1c7; stroke-width: 0.8; stroke-dasharray: 2 3; }
+  .rose-axis { stroke: #d3d1c7; stroke-width: 0.8; }
+  .rose-wedge { fill: #8FB6DA; stroke: #fff; stroke-width: 0.6; }
+  .rose-top { fill: #C2412F; stroke: #fff; stroke-width: 0.6; }
+
+  table.detail { width: 100%; border-collapse: collapse; font-size: 11px; margin: 8px 0 16px; }
+  table.detail caption { caption-side: top; text-align: left; font-size: 11px; font-weight: 600; color: var(--text2); padding: 0 0 3px; }
+  table.detail th { background: var(--bg3); text-align: left; padding: 5px 8px; font-weight: 500; border: 1px solid var(--border); }
+  table.detail td { padding: 4px 8px; border: 1px solid var(--border); vertical-align: top; }
+  table.detail tr:nth-child(even) td { background: var(--bg2); }
+  table.detail td.num, table.detail th.num { text-align: right; white-space: nowrap; }
+  table.detail th.num { white-space: normal; }
+  table.detail th.center, table.detail td.center { text-align: center; }
+  table.detail td .small { display: block; font-size: 0.88em; color: var(--text2); }
+  table.detail td em { color: var(--text2); }
+  .source-list { padding-left: 20px; font-size: 12px; }
+  .source-list li { margin: 5px 0; }
+  .footer { margin-top: 24px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text3); }
+
+  @page {
+    size: 8.5in 11in;
+    margin: 10mm 10mm 12mm;
+    @bottom-left { content: "Prairie Plants - Site baselines: snow, storms, heat, wind, sun, and building values"; font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+  }
+  @media print {
+    body { padding: 0; margin: 0; max-width: none; font-size: 9pt; line-height: 1.3; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    .print-help, .screen-only { display: none; }
+    .page-break { break-before: page; }
+    .keep { break-inside: avoid; }
+    h1 { font-size: 16pt; line-height: 1.15; }
+    h2 { font-size: 12pt; margin: 3mm 0 1.5mm; padding-bottom: 1mm; }
+    h3 { font-size: 10pt; margin: 2mm 0 1mm; }
+    h1, h2, h3 { break-after: avoid; }
+    p { orphans: 3; widows: 3; }
+    .subtitle { font-size: 9pt; margin-bottom: 1.5mm; }
+    .source-note { font-size: 7.5pt; line-height: 1.3; }
+    .lead { font-size: 9pt; line-height: 1.35; }
+    ul.points { font-size: 8.5pt; line-height: 1.3; padding-left: 5mm; }
+    ul.points li { margin: 0.6mm 0; }
+    .specs { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 2mm; margin: 2mm 0; }
+    .spec { padding: 1.5mm 2mm; border-radius: 1mm; }
+    .spec .label { font-size: 6.5pt; letter-spacing: 0; }
+    .spec .value { font-size: 10.5pt; }
+    .spec .hint { font-size: 6.5pt; }
+    .notice { font-size: 8pt; padding: 1.5mm 2mm; margin: 2mm 0; }
+    .chart { max-height: 2.15in; }
+    .chart.tall { max-height: 4.5in; }
+    table.detail { table-layout: fixed; font-size: 7.8pt; line-height: 1.25; margin: 2mm 0 3mm; }
+    table.detail caption { font-size: 8pt; }
+    table.detail th, table.detail td { padding: 1mm 1.5mm; overflow-wrap: anywhere; }
+    table.detail tr { break-inside: avoid; }
+    thead { display: table-header-group; }
+    .source-list { font-size: 7.2pt; padding-left: 5mm; }
+    .source-list li { margin: 0.4mm 0; }
+    a { text-decoration: none; color: inherit; }
+    .footer { font-size: 7.5pt; margin-top: 1.5mm; padding-top: 1mm; }
+  }
+  .home-link { margin: 0 0 0.1in; font-size: 9.5pt; }
+  @media print { .home-link { display: none; } }
+</style>
+</head>
+<body>
+<nav class="home-link" aria-label="Back to the home page"><a href="index.html">← Mountain Prairie Acres — Orchard and Ranch Projects</a></nav>
+
+<div class="notice print-help" role="note"><strong>Print setup:</strong> Letter (8.5 × 11 in), portrait, 100% scale. Turn on background graphics and turn off the browser's headers and footers.</div>
+<noscript><div class="notice error">JavaScript is required to draw the charts and the calculated tables.</div></noscript>
+<div class="notice error" id="render-error" hidden></div>
+
+<section aria-labelledby="page-title">
+<h1 id="page-title">Site Baselines: Snow, Storms, Heat, Wind, Sun, and Building Values</h1>
+<p class="subtitle" id="subtitle"></p>
+<p class="source-note" id="purpose"></p>
+<div class="specs" id="specs"></div>
+</section>
+
+<section aria-labelledby="snow-heading">
+<h2 id="snow-heading">Snow and Precipitation</h2>
+<p class="lead" id="snow-lead"></p>
+<div id="snow-chart"></div>
+<p class="source-note" id="snow-chart-note"></p>
+<div id="precip-chart"></div>
+<p class="source-note" id="precip-note"></p>
+<table class="detail" id="snow-table">
+<colgroup><col style="width:30%"><col style="width:14%"><col style="width:14%"><col style="width:14%"><col style="width:14%"><col style="width:14%"></colgroup>
+<thead><tr><th id="snow-table-title">Measure, water years</th><th class="num">Lowest or earliest</th><th class="num">1 year in 10 below</th><th class="num">Median</th><th class="num">1 year in 10 above</th><th class="num">Highest or latest</th></tr></thead>
+<tbody></tbody></table>
+</section>
+
+<section class="page-break" aria-labelledby="storms-heading">
+<h2 id="storms-heading">Design Storms</h2>
+<p class="lead" id="storms-lead"></p>
+<table class="detail" id="storms-table">
+<thead></thead><tbody></tbody></table>
+<p class="source-note" id="storms-note"></p>
+
+<h2 id="growth-heading">Heat: Degree Days</h2>
+<p class="lead" id="gdd-lead"></p>
+<div id="gdd-chart"></div>
+<p class="source-note" id="gdd-note"></p>
+<table class="detail" id="gdd-table">
+<colgroup><col style="width:30%"><col style="width:14%"><col style="width:14%"><col style="width:14%"><col style="width:14%"><col style="width:14%"></colgroup>
+<thead><tr><th id="gdd-table-title">Degree days in a year</th><th class="num">Lowest</th><th class="num">1 year in 10 below</th><th class="num">Median</th><th class="num">1 year in 10 above</th><th class="num">Highest</th></tr></thead>
+<tbody></tbody></table>
+</section>
+
+<section class="page-break" aria-labelledby="chill-heading">
+<h2 id="chill-heading">Chill Hours</h2>
+<p class="lead" id="chill-lead"></p>
+<div id="chill-chart"></div>
+<p class="source-note" id="chill-note"></p>
+
+<h2 id="sun-heading">Sun and Humidity</h2>
+<p class="lead" id="sun-lead"></p>
+<div id="sun-chart"></div>
+<p class="source-note" id="sun-note"></p>
+<p class="lead" id="humidity-lead"></p>
+<div id="humidity-chart"></div>
+<p class="source-note" id="humidity-note"></p>
+</section>
+
+<section class="page-break" aria-labelledby="wind-heading">
+<h2 id="wind-heading">Wind</h2>
+<div class="notice caution" id="wind-status" role="note"></div>
+<p class="lead" id="wind-lead"></p>
+<div id="wind-chart"></div>
+<p class="source-note" id="wind-note"></p>
+<table class="detail" id="wind-table">
+<colgroup><col style="width:27%"><col style="width:13%"><col style="width:9%"><col style="width:11%"><col style="width:8%"><col style="width:8%"><col style="width:8%"><col style="width:8%"><col style="width:8%"></colgroup>
+<thead><tr><th>Source</th><th>Distance from the lot</th><th class="num">Height, ft</th><th>Years (hours recorded)</th><th class="num">Mean, mph</th><th class="num">Calm hours</th><th class="num">Hours at 10 mph or more</th><th class="num">At 15 mph or more</th><th class="num">At 25 mph or more</th></tr></thead>
+<tbody></tbody></table>
+<table class="detail" id="wind-months">
+<colgroup><col style="width:16%"><col style="width:7%"><col style="width:7%"><col style="width:7%"><col style="width:7%"><col style="width:7%"><col style="width:7%"><col style="width:7%"><col style="width:7%"><col style="width:7%"><col style="width:7%"><col style="width:7%"><col style="width:7%"></colgroup>
+<thead></thead><tbody></tbody></table>
+</section>
+
+<section class="page-break" aria-labelledby="building-heading">
+<h2 id="building-heading">County Building Values</h2>
+<p class="lead" id="building-lead"></p>
+<table class="detail" id="building-table">
+<colgroup><col style="width:15%"><col style="width:12%"><col style="width:26%"><col style="width:47%"></colgroup>
+<thead><tr><th>Value</th><th class="num">For Prairie</th><th>County documents</th><th>What to ask the county</th></tr></thead>
+<tbody></tbody></table>
+<p class="source-note" id="building-note"></p>
+
+<h2 id="hail-heading">Hail</h2>
+<p class="lead" id="hail-lead"></p>
+<table class="detail" id="hail-table">
+<colgroup><col style="width:12%"><col style="width:18%"><col style="width:13%"><col style="width:9%"><col style="width:14%"><col style="width:34%"></colgroup>
+<thead><tr><th>Date</th><th>Place</th><th>Size</th><th class="num">Miles from the lot</th><th>Reported by</th><th>What was reported</th></tr></thead>
+<tbody></tbody></table>
+<p class="source-note" id="hail-note"></p>
+</section>
+
+<section class="page-break" aria-labelledby="sources-heading">
+<h2 id="sources-heading">Sources and Method</h2>
+<p class="source-note">Each source was retrieved on the date it gives, and the exact request is kept in <code>data/site_baselines.json</code> beside the numbers it produced. Unless a line says measured, it is a model or a statistical estimate, and none of them is a reading from the lot.</p>
+<ul class="source-list" id="source-list"></ul>
+<h3>How the numbers are counted</h3>
+<ul class="source-list" id="definition-list"></ul>
+</section>
+
+<div class="footer">Prairie Plants · Site baselines · created October 19, 2026 · data in <code>data/site_baselines.json</code> and the SQLite tables built from it (<code>snow_years</code>, <code>design_storms</code>, <code>site_baseline_months</code>).</div>
+
+<script src="data/water_harvesting.js"></script>
+<script src="data/site_climate.js"></script>
+<script src="data/site_baselines.js"></script>
+<script>
+'use strict';
+if (!window.SiteBaselines || !window.SiteClimate || !window.WATER_HARVESTING) {
+  const box = document.getElementById('render-error');
+  box.hidden = false;
+  box.textContent = 'Could not build the page: the generated baselines, climate, or water data did not load. Rebuild with tools/property_data.py build.';
+  throw new Error('site baselines data files missing');
+}
+const B = window.SiteBaselines;
+const D = B.data;
+const SITE = window.SiteClimate.data.site;
+const WATER = window.WATER_HARVESTING;
+const MONTHS = B.MONTH_NAMES;
+const LONG_MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const COUNT_WORDS = ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'];
+const SVG_NS = 'http://www.w3.org/2000/svg';
+window.addEventListener('error', event => {
+  const box = document.getElementById('render-error');
+  box.hidden = false;
+  box.textContent = `This page could not finish drawing: ${event.message}`;
+});
+// Short names for the charts and tables; a source with no entry here falls back to its full label.
+const SOURCE_NAMES = {
+  'hrrr-lot': ['HRRR weather model', 'cell at the lot'], 'pine-turnoff-rwis': ['Pine Turnoff', 'road weather station'],
+  'muo-asos': ['Mountain Home AFB', 'airport station'], 'nasa-power': ['NASA POWER', 'global model'], daymet: ['Daymet', '1 km model'],
+  'pvgis-nsrdb': ['PVGIS NSRDB', 'satellite estimate']
+};
+const nameOf = source => (SOURCE_NAMES[source.id] || [source.label])[0];
+const titleCase = text => text.toLowerCase().replace(/\b[a-z]/g, letter => letter.toUpperCase());
+// A reporter's title, such as COOP Observer, keeps its own capitals unless the whole text is shouted in capitals.
+const tidy = text => text === text.toUpperCase() ? titleCase(text) : text;
+
+/* Formatting and DOM helpers */
+const fmt = (value, digits = 0) => Number(value).toLocaleString('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits });
+const percent = share => `${Math.round(share * 100)}%`;
+const longDate = iso => { const [year, month, day] = iso.split('-').map(Number); return `${MONTHS[month - 1]} ${day}, ${year}`; };
+const winterName = year => `${year}\u2013${String(year + 1).slice(2)}`;
+const andList = items => items.length < 2 ? items.join('') : items.length === 2 ? items.join(' and ') : `${items.slice(0, -1).join(', ')}, and ${items[items.length - 1]}`;
+function svgNode(tag, attrs = {}, text) {
+  const node = document.createElementNS(SVG_NS, tag);
+  Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+function element(tag, text, className) {
+  const node = document.createElement(tag);
+  if (text !== undefined && text !== null) node.textContent = text;
+  if (className) node.className = className;
+  return node;
+}
+function addRow(tbody, cells, classes = []) {
+  const tr = element('tr');
+  cells.forEach((cell, index) => {
+    const td = element('td');
+    if (cell instanceof Node) td.append(cell); else td.textContent = cell;
+    if (classes[index]) td.className = classes[index];
+    tr.append(td);
+  });
+  tbody.append(tr);
+  return tr;
+}
+function headRow(thead, cells) {
+  const tr = element('tr');
+  cells.forEach(cell => {
+    const [text, className] = Array.isArray(cell) ? cell : [cell];
+    tr.append(element('th', text, className));
+  });
+  thead.append(tr);
+}
+function chartFrame(id, width, height, title, className = 'chart') {
+  const svg = svgNode('svg', { viewBox: `0 0 ${width} ${height}`, class: `diagram ${className}`, role: 'img', 'aria-labelledby': `${id}-title` });
+  svg.append(svgNode('title', { id: `${id}-title` }, title));
+  return svg;
+}
+const label = (svg, x, y, str, attrs = {}) => svg.append(svgNode('text', { x, y, 'font-size': 11, ...attrs }, str));
+function set(id, text) { document.getElementById(id).textContent = text; }
+function mount(id, svg) { document.getElementById(id).append(svg); }
+const summaryRow = (tbody, name, item, format, classes) => addRow(tbody, [name, ...['min', 'p10', 'p50', 'p90', 'max'].map(key => format(item[key]))], classes);
+const NUMERIC_COLUMNS = [null, 'num', 'num', 'num', 'num', 'num'];
+
+/* A bar chart with one or more bars per label, an optional dashed reference line, and optional per-bar color classes. */
+function drawBars({ id, title, labels, series, max, step, unit, labelEvery = 1, line, lineLabel, classes = {}, digits = 0, width = 720, height = 200 }) {
+  const m = { l: 46, r: 12, t: 26, b: 32 };
+  const iw = width - m.l - m.r, ih = height - m.t - m.b;
+  const svg = chartFrame(id, width, height, title);
+  const y = value => m.t + ih - value / max * ih;
+  for (let tick = 0; tick <= max + 1e-9; tick += step) {
+    svg.append(svgNode('line', { x1: m.l, x2: width - m.r, y1: y(tick), y2: y(tick), class: tick === 0 ? 'c-axis' : 'c-grid' }));
+    label(svg, m.l - 6, y(tick) + 4, fmt(tick, digits), { 'text-anchor': 'end', class: 't-note' });
+  }
+  label(svg, m.l - 40, 14, unit, { class: 't-note', 'font-size': 10 });
+  const band = iw / labels.length, barWidth = band * 0.74 / series.length;
+  labels.forEach((name, index) => {
+    series.forEach((item, s) => {
+      const value = item.values[index];
+      const bar = svgNode('rect', { x: m.l + index * band + band * 0.13 + s * barWidth, y: y(value), width: barWidth, height: Math.max(0, y(0) - y(value)),
+        class: classes[index] || item.className });
+      bar.append(svgNode('title', {}, `${name}: ${fmt(value, digits)}`));
+      svg.append(bar);
+    });
+    if (index % labelEvery === 0) label(svg, m.l + index * band + band / 2, height - m.b + 14, name, { 'text-anchor': 'middle', class: 't-note', 'font-size': 10 });
+  });
+  if (line !== undefined) {
+    svg.append(svgNode('line', { x1: m.l, x2: width - m.r, y1: y(line), y2: y(line), class: 'c-median' }));
+    label(svg, width - m.r - 4, y(line) - 5, lineLabel, { 'text-anchor': 'end', class: 't-strong halo' });
+  }
+  return svg;
+}
+
+/* A line chart over the 12 months, one line per series, with a legend. */
+function drawMonthLines({ id, title, series, max, step, unit, digits = 0, width = 720, height = 200, endLabels = true }) {
+  const m = { l: 46, r: endLabels ? 74 : 14, t: 30, b: 26 };
+  const iw = width - m.l - m.r, ih = height - m.t - m.b;
+  const svg = chartFrame(id, width, height, title);
+  const x = month => m.l + (month + 0.5) / 12 * iw, y = value => m.t + ih - value / max * ih;
+  for (let tick = 0; tick <= max + 1e-9; tick += step) {
+    svg.append(svgNode('line', { x1: m.l, x2: width - m.r, y1: y(tick), y2: y(tick), class: tick === 0 ? 'c-axis' : 'c-grid' }));
+    label(svg, m.l - 6, y(tick) + 4, fmt(tick, digits), { 'text-anchor': 'end', class: 't-note' });
+  }
+  MONTHS.forEach((name, month) => label(svg, x(month), height - m.b + 14, name, { 'text-anchor': 'middle', class: 't-note', 'font-size': 10 }));
+  label(svg, m.l - 40, 14, unit, { class: 't-note', 'font-size': 10 });
+  series.forEach((item, index) => {
+    svg.append(svgNode('polyline', { points: item.values.map((value, month) => `${x(month)},${y(value)}`).join(' '), class: `line-${item.color}` }));
+    item.values.forEach((value, month) => {
+      const dot = svgNode('circle', { cx: x(month), cy: y(value), r: 3, class: `dot-${item.color}` });
+      dot.append(svgNode('title', {}, `${item.name}, ${MONTHS[month]}: ${fmt(value, digits)}`));
+      svg.append(dot);
+    });
+    if (endLabels) label(svg, width - m.r + 6, y(item.values[11]) + 4, item.endLabel || item.name, { 'font-size': 10, class: 't-strong halo' });
+    svg.append(svgNode('rect', { x: m.l + 100 + index * 170, y: 4, width: 10, height: 10, class: `leg-${item.color}` }));
+    label(svg, m.l + 100 + index * 170 + 15, 13, item.name, { 'font-size': 10 });
+  });
+  return svg;
+}
+
+/* One wind rose: a wedge for each of 16 directions, the length showing the share of windy hours, the most common one in red. */
+function drawRose(svg, cx, cy, radius, values, maxShare) {
+  [10, 20, 30].forEach(ring => svg.append(svgNode('circle', { cx, cy, r: radius * ring / maxShare, class: 'rose-ring' })));
+  svg.append(svgNode('line', { x1: cx - radius, x2: cx + radius, y1: cy, y2: cy, class: 'rose-axis' }));
+  svg.append(svgNode('line', { x1: cx, x2: cx, y1: cy - radius, y2: cy + radius, class: 'rose-axis' }));
+  const top = values.indexOf(Math.max(...values));
+  values.forEach((share, index) => {
+    const centre = index * 22.5, half = 10;
+    const point = (angle, length) => `${cx + length * Math.sin(angle * Math.PI / 180)},${cy - length * Math.cos(angle * Math.PI / 180)}`;
+    const length = radius * share / maxShare;
+    const wedge = svgNode('path', { d: `M${cx},${cy} L${point(centre - half, length)} A${length},${length} 0 0 1 ${point(centre + half, length)} Z`,
+      class: index === top ? 'rose-top' : 'rose-wedge' });
+    wedge.append(svgNode('title', {}, `${D.wind.sector_names[index]}: ${fmt(share, 1)}% of windy hours`));
+    svg.append(wedge);
+  });
+  [['N', 0, -1], ['E', 1, 0], ['S', 0, 1], ['W', -1, 0]].forEach(([name, dx, dy]) =>
+    label(svg, cx + dx * (radius + 8), cy + dy * (radius + 8) + 3, name, { 'text-anchor': 'middle', 'font-size': 8, class: 't-note' }));
+}
+
+/* ---------- Header ---------- */
+set('subtitle', `Prairie Plants · ${SITE.name} · about ${fmt(SITE.elevation_ft)} ft · reference numbers from the nearest stations, models, and county documents`);
+set('purpose', `${D.purpose} Open questions about these numbers are under Still to Check on the `);
+const purpose = document.getElementById('purpose');
+const climateLink = element('a', 'site climate page');
+climateLink.href = 'site_climate.html';
+purpose.append(climateLink, '.');
+
+const SNOW = D.snow, NORMALS = SNOW.normals_period, SNOW_YEARS = SNOW.years;
+const SUMMARY = SNOW.summary;
+const LATEST = SNOW_YEARS[SNOW_YEARS.length - 1];
+const GDD = D.growth.gdd, CHILL = D.growth.chill;
+const GDD50 = GDD.summary.hourly['50'], GDD43 = GDD.summary.hourly['43'];
+const CHILL_A = CHILL.summary.hours_32_45, CHILL_B = CHILL.summary.hours_45;
+// Where the latest water year's peak stands among the years on record, in words that stay true as years are added.
+const STANDING = B.snowStanding(LATEST.water_year);
+const TIED = STANDING.tied ? 'tied for ' : '';
+const IN_THE_LOWEST_FIVE = STANDING.lower < 5;
+function latestStanding() {
+  const span = `of the ${STANDING.count} years since ${SNOW_YEARS[0].water_year}`;
+  if (IN_THE_LOWEST_FIVE) return `${TIED}the ${B.rankWord(STANDING.lower + 1, 'lowest')} ${span}`;
+  if (STANDING.higher < 5) return `${TIED}the ${B.rankWord(STANDING.higher + 1, 'highest')} ${span}`;
+  const median = SUMMARY.peak_swe_in.p50;
+  return `${LATEST.peak_swe_in > median ? 'above' : LATEST.peak_swe_in < median ? 'below' : 'at'} the ${NORMALS[0]} to ${NORMALS[1]} median of ${fmt(median, 1)} inches`;
+}
+
+function renderSpecs() {
+  const snowLoad = B.buildingValue('ground-snow-load');
+  [
+    ['Snowpack peak', `${fmt(SUMMARY.peak_swe_in.p50, 1)} in`, `of water, typically ${B.monthDay(SUMMARY.peak_on.p50)}; ${LATEST.water_year} peaked at ${fmt(LATEST.peak_swe_in, 1)} in`],
+    ['Precipitation', `${fmt(SUMMARY.precip_in.p50, 1)} in`, `in a typical water year; 1 year in 10 has under ${fmt(SUMMARY.precip_in.p10, 1)} in`],
+    ['25-year, 24-hour storm', `${fmt(B.stormDepth('24-hr', 25), 2)} in`, `of rain; 90% interval ${fmt(B.stormDepth('24-hr', 25, 'lower_in'), 2)} to ${fmt(B.stormDepth('24-hr', 25, 'upper_in'), 2)} in`],
+    ['Degree days, base 50 °F', fmt(GDD50.p50), `in a typical year by the hourly method; base 43 °F gives ${fmt(GDD43.p50)}`],
+    ['Chill, 32 to 45 °F', `${fmt(CHILL_A.p50)} h`, `November to February; the winters ranged from ${fmt(CHILL_A.min)} to ${fmt(CHILL_A.max)}`],
+    ['County snow load', `${fmt(snowLoad.value)} lb/sq ft`, 'on the county map for Prairie; confirm for a building here']
+  ].forEach(([name, value, hint]) => {
+    const card = element('div', null, 'spec');
+    card.append(element('div', name, 'label'), element('div', value, 'value'), element('div', hint, 'hint'));
+    document.getElementById('specs').append(card);
+  });
+}
+
+/* ---------- Snow and precipitation ---------- */
+function renderSnow() {
+  const lowest = B.snowExtreme('peak_swe_in', 'min'), heaviest = B.snowExtreme('peak_swe_in', 'max');
+  const monthly = SNOW.monthly_precip_in;
+  const winterShare = [10, 11, 0, 1, 2].reduce((sum, month) => sum + monthly[month], 0) / monthly.reduce((sum, value) => sum + value, 0);
+  const prism = WATER.months.map(month => month.precipitation_in);
+  const worst = Math.max(...monthly.map((value, index) => Math.abs(value - prism[index])));
+  const inNormals = SNOW_YEARS.filter(row => row.water_year >= NORMALS[0] && row.water_year <= NORMALS[1]);
+  const snowyApril = inNormals.filter(row => row.apr1_swe_in > 0).length / inNormals.length;
+  set('snow-lead', `At the Prairie SNOTEL station the snowpack typically peaks at ${fmt(SUMMARY.peak_swe_in.p50, 1)} inches of water around ${B.monthDay(SUMMARY.peak_on.p50)} and has melted out by about ${B.monthDay(SUMMARY.melt_out_on.p50)}; 1 year in 10 peaks under ${fmt(SUMMARY.peak_swe_in.p10, 1)} inches and 1 in 10 over ${fmt(SUMMARY.peak_swe_in.p90, 1)}. Water year ${LATEST.water_year} peaked at ${IN_THE_LOWEST_FIVE ? 'only ' : ''}${fmt(LATEST.peak_swe_in, 1)} inches on ${longDate(LATEST.peak_on)}, ${latestStanding()}${lowest.year === LATEST.water_year ? '' : `; the lowest was ${fmt(lowest.value, 1)} inches in ${lowest.year}`}. The heaviest pack, ${fmt(heaviest.value, 1)} inches in ${heaviest.year}, weighed about ${fmt(B.snowPounds(heaviest.value))} pounds per square foot. Snow was still on the pillow on April 1 in ${percent(snowyApril)} of the ${inNormals.length} years from ${NORMALS[0]} to ${NORMALS[1]}.`);
+  const normals = SNOW_YEARS.map(row => row.water_year >= NORMALS[0] && row.water_year <= NORMALS[1]);
+  const classes = {};
+  SNOW_YEARS.forEach((row, index) => { classes[index] = row === LATEST ? 'bar-now' : normals[index] ? 'bar-a' : 'bar-out'; });
+  mount('snow-chart', drawBars({ id: 'snow', title: 'Peak snow water equivalent each water year', labels: SNOW_YEARS.map(row => String(row.water_year)),
+    series: [{ values: SNOW_YEARS.map(row => row.peak_swe_in) }], max: 10, step: 2, unit: 'inches of water', labelEvery: 3, classes,
+    line: SUMMARY.peak_swe_in.p50, lineLabel: `median ${fmt(SUMMARY.peak_swe_in.p50, 1)} in, ${NORMALS[0]} to ${NORMALS[1]}`, digits: 0 }));
+  set('snow-chart-note', `The most water the snow on the pillow held in each water year (October to September, named for the year it ends). Dark blue bars are the ${SUMMARY.years} years of the ${NORMALS[0]} to ${NORMALS[1]} normals, light blue are the years around them, and orange is water year ${LATEST.water_year}. The pillow weighs the snow, so this is water, not depth.`);
+  mount('precip-chart', drawBars({ id: 'precip', title: 'Average precipitation by month, the station and the PRISM model', labels: MONTHS,
+    series: [{ values: monthly, className: 'bar-a' }, { values: prism, className: 'bar-b' }], max: 4, step: 1, unit: 'inches', digits: 0 }));
+  set('precip-note', `Blue is the station's gauge, averaged over ${NORMALS[0]} to ${NORMALS[1]} (${fmt(monthly.reduce((sum, value) => sum + value, 0), 1)} inches a year); tan is the PRISM model that the water-harvesting plan uses (${fmt(prism.reduce((sum, value) => sum + value, 0), 1)} inches). They agree within ${fmt(Math.ceil(worst * 10) / 10, 1)} inch in every month. ${percent(winterShare)} of the year's water falls from November to March, mostly as snow, so snowmelt and spring rain are the main harvest. A gauge catches less snow when it is windy, so the true total may be somewhat higher.`);
+  const tbody = document.querySelector('#snow-table tbody');
+  set('snow-table-title', `Measure, water years ${NORMALS[0]} to ${NORMALS[1]}`);
+  const inches = value => fmt(value, 1);
+  summaryRow(tbody, 'Peak snow water (inches)', SUMMARY.peak_swe_in, inches, NUMERIC_COLUMNS);
+  summaryRow(tbody, 'Snow water on April 1 (inches)', SUMMARY.apr1_swe_in, inches, NUMERIC_COLUMNS);
+  summaryRow(tbody, 'Water-year precipitation (inches)', SUMMARY.precip_in, inches, NUMERIC_COLUMNS);
+  [['Date of the peak', 'peak_on'], ['Melt-out: first zero after the peak', 'melt_out_on'], ['Last day with 0.1 inch or more of snow water', 'last_snow_on']].forEach(([name, key]) => {
+    const item = SUMMARY[key];
+    addRow(tbody, [name, ...['earliest', 'p10', 'p50', 'p90', 'latest'].map(stat => B.monthDay(item[stat]))], NUMERIC_COLUMNS);
+  });
+}
+
+/* ---------- Design storms ---------- */
+function renderStorms() {
+  const lengths = ['60-min', '3-hr', '6-hr', '12-hr', '24-hr', '2-day', '10-day'];
+  const periods = [2, 5, 10, 25, 50, 100];
+  const names = { '60-min': '1 hour', '3-hr': '3 hours', '6-hr': '6 hours', '12-hr': '12 hours', '24-hr': '24 hours', '2-day': '2 days', '10-day': '10 days' };
+  set('storms-lead', `NOAA's Atlas 14 gives the most rain expected at the lot in a stated time, on average once per return period. A 25-year, 24-hour storm drops ${fmt(B.stormDepth('24-hr', 25), 2)} inches, and a 100-year, 24-hour storm ${fmt(B.stormDepth('24-hr', 100), 2)}; in a cloudburst the 25-year, one-hour storm falls at ${fmt(B.stormRate('60-min', 25), 2)} inches an hour. These are rain only, so they do not cover snowmelt. For scale, the water-harvesting plan sets basin spillways 3 to 4 inches above the basin floor.`);
+  const table = document.getElementById('storms-table');
+  headRow(table.tHead, [['Rain in', ''], ...periods.map(years => [`${years}-year storm`, 'num'])]);
+  lengths.forEach(duration => addRow(table.tBodies[0], [names[duration], ...periods.map(years => {
+    const cell = element('span', fmt(B.stormDepth(duration, years), 2));
+    cell.append(element('span', `${fmt(B.stormDepth(duration, years, 'lower_in'), 2)} to ${fmt(B.stormDepth(duration, years, 'upper_in'), 2)}`, 'small'));
+    return cell;
+  })], ['', ...periods.map(() => 'num')]));
+  const note = document.getElementById('storms-note');
+  note.append('Inches of rain, with the 90% interval under each depth: the true value probably lies inside it. Partial-duration series, NOAA Atlas 14 Volume 12 version 2, at the lot center. The database holds all ', `${D.storms.durations.length}`, ' durations from 5 minutes to 60 days and every return period from 1 to 1,000 years (', element('code', 'design_storms'), ').');
+}
+
+/* ---------- Heat and chill ---------- */
+function renderGrowth() {
+  const c50 = B.cumulativeDegreeDays(50), c43 = B.cumulativeDegreeDays(43);
+  const daily50 = GDD.summary.daily_average['50'];
+  const cut = Math.round((1 - daily50.p50 / GDD50.p50) * 100);
+  set('gdd-lead', `Degree days add up how much warmth a growing season delivers. Counted from every hourly reading at the Prairie SNOTEL, a typical year holds ${fmt(GDD50.p50)} degree days above 50 °F and ${fmt(GDD43.p50)} above 43 °F (${GDD.years.length} years, ${GDD.period[0]} to ${GDD.period[1]}); 1 year in 10 has under ${fmt(GDD50.p10)} at base 50. In the average year the base-50 total stands at ${fmt(c50[5])} by the end of June, ${fmt(c50[7])} by the end of August, and ${fmt(c50[8])} by the end of September. The daily-average shortcut that many charts use gives ${fmt(daily50.p50)} at base 50, ${cut}% lower, so check which method and base a chart uses before comparing it with these.`);
+  mount('gdd-chart', drawMonthLines({ id: 'gdd', title: 'Running total of degree days at the end of each month, average year', max: 3500, step: 500, unit: 'degree days',
+    series: [{ name: 'Base 43 °F', values: c43, color: 'b', endLabel: `${fmt(c43[11])}` }, { name: 'Base 50 °F', values: c50, color: 'a', endLabel: `${fmt(c50[11])}` }] }));
+  const missingYears = [];
+  for (let year = GDD.period[0]; year <= GDD.period[1]; year++) if (!GDD.years.some(row => row.year === year)) missingYears.push(year);
+  set('gdd-note', `Average of ${GDD.years.length} years of hourly readings, ${GDD.period[0]} to ${GDD.period[1]}${missingYears.length ? ` (${andList(missingYears)} ${missingYears.length === 1 ? 'is' : 'are'} left out because more than ${percent(1 - GDD.min_hours_share)} of the hours were not recorded)` : ''}. Each hour counts the degrees above the base, capped at ${GDD.upper_cutoff_f} °F and divided by 24.`);
+  const tbody = document.querySelector('#gdd-table tbody');
+  set('gdd-table-title', `Degree days in a year, ${GDD.period[0]} to ${GDD.period[1]}`);
+  const whole = value => fmt(value);
+  [['hourly', 'Hourly method'], ['daily_average', 'Daily-average shortcut']].forEach(([method, name]) => GDD.bases_f.forEach(base =>
+    summaryRow(tbody, `${name}, base ${base} °F`, GDD.summary[method][String(base)], whole, NUMERIC_COLUMNS)));
+  const winters = CHILL.winters;
+  const mildest = winters.reduce((best, row) => row.hours_45 < best.hours_45 ? row : best);
+  let mildNote = `The mildest winter, ${winterName(mildest.winter)}, had the fewest hours at or below 45 °F (${fmt(mildest.hours_45)})`;
+  if (mildest.hours_32_45 === CHILL_A.max) mildNote += ' and the most between 32 and 45 °F';
+  mildNote += mildest.winter + 1 === LATEST.water_year && IN_THE_LOWEST_FIVE ? `. It was also the winter of a snowpack that was ${TIED}the ${B.rankWord(STANDING.lower + 1, 'smallest')} on record.` : '.';
+  set('chill-lead', `Chill hours are the cold hours that let a fruit tree finish its winter rest. Counting November 1 to the end of February, the station logged a median ${fmt(CHILL_A.p50)} hours between 32 and 45 °F (the winters ranged from ${fmt(CHILL_A.min)} to ${fmt(CHILL_A.max)}) and a median ${fmt(CHILL_B.p50)} hours at or below 45 °F (${fmt(CHILL_B.min)} to ${fmt(CHILL_B.max)}). Nursery and extension sources count chill in one of those two ways, so check which a cultivar's rating uses. ${mildNote}`);
+  const classes = {};
+  winters.forEach((row, index) => { classes[index] = row.hours_32_45 === CHILL_A.min || row.hours_32_45 === CHILL_A.max ? 'bar-chill' : 'bar-chill-out'; });
+  mount('chill-chart', drawBars({ id: 'chill', title: 'Chill hours between 32 and 45 °F, November to February, each winter', labels: winters.map(row => winterName(row.winter)),
+    series: [{ values: winters.map(row => row.hours_32_45) }], max: 1400, step: 200, unit: 'hours', labelEvery: 2, classes, height: 178,
+    line: CHILL_A.p50, lineLabel: `median ${fmt(CHILL_A.p50)} h` }));
+  set('chill-note', `Each bar is one winter, named for the year it starts. The darker bars are the lowest and the highest. Hours not recorded are not counted, and a winter is used only if at least ${percent(CHILL.min_hours_share)} of its hours were recorded.`);
+}
+
+/* ---------- Wind ---------- */
+function renderWind() {
+  set('wind-status', D.wind.status);
+  const sources = D.wind.sources;
+  const ids = ['hrrr-lot', 'muo-asos', 'pine-turnoff-rwis'];
+  const top = (id, season) => B.windTop(id, season, 1)[0];
+  const phrase = (id, season) => `${top(id, season).sector} (${fmt(top(id, season).pct)}%)`;
+  const winterAgree = new Set(ids.map(id => top(id, 'winter').sector)).size === 1;
+  const summerWest = ids.every(id => ['W', 'WNW', 'NW'].includes(top(id, 'summer').sector));
+  const heightGap = source => Math.abs(source.elevation_ft - SITE.elevation_ft);
+  const closestInHeight = sources.filter(source => source.kind === 'station').reduce((best, source) => heightGap(source) < heightGap(best) ? source : best).id === 'pine-turnoff-rwis';
+  set('wind-lead', `Each rose shows how the wind is spread over the compass in a season: the longer the wedge, the larger the share of windy hours (calm hours under ${D.wind.calm_below_knots} knots are left out) that the wind blew from that direction, and the red wedge is the most common one. In winter the most common direction, as a share of windy hours, is ${phrase('hrrr-lot', 'winter')} in the weather model at the lot, ${phrase('muo-asos', 'winter')} at Mountain Home Air Force Base, and ${phrase('pine-turnoff-rwis', 'winter')} at Pine Turnoff${closestInHeight ? ', the measured station closest in height' : ''}. ${winterAgree ? 'The three agree.' : 'They disagree, which matters for where a windbreak and snow fence help, and only a wind sensor at the lot can settle it.'} In summer it is ${phrase('hrrr-lot', 'summer')} in the model, ${phrase('muo-asos', 'summer')} at Mountain Home, and ${phrase('pine-turnoff-rwis', 'summer')} at Pine Turnoff${summerWest ? ', all from the west or northwest' : ''}.`);
+  const seasons = B.SEASONS, W = 720, left = 150, cellW = (W - left) / 4, cellH = 134, header = 24, radius = 46;
+  const svg = chartFrame('wind', W, header + cellH * sources.length, 'Wind roses by season for the model at the lot and two measured stations', 'chart tall');
+  seasons.forEach((season, column) => label(svg, left + cellW * (column + 0.5), 14, season[0].toUpperCase() + season.slice(1), { 'text-anchor': 'middle', class: 't-strong' }));
+  sources.forEach((source, row) => {
+    const cy = header + cellH * (row + 0.5) - 8;
+    const [first, second] = SOURCE_NAMES[source.id] || [source.label, ''];
+    label(svg, 6, cy - 6, first, { class: 't-strong', 'font-size': 10.5 });
+    label(svg, 6, cy + 7, second, { class: 't-note', 'font-size': 9.5 });
+    label(svg, 6, cy + 19, source.kind === 'model' ? 'model, not measured' : `measured, ${fmt(source.distance_mi, 1)} mi away`, { class: 't-note', 'font-size': 9.5 });
+    seasons.forEach((season, column) => {
+      const cx = left + cellW * (column + 0.5);
+      drawRose(svg, cx, cy, radius, source.rose_pct[season], 36);
+      const best = top(source.id, season);
+      label(svg, cx, cy + radius + 20, `most common: ${best.sector} ${fmt(best.pct)}%`, { 'text-anchor': 'middle', 'font-size': 9.5, class: 't-note' });
+    });
+  });
+  mount('wind-chart', svg);
+  set('wind-note', 'Directions are where the wind comes from, so a west wind blows toward the east. Rings mark 10, 20, and 30 percent of windy hours, and all roses share one scale so they can be compared.');
+  const tbody = document.querySelector('#wind-table tbody');
+  sources.forEach(source => {
+    const share = source.hours / ((source.period[1] - source.period[0] + 1) * 8766);
+    const name = element('span', nameOf(source));
+    name.append(element('span', (SOURCE_NAMES[source.id] || ['', ''])[1], 'small'));
+    addRow(tbody, [name, `${fmt(source.distance_mi, 1)} mi, bearing ${source.bearing_deg}°`, fmt(source.elevation_ft), `${source.period[0]} to ${source.period[1]} (${percent(share)})`,
+      fmt(source.mean_mph, 1), `${fmt(source.calm_pct)}%`, `${fmt(source.pct_hours_at_or_above_mph['10'])}%`, `${fmt(source.pct_hours_at_or_above_mph['15'])}%`, `${fmt(source.pct_hours_at_or_above_mph['25'], 1)}%`],
+      ['', '', 'num', '', 'num', 'num', 'num', 'num', 'num']);
+  });
+  const monthsTable = document.getElementById('wind-months');
+  monthsTable.createCaption().textContent = 'Average wind speed by month, mph';
+  headRow(monthsTable.tHead, [['Source', ''], ...MONTHS.map(name => [name, 'num'])]);
+  [...sources, D.wind.coarse_model].forEach(source => addRow(monthsTable.tBodies[0],
+    [nameOf(source), ...source.monthly_mean_mph.map(value => fmt(value, 1))], ['', ...MONTHS.map(() => 'num')]));
+}
+
+/* ---------- Sun and humidity ---------- */
+function renderSun() {
+  const sun = D.sun.sources, annual = sun.map(source => source.annual);
+  const primary = sun.find(source => source.id === D.sun.primary);
+  const kwh = value => fmt(value / 3.6, 1);
+  const best = Math.max(...primary.monthly), dimmest = Math.min(...primary.monthly);
+  const spreads = MONTHS.map((_, month) => Math.max(...sun.map(source => source.monthly[month])) - Math.min(...sun.map(source => source.monthly[month])));
+  const widest = spreads.indexOf(Math.max(...spreads));
+  set('sun-lead', `Three independent estimates of the sunshine reaching a flat surface at the lot agree within ${Math.ceil((Math.max(...annual) / Math.min(...annual) - 1) * 100)}% on the year's average: ${andList(sun.map(source => fmt(source.annual, 1)))} MJ per square meter per day (${andList(sun.map(source => kwh(source.annual)))} kilowatt-hours). ${LONG_MONTHS[primary.monthly.indexOf(best)]} is the sunniest month (about ${fmt(best)} MJ) and ${LONG_MONTHS[primary.monthly.indexOf(dimmest)]} the dimmest (about ${fmt(dimmest)} MJ), so the sunniest month gets about ${fmt(best / dimmest)} times as much. The sources differ most in ${LONG_MONTHS[widest]}, by ${fmt(spreads[widest], 1)} MJ.`);
+  const colors = ['a', 'b', 'c'];
+  mount('sun-chart', drawMonthLines({ id: 'sun', title: 'Solar radiation by month from three sources', max: 30, step: 5, unit: 'MJ per m² per day', endLabels: false, height: 178,
+    series: sun.map((source, index) => ({ name: nameOf(source), values: source.monthly, color: colors[index] })) }));
+  set('sun-note', `${D.sun.units}. One kilowatt-hour is 3.6 MJ. Periods: ${andList(sun.map(source => `${nameOf(source)} ${source.period[0]} to ${source.period[1]}`))}. A weather station's light sensor reports watts per square meter, and a day's average of that, times 0.0864, gives MJ per square meter per day.`);
+  const humidity = D.humidity.sources;
+  const [model, station] = [humidity.find(source => source.id === 'nasa-power'), humidity.find(source => source.id === 'pine-turnoff-rwis')];
+  const stationInfo = D.wind.sources.find(source => source.id === station.id);
+  const range = source => [Math.min(...source.monthly), Math.max(...source.monthly)];
+  const wettest = source => LONG_MONTHS[source.monthly.indexOf(Math.max(...source.monthly))], driest = source => LONG_MONTHS[source.monthly.indexOf(Math.min(...source.monthly))];
+  set('humidity-lead', `The air is humid in winter and dry in summer. The model puts the monthly average relative humidity between ${fmt(range(model)[0])}% (${driest(model)}) and ${fmt(range(model)[1])}% (${wettest(model)}); the measured station ${fmt(stationInfo.distance_mi)} miles away, between ${fmt(range(station)[0])}% (${driest(station)}) and ${fmt(range(station)[1])}% (${wettest(station)}). Dry summer air pulls water out of leaves and soil quickly, and damp winter and spring air favors fungal disease.`);
+  mount('humidity-chart', drawMonthLines({ id: 'humidity', title: 'Average relative humidity by month, model and nearby station', max: 100, step: 20, unit: 'percent', endLabels: false, height: 178,
+    series: [{ name: `${nameOf(model)} model`, values: model.monthly, color: 'd' }, { name: `${nameOf(station)} station (measured)`, values: station.monthly, color: 'c' }] }));
+  const higher = Math.round((stationInfo.elevation_ft - SITE.elevation_ft) / 100) * 100;
+  set('humidity-note', `${D.humidity.units}. The model is a grid roughly 50 km wide; the station is at ${fmt(stationInfo.elevation_ft)} ft, about ${fmt(higher)} ft above the lot. They stay within ${fmt(Math.ceil(Math.max(...model.monthly.map((value, month) => Math.abs(value - station.monthly[month])))))} points of each other in every month.`);
+}
+
+/* ---------- County building values ---------- */
+function renderBuilding() {
+  const building = D.building;
+  const sources = Object.fromEntries(building.sources.map(source => [source.id, source]));
+  const heaviest = B.snowExtreme('peak_swe_in', 'max');
+  const load = B.buildingValue('ground-snow-load').value;
+  set('building-lead', `${building.authority}, sets these design values for new buildings. ${building.reading} For scale, ${fmt(load)} pounds per square foot is the weight of about ${fmt(load / B.snowPounds(1))} inches of snow water, and the heaviest pack in the station's ${SNOW_YEARS.length}-year record, ${fmt(heaviest.value, 1)} inches in ${heaviest.year}, weighed about ${fmt(B.snowPounds(heaviest.value))} pounds per square foot.`);
+  const tbody = document.querySelector('#building-table tbody');
+  building.values.forEach(item => {
+    const documents = element('div');
+    item.source_ids.forEach(id => {
+      const link = element('a', sources[id].label);
+      link.href = sources[id].url;
+      documents.append(link, element('span', '', 'small'));
+    });
+    addRow(tbody, [item.label, item.unit === 'zone' ? `Zone ${item.value}` : `${item.value} ${item.unit}`, documents, item.note], ['', 'num', '', '']);
+  });
+  set('building-note', `${building.note} Retrieved ${longDate(building.retrieved_on)}. What each document says, word for word, is under Sources and Method.`);
+}
+
+/* ---------- Hail ---------- */
+// The weather service's everyday comparisons for hail, by diameter in inches.
+const HAIL_SIZES = { 0.75: 'penny', 0.88: 'nickel', 1: 'quarter', 1.25: 'half dollar', 1.5: 'ping-pong ball', 1.75: 'golf ball' };
+function renderHail() {
+  const events = D.hail.events;
+  const near = B.hailWithin(5), largest = events.reduce((best, event) => event.size_in > best.size_in ? event : best);
+  const years = D.hail.period[1] - D.hail.period[0] + 1;
+  set('hail-lead', `The weather service has ${events.length} hail reports within ${D.hail.radius_mi} miles of the lot in the ${years} years from ${D.hail.period[0]} to ${D.hail.period[1]}. ${near.length ? `${COUNT_WORDS[near.length] || near.length} ${near.length === 1 ? 'was' : 'were'} at Prairie itself (${andList(near.map(event => longDate(event.date)))}). ` : 'None was at Prairie itself. '}The largest was ${fmt(largest.size_in, 2)} inches${HAIL_SIZES[largest.size_in] ? ` (${HAIL_SIZES[largest.size_in]} sized)` : ''}, at ${titleCase(largest.place)} on ${longDate(largest.date)}.${near.some(event => /shredded trees/i.test(event.narrative || '')) ? ' One of the Prairie reports says the hail shredded trees.' : ''} Hail can break blossoms and bruise fruit, so a report in bloom or harvest season matters most.`);
+  const tbody = document.querySelector('#hail-table tbody');
+  events.forEach(event => addRow(tbody, [longDate(event.date), `${titleCase(event.place)}, ${titleCase(event.county)} County`,
+    `${fmt(event.size_in, 2)} in${HAIL_SIZES[event.size_in] ? ` (${HAIL_SIZES[event.size_in]})` : ''}`, fmt(event.distance_mi, 1), event.reported_by ? tidy(event.reported_by) : 'not given', event.narrative || 'no description'], ['', '', '', 'num', '', '']));
+  set('hail-note', D.hail.source.note);
+}
+
+/* ---------- Sources and method ---------- */
+function renderSources() {
+  const list = document.getElementById('source-list');
+  const seen = new Set();
+  const items = [D.snow.source, D.storms.source, D.growth.source, ...D.wind.sources, D.wind.coarse_model, ...D.sun.sources, ...D.humidity.sources, D.hail.source];
+  items.forEach(source => {
+    if (seen.has(source.retrieved_from)) return;
+    seen.add(source.retrieved_from);
+    const item = element('li');
+    const link = element('a', source.label);
+    link.href = source.url;
+    item.append(link, `: ${source.retrieved_from}. ${source.note}`);
+    list.append(item);
+  });
+  D.building.sources.forEach(source => {
+    const item = element('li');
+    const link = element('a', source.label);
+    link.href = source.url;
+    item.append(link, ` (retrieved ${longDate(D.building.retrieved_on)}). It says: `, element('em', `“${source.quote}”`));
+    list.append(item);
+  });
+  const definitions = document.getElementById('definition-list');
+  const labels = { water_year: 'Water year', peak_swe: 'Peak snow water', peak_on: 'Date of the peak', melt_out: 'Melt-out', last_snow: 'Last snow', apr1: 'April 1', precip: 'Water-year precipitation',
+    monthly: 'Monthly precipitation', hourly: 'Degree days, hourly method', daily_average: 'Degree days, daily-average shortcut', bases: 'Degree-day bases', monthly_mean: 'Monthly degree days',
+    hours_32_45: 'Chill hours, 32 to 45 °F', hours_45: 'Chill hours, 45 °F or below', winter: 'Winter', rose: 'Wind rose', seasons: 'Seasons' };
+  // The chart notes already explain these, so they are left out of the list to keep the appendix short.
+  const covered = new Set(['peak_on', 'apr1', 'winter', 'monthly_mean', 'melt_out', 'last_snow', 'rose']);
+  [D.snow.definitions, GDD.definitions, CHILL.definitions, D.wind.definitions].forEach(group => Object.entries(group).forEach(([key, text]) => {
+    if (covered.has(key)) return;
+    const item = element('li');
+    const name = labels[key] || key;
+    if (!text.toLowerCase().startsWith(name.toLowerCase())) item.append(element('strong', `${name}. `));
+    item.append(text);
+    definitions.append(item);
+  }));
+  const summary = element('li');
+  summary.append(element('strong', 'Percentiles. '), `"1 year in 10 below" is the 10th percentile and "1 year in 10 above" the 90th, over the years each table names. The data check recomputes every summary from the yearly rows, so a hand edit that disagrees fails the build.`);
+  definitions.append(summary);
+}
+
+renderSpecs();
+renderSnow();
+renderStorms();
+renderGrowth();
+renderWind();
+renderSun();
+renderBuilding();
+renderHail();
+renderSources();
+</script>
+</body>
+</html>

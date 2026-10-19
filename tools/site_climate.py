@@ -113,6 +113,60 @@ def frost_summary(years, thresholds, start, end):
     return summary
 
 
+def water_year_day(date):
+    """Day number counted from Oct 1 (day 1) of the date's water year, numbered as in a non-leap year."""
+    start = datetime.date(date.year if date.month >= 10 else date.year - 1, 10, 1)
+    number = (date - start).days + 1
+    return number - 1 if date.month > 2 and date.month < 10 and calendar.isleap(date.year) else number
+
+
+def water_year_month_day(number):
+    """MM-DD text for a non-leap water-year day number (day 1 is Oct 1)."""
+    date = datetime.date(2001, 10, 1) + datetime.timedelta(days=int(number) - 1)
+    return f"{date.month:02d}-{date.day:02d}"
+
+
+def series_summary(values, digits=1):
+    """Smallest, 10%, median, 90%, largest, and mean of a list of numbers, rounded half up to the given decimals."""
+    scale = 10 ** digits
+    fractions = (("min", 0.0), ("p10", 0.1), ("p50", 0.5), ("p90", 0.9), ("max", 1.0))
+    summary = {name: round_half_up(quantile(values, fraction) * scale) / scale for name, fraction in fractions}
+    summary["mean"] = round_half_up(sum(values) / len(values) * scale) / scale
+    return summary
+
+
+def date_summary(day_numbers, to_text):
+    """Earliest, 10%, median, 90%, and latest of day numbers, each rounded to a whole day and written as MM-DD."""
+    fractions = (("earliest", 0.0), ("p10", 0.1), ("p50", 0.5), ("p90", 0.9), ("latest", 1.0))
+    return {name: to_text(round_half_up(quantile(day_numbers, fraction))) for name, fraction in fractions}
+
+
+def extraterrestrial_mj(latitude, date):
+    """Sunshine on top of the atmosphere for one day on a flat surface, in MJ per square meter (FAO-56 equation 21)."""
+    j = date.timetuple().tm_yday
+    distance_factor = 1 + 0.033 * math.cos(2 * math.pi * j / 365)
+    declination = 0.409 * math.sin(2 * math.pi * j / 365 - 1.39)
+    phi = math.radians(latitude)
+    sunset_angle = math.acos(max(-1, min(1, -math.tan(phi) * math.tan(declination))))
+    return (24 * 60 / math.pi) * 0.0820 * distance_factor * (
+        sunset_angle * math.sin(phi) * math.sin(declination) + math.cos(phi) * math.cos(declination) * math.sin(sunset_angle))
+
+
+def extraterrestrial_months(latitude, year=2001):
+    """Average daily extraterrestrial radiation (MJ per square meter) for each month, 12 values."""
+    return [sum(extraterrestrial_mj(latitude, datetime.date(year, month, day)) for day in range(1, calendar.monthrange(year, month)[1] + 1))
+            / calendar.monthrange(year, month)[1] for month in range(1, 13)]
+
+
+def bearing_degrees(latitude_a, longitude_a, latitude_b, longitude_b):
+    """Compass bearing in degrees (0 is north) from the first point toward the second."""
+    phi_a, phi_b = math.radians(latitude_a), math.radians(latitude_b)
+    dlambda = math.radians(longitude_b - longitude_a)
+    x = math.sin(dlambda) * math.cos(phi_b)
+    y = math.cos(phi_a) * math.sin(phi_b) - math.sin(phi_a) * math.cos(phi_b) * math.cos(dlambda)
+    return (math.degrees(math.atan2(x, y)) + 360) % 360
+
+
 def _sun_at_noon(longitude, date):
     """Declination (degrees) and equation of time (minutes) near local solar noon on the date."""
     julian_day = date.toordinal() + 1721424.5 + 0.5 - longitude / 360

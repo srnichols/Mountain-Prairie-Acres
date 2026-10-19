@@ -337,6 +337,50 @@
       "timing": "March to October 2027.",
       "resolved_on": null,
       "result": null
+    },
+    {
+      "id": "wind-direction",
+      "title": "Measure which way the wind blows at the lot",
+      "status": "open",
+      "what": "No wind has been measured at the lot. The measured station closest in height, Pine Turnoff 20 miles away, shows west wind as the most common in every season, while the weather model at the lot (35 percent of windy winter hours) and Mountain Home Air Force Base (23 percent) show east wind as the most common in winter.",
+      "why": "Which side of the orchard takes the cold, drifting winter wind decides where a windbreak and snow fence help. The water-harvesting plan counts on west winds dropping snow east of the hazelnut row, and an east wind in winter would put the drift on the other side.",
+      "how": "Run the weather station's wind sensor for a full year, then compare its seasonal wind rose with the three on the site baselines page, and note the answer here.",
+      "timing": "One full year of readings, so winter 2027 to 2028 at the earliest.",
+      "resolved_on": null,
+      "result": null
+    },
+    {
+      "id": "county-snow-load",
+      "title": "Confirm the design snow load for a building at the lot",
+      "status": "open",
+      "what": "The county's snow load map puts Prairie in the 120 pound per square foot zone, but the county's permit application ties the engineered 120 pound design to buildings above about 5,000 ft, and the lot is at about 4,750 ft. The 30 pound zone covers the rest of the county.",
+      "why": "A barn, greenhouse, or house designed for 30 pounds may not meet the county's rule, and one designed for 120 pounds when 30 would do costs far more.",
+      "how": "Ask the Elmore County Land Use and Building Department (208-587-2130, extension 6500) which snow load applies to a building at 4,750 ft at the lot, and write the answer and the date here.",
+      "timing": "Before any building is designed.",
+      "resolved_on": null,
+      "result": null
+    },
+    {
+      "id": "county-frost-depth",
+      "title": "Confirm what the county's 30 inch frost depth means",
+      "status": "open",
+      "what": "The county's frost depth map puts Prairie in the 30 inch zone, but its permit page words the footing depth as '30 in below frost line'.",
+      "why": "It decides how deep footings and posts must go: 30 inches below ground, or deeper.",
+      "how": "Ask the Land Use and Building Department whether a footing bottom must be 30 inches below grade or 30 inches below the frost line, and write the answer and the date here.",
+      "timing": "Before any footing or post is set.",
+      "resolved_on": null,
+      "result": null
+    },
+    {
+      "id": "station-vs-baselines",
+      "title": "Compare a year of weather station readings with the baselines",
+      "status": "open",
+      "what": "The baselines for wind, humidity, sunshine, rain, and heat come from stations and models away from the lot, and none of them is a reading on the ground.",
+      "why": "How far the lot differs from them tells how much to trust the models for planting and water decisions.",
+      "how": "After the weather station has run for a full year, compare its monthly averages with the site_baseline_months view or the tables on the site baselines page, and write the largest differences here.",
+      "timing": "After one full year of readings.",
+      "resolved_on": null,
+      "result": null
     }
   ]
 }

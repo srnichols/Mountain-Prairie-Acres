@@ -9,7 +9,7 @@ import tempfile
 import unittest
 
 from property_data import build, check, load_data, query, source_digest, validate_data
-from site_climate import parse_month_day
+from site_climate import bearing_degrees, distance_miles, parse_month_day
 from site_grid import SiteGrid
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -32,6 +32,57 @@ def late_spring_at_24_f(climate):
     shortest = parse_month_day(summary["first_fall"]["earliest"]) - parse_month_day("06-30")
     longest = parse_month_day(summary["first_fall"]["latest"]) - parse_month_day("06-30")
     summary["frost_free_days"].update(shortest=shortest, p10=shortest, p50=shortest, p90=longest, longest=longest)
+
+
+def swap_storm_rows(baselines):
+    """Swap the 60-minute and 2-hour depths, so a longer storm has less rain than a shorter one."""
+    table = baselines["storms"]["depth_in"]
+    table[4], table[5] = table[5], table[4]
+
+
+def distort_january_and_december_sun(baselines):
+    """Move 5 MJ from December to January: the yearly average holds, but both months become physically impossible."""
+    months = baselines["sun"]["sources"][0]["monthly"]
+    months[0] += 5
+    months[11] -= 5
+
+
+def swap_first_two_hail_events(baselines):
+    events = baselines["hail"]["events"]
+    events[0], events[1] = events[1], events[0]
+
+
+def named(sources, name):
+    return next(source for source in sources if source["id"] == name)
+
+
+def drop_storm_duration(baselines, name):
+    storms = baselines["storms"]
+    index = storms["durations"].index(name)
+    del storms["durations"][index], storms["duration_hours"][index]
+
+
+def scale_monthly(source, key, factor):
+    source[key] = [value * factor for value in source[key]]
+
+
+def scale_solar_source(baselines, name, factor):
+    """Scale a solar source's months and its annual average together, so only the spread between the sources is wrong."""
+    source = named(baselines["sun"]["sources"], name)
+    scale_monthly(source, "monthly", factor)
+    source["annual"] *= factor
+
+
+def shrink_five_minute_storms(baselines):
+    """Make the 5-minute depths so small that their rate in inches per hour is below the 10-minute rate, while every depth still rises."""
+    baselines["storms"]["depth_in"][0] = [0.001 * (index + 1) for index in range(10)]
+
+
+def move_wind_source(baselines, site, name, latitude, longitude):
+    """Move a wind source and restate its distance and bearing, so only the rule about how far the model's cell may be can fail."""
+    named(baselines["wind"]["sources"], name).update(
+        latitude=latitude, longitude=longitude, bearing_deg=int(bearing_degrees(site["latitude"], site["longitude"], latitude, longitude)),
+        distance_mi=round(distance_miles(site["latitude"], site["longitude"], latitude, longitude), 1))
 
 
 class PropertyDataTest(unittest.TestCase):
@@ -173,7 +224,7 @@ class PropertyDataTest(unittest.TestCase):
         self.assertAlmostEqual(sample["elevation_m"], 1444.52)
 
     def test_site_climate_is_queryable(self):
-        counts = {"climate_sources": 4, "temperature_months": 48, "frost_summary": 16, "frost_days": 48, "frost_years": 124, "climate_checks": 4,
+        counts = {"climate_sources": 4, "temperature_months": 48, "frost_summary": 16, "frost_days": 48, "frost_years": 124, "climate_checks": 8,
                   "frost_thresholds": 4, "daylight_months": 12, "daylight_crossings": 4, "sun_key_dates": 4, "climate_site": 1}
         for table, expected in counts.items():
             with self.subTest(table=table):
@@ -208,8 +259,9 @@ class PropertyDataTest(unittest.TestCase):
 
     def test_things_still_to_check_are_queryable_and_can_be_settled(self):
         checks = query("SELECT id, status, resolved_on, result FROM climate_checks ORDER BY position", self.root)
-        self.assertEqual([r["id"] for r in checks], ["usda-zone-map", "bloom-dates", "cold-air-drainage", "minimum-thermometer"])
-        # The official USDA map was read on 2026-10-18; the other three need the lot's own seasons and stay open.
+        self.assertEqual([r["id"] for r in checks], ["usda-zone-map", "bloom-dates", "cold-air-drainage", "minimum-thermometer", "wind-direction",
+                                                     "county-snow-load", "county-frost-depth", "station-vs-baselines"])
+        # The official USDA map was read on 2026-10-18; the other seven wait on the lot's own seasons, the county, or a year of station readings.
         by_id = {r["id"]: r for r in checks}
         self.assertEqual((by_id["usda-zone-map"]["status"], by_id["usda-zone-map"]["resolved_on"]), ("done", "2026-10-18"))
         self.assertIn("zone 6a", by_id["usda-zone-map"]["result"])
@@ -225,6 +277,90 @@ class PropertyDataTest(unittest.TestCase):
         self.assertEqual([r["id"] for r in settled], ["usda-zone-map", "bloom-dates"])
         self.assertEqual(settled[1], {"id": "bloom-dates", "status": "done", "resolved_on": "2027-05-10", "result": "First bloom was on April 29."})
         validate_data(load_data(self.root))
+
+    def test_site_baselines_are_queryable(self):
+        # A swale or spillway is sized from a design storm; the 90 percent interval says how sure NOAA is of the depth.
+        storm = query("SELECT depth_in, lower_in, upper_in FROM design_storms WHERE duration = '24-hr' AND return_years = 25", self.root)[0]
+        self.assertEqual((storm["depth_in"], storm["lower_in"], storm["upper_in"]), (2.55, 2.29, 2.83))
+        self.assertEqual(query("SELECT COUNT(*) AS n FROM design_storms", self.root)[0]["n"], 19 * 10)
+        # The two driest snow years on record are 1992 and 2026, and the station's median peak is Feb 20.
+        lowest = query("SELECT water_year FROM snow_years ORDER BY peak_swe_in, water_year LIMIT 2", self.root)
+        self.assertEqual([row["water_year"] for row in lowest], [1992, 2026])
+        peak = query("SELECT years, p10, p50, p90, maximum FROM baseline_summary WHERE topic = 'snow' AND measure = 'peak_swe_in'", self.root)[0]
+        self.assertEqual(peak, {"years": 30, "p10": 3.2, "p50": 5.8, "p90": 8.5, "maximum": 9.7})
+        self.assertEqual(query("SELECT p50 FROM snow_date_summary WHERE measure = 'peak_on'", self.root)[0]["p50"], "02-20")
+        # A water year whose peak came in December (day numbers count from October 1) sorts before one that peaked in February.
+        order = query("SELECT water_year FROM snow_years WHERE water_year IN (1997, 2026) ORDER BY peak_day", self.root)
+        self.assertEqual([row["water_year"] for row in order], [1997, 2026])
+        # The month-by-month view lines the station's rain up beside the PRISM model's and the other baselines.
+        months = query("SELECT * FROM site_baseline_months ORDER BY month", self.root)
+        self.assertEqual([row["month"] for row in months], list(range(1, 13)))
+        self.assertAlmostEqual(sum(row["snotel_precip_in"] for row in months), 21.54, places=2)
+        self.assertLess(max(abs(row["snotel_precip_in"] - row["prism_precip_in"]) for row in months), 0.15)
+        july = months[6]
+        self.assertEqual((july["gdd_50"], july["gdd_43"], july["solar_mj"], july["humidity_pct"]), (591, 799, 28.09, 37.0))
+        self.assertTrue(all(row[key] is not None for row in months for key in row))
+        # Degree days from hourly readings come out well above the daily-average shortcut.
+        gdd = {row["measure"]: row["p50"] for row in query("SELECT measure, p50 FROM baseline_summary WHERE topic = 'gdd'", self.root)}
+        self.assertEqual((gdd["hourly_50"], gdd["daily_average_50"], gdd["hourly_43"], gdd["daily_average_43"]), (2104, 1806, 3190, 2952))
+        chill = query("SELECT years, minimum, p50, maximum FROM baseline_summary WHERE topic = 'chill' AND measure = 'hours_32_45'", self.root)[0]
+        self.assertEqual(chill, {"years": 21, "minimum": 612, "p50": 872, "maximum": 1338})
+        # The stations and the model disagree about winter wind: east at the model and Mountain Home, west at Pine Turnoff.
+        top = {row["source_id"]: row["sector"] for row in query(
+            "SELECT source_id, sector FROM wind_rose r WHERE season = 'winter' AND pct = "
+            "(SELECT MAX(pct) FROM wind_rose WHERE source_id = r.source_id AND season = 'winter')", self.root)}
+        self.assertEqual(top, {"hrrr-lot": "E", "pine-turnoff-rwis": "W", "muo-asos": "E"})
+        self.assertEqual(query("SELECT COUNT(*) AS n FROM wind_rose", self.root)[0]["n"], 3 * 4 * 16)
+        # The county's values carry their numbers, the documents they came from, and the caution about each.
+        values = {row["id"]: row for row in query("SELECT id, value, numeric_value, unit FROM building_values", self.root)}
+        self.assertEqual([values[key]["numeric_value"] for key in ("frost-depth", "ground-snow-load", "wind-speed")], [30, 120, 115])
+        self.assertEqual((values["seismic-zone"]["value"], values["seismic-zone"]["numeric_value"]), ("C", None))
+        snow_sources = query("SELECT s.id FROM building_value_sources v JOIN building_sources s ON s.id = v.source_id "
+                             "WHERE v.value_id = 'ground-snow-load' ORDER BY s.id", self.root)
+        self.assertEqual([row["id"] for row in snow_sources], ["permit-application", "permit-requirements", "snow-load-map"])
+        # The only hail within 5 miles was reported at Prairie in 2019, and the 25-mile list is every report the source has.
+        near = query("SELECT date, size_in FROM hail_events WHERE distance_mi < 5 ORDER BY date", self.root)
+        self.assertEqual(near, [{"date": "2019-07-09", "size_in": 1.25}, {"date": "2019-08-10", "size_in": 1.75}])
+        self.assertEqual(query("SELECT COUNT(*) AS n FROM hail_events", self.root)[0]["n"], 9)
+        # Every source is listed once per topic, and exactly one source per single-source topic is primary.
+        sources = query("SELECT topic, COUNT(*) AS n, SUM(is_primary) AS primaries FROM baseline_sources GROUP BY topic ORDER BY topic", self.root)
+        self.assertEqual({row["topic"]: (row["n"], row["primaries"]) for row in sources},
+                         {"snow": (1, 1), "storms": (1, 1), "growth": (1, 1), "wind": (4, 0), "sun": (3, 1), "humidity": (2, 1), "hail": (1, 1)})
+        notes = query("SELECT COUNT(*) AS n FROM baseline_notes WHERE topic = 'snow'", self.root)[0]["n"]
+        self.assertEqual(notes, 8)
+
+    def test_a_new_snow_year_changes_the_summary_only_when_it_is_in_the_normals(self):
+        # The rows 1987 to 1990 and 2021 to 2026 are context; the summary covers the 30 water years 1991 to 2020 only.
+        path = self.root / "data" / "site_baselines.json"
+        baselines = json.loads(path.read_text(encoding="utf-8"))
+        baselines["snow"]["years"][0]["peak_swe_in"] = 3.5
+        path.write_text(json.dumps(baselines), encoding="utf-8")
+        validate_data(load_data(self.root))
+        baselines["snow"]["years"][10]["peak_swe_in"] = 3.5
+        path.write_text(json.dumps(baselines), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "snow summary does not match"):
+            validate_data(load_data(self.root))
+
+    def test_a_new_water_year_is_added_without_changing_the_normals(self):
+        # The yearly refresh the data guide describes: append the finished water year; the 1991 to 2020 summary stays as it is.
+        path = self.root / "data" / "site_baselines.json"
+        baselines = json.loads(path.read_text(encoding="utf-8"))
+        baselines["snow"]["years"].append({"water_year": 2027, "peak_swe_in": 6.2, "peak_on": "2027-02-20", "melt_out_on": "2027-03-30",
+                                           "last_snow_on": "2027-03-29", "apr1_swe_in": 0.0, "precip_in": 22.0})
+        path.write_text(json.dumps(baselines), encoding="utf-8")
+        self.assertEqual(query("SELECT COUNT(*) AS years, MAX(water_year) AS latest FROM snow_years", self.root)[0], {"years": 41, "latest": 2027})
+        self.assertEqual(query("SELECT years FROM baseline_summary WHERE topic = 'snow' AND measure = 'peak_swe_in'", self.root)[0]["years"], 30)
+
+    def test_a_snow_pack_that_peaks_on_a_leap_day_and_melts_out_the_next_day_builds(self):
+        # A leap year's Feb 29 and Mar 1 share a day number, so the table must accept a melt-out the day after a Feb 29 peak.
+        path = self.root / "data" / "site_baselines.json"
+        baselines = json.loads(path.read_text(encoding="utf-8"))
+        row = next(item for item in baselines["snow"]["years"] if item["water_year"] == 2024)
+        row.update(peak_swe_in=0.5, peak_on="2024-02-29", melt_out_on="2024-03-01", last_snow_on="2024-02-29", apr1_swe_in=0.0)
+        path.write_text(json.dumps(baselines), encoding="utf-8")
+        validate_data(load_data(self.root))
+        days = query("SELECT peak_day, melt_out_day FROM snow_years WHERE water_year = 2024", self.root)[0]
+        self.assertEqual(days["peak_day"], days["melt_out_day"])
 
     def test_database_allows_only_one_primary_climate_source(self):
         database = build(self.root, web=False)
@@ -305,9 +441,9 @@ class PropertyDataTest(unittest.TestCase):
         before = query("SELECT value FROM build_metadata WHERE key = 'source_digest'", self.root)[0]["value"]
         path = self.root / "data" / "water_harvesting.json"
         data = json.loads(path.read_text(encoding="utf-8"))
-        data["months"][0]["precipitation_in"] = 4
+        data["months"][0]["et0_in"] = 4
         path.write_text(json.dumps(data), encoding="utf-8")
-        self.assertEqual(query("SELECT precipitation_in FROM climate_months WHERE month = 1", self.root)[0]["precipitation_in"], 4)
+        self.assertEqual(query("SELECT et0_in FROM climate_months WHERE month = 1", self.root)[0]["et0_in"], 4)
         after = query("SELECT value FROM build_metadata WHERE key = 'source_digest'", self.root)[0]["value"]
         self.assertNotEqual(before, after)
         self.assertEqual(build(self.root, web=False), database)
@@ -575,6 +711,79 @@ class PropertyDataTest(unittest.TestCase):
             ("cultivar_library", lambda d: next(r for r in d["records"] if r["id"] == "apple-dayton").update(type="Pear"), "disagrees with Apple"),
             ("locations", lambda d: next(r for r in d["records"] if r["name"] == "R13-C1").update(replacement_year=2027, replacement_type="Apple"),
              "without a planting plan item"),
+            ("site_baselines", lambda d: d["snow"]["years"][5].update(peak_swe_in=9.0), "snow summary does not match"),
+            ("site_baselines", lambda d: d["snow"]["years"][0].update(melt_out_on="1987-01-15"), "melt-out and the last snow must come after the peak"),
+            ("site_baselines", lambda d: d["snow"]["years"][0].update(apr1_swe_in=5.0), "April 1 snow cannot exceed the peak"),
+            ("site_baselines", lambda d: d["snow"]["years"].pop(10), "must be consecutive"),
+            ("site_baselines", lambda d: d["snow"]["monthly_precip_in"].__setitem__(0, 6.0), "must add up to the average water-year total"),
+            ("site_baselines", lambda d: d["snow"]["monthly_precip_in"].append(d["snow"]["monthly_precip_in"].pop(0)), "disagrees with the PRISM months"),
+            ("site_baselines", swap_storm_rows, "depths must rise with the duration"),
+            ("site_baselines", lambda d: d["storms"]["lower_in"][9].__setitem__(3, 2.19), "between its lower and upper bound"),
+            ("site_baselines", lambda d: d["storms"].update(latitude=44.0), "must be for the lot center"),
+            ("site_baselines", lambda d: d["storms"]["return_periods_years"].remove(25), "Storms need 25-year"),
+            ("site_baselines", lambda d: d["growth"]["gdd"]["years"][5]["hourly"].update({"50": 1700}), "degree-day summary does not match"),
+            ("site_baselines", lambda d: d["growth"]["gdd"]["years"][0].update(hours_recorded=8000), "at least 99% of the year's hours"),
+            ("site_baselines", lambda d: d["growth"]["gdd"]["monthly_mean"]["50"].__setitem__(6, 900), "monthly degree days at base 50 must add up"),
+            ("site_baselines", lambda d: d["growth"]["gdd"]["years"][0]["hourly"].update({"43": 100}), "a lower base cannot have fewer degree days"),
+            ("site_baselines", lambda d: d["growth"]["chill"]["winters"][0].update(hours_32_45=3000), "cannot exceed hours at or below 45 F"),
+            ("site_baselines", lambda d: d["growth"]["chill"]["winters"][3].update(hours_32_45=700), "chill summary does not match"),
+            ("site_baselines", lambda d: d["growth"]["chill"]["winters"][0].update(hours_recorded=2000), "at least 97% of the winter's hours"),
+            ("site_baselines", lambda d: d["wind"]["sources"][1]["rose_pct"]["winter"].__setitem__(0, 12.3), "winter rose must add up to 100 percent"),
+            ("site_baselines", lambda d: d["wind"]["sources"][1].update(bearing_deg=300), "bearing_deg should be about"),
+            ("site_baselines", lambda d: d["wind"]["sources"][2].update(distance_mi=12.0), "distance_mi should be about"),
+            ("site_baselines", lambda d: d["wind"]["sources"].pop(2), "Wind sources need muo-asos"),
+            ("site_baselines", lambda d: d["wind"]["sector_names"].reverse(), "16 compass directions"),
+            ("site_baselines", lambda d: d["wind"]["sources"][0]["rose_hours"].update(winter=1000), "rose hours must equal the hours that were not calm"),
+            ("site_baselines", lambda d: d["wind"]["sources"][0]["pct_hours_at_or_above_mph"].update({"25": 30.0}), "share of hours at 10 mph must be at least"),
+            ("site_baselines", lambda d: d["sun"]["sources"][0]["monthly"].__setitem__(0, 20.0), "annual figure should be about"),
+            ("site_baselines", distort_january_and_december_sun, "of the sunshine above the atmosphere"),
+            ("site_baselines", lambda d: d["sun"].update(primary="nowhere"), "primary solar source must be one of the sources"),
+            ("site_baselines", lambda d: d["humidity"]["sources"][0]["monthly"].__setitem__(0, 101.0), "above 0 and at most 100 percent"),
+            ("site_baselines", lambda d: d["humidity"]["sources"][1]["monthly"].__setitem__(0, 60.0), "agree within 15 points of humidity"),
+            ("site_baselines", lambda d: d["building"]["values"].pop(1), "Building values need ground-snow-load"),
+            ("site_baselines", lambda d: d["building"]["values"][0].update(value=300), "outside the 12 to 72 range"),
+            ("site_baselines", lambda d: d["building"]["values"][0].update(source_ids=["nowhere"]), "source_ids must name one or more different building sources"),
+            ("site_baselines", lambda d: d["building"]["values"][3].update(value="G"), "letter from A to F"),
+            ("site_baselines", lambda d: d["hail"]["events"][4].update(distance_mi=9.0), "distance_mi should be about"),
+            ("site_baselines", swap_first_two_hail_events, "must be listed oldest first"),
+            ("site_baselines", lambda d: d["hail"].update(radius_mi=1), "farther than the 1 mile radius"),
+            ("site_baselines", lambda d: d["hail"]["events"][0].update(event_id=d["hail"]["events"][1]["event_id"]), "duplicate hail event"),
+            ("site_baselines", lambda d: d["storms"]["source"].update(url="http://example.com"), "url must use https"),
+            # What the page and the database view look up by name cannot be dropped or retyped.
+            *[("site_baselines", lambda d, name=name: drop_storm_duration(d, name), f"Storms need {name}") for name in ("3-hr", "12-hr", "10-day")],
+            *[("site_baselines", lambda d, years=years: d["storms"]["return_periods_years"].remove(years), f"Storms need {years}-year") for years in (5, 50)],
+            ("site_baselines", lambda d: d["growth"]["gdd"]["bases_f"].remove(43), "Degree days need bases 43"),
+            ("site_baselines", lambda d: named(d["humidity"]["sources"], "nasa-power").update(kind="station"), "nasa-power must be a model"),
+            ("site_baselines", lambda d: named(d["wind"]["sources"], "pine-turnoff-rwis").update(kind="model"), "must be measured stations"),
+            ("site_baselines", lambda d: named(d["wind"]["sources"], "hrrr-lot").update(kind="station"), "hrrr-lot wind source must be a model cell within 2 miles"),
+            ("site_baselines", lambda d: move_wind_source(d, self.data["climate"]["site"], "hrrr-lot", 43.5237, -115.5942),
+             "hrrr-lot wind source must be a model cell within 2 miles"),
+            ("site_baselines", lambda d: d["wind"]["coarse_model"].update(id="hrrr-lot"), "needs an id of its own"),
+            # The database stores a whole number of degrees for the bearing, and the id of a coarse model must not repeat a wind source's.
+            ("site_baselines", lambda d: named(d["wind"]["sources"], "pine-turnoff-rwis").update(bearing_deg=124.4), "bearing must be an integer"),
+            ("site_baselines", lambda d: named(d["wind"]["sources"], "pine-turnoff-rwis").update(bearing_deg=360), "whole number of degrees from 0 to 359"),
+            # A unit slip in a monthly series: knots for one station, meters per second for the coarse model, and a source scaled to the wrong size.
+            ("site_baselines", lambda d: scale_monthly(named(d["wind"]["sources"], "pine-turnoff-rwis"), "monthly_mean_mph", 0.869),
+             "within 0.3 mph of the average of the monthly means"),
+            ("site_baselines", lambda d: scale_monthly(d["wind"]["coarse_model"], "monthly_mean_mph", 0.447), "within 25 percent of the mean speed at the lot"),
+            ("site_baselines", lambda d: scale_solar_source(d, "nasa-power", 1.12), "agree within 15 percent on the annual average"),
+            # Storm depths must rise with the return period, and the rate of rain must fall as a storm lasts longer.
+            ("site_baselines", lambda d: d["storms"]["depth_in"][3].__setitem__(4, d["storms"]["depth_in"][3][3]), "must be positive and rise with the return period"),
+            ("site_baselines", shrink_five_minute_storms, "rate of rain in inches per hour must fall as the duration grows"),
+            # A snow year's dates stay inside its water year, and its peak cannot exceed its precipitation.
+            ("site_baselines", lambda d: d["snow"]["years"][0].update(precip_in=2.0), "the peak cannot exceed the year's precipitation"),
+            ("site_baselines", lambda d: d["snow"]["years"][0].update(last_snow_on=d["snow"]["years"][0]["melt_out_on"]), "cannot be the last day with snow"),
+            ("site_baselines", lambda d: d["snow"]["years"][0].update(peak_on="1986-09-30"), "must fall from 1986-10-01 to 1987-07-31"),
+            ("site_baselines", lambda d: d["snow"]["years"][0].update(last_snow_on="1987-08-01"), "must fall from 1986-10-01 to 1987-07-31"),
+            # Years stay in order, and absurd numbers fail with a message instead of overflowing.
+            ("site_baselines", lambda d: d["growth"]["gdd"]["years"].reverse(), "oldest first"),
+            ("site_baselines", lambda d: d["growth"]["chill"]["winters"].reverse(), "oldest first"),
+            ("site_baselines", lambda d: d["snow"]["years"][-1].update(water_year=10 ** 11), "no later than 2200"),
+            ("site_baselines", lambda d: d["growth"]["gdd"]["years"][-1].update(year=10 ** 11), "no later than 2200"),
+            ("site_baselines", lambda d: d["growth"]["chill"]["winters"][-1].update(winter=10 ** 11), "no later than 2200"),
+            ("site_baselines", lambda d: d["snow"]["years"][0].update(peak_swe_in=1e308), "no larger than one trillion"),
+            ("site_baselines", lambda d: d["snow"]["years"][0].update(peak_swe_in=10 ** 400), "no larger than one trillion"),
+            ("climate", lambda d: d["sources"][0].update(id="other-station"), "same station as the climate record's primary source"),
         ]
         for collection, change, message in cases:
             data = copy.deepcopy(self.data)
@@ -582,8 +791,12 @@ class PropertyDataTest(unittest.TestCase):
             with self.subTest(collection=collection, message=message), self.assertRaisesRegex(ValueError, message):
                 validate_data(data)
 
-    def malformed_records_raise_value_errors(self, name, minimum, middle=False):
-        """Delete or mistype every sampled field of one collection; each must raise ValueError, never crash with another error."""
+    def malformed_records_raise_value_errors(self, name, minimum, middle=False, numbers=False):
+        """Delete or mistype every sampled field of one collection; each must raise ValueError, never crash with another error.
+
+        With numbers=True every number is also replaced by values that once overflowed or slipped past a check: a huge integer, a huge float,
+        a negative, and a fraction.
+        """
         def sampled_paths(node, prefix=()):
             """Every field, keeping only the first and last (and optionally the middle) of a long list or of numbered keys, which behave alike."""
             yield prefix
@@ -606,18 +819,22 @@ class PropertyDataTest(unittest.TestCase):
             return document
 
         replacements = {"null": None, "string": "x", "empty object": {}, "empty list": []}
+        number_replacements = {"huge integer": 10 ** 400, "huge float": 1e308, "negative": -1, "fraction": 0.5}
         tried = 0
         for path in sampled_paths(self.data[name]):
             if not path:
                 continue
-            container = isinstance(at(self.data[name], path), (dict, list))
-            for kind in (("delete", *replacements) if container else ("delete", "null", "empty list")):
+            original = at(self.data[name], path)
+            kinds = ("delete", *replacements) if isinstance(original, (dict, list)) else ("delete", "null", "empty list")
+            if numbers and isinstance(original, (int, float)) and not isinstance(original, bool):
+                kinds += tuple(number_replacements)
+            for kind in kinds:
                 document = copy.deepcopy(self.data[name])
                 parent = at(document, path[:-1])
                 if kind == "delete":
                     parent.pop(path[-1])
                 else:
-                    parent[path[-1]] = copy.deepcopy(replacements[kind])
+                    parent[path[-1]] = copy.deepcopy({**replacements, **number_replacements}[kind])
                 tried += 1
                 with self.subTest(collection=name, path=path, kind=kind):
                     try:
@@ -627,7 +844,10 @@ class PropertyDataTest(unittest.TestCase):
         self.assertGreater(tried, minimum, f"The walk should reach most of the {name} record")
 
     def test_malformed_climate_records_fail_with_a_clear_error_not_a_crash(self):
-        self.malformed_records_raise_value_errors("climate", 300)
+        self.malformed_records_raise_value_errors("climate", 300, numbers=True)
+
+    def test_malformed_site_baselines_fail_with_a_clear_error_not_a_crash(self):
+        self.malformed_records_raise_value_errors("site_baselines", 1000, numbers=True)
 
     def test_malformed_plant_events_fail_with_a_clear_error_not_a_crash(self):
         # The middle of the vocabulary is a growth stage, so its order field is exercised too.

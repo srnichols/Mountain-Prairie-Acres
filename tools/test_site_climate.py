@@ -145,5 +145,56 @@ class FrostStatisticsTest(unittest.TestCase):
         self.assertEqual(narrow["years_both"], 3)
 
 
+class BaselineHelpersTest(unittest.TestCase):
+    def test_water_year_days_count_from_october_first_and_ignore_leap_days(self):
+        self.assertEqual(sc.water_year_day(datetime.date(2025, 10, 1)), 1)
+        self.assertEqual(sc.water_year_day(datetime.date(2025, 12, 31)), 92)
+        self.assertEqual(sc.water_year_day(datetime.date(2026, 1, 1)), 93)
+        self.assertEqual(sc.water_year_day(datetime.date(2026, 9, 30)), 365)
+        # March 1 is day 152 in every water year, so a leap year's later dates still line up with an ordinary year's.
+        self.assertEqual(sc.water_year_day(datetime.date(2026, 3, 1)), 152)
+        self.assertEqual(sc.water_year_day(datetime.date(2024, 3, 1)), 152)
+        self.assertEqual(sc.water_year_day(datetime.date(2024, 9, 30)), 365)
+        self.assertEqual(sc.water_year_day(datetime.date(2024, 2, 28)), 151)
+        # A leap year's Feb 29 shares day 152 with Mar 1, so a database cannot require a later day number for the day after a Feb 29.
+        self.assertEqual(sc.water_year_day(datetime.date(2024, 2, 29)), 152)
+        for number in (1, 92, 93, 152, 365):
+            text = sc.water_year_month_day(number)
+            month, day = int(text[:2]), int(text[3:])
+            self.assertEqual(sc.water_year_day(datetime.date(2001 if month >= 10 else 2002, month, day)), number)
+        self.assertEqual([sc.water_year_month_day(n) for n in (1, 92, 93, 152, 365)], ["10-01", "12-31", "01-01", "03-01", "09-30"])
+
+    def test_series_and_date_summaries_round_half_up(self):
+        values = [3.0, 1.0, 5.0, 2.0, 4.0]
+        self.assertEqual(sc.series_summary(values, 1), {"min": 1.0, "p10": 1.4, "p50": 3.0, "p90": 4.6, "max": 5.0, "mean": 3.0})
+        # An exact half rounds up: 0.5 becomes 1 and 1.5 becomes 2.
+        self.assertEqual(sc.series_summary([0.5, 1.5], 0), {"min": 1.0, "p10": 1.0, "p50": 1.0, "p90": 1.0, "max": 2.0, "mean": 1.0})
+        self.assertEqual(sc.series_summary([1659, 2263], 0)["mean"], 1961)
+        self.assertEqual(sc.date_summary([93, 120, 152, 168, 190], sc.water_year_month_day),
+                         {"earliest": "01-01", "p10": "01-12", "p50": "03-01", "p90": "03-30", "latest": "04-08"})
+        with self.assertRaises(ValueError):
+            sc.series_summary([], 1)
+
+    def test_extraterrestrial_sunshine_follows_the_seasons(self):
+        # Checked against a minute-by-minute integration of the solar constant at this latitude: 41.94 and 11.40 MJ per square meter.
+        self.assertAlmostEqual(sc.extraterrestrial_mj(LATITUDE, datetime.date(2026, 6, 21)), 41.94, delta=0.2)
+        self.assertAlmostEqual(sc.extraterrestrial_mj(LATITUDE, datetime.date(2026, 12, 21)), 11.40, delta=0.1)
+        months = sc.extraterrestrial_months(LATITUDE)
+        self.assertEqual([round(month, 1) for month in months], [13.2, 18.3, 25.9, 33.7, 39.4, 41.7, 40.4, 35.6, 28.4, 20.4, 14.2, 11.6])
+        self.assertEqual(months.index(max(months)), 5)
+        self.assertEqual(months.index(min(months)), 11)
+        # Under a polar night the sun never rises, and the formula must give zero, not an error.
+        self.assertEqual(sc.extraterrestrial_mj(85, datetime.date(2026, 12, 21)), 0)
+
+    def test_bearing_points_along_the_compass(self):
+        self.assertAlmostEqual(sc.bearing_degrees(43, -115, 44, -115), 0, places=3)
+        self.assertAlmostEqual(sc.bearing_degrees(43, -115, 43, -114), 90, delta=0.5)
+        self.assertAlmostEqual(sc.bearing_degrees(43, -115, 42, -115), 180, places=3)
+        self.assertAlmostEqual(sc.bearing_degrees(43, -115, 43, -116), 270, delta=0.5)
+        # Pine Turnoff lies south-east of the lot and Mountain Home Air Force Base south-south-west.
+        self.assertAlmostEqual(sc.bearing_degrees(LATITUDE, LONGITUDE, 43.3136, -115.2667), 124, delta=1)
+        self.assertAlmostEqual(sc.bearing_degrees(LATITUDE, LONGITUDE, 43.0436, -115.8724), 205, delta=1)
+
+
 if __name__ == "__main__":
     unittest.main()

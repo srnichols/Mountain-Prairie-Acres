@@ -6,7 +6,7 @@ const test = require('node:test');
 
 const root = path.join(__dirname, '..');
 const context = { window: {} };
-for (const name of ['site_grid', 'site_terrain', 'cultivar_library', 'orchard_model', 'water_harvesting', 'site_climate']) {
+for (const name of ['site_grid', 'site_terrain', 'cultivar_library', 'orchard_model', 'water_harvesting', 'site_climate', 'site_baselines']) {
   vm.runInNewContext(fs.readFileSync(path.join(root, 'docs', 'data', name + '.js'), 'utf8'), context);
 }
 const model = context.window.OrchardModel;
@@ -32,6 +32,18 @@ function windowWithoutPlan() {
   assert.ok(codeStart > 0, 'The generated model should start its code after the data statement');
   vm.runInNewContext(`${source.slice(0, codeStart)}\ndelete window.ORCHARD_DATA.PLANTING_PLAN;${source.slice(codeStart)}`, copy);
   return copy.window;
+}
+
+// The generated baselines helper over a changed copy of the data, to see what a new year or a tie would do to its answers.
+function baselinesWith(change) {
+  const copy = { window: {} };
+  const source = fs.readFileSync(path.join(root, 'docs', 'data', 'site_baselines.js'), 'utf8');
+  const codeStart = source.indexOf('\n(function (root) {');
+  assert.ok(codeStart > 0, 'The generated baselines should start their code after the data statement');
+  vm.runInNewContext(source.slice(0, codeStart), copy);
+  change(copy.window.SITE_BASELINES);
+  vm.runInNewContext(source.slice(codeStart), copy);
+  return copy.window.SiteBaselines;
 }
 test('Generated orchard model preserves current assignments and vacancies', () => {
   const { records, rows } = model.plan();
@@ -242,8 +254,105 @@ test('Generated site climate data carries what the climate page draws', () => {
   assert.equal(days.indexOf(Math.min(...days)), 11, 'December has the shortest days');
   assert.equal(climate.daylight.key_dates.length, 4);
   // The things still to check travel with the data, so the page lists them and the SQL table matches.
-  assert.deepEqual(Array.from(climate.checks, item => item.id), ['usda-zone-map', 'bloom-dates', 'cold-air-drainage', 'minimum-thermometer']);
+  assert.deepEqual(Array.from(climate.checks, item => item.id), ['usda-zone-map', 'bloom-dates', 'cold-air-drainage', 'minimum-thermometer',
+    'wind-direction', 'county-snow-load', 'county-frost-depth', 'station-vs-baselines']);
   assert.ok(climate.checks.every(item => ['open', 'done'].includes(item.status) && (item.status === 'done') === (item.result !== null)));
+});
+
+test('Site baselines helpers read storms, snow, degree days, and wind from the generated data', () => {
+  const b = context.window.SiteBaselines;
+  const plain = value => JSON.parse(JSON.stringify(value));
+  assert.equal(b.monthDay('02-20'), 'Feb 20');
+  for (const bad of ['2-20', '13-01', '00-10', 'Feb 20', '']) assert.throws(() => b.monthDay(bad), /MM-DD/, bad);
+  // A swale sized for a 25-year, 24-hour storm holds 2.55 inches of rain, and NOAA's 90 percent interval is 2.29 to 2.83.
+  assert.equal(b.stormDepth('24-hr', 25), 2.55);
+  assert.deepEqual([b.stormDepth('24-hr', 25, 'lower_in'), b.stormDepth('24-hr', 25, 'upper_in')], [2.29, 2.83]);
+  assert.equal(b.stormDepth('60-min', 2), 0.476);
+  assert.ok(Math.abs(b.stormRate('60-min', 10) - 0.946) < 1e-9, 'a one-hour storm falls at its own depth per hour');
+  assert.ok(Math.abs(b.stormRate('24-hr', 25) - 2.55 / 24) < 1e-9);
+  assert.throws(() => b.stormDepth('24-hr', 3), /return period/);
+  assert.throws(() => b.stormDepth('1-hr', 25), /duration/);
+  assert.throws(() => b.stormDepth('24-hr', 25, 'mean_in'), /table/);
+  // The record's heaviest snowpack was 9.7 inches of water in 1999, about 50 pounds per square foot; the lightest was 1992.
+  assert.deepEqual(plain(b.snowExtreme('peak_swe_in', 'max')), { year: 1999, value: 9.7 });
+  assert.deepEqual(plain(b.snowExtreme('peak_swe_in', 'min')), { year: 1992, value: 0.9 });
+  assert.equal(Math.round(b.snowPounds(9.7)), 50);
+  assert.throws(() => b.snowExtreme('peak_swe_in', 'median'), /max or min/);
+  assert.throws(() => b.snowExtreme('peak_on', 'max'), /No yearly snow measure/);
+  // Degree days build up through summer and reach the year's total in December.
+  const gdd50 = b.cumulativeDegreeDays(50);
+  assert.equal(gdd50.length, 12);
+  assert.equal(gdd50[11], 2051);
+  assert.ok(gdd50.every((value, index) => index === 0 || value >= gdd50[index - 1]));
+  assert.throws(() => b.cumulativeDegreeDays(40), /base 40/);
+  // Chill: two winters in 21 had under 620 hours between 32 and 45 F, and none had under 2,400 hours at or below 45 F.
+  assert.deepEqual(plain(b.chillWintersBelow(620)), { winters: 2, of: 21 });
+  assert.deepEqual(plain(b.chillWintersBelow(2400, 'hours_45')), { winters: 0, of: 21 });
+  assert.throws(() => b.chillWintersBelow(600, 'hours_ten'), /No chill measure/);
+  // The model at the lot and Mountain Home put the winter wind in the east, and Pine Turnoff puts it in the west.
+  const topSector = id => b.windTop(id, 'winter', 1)[0].sector;
+  assert.deepEqual(['hrrr-lot', 'pine-turnoff-rwis', 'muo-asos'].map(topSector), ['E', 'W', 'E']);
+  assert.equal(b.windRose('muo-asos', 'summer').length, 16);
+  assert.deepEqual(plain(b.windTop('muo-asos', 'winter', 2).map(item => item.sector)), ['E', 'ESE']);
+  assert.throws(() => b.windRose('muo-asos', 'monsoon'), /No season/);
+  assert.throws(() => b.windSource('nowhere'), /No wind source/);
+  // The county's values, and the hail near the lot.
+  assert.deepEqual(['frost-depth', 'ground-snow-load', 'wind-speed', 'seismic-zone'].map(id => b.buildingValue(id).value), [30, 120, 115, 'C']);
+  assert.throws(() => b.buildingValue('roof'), /No building value/);
+  assert.deepEqual(plain(b.hailWithin(5).map(event => event.date)), ['2019-07-09', '2019-08-10']);
+  assert.equal(b.hailWithin(25).length, 9);
+  assert.equal(b.hailWithin(1).length, 0);
+});
+
+test('Snow years are ranked in words that stay right as years are added', () => {
+  const b = context.window.SiteBaselines;
+  const plain = value => JSON.parse(JSON.stringify(value));
+  // Words up to tenth, then numbers with the right ending: 11th, 12th, and 13th are not 11st, 12nd, or 13rd.
+  assert.deepEqual([1, 2, 3, 10].map(b.ordinal), ['first', 'second', 'third', 'tenth']);
+  assert.deepEqual([11, 12, 13, 21, 22, 23, 24, 100, 101, 111, 112, 121].map(b.ordinal),
+    ['11th', '12th', '13th', '21st', '22nd', '23rd', '24th', '100th', '101st', '111th', '112th', '121st']);
+  for (const bad of [0, -1, 1.5, '2', NaN]) assert.throws(() => b.ordinal(bad), /whole number/, String(bad));
+  // The first rank is the extreme itself, not "first lowest".
+  assert.equal(b.rankWord(1, 'lowest'), 'lowest');
+  assert.equal(b.rankWord(2, 'lowest'), 'second lowest');
+  assert.equal(b.rankWord(24, 'highest'), '24th highest');
+  // Water year 2026 peaked at 1.1 inches and only 1992 (0.9) peaked lower, so it was the second lowest of the 40 years on record.
+  assert.deepEqual(plain(b.snowStanding(2026)), { lower: 1, higher: 38, tied: false, count: 40 });
+  assert.deepEqual(plain(b.snowStanding(1992)), { lower: 0, higher: 39, tied: false, count: 40 });
+  assert.deepEqual(plain(b.snowStanding(1999)), { lower: 39, higher: 0, tied: false, count: 40 });
+  // 2013 and 2015 both peaked at 3.3 inches, which is a tie, not a rank.
+  assert.deepEqual([2013, 2015].map(year => b.snowStanding(year).tied), [true, true]);
+  assert.throws(() => b.snowStanding(1900), /No snow record/);
+  // A new year is counted against the old ones: an ordinary year, a new record low, a tie with the old low, and a new record high.
+  const withYear = peak => baselinesWith(data => data.snow.years.push({
+    water_year: 2027, peak_swe_in: peak, peak_on: '2027-02-20', melt_out_on: '2027-03-30', last_snow_on: '2027-03-29', apr1_swe_in: 0, precip_in: 22 }));
+  assert.deepEqual(plain(withYear(6.2).snowStanding(2027)), { lower: 25, higher: 15, tied: false, count: 41 });
+  assert.deepEqual(plain(withYear(0.5).snowStanding(2027)), { lower: 0, higher: 40, tied: false, count: 41 });
+  assert.deepEqual(plain(withYear(0.9).snowStanding(2027)), { lower: 0, higher: 39, tied: true, count: 41 });
+  assert.deepEqual(plain(withYear(9.9).snowStanding(2027)), { lower: 40, higher: 0, tied: false, count: 41 });
+  assert.equal(withYear(9.9).snowExtreme('peak_swe_in', 'max').year, 2027);
+});
+
+test('Generated site baselines carry what the baselines page draws', () => {
+  const baselines = context.window.SITE_BASELINES;
+  assert.equal(baselines.snow.years.length, 40);
+  assert.equal(baselines.snow.years.filter(row => row.water_year >= 1991 && row.water_year <= 2020).length, baselines.snow.summary.years);
+  assert.equal(baselines.storms.depth_in.length, baselines.storms.durations.length);
+  assert.ok(baselines.storms.depth_in.every(row => row.length === baselines.storms.return_periods_years.length));
+  for (const source of baselines.wind.sources) {
+    for (const season of ['winter', 'spring', 'summer', 'fall']) {
+      const total = source.rose_pct[season].reduce((sum, value) => sum + value, 0);
+      assert.ok(Math.abs(total - 100) < 1, `${source.id} ${season} rose adds up to ${total}`);
+    }
+  }
+  // Three independent solar sources agree on the year's sunshine, and the nearby station agrees with the model on humidity.
+  const annual = baselines.sun.sources.map(source => source.annual);
+  assert.ok(Math.max(...annual) / Math.min(...annual) < 1.15);
+  const [model, station] = ['nasa-power', 'pine-turnoff-rwis'].map(id => baselines.humidity.sources.find(source => source.id === id).monthly);
+  assert.ok(model.every((value, index) => Math.abs(value - station[index]) < 15));
+  // Every number the page quotes about the county comes with the document that says it.
+  const sources = new Set(baselines.building.sources.map(source => source.id));
+  for (const item of baselines.building.values) assert.ok(item.source_ids.length > 0 && item.source_ids.every(id => sources.has(id)), item.id);
 });
 
 test('Generated browser records match the authoritative JSON', () => {
@@ -252,6 +361,7 @@ test('Generated browser records match the authoritative JSON', () => {
   assert.deepEqual(JSON.parse(JSON.stringify(context.window.SITE_TERRAIN)), data('terrain'));
   assert.deepEqual(JSON.parse(JSON.stringify(context.window.WATER_HARVESTING)), data('water_harvesting'));
   assert.deepEqual(JSON.parse(JSON.stringify(context.window.SITE_CLIMATE)), data('climate'));
+  assert.deepEqual(JSON.parse(JSON.stringify(context.window.SITE_BASELINES)), data('site_baselines'));
   assert.equal(context.window.ORCHARD_DATA.INVENTORY.length, data('inventory').records.length);
   assert.equal(context.window.ORCHARD_DATA.FRUIT_SHEET.length, data('catalog').fruit_records.length);
 });
