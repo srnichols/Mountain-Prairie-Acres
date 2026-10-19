@@ -4658,6 +4658,48 @@
       "reviewed_on": "2026-10-17"
     },
     {
+      "id": "peach-harrow-diamond",
+      "group": "Peach",
+      "type": "Peach",
+      "kind": "cultivar",
+      "name": "Harrow Diamond",
+      "aliases": [],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Early; showy pink bloom; red-blushed yellow skin, sweet-juicy",
+      "summary": "Freestone peach bred at Agriculture Canada's Harrow Research Station in Ontario from Redskin x Harbinger, released in 1984; medium fruit with a red blush over yellow and sweet, juicy yellow flesh; used fresh and for canning.",
+      "appearance": "Medium freestone peach, about 6 cm across when thinned; skin shows a bright red blush over 60 to 70 percent of a yellow background, with light, sparse fuzz; flesh is yellow, melting, and medium-firm to firm.",
+      "flavor_use": "Yellow flesh is melting, medium-firm to firm, moderately sweet and juicy; sources call the flavor fully acceptable to excellent for an early peach. Self-fertile. Rated resistant to bacterial spot and brown rot with few split pits, but no source rates bacterial canker, which is this site's main stone fruit problem.",
+      "uses": [
+        "fresh",
+        "canning"
+      ],
+      "ripening": "Early",
+      "ripening_note": "Kentucky: about 11 days before Redhaven. Stark says early July; the Harrow, Ontario trial July 25. None is a Prairie date.",
+      "id_cues": "Ripens earliest of the four: about 11 days before Redhaven, while Reliance ripens 3 days before to 5 after Redhaven and Contender 16 to 20 days after (Kentucky). Showy pink blossoms contrast with the small red or non-showy flowers of the others, and its 60 to 70 percent bright red blush is lighter than Redhaven's.",
+      "habit": "Breeder record: a moderately vigorous tree, open and spreading in form, with branch crotch angles described as medium to wide.",
+      "bark": null,
+      "leaf": "Breeder record: lance-shaped, wavy leaves with finely toothed edges, about 15 cm long and 3.7 cm wide, usually with 2 rounded glands where the blade meets the leaf stalk.",
+      "hardiness": "Survived -26C and -28C winters at Harrow; 43% flower bud loss at -26C (breeder)",
+      "sources": [
+        [
+          "Univ. of Kentucky: HO-6 Peach Cultivar Performance table",
+          "https://publications.mgcafe.uky.edu/files/ho6.pdf"
+        ],
+        [
+          "Stark Bro's: Harrow Diamond Peach product page",
+          "https://www.starkbros.com/products/fruit-trees/peach-trees/harrow-diamond-peach"
+        ],
+        [
+          "HortScience 1985 (Layne): Harrow Diamond cultivar release",
+          "https://pdfs.semanticscholar.org/1384/181d8f062e0acb7897524714fe06a82cf75c.pdf"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "No source rates bacterial canker, this site's main stone fruit problem; the breeder record rates only moderate tolerance to a different fungal canker (Leucostoma). No trial matches this zone 5a-5b, 70-110 day site.",
+      "reviewed_on": "2026-10-17"
+    },
+    {
       "id": "apricot-chinese-mormon",
       "group": "Apricot",
       "type": "Apricot",

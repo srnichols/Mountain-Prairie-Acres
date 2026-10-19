@@ -170,11 +170,18 @@ function rowTemplate(trees) {
     group.blocks.forEach(block => {
       if (BLOCK_ROWS[block.type] || RESERVED_ROWS[block.type]) throw new Error(`${block.type} has both its own row settings and shared rows`);
       if (block.perRow.length !== rowCount) throw new Error('Every block in a shared group needs the same number of rows');
+      if (block.columns && block.columns.length !== rowCount) throw new Error(`${block.type}: columns must list each of the ${rowCount} shared rows`);
       const total = block.perRow.reduce((sum, n) => sum + n, 0);
       if (total !== countOf(block.type)) throw new Error(`${block.type}: the shared rows hold ${total} trees, but ${countOf(block.type)} are at Prairie`);
       block.perRow.forEach((n, k) => {
         const r = template.length + k + 1;
-        blockColumns(block.align, n, r % 2 === 0).forEach(c => {
+        // A block lists its exact columns when the trees were planted away from the usual alignment.
+        const columns = block.columns ? block.columns[k] : blockColumns(block.align, n, r % 2 === 0);
+        if (!Array.isArray(columns) || columns.length !== n || new Set(columns).size !== n ||
+            columns.some(c => !Number.isInteger(c) || c < 1 || c > GRID_COLUMNS)) {
+          throw new Error(`R${r}: the ${block.type} block needs ${n} different columns from 1 to ${GRID_COLUMNS}`);
+        }
+        columns.forEach(c => {
           if (cells[k][c - 1]) throw new Error(`R${r}-C${c}: the ${block.type} block overlaps the ${cells[k][c - 1]} block`);
           cells[k][c - 1] = block.type;
         });
@@ -191,9 +198,22 @@ function rowTemplate(trees) {
 // A position counts as planted only when a planting record at that very orchard spot says so. Trees under one tag are
 // interchangeable, so the record's plant number may differ from the one the layout puts there, and a tree planted
 // outside the orchard never marks its old orchard spot.
-function plantedAt(spot, invRow) {
-  return Object.values(PLANT_LOCATIONS).some(planting =>
-    planting.status === 'planted' && planting.location_id === spot && planting.inventory_row === invRow);
+function plantingAt(spot, invRow) {
+  return Object.values(PLANT_LOCATIONS).find(planting =>
+    planting.status === 'planted' && planting.location_id === spot && planting.inventory_row === invRow) || null;
+}
+
+const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+// When the given trees were planted as text ("October 2026", or "October to November 2026"), or '' if any planting date is unknown.
+function plantedWhen(trees) {
+  const months = trees.map(tree => tree.plantedOn ? tree.plantedOn.slice(0, 7) : null);
+  if (!months.length || months.includes(null)) return '';
+  const sorted = [...new Set(months)].sort();
+  const parts = month => { const [year, number] = month.split('-'); return { name:MONTH_NAMES[Number(number) - 1], year }; };
+  const first = parts(sorted[0]);
+  const last = parts(sorted[sorted.length - 1]);
+  if (sorted.length === 1) return `${first.name} ${first.year}`;
+  return first.year === last.year ? `${first.name} to ${last.name} ${last.year}` : `${first.name} ${first.year} to ${last.name} ${last.year}`;
 }
 
 // Places the trees listed in a row plan (see ROW_PLAN) after checking every position against the row template.
@@ -227,9 +247,10 @@ function layoutRows(plan, trees) {
         throw new Error(`Inventory row ${id}: the recorded planting position must stay at R${fixedPosition.r}-C${fixedPosition.c}`);
       }
       used.set(id, next + 1);
+      const planting = plantingAt(`orchard-r${r}-c${column + 1}`, tree.invRow);
       Object.assign(tree, {
         r, c:column + 1, x:column * TREE_SPACING + (off ? TREE_SPACING / 2 : 0), y:index * ROW_SPACING,
-        planted:plantedAt(`orchard-r${r}-c${column + 1}`, tree.invRow)
+        planted:!!planting, plantedOn:planting ? planting.planted_on : null
       });
       if (tree.orchardUpdate) held.push(tree);
       return tree.orchardUpdate ? null : tree;
@@ -444,6 +465,7 @@ function unidentifiedLine(info) {
     const spot = location && /^orchard-r(\d+)-c(\d+)$/.exec(location.location_id);
     return {
       id, number:index + 1, label:`${prefix}-${index + 1}`, tag:unknownLine[6], status:location ? location.status : null,
+      plantedOn:location && location.status === 'planted' ? location.planted_on || null : null,
       spot:spot ? `R${spot[1]}-C${spot[2]}` : location ? location.location_id : null,
       siteRef:location ? location.site_ref : null
     };
@@ -478,5 +500,5 @@ function unidentifiedApples() {
 function unidentifiedStoneFruit() {
   return { info:UNIDENTIFIED_STONE_FRUIT, lines:UNIDENTIFIED_STONE_FRUIT.lines.map(unidentifiedLine) };
 }
-root.OrchardModel = { PLAN_DATE, STATUS_DATE, FRUIT_SHEET, INVENTORY, INVENTORY_MATCH, TYPE_ORDER, BLOCK_ROWS, SHARED_ROWS, RESERVED_ROWS, ORCHARD_ROWS, ROW_PLAN, GRID_COLUMNS, PLOT_WIDTH, EAST_SIDE, PLOT_DEPTH, TREE_SPACING, ROW_SPACING, LOCAL_RADIUS, ORCHARD_WEST_SETBACK, JUNIPER_DISTANCE, WINDBREAK, C1_GUILDS, EAST_HEDGE, OWNER_NOTES, ORCHARD_UPDATES, PLANTED_ROOTSTOCKS, ROOTSTOCK_LABELS, GENERATED_CODES, FAMILY_OVERRIDES, APPLE_ALIASES, HARRISON_BLOOM_RESEARCH, APPLE_BLOOM_RESEARCH, URBAN_APPLE_ROWS, PEAR_BLOOM, CHERRY_CHART, PLANTING_PLAN, FRUIT_BY_ROW, INVENTORY_BY_ROW, ORCHARD_X0, RESERVED, fruitRecord, inventoryLine, rootstockRemaining, normalizeName, placementOf, buildOrchardTrees, balancedRows, blockShape, sharedGroupOf, blockColumns, rowTemplate, layoutRows, lineCount, layoutPlantRow, windbreakLayout, eastHedgeLayout, alleyGeometry, laneGeometry, guildLayout, treeDistance, needsTwoDonors, compatiblePair, nearestPartners, PLANT_LOCATIONS, plan, plannedSpots, plannedAt, plannedTrees, plannedPollination, UNIDENTIFIED_APPLES, unidentifiedApples, UNIDENTIFIED_STONE_FRUIT, unidentifiedStoneFruit };
+root.OrchardModel = { PLAN_DATE, STATUS_DATE, FRUIT_SHEET, INVENTORY, INVENTORY_MATCH, TYPE_ORDER, BLOCK_ROWS, SHARED_ROWS, RESERVED_ROWS, ORCHARD_ROWS, ROW_PLAN, GRID_COLUMNS, PLOT_WIDTH, EAST_SIDE, PLOT_DEPTH, TREE_SPACING, ROW_SPACING, LOCAL_RADIUS, ORCHARD_WEST_SETBACK, JUNIPER_DISTANCE, WINDBREAK, C1_GUILDS, EAST_HEDGE, OWNER_NOTES, ORCHARD_UPDATES, PLANTED_ROOTSTOCKS, ROOTSTOCK_LABELS, GENERATED_CODES, FAMILY_OVERRIDES, APPLE_ALIASES, HARRISON_BLOOM_RESEARCH, APPLE_BLOOM_RESEARCH, URBAN_APPLE_ROWS, PEAR_BLOOM, CHERRY_CHART, PLANTING_PLAN, FRUIT_BY_ROW, INVENTORY_BY_ROW, ORCHARD_X0, RESERVED, fruitRecord, inventoryLine, rootstockRemaining, normalizeName, placementOf, buildOrchardTrees, balancedRows, blockShape, sharedGroupOf, blockColumns, rowTemplate, layoutRows, lineCount, layoutPlantRow, windbreakLayout, eastHedgeLayout, alleyGeometry, laneGeometry, guildLayout, treeDistance, needsTwoDonors, compatiblePair, nearestPartners, PLANT_LOCATIONS, plantedWhen, plan, plannedSpots, plannedAt, plannedTrees, plannedPollination, UNIDENTIFIED_APPLES, unidentifiedApples, UNIDENTIFIED_STONE_FRUIT, unidentifiedStoneFruit };
 })(typeof window !== 'undefined' ? window : globalThis);

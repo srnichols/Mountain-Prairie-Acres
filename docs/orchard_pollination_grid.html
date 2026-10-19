@@ -511,7 +511,7 @@ window.addEventListener('afterprint', () => {
   printOpenedDetails.clear();
 });
 
-const { PLAN_DATE, STATUS_DATE, FRUIT_SHEET, INVENTORY, INVENTORY_MATCH, TYPE_ORDER, BLOCK_ROWS, SHARED_ROWS, RESERVED_ROWS, ORCHARD_ROWS, ROW_PLAN, GRID_COLUMNS, PLOT_WIDTH, EAST_SIDE, PLOT_DEPTH, TREE_SPACING, ROW_SPACING, LOCAL_RADIUS, ORCHARD_WEST_SETBACK, JUNIPER_DISTANCE, WINDBREAK, EAST_HEDGE, OWNER_NOTES, ORCHARD_UPDATES, PLANTED_ROOTSTOCKS, ROOTSTOCK_LABELS, GENERATED_CODES, FAMILY_OVERRIDES, APPLE_ALIASES, HARRISON_BLOOM_RESEARCH, APPLE_BLOOM_RESEARCH, URBAN_APPLE_ROWS, PEAR_BLOOM, CHERRY_CHART, FRUIT_BY_ROW, INVENTORY_BY_ROW, RESERVED, fruitRecord, inventoryLine, rootstockRemaining, normalizeName, placementOf, buildOrchardTrees, balancedRows, blockShape, sharedGroupOf, blockColumns, rowTemplate, layoutRows, lineCount, layoutPlantRow, windbreakLayout, eastHedgeLayout, alleyGeometry, laneGeometry, guildLayout, treeDistance, needsTwoDonors, compatiblePair, nearestPartners, PLANT_LOCATIONS } = window.OrchardModel;
+const { PLAN_DATE, STATUS_DATE, FRUIT_SHEET, INVENTORY, INVENTORY_MATCH, TYPE_ORDER, BLOCK_ROWS, SHARED_ROWS, RESERVED_ROWS, ORCHARD_ROWS, ROW_PLAN, GRID_COLUMNS, PLOT_WIDTH, EAST_SIDE, PLOT_DEPTH, TREE_SPACING, ROW_SPACING, LOCAL_RADIUS, ORCHARD_WEST_SETBACK, JUNIPER_DISTANCE, WINDBREAK, EAST_HEDGE, OWNER_NOTES, ORCHARD_UPDATES, PLANTED_ROOTSTOCKS, ROOTSTOCK_LABELS, GENERATED_CODES, FAMILY_OVERRIDES, APPLE_ALIASES, HARRISON_BLOOM_RESEARCH, APPLE_BLOOM_RESEARCH, URBAN_APPLE_ROWS, PEAR_BLOOM, CHERRY_CHART, FRUIT_BY_ROW, INVENTORY_BY_ROW, RESERVED, fruitRecord, inventoryLine, rootstockRemaining, normalizeName, placementOf, buildOrchardTrees, balancedRows, blockShape, sharedGroupOf, blockColumns, rowTemplate, layoutRows, lineCount, layoutPlantRow, windbreakLayout, eastHedgeLayout, alleyGeometry, laneGeometry, guildLayout, treeDistance, needsTwoDonors, compatiblePair, nearestPartners, PLANT_LOCATIONS, plantedWhen } = window.OrchardModel;
 const { C1_GUILDS, ORCHARD_X0, PLANTING_PLAN, plannedAt, plannedSpots } = window.OrchardModel;
 
 const orchardTrees = buildOrchardTrees();
@@ -561,6 +561,11 @@ const PLURAL = { Apple:'apples', Apricot:'apricots', Cherry:'cherries', Peach:'p
 const capitalize = text => text[0].toUpperCase() + text.slice(1);
 const typeRows = type => rows.filter(row => row.types.includes(type));
 const typeCount = (row, type) => row.trees.filter(tree => tree && tree.type === type).length;
+const columnText = (row, type) => {
+  const columns = row.trees.flatMap((tree, index) => tree && tree.type === type ? [index + 1] : []);
+  const contiguous = columns.length > 1 && columns[columns.length - 1] - columns[0] === columns.length - 1;
+  return contiguous ? `C${columns[0]}–C${columns[columns.length - 1]}` : columns.map(c => `C${c}`).join(', ');
+};
 const rowRange = type => {
   const list = typeRows(type);
   return list.length > 1 ? `R${list[0].r}–R${list[list.length - 1].r}` : `R${list[0].r}`;
@@ -578,10 +583,14 @@ const layoutText = type => {
 // Shared rows: where each block sits, by compass direction and as drawn on the map (west on the right).
 const ALIGN_TEXT = { west:'at the west end', center:'in the center', east:'at the east end' };
 const ALIGN_MAP = { west:'right-justified', center:'centered', east:'left-justified' };
+// A block with its own `columns` list was planted away from its usual alignment, so it is described by where its trees are.
+const blockColumnsText = block => listText(typeRows(block.type).map(row => `${columnText(row, block.type)} in R${row.r}`));
+const blockPlace = block => block.columns ? `at ${blockColumnsText(block)}` : ALIGN_TEXT[block.align];
+const blockMapPlace = block => block.columns ? `placed at ${blockColumnsText(block)}` : ALIGN_MAP[block.align];
 const firstOfGroup = type => TYPE_ORDER.find(other => sharedGroupOf(type).blocks.some(block => block.type === other)) === type;
 const sharedText = group => `${listText(group.blocks.map(block =>
-  `${PLURAL[block.type]} ${ALIGN_TEXT[block.align]} (${typeRows(block.type).map(row => typeCount(row, block.type)).join(' + ')})`))} share ${rowRange(group.blocks[0].type)}`;
-const sharedMapText = group => `in ${rowRange(group.blocks[0].type)} the ${listText(group.blocks.map(block => `${PLURAL[block.type]} are ${ALIGN_MAP[block.align]}`))}, so the open spots there are between the blocks`;
+  `${PLURAL[block.type]} ${blockPlace(block)} (${typeRows(block.type).map(row => typeCount(row, block.type)).join(' + ')})`))} share ${rowRange(group.blocks[0].type)}`;
+const sharedMapText = group => `in ${rowRange(group.blocks[0].type)} the ${listText(group.blocks.map(block => `${PLURAL[block.type]} are ${blockMapPlace(block)}`))}, so the open spots there are between the blocks`;
 const presentGroups = SHARED_ROWS.filter(group => group.blocks.some(block => typeRows(block.type).length));
 // Rows held open at the north end for trees bought or grafted later.
 const futureRows = rows.filter(row => row.future);
@@ -601,11 +610,6 @@ const typeOrderText = () => TYPE_ORDER.filter(type => typeRows(type).length).fla
 // Map label for a row; shared rows list their types left to right as drawn (east to west).
 const rowLabel = row => row.future ? 'Future trees' :
   row.shared ? [...row.types].reverse().map((type, index) => index ? type.toLowerCase() : type).join(' · ') : row.types[0];
-const columnText = (row, type) => {
-  const columns = row.trees.flatMap((tree, index) => tree && tree.type === type ? [index + 1] : []);
-  const contiguous = columns.length > 1 && columns[columns.length - 1] - columns[0] === columns.length - 1;
-  return contiguous ? `C${columns[0]}–C${columns[columns.length - 1]}` : columns.map(c => `C${c}`).join(', ');
-};
 const rootstockSummary = INVENTORY.filter(line => placementOf(line) === 'rootstock')
   .map(line => `${rootstockRemaining(line[0])} ${ROOTSTOCK_LABELS[line[0]] || line[5]}`).join(', ');
 const unidentifiedByType = type => allTrees.filter(tree => tree.unknown && tree.type === type).length;
@@ -806,10 +810,20 @@ function svgNode(tag, attrs = {}, text) {
 document.getElementById('subtitle').textContent = `Prairie Plants — inventory of ${PLAN_DATE}; planting status updated ${STATUS_DATE} — orchard plot ${PLOT_WIDTH} × ${PLOT_DEPTH} ft plus a ${WINDBREAK.width} ft west windbreak — ${GRID_COLUMNS} positions per row — ${TREE_SPACING} ft in-row (E–W) × ${ROW_SPACING} ft rows (N–S), triangular offset`;
 openRecords.forEach(tree => document.getElementById('orchard-updates').append(element('p', updateNote(tree))));
 plantedRootstocks.forEach(tree => document.getElementById('orchard-updates').append(element('p', planningNote(tree))));
-plantedTrees.filter(tree => !tree.rootstockOnly).forEach(tree => document.getElementById('orchard-updates').append(
-  element('p', `${position(tree)}: ${tree.name} (tag ${tree.tag || 'none'}, inventory row ${tree.invRow}) is already planted, per the owner's update of ${STATUS_DATE}.`)));
-document.getElementById('planted-note').textContent = plantedTrees.length ?
-  `✓ = already planted, from your planting updates: ${plantedTrees.map(tree => `${position(tree)} (${tree.name})`).join('; ')}.` : '';
+// When every orchard fruit tree is planted, one summary line replaces a note for each tree.
+const plantedFruit = plantedTrees.filter(tree => !tree.rootstockOnly);
+const allPlanted = orchardFruitTrees.length > 0 && plantedFruit.length === orchardFruitTrees.length;
+const plantedMonth = plantedWhen(plantedFruit);
+if (allPlanted) {
+  document.getElementById('orchard-updates').append(element('p',
+    `All ${plantedFruit.length} living orchard fruit trees are planted${plantedMonth ? ` (${plantedMonth})` : ''}, per the owner's update of ${STATUS_DATE}.`));
+} else {
+  plantedFruit.forEach(tree => document.getElementById('orchard-updates').append(
+    element('p', `${position(tree)}: ${tree.name} (tag ${tree.tag || 'none'}, inventory row ${tree.invRow}) is already planted, per the owner's update of ${STATUS_DATE}.`)));
+}
+document.getElementById('planted-note').textContent = !plantedTrees.length ? '' : allPlanted ?
+  `✓ = planted. Every living orchard fruit tree is planted${plantedMonth ? ` (${plantedMonth})` : ''}${plantedRootstocks.length ? `, and so is the M-111 rootstock at ${plantedRootstocks.map(position).join(', ')}` : ''}.` :
+  `✓ = already planted, from your planting updates: ${plantedTrees.map(tree => `${position(tree)} (${tree.name})`).join('; ')}.`;
 document.getElementById('plot-size').textContent = `${PLOT_WIDTH} × ${PLOT_DEPTH} ft`;
 document.getElementById('wb-width').textContent = `${WINDBREAK.width} ft, ${windbreakRows.length} rows`;
 document.getElementById('alley-width').textContent = `${num(alley.clear)} ft clear`;
@@ -1326,7 +1340,11 @@ function drawSitePlan() {
   return root;
 }
 document.getElementById('site-plan').append(drawSitePlan());
-document.getElementById('site-plan-note').textContent = `To scale, south up and west on the right, matching the planting map (the view from the north end looking south). East–west distances are from the west fence; north–south distances are from the R1 row line. Large dots are orchard trees in fruit-type colors; the olive dot at R6-C3 is the planted M-111 rootstock. Filled dashed red rings are positions reserved for grafted rootstock apples, and dashed gray circles are open positions. The unfilled dark-red ring at ${lostTrees.map(position).join(', ')} marks the dead pear's open position. Slate rings at ${outsideTrees.map(position).join(', ')} mark the unplanted Urban apple spots. All four are labeled for 2027 replacements; the Urban apples' outside-orchard locations are pending. Small dots are windbreak plants (purple red mulberry, olive hazelnut) with their managed mature width shaded; the ${num(lane.width)} ft walking lane runs between the two rows. Lime dots beside the C1 trees are the berry guilds, and dashed lime rings are guild positions waiting for the R1 and future-row trees. The green dots between the driveway and the east fence are the elderberry hedge, and its dashed rings mark positions for plants to add later. East of the orchard are ${num(headland)} ft of open ground for turning at the row ends, the driveway, the hedge, and the east fence. The plot is ${PLOT_DEPTH} ft deep; only the planted ${Math.round(plantedDepth)} ft is drawn. The block can slide north or south, but keeping it toward the north end adds distance from the junipers. Hover over a dot for its position.`;
+const lostByType = listText(TYPE_ORDER.filter(type => lostTrees.some(tree => tree.type === type)).map(type => {
+  const count = lostTrees.filter(tree => tree.type === type).length;
+  return count > 1 ? `${count} ${PLURAL[type]}` : `1 ${type.toLowerCase()}`;
+}));
+document.getElementById('site-plan-note').textContent = `To scale, south up and west on the right, matching the planting map (the view from the north end looking south). East–west distances are from the west fence; north–south distances are from the R1 row line. Large dots are orchard trees in fruit-type colors; the olive dot at R6-C3 is the planted M-111 rootstock. Filled dashed red rings are positions reserved for grafted rootstock apples, and dashed gray circles are open positions. The unfilled dark-red rings at ${lostTrees.map(position).join(', ')} mark the open positions of the dead trees (${lostByType}). Slate rings at ${outsideTrees.map(position).join(', ')} mark the unplanted Urban apple spots. All ${lostTrees.length + outsideTrees.length} are labeled for 2027 replacements; the Urban apples' outside-orchard locations are pending. Small dots are windbreak plants (purple red mulberry, olive hazelnut) with their managed mature width shaded; the ${num(lane.width)} ft walking lane runs between the two rows. Lime dots beside the C1 trees are the berry guilds, and dashed lime rings are guild positions waiting for the R1 and future-row trees. The green dots between the driveway and the east fence are the elderberry hedge, and its dashed rings mark positions for plants to add later. East of the orchard are ${num(headland)} ft of open ground for turning at the row ends, the driveway, the hedge, and the east fence. The plot is ${PLOT_DEPTH} ft deep; only the planted ${Math.round(plantedDepth)} ft is drawn. The block can slide north or south, but keeping it toward the north end adds distance from the junipers. Hover over a dot for its position.`;
 
 [
   ...openRecords.map(updateNote),
@@ -1521,7 +1539,7 @@ rows.forEach(row => {
   if (row.shared) {
     const group = sharedGroupOf(row.types[0]);
     const blocks = group.blocks.filter(block => row.types.includes(block.type)).map(block =>
-      `${typeCount(row, block.type) > 1 ? PLURAL[block.type] : block.type.toLowerCase()} ${columnText(row, block.type)} ${ALIGN_TEXT[block.align]}`);
+      `${typeCount(row, block.type) > 1 ? PLURAL[block.type] : block.type.toLowerCase()} ${columnText(row, block.type)}${block.columns ? '' : ` ${ALIGN_TEXT[block.align]}`}`);
     addTableRow('row-summary', [`R${row.r}`, `${listText(row.types.map((type, index) => index ? type.toLowerCase() : type))} (shared)`, trees.length, GRID_COLUMNS - trees.length,
       `${capitalize(listText(blocks))}. ${row.types.map(type => TYPE_NOTES[type]).join(' ')}`]);
     return;

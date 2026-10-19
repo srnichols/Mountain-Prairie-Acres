@@ -226,7 +226,7 @@
 <tbody>
 <tr><td>1</td><td>Begin with long and thoughtful observation.</td><td>Walk the block during snowmelt and after summer storms. Flag where water runs and ponds and where snow and frost linger, and use the log on the last page.</td></tr>
 <tr><td>2</td><td>Start at the top (highpoint) of your watershed and work your way down.</td><td>Your high point is the homestead pad: its roofs and gravel come first, then the driveway and the top rows. The northwest corner by the road comes last.</td></tr>
-<tr><td>3</td><td>Start small and simple.</td><td>One crescent per tree at planting. Add the spreader, driveway basins, lane, and corner basin after a season of watching.</td></tr>
+<tr><td>3</td><td>Start small and simple.</td><td>One crescent per tree: at planting for new trees, and as soon as you can for the trees already in the ground. Add the spreader, driveway basins, lane, and corner basin after a season of watching.</td></tr>
 <tr><td>4</td><td>Slow, spread, and infiltrate the flow of water.</td><td>Level basin floors and level berm crests; many small basins instead of one ditch; mulch everywhere water lands.</td></tr>
 <tr><td>5</td><td>Always plan an overflow route, and manage that overflow as a resource.</td><td>Every basin spills to the next tree downhill, and the chain ends in the northwest sponge basin, not the road.</td></tr>
 <tr><td>6</td><td>Maximize living and organic groundcover.</td><td>Wood chips in the basins, perennial cover in the alleys, clippings blown onto the rows.</td></tr>
@@ -243,7 +243,7 @@
 </div>
 <h3>Build it as you plant</h3>
 <ol class="steps">
-  <li>Plant on a low mound, 3–4 in high and wider than the root ball, so the root flare ends up 1–2 in above the future spillway level after the soil settles.</li>
+  <li>Plant on a low mound, 3–4 in high and wider than the root ball, so the root flare ends up 1–2 in above the future spillway level after the soil settles. (The fall 2026 trees are already planted, so start at step 2 for them.)</li>
   <li>Find the downhill direction at the tree with a level. Expect northwest in R1–R5 and north-northwest farther north (the site plan shows each tree), but local bumps rule.</li>
   <li>Mark an arc on the downhill side, 3–4 ft from the trunk, with its ends running along the contour and curving slightly uphill.</li>
   <li>Shape a shallow, level-floored saucer between the mound and the arc, digging no deeper than about 2 in so the floor stays in the loam above the stickier clay-loam subsoil. Get the rest of the depth from the berm: pile soil on the arc (scrape extra from the alley side, never from the basin floor), tamp it, and level its crest.</li>
@@ -271,7 +271,7 @@
 <colgroup><col style="width:10%"><col style="width:15%"><col style="width:16%"><col style="width:22%"><col style="width:11%"><col style="width:26%"></colgroup>
 <thead><tr><th>Fruit</th><th>Where · trees</th><th>Wet-soil tolerance</th><th>Basin</th><th>Send overflow?</th><th>Notes</th></tr></thead>
 <tbody></tbody></table>
-<div class="notice cold"><strong>Cold air follows the water.</strong> On frosty spring nights cold air drains the same way water does, toward the northwest corner by the road. With the block at the south end of the strip, that open corner, about 300 ft past R15, is the frost pocket, not the orchard. Within the block the stone fruit (R9–R12) is on the lower half but on its steepest band, so cold air keeps moving, and the apricots (R11–R12, C1–C3) are the lowest planted trees. Stone fruit blooms first, and UC IPM notes that bacterial canker, already flagged on many of these trees, is worse in low spots and after spring freezes; drought stress and irrigation that wets the trunk also set trees up for it. So these trees need water that soaks through, never water that stands, plus steady drip in summer. Don't plant a solid hedge across the block's north end, where it would dam cold air against them. NRCS lists only 60–100 frost-free days for this soil's setting, so that cold-air drainage matters.</div>
+<div class="notice cold"><strong>Cold air follows the water.</strong> On frosty spring nights cold air drains the same way water does, toward the northwest corner by the road. With the block at the south end of the strip, that open corner, about 300 ft past R15, is the frost pocket, not the orchard. Within the block the stone fruit (R9–R12) is on the lower half but on its steepest band, so cold air keeps moving, and the apricots (R11–R12, C1–C3) and the plums at R12-C5 and R12-C6 are the lowest planted trees. Stone fruit blooms first, and UC IPM notes that bacterial canker, already flagged on many of these trees, is worse in low spots and after spring freezes; drought stress and irrigation that wets the trunk also set trees up for it. So these trees need water that soaks through, never water that stands, plus steady drip in summer. Don't plant a solid hedge across the block's north end, where it would dam cold air against them. NRCS lists only 60–100 frost-free days for this soil's setting, so that cold-air drainage matters.</div>
 
 <h2 class="page-break">Row-by-Row Build Tracker</h2>
 <table class="detail" id="tracker">
@@ -713,7 +713,7 @@ function drawSitePlan() {
     const xs = apricots.map(t => t.x), ys = apricots.map(t => t.y);
     const x0 = Math.min(...xs) - 6, x1 = Math.max(...xs) + 6, y0 = Math.min(...ys) - 7, y1 = Math.max(...ys) + 7;
     box(x0, x1, y0, y1, { class: 'w-apricot', rx: 8 });
-    text((x0 + x1) / 2, y1 + 8, 'apricots: lowest planted trees', { 'text-anchor': 'middle', 'font-size': 8.5, class: 't-stone halo' });
+    text((x0 + x1) / 2, y1 + 8, 'apricots: among the lowest trees', { 'text-anchor': 'middle', 'font-size': 8.5, class: 't-stone halo' });
   }
   const fs = [226, 236], fe = [fs[0] + 46 * fall[0], fs[1] + 46 * fall[1]];
   path([fs, fe], { class: 'w-cold', 'marker-end': 'url(#sp-cold)' });

@@ -37,20 +37,48 @@ test('Generated orchard model preserves current assignments and vacancies', () =
   const { records, rows } = model.plan();
   const active = rows.flatMap(row => row.trees.filter(Boolean));
   assert.equal(records.length, 115);
-  assert.equal(active.length, 109);
-  assert.equal(active.filter(tree => !tree.rootstockOnly).length, 108);
+  assert.equal(active.length, 107);
+  assert.equal(active.filter(tree => !tree.rootstockOnly).length, 106);
   assert.equal(rows.filter(row => row.reserved).reduce((sum, row) => sum + row.reserved, 0), 13);
-  for (const [r, c] of [[4, 9], [5, 9], [5, 10], [8, 1], [9, 2], [11, 10]]) assert.equal(rows[r - 1].trees[c - 1], null);
-  assert.deepEqual(Array.from(rows.flatMap(row => row.held).map(tree => tree.id).sort()), ['i108-1', 'i63-1', 'i64-1', 'i65-1', 'i80-1', 'i88-1']);
+  for (const [r, c] of [[4, 9], [5, 9], [5, 10], [8, 1], [9, 2], [11, 7], [11, 10], [11, 12], [12, 7], [12, 11]]) assert.equal(rows[r - 1].trees[c - 1], null);
+  assert.deepEqual(Array.from(rows.flatMap(row => row.held).map(tree => tree.id).sort()),
+    ['i108-1', 'i63-1', 'i64-1', 'i65-1', 'i80-1', 'i83-1', 'i84-1', 'i88-1']);
   assert.equal(rows[5].trees[2].id, 'i56-1');
   assert.equal(rows[7].trees[2].id, 'i94-1');
-  assert.equal(rows[7].trees[2].planted, true);
   assert.equal(rows[7].trees[0], null);
-  assert.deepEqual(Array.from(active.filter(tree => tree.planted).map(tree => tree.id).sort()), ['i56-1', 'i94-1']);
+  // The three Italian plums sit where the owner moved them (R11-C7 to R11-C6 and R12-C7 to R12-C5).
+  assert.deepEqual(Array.from([[11, 6], [12, 5], [12, 6]].map(([r, c]) => rows[r - 1].trees[c - 1].invRow)), [111, 111, 111]);
+  // The owner finished planting in October 2026: every living orchard tree is planted, and each fruit tree carries the month
+  // (the planted M-111 rootstock was reported earlier, with no date).
+  const fruit = active.filter(tree => !tree.rootstockOnly);
+  assert.ok(active.every(tree => tree.planted));
+  assert.deepEqual(Array.from(new Set(fruit.map(tree => tree.plantedOn))), ['2026-10']);
+  assert.equal(active.find(tree => tree.rootstockOnly).plantedOn, null);
+  assert.equal(model.plantedWhen(fruit), 'October 2026');
   assert.equal(grid.siteRef(...grid.treeXY(6, 3)), 'B10-E33-S35');
   active.forEach(tree => {
     assert.ok(model.nearestPartners(tree, records).every(partner => !partner.donor.orchardUpdate && !partner.donor.rootstockOnly));
   });
+});
+
+test('A shared-row block can list the exact columns its trees were planted in', () => {
+  // The plum block's alignment is "center", but the plums were planted just west of center (R11-C6, R12-C5, R12-C6); its columns list records that.
+  const plums = context.window.ORCHARD_DATA.SHARED_ROWS[0].blocks.find(block => block.type === 'Plum');
+  assert.deepEqual(JSON.parse(JSON.stringify(plums.columns)), [[6], [5, 6]]);
+  const withColumns = columns => {
+    const win = freshWindow();
+    win.ORCHARD_DATA.SHARED_ROWS[0].blocks.find(block => block.type === 'Plum').columns = columns;
+    return win.OrchardModel;
+  };
+  // The recorded plantings must match the template, so the old centered positions are rejected.
+  assert.throws(() => withColumns([[7], [6, 7]]).plan(), /R11-C6 should be open in the row plan/);
+  assert.throws(() => withColumns([[6]]).plan(), /columns must list each of the 2 shared rows/);
+  assert.throws(() => withColumns([[6], [5]]).plan(), /needs 2 different columns from 1 to 13/);
+  assert.throws(() => withColumns([[6], [5, 5]]).plan(), /needs 2 different columns from 1 to 13/);
+  assert.throws(() => withColumns([[6], [5, 14]]).plan(), /needs 2 different columns from 1 to 13/);
+  assert.throws(() => withColumns([[6], [1, 6]]).plan(), /overlaps/);
+  // Without columns the block falls back to its alignment, which no longer matches the planted trees.
+  assert.throws(() => withColumns(undefined).plan(), /should be open in the row plan/);
 });
 
 test('Planted marks follow the orchard spot, not the plant number or an outside planting', () => {
@@ -59,37 +87,56 @@ test('Planted marks follow the orchard spot, not the plant number or an outside 
     return rows[r - 1].trees[c - 1];
   };
   const planted = rows => rows.flatMap(row => row.trees).filter(tree => tree && tree.planted).map(tree => tree.id).sort();
+  // Every tree is planted in the shipped records, so each case starts from a copy where nothing is planted yet.
+  const nothingPlanted = () => {
+    const win = freshWindow();
+    Object.values(win.ORCHARD_DATA.PLANT_LOCATIONS).forEach(planting => { planting.status = 'planned'; planting.planted_on = null; });
+    return win;
+  };
+  assert.equal(planted(nothingPlanted().OrchardModel.plan().rows).length, 0);
 
-  // Trees under one tag are interchangeable: i62-4 recorded as planted where the layout puts i62-1 marks that spot only.
-  const swapped = freshWindow();
+  // Trees under one tag are interchangeable: i62-4 recorded as planted where the layout puts i62-1 marks that spot only,
+  // and the planting month follows the same spot.
+  const swapped = nothingPlanted();
   const locations = swapped.ORCHARD_DATA.PLANT_LOCATIONS;
   const first = locations['i62-1'];
   const fourth = locations['i62-4'];
-  locations['i62-4'] = { ...first, status: 'planted' };
+  locations['i62-4'] = { ...first, status: 'planted', planted_on: '2026-11' };
   locations['i62-1'] = { ...fourth };
   const { rows } = swapped.OrchardModel.plan();
   assert.equal(treeAt(rows, first.location_id).id, 'i62-1');
   assert.equal(treeAt(rows, first.location_id).planted, true);
+  assert.equal(treeAt(rows, first.location_id).plantedOn, '2026-11');
   assert.equal(treeAt(rows, fourth.location_id).id, 'i62-4');
   assert.equal(treeAt(rows, fourth.location_id).planted, false);
-  assert.deepEqual(Array.from(planted(rows)), ['i56-1', 'i62-1', 'i94-1']);
+  assert.equal(treeAt(rows, fourth.location_id).plantedOn, null);
+  assert.deepEqual(Array.from(planted(rows)), ['i62-1']);
 
   // A tree planted outside the orchard leaves its old orchard spot open and unmarked.
-  const outside = freshWindow();
+  const outside = nothingPlanted();
   outside.ORCHARD_DATA.PLANT_LOCATIONS['i64-1'] = {
     status: 'planted', location_id: 'outside-c17', inventory_row: 64, site_ref: 'C17-E12-S18', x_ft: 112, y_ft: 818
   };
   const result = outside.OrchardModel.plan();
   assert.equal(result.records.find(tree => tree.id === 'i64-1').planted, false);
   assert.equal(result.rows[3].trees[8], null);
-  assert.deepEqual(Array.from(planted(result.rows)), ['i56-1', 'i94-1']);
+  assert.deepEqual(Array.from(planted(result.rows)), []);
+});
+
+test('Planting months are worded for the pages that summarize them', () => {
+  const when = (...months) => model.plantedWhen(months.map(plantedOn => ({ plantedOn })));
+  assert.equal(when('2026-10', '2026-10-18'), 'October 2026');
+  assert.equal(when('2026-10', '2026-11-03'), 'October to November 2026');
+  assert.equal(when('2026-12', '2027-01'), 'December 2026 to January 2027');
+  assert.equal(when('2026-10', null), '', 'A tree with no date means the months are unknown');
+  assert.equal(model.plantedWhen([]), '');
 });
 
 test('Dead plants are exported for the pages that count what is on hand', () => {
   const plants = JSON.parse(fs.readFileSync(path.join(root, 'data', 'plants.json'), 'utf8')).records;
   const dead = plants.filter(plant => plant.health_status === 'dead').map(plant => plant.id);
   assert.deepEqual(Array.from(context.window.ORCHARD_DATA.DEAD_PLANTS), dead);
-  assert.deepEqual(dead, ['i24-1', 'i24-2', 'i80-1', 'i88-1', 'i108-1']);
+  assert.deepEqual(dead, ['i24-1', 'i24-2', 'i80-1', 'i83-1', 'i84-1', 'i88-1', 'i108-1']);
 });
 
 test('Generated orchard model retains every windbreak, hedge, and guild rule', () => {
@@ -117,7 +164,7 @@ test('Unidentified apple possibilities reconcile with purchases and planned spot
   const apples = model.unidentifiedApples();
   assert.equal(apples.tag, 'AL-UnKn');
   assert.deepEqual(plain(apples.trees.map(tree => tree.id)), [1, 2, 3, 4, 5, 6].map(n => `i62-${n}`));
-  assert.ok(apples.trees.every(tree => tree.status === 'planned' && /^R\d+-C\d+$/.test(tree.spot) && tree.siteRef));
+  assert.ok(apples.trees.every(tree => tree.status === 'planted' && tree.plantedOn === '2026-10' && /^R\d+-C\d+$/.test(tree.spot) && tree.siteRef));
   assert.equal(new Set(apples.trees.map(tree => tree.spot)).size, 6);
   assert.deepEqual(plain(apples.pool), { main:10, longShot:1, trees:6, lostMin:4, lostMax:5 });
   for (const candidate of apples.candidates) {
@@ -128,6 +175,17 @@ test('Unidentified apple possibilities reconcile with purchases and planned spot
   assert.deepEqual(plain(apples.candidates.filter(candidate => !candidate.taggedQty).map(candidate => candidate.name)), ['Golden Russet', 'Empire']);
   assert.deepEqual(plain(apples.candidates.filter(candidate => candidate.slots > 1).map(candidate => candidate.name)), ['Cortland']);
   assert.deepEqual(plain(apples.candidates.filter(candidate => candidate.longShot).map(candidate => candidate.name)), ['Dolgo crabapple']);
+});
+
+test('Unidentified trees report a planting month only once they are planted', () => {
+  const win = freshWindow();
+  win.ORCHARD_DATA.PLANT_LOCATIONS['i62-1'].status = 'planned';
+  const trees = win.OrchardModel.unidentifiedApples().trees;
+  assert.equal(trees[0].status, 'planned');
+  assert.equal(trees[0].plantedOn, null);
+  assert.deepEqual(Array.from(new Set(trees.slice(1).map(tree => tree.plantedOn))), ['2026-10']);
+  assert.equal(win.OrchardModel.plantedWhen(trees), '', 'One unplanted tree leaves the planting months unknown');
+  assert.equal(win.OrchardModel.plantedWhen(trees.slice(1)), 'October 2026');
 });
 
 test('Unidentified stone fruit possibilities reconcile with purchases and planned spots', () => {
@@ -144,7 +202,7 @@ test('Unidentified stone fruit possibilities reconcile with purchases and planne
   const spots = lines.flatMap(line => line.trees.map(tree => tree.spot));
   assert.equal(new Set(spots).size, 6);
   for (const line of lines) {
-    assert.ok(line.trees.every(tree => tree.status === 'planned' && /^R\d+-C\d+$/.test(tree.spot) && tree.siteRef), line.type);
+    assert.ok(line.trees.every(tree => tree.status === 'planted' && tree.plantedOn === '2026-10' && /^R\d+-C\d+$/.test(tree.spot) && tree.siteRef), line.type);
     for (const candidate of line.candidates) {
       const purchased = candidate.rows.reduce((total, row) => total + model.fruitRecord(row).quantity, 0);
       assert.equal(candidate.slots, purchased - candidate.taggedQty, candidate.name);
@@ -180,7 +238,7 @@ test('Cultivar library covers every inventory line and its links resolve', () =>
   assert.equal(library.byId('apple-cortland').inventory_rows[0], 29);
   assert.ok(library.tooltip(library.byId('apple-cortland')).startsWith('Cortland: '));
   assert.equal(library.guideHref(library.byId('apple-cortland')), 'cultivar_guide.html#apple-cortland');
-  assert.equal(library.profiles.length, 161);
+  assert.equal(library.profiles.length, 162);
   assert.equal(library.GROUPS.length, 11);
   assert.ok(library.profiles.every(profile => library.GROUPS.includes(profile.group)));
 });
@@ -217,14 +275,20 @@ test('The 2027 planting plan fills every open spot in R1 to R12 and leaves livin
   const spots = model.plannedSpots();
   assert.equal(plan.year, 2027);
   assert.equal(plan.covers_rows, 12);
-  assert.equal(spots.length, 47);
-  assert.equal(new Set(spots.map(entry => entry.spot)).size, 47);
+  assert.equal(spots.length, 49);
+  assert.equal(new Set(spots.map(entry => entry.spot)).size, 49);
   const counts = {};
   spots.forEach(entry => { counts[entry.item.type] = (counts[entry.item.type] || 0) + 1; });
-  assert.deepEqual(counts, { Apple: 26, Pear: 2, Cherry: 11, Peach: 1, Plum: 7 });
+  assert.deepEqual(counts, { Apple: 26, Pear: 2, Cherry: 11, Peach: 3, Plum: 7 });
   spots.forEach(({ r, c, spot }) => assert.equal(rows[r - 1].trees[c - 1], null, `${spot} should be open`));
   rows.flatMap(row => row.held).forEach(tree => assert.ok(model.plannedAt(tree.r, tree.c), `R${tree.r}-C${tree.c} has no planned cultivar`));
   assert.equal(model.plannedAt(6, 4).item.cultivar, 'Dayton');
+  // Spots left open by dead or moved trees are planned for the same fruit type; the moved plums' new spots are not planned.
+  for (const [r, c, type] of [[11, 7, 'Plum'], [12, 7, 'Plum'], [11, 10, 'Peach'], [11, 12, 'Peach'], [12, 11, 'Peach'], [9, 2, 'Cherry'], [8, 1, 'Pear']]) {
+    assert.equal(model.plannedAt(r, c).item.type, type, `R${r}-C${c}`);
+  }
+  assert.equal(model.plannedAt(11, 6), null);
+  assert.equal(model.plannedAt(12, 5), null);
   // No hole in R1 to R12: every position holds a living tree or has a planned cultivar.
   const holes = [];
   for (let r = 1; r <= plan.covers_rows; r++) {
@@ -260,6 +324,7 @@ test('Every planned cultivar has a library profile of the same fruit type with s
     assert.equal(profile.type, item.type, item.id);
     assert.ok(profile.sources.length >= 1 && profile.sources.every(([, link]) => link.startsWith('https://')), item.id);
     assert.ok(!/PLACEHOLDER/.test(JSON.stringify(profile)), `${item.id} still has a placeholder profile`);
+    assert.ok(!/TEMPORARY|TMP/.test(JSON.stringify(item)), `${item.id} still has temporary text`);
   }
 });
 
@@ -302,9 +367,9 @@ test('The planned pear, cherries, plums and peach follow the pollination rules',
   const bing = records.find(tree => tree.name === 'Bing');
   assert.equal(model.compatiblePair(bing, cherry), null);
   assert.ok(model.compatiblePair(bing, { ...cherry, cherryChart: { group: null, bloom: 4 } }));
-  // The new sweet cherries are self-fertile and bloom a period after Bing, and tart cherries and plums need no partner.
+  // The new sweet cherries are self-fertile and bloom a period after Bing, and tart cherries, plums and peaches need no partner.
   for (const name of ['Skeena', 'WhiteGold']) assert.equal(planned(name).tree.selfFertile, true, name);
-  for (const name of ['Surefire', 'Meteor', 'Carmine Jewel', 'Mount Royal', 'Stanley', 'Damson']) {
+  for (const name of ['Surefire', 'Meteor', 'Carmine Jewel', 'Mount Royal', 'Stanley', 'Damson', 'Contender', 'Harrow Diamond']) {
     const entry = planned(name);
     assert.equal(entry.tree.selfFertile, true, name);
     assert.equal(entry.partners.length, 0, `${name} is self-fertile and nothing is counted as its partner`);

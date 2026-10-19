@@ -250,6 +250,9 @@ const untagged = main.filter(candidate => !candidate.taggedQty).map(candidate =>
 const repeats = main.filter(candidate => candidate.slots > 1);
 const lost = pool.lostMin === pool.lostMax ? `${pool.lostMin} are` : `${pool.lostMin} to ${pool.lostMax} are`;
 const summary = document.getElementById('summary');
+const allPlanted = trees.every(tree => tree.status === 'planted');
+const plantedWhen = OrchardModel.plantedWhen(trees);
+const labels = `${first.label} to ${last.label}`;
 summary.append(
   labelled('What this is:', `${trees.length} apple trees share the tag ${tag}. Each is one of the purchased apples below that has no tagged tree. Bloom timing and fruit will tell them apart over the next few years.`),
   labelled(`Owner statement, ${stated}:`, info.owner_statement),
@@ -257,7 +260,9 @@ summary.append(
   labelled('Narrowing it down:', `Compare each tree with the tagged tree of the same name, by bloom timing first and by fruit later. ` +
     (untagged.length ? `${sentenceList(untagged)} ${untagged.length > 1 ? 'have' : 'has'} no tagged tree to compare with, so a tree that matches none of the tagged trees points to ${untagged.length > 1 ? 'one of them' : 'it'}. ` : '') +
     (repeats.length ? `Only ${sentenceList(repeats.map(candidate => candidate.name))} can fill more than one tree, so two trees that look identical are probably ${repeats.length === 1 ? `the ${repeats[0].slots} ${repeats[0].name} trees` : 'a repeated one of those'}; every other candidate fills at most one tree.` : '')),
-  labelled('Numbering:', `The ${trees.length} trees share one tag. When each is planted, add a number tag (${first.label} to ${last.label}) and write down its actual spot so an ID stays with the right tree. Their planned spots are on the `)
+  labelled('Numbering:', allPlanted
+    ? `The ${trees.length} trees share one tag. They are planted${plantedWhen ? ` (${plantedWhen})` : ''}, so add a number tag (${labels}) to each and write down its actual spot so an ID stays with the right tree. Their spots are on the `
+    : `The ${trees.length} trees share one tag. When each is planted, add a number tag (${labels}) and write down its actual spot so an ID stays with the right tree. Their planned spots are on the `)
 );
 const gridLink = element('a', 'pollination grid');
 gridLink.href = 'orchard_pollination_grid.html';
@@ -338,9 +343,9 @@ trees.forEach(tree => {
   const card = element('article', undefined, 'tree-card');
   const head = element('div', undefined, 'tree-head');
   head.append(element('span', tree.label, 'tree-label'), element('span', tree.id, 'mono'), element('span', `Tag ${tree.tag}`),
-    element('span', `Planned spot ${tree.spot || 'pending'}${tree.siteRef ? ` · SiteRef ${tree.siteRef}` : ''}`, 'mono'));
+    element('span', `${tree.status === 'planted' ? 'Spot' : 'Planned spot'} ${tree.spot || 'pending'}${tree.siteRef ? ` · SiteRef ${tree.siteRef}` : ''}`, 'mono'));
   const where = element('div', undefined, 'final');
-  where.append(field('Actual spot / SiteRef:', 'long'), field('Planted on:', 'short'), checkbox('Number tag added'));
+  where.append(field('Actual spot / SiteRef:', 'long'), field(tree.plantedOn ? `Exact planting date (${OrchardModel.plantedWhen([tree])}):` : 'Planted on:', 'short'), checkbox('Number tag added'));
   const bloom = logTable(`${tree.label} bloom log`, ['Bloom year', 'First bloom', 'Full bloom', 'Last bloom', 'Compared with (tagged tree) / notes'], 3);
   const form = logTable(`${tree.label} bark and leaf log`, ['Date', 'Habit and branching', 'Bark and twigs', 'Leaves (size, shape, underside)', 'Compared with (tagged tree)'], 2);
   const fruit = logTable(`${tree.label} fruit log`, ['Fruit year', 'Ripe on', 'Size', 'Skin color / stripes', 'Flesh', 'Taste', 'Keeps'], 3);

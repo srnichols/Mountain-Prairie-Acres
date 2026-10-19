@@ -88,6 +88,18 @@ def _date(value, name):
             raise ValueError(f"{name} must use YYYY-MM-DD")
 
 
+def _month_or_date(value, name):
+    """A planting date the owner gave only as a month is stored as YYYY-MM, so no day is invented."""
+    month = re.fullmatch(r"([0-9]{4})-(0[1-9]|1[0-2])", value) if isinstance(value, str) else None
+    try:
+        if month:
+            datetime.date(int(month.group(1)), int(month.group(2)), 1)
+        else:
+            _date(value, name)
+    except ValueError as error:
+        raise ValueError(f"{name} must be YYYY-MM-DD, YYYY-MM, or null") from error
+
+
 def _index(records, label, key="id"):
     if not isinstance(records, list):
         raise ValueError(f"{label} records must be an array")
@@ -707,7 +719,7 @@ def validate_data(data):
         if planting["status"] not in ("planned", "planted", "dead", "outside-orchard", "vacated"):
             raise ValueError("Invalid planting status")
         for key in ("planted_on", "recorded_on"):
-            _date(planting[key], "planting " + key)
+            (_month_or_date if key == "planted_on" else _date)(planting[key], "planting " + key)
         _text(planting["notes"], "planting notes")
         if planting["status"] in ("planned", "planted"):
             if planting["plant_id"] in active_plants or planting["location_id"] in active_spots:
@@ -976,6 +988,7 @@ def orchard_constants(data):
                 "inventory_row": plant["inventory_row"],
                 "site_ref": grid.site_ref(location["x_ft"], location["y_ft"]),
                 "x_ft": location["x_ft"], "y_ft": location["y_ft"],
+                "planted_on": planting["planted_on"],
             }
         r, c = location["orchard_row"], location["orchard_column"]
         if r is None or planting["status"] == "vacated":

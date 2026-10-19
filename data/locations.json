@@ -1505,8 +1505,8 @@
       "orchard_row": 11,
       "orchard_column": 7,
       "reserved_for": null,
-      "replacement_year": null,
-      "replacement_type": null
+      "replacement_year": 2027,
+      "replacement_type": "Plum"
     },
     {
       "id": "orchard-r11-c8",
@@ -1560,8 +1560,8 @@
       "orchard_row": 11,
       "orchard_column": 12,
       "reserved_for": null,
-      "replacement_year": null,
-      "replacement_type": null
+      "replacement_year": 2027,
+      "replacement_type": "Peach"
     },
     {
       "id": "orchard-r11-c13",
@@ -1648,8 +1648,8 @@
       "orchard_row": 12,
       "orchard_column": 7,
       "reserved_for": null,
-      "replacement_year": null,
-      "replacement_type": null
+      "replacement_year": 2027,
+      "replacement_type": "Plum"
     },
     {
       "id": "orchard-r12-c8",
@@ -1692,8 +1692,8 @@
       "orchard_row": 12,
       "orchard_column": 11,
       "reserved_for": null,
-      "replacement_year": null,
-      "replacement_type": null
+      "replacement_year": 2027,
+      "replacement_type": "Peach"
     },
     {
       "id": "orchard-r12-c12",

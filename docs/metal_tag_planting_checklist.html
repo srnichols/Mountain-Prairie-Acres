@@ -207,11 +207,16 @@ OrchardChecklist.render(document.getElementById('planting-checklist'), records);
 const active = rows.flatMap(row => row.trees.filter(Boolean));
 const rootstocks = active.filter(tree => tree.rootstockOnly);
 const plantedFruit = active.filter(tree => tree.planted && !tree.rootstockOnly);
+const fruitCount = active.length - rootstocks.length;
+// When every fruit tree is planted, one summary line replaces a note for each tree.
+const allPlanted = fruitCount > 0 && plantedFruit.length === fruitCount;
+const plantedMonth = OrchardModel.plantedWhen(plantedFruit);
 document.getElementById('planting-status').textContent =
-  `${active.length} living orchard trees: ${active.length - rootstocks.length} fruit trees and ${rootstocks.length} planted rootstock.` +
-  (plantedFruit.length ? ` ${plantedFruit.length} of the fruit trees ${plantedFruit.length === 1 ? 'is' : 'are'} already planted.` : '');
+  `${active.length} living orchard trees: ${fruitCount} fruit trees and ${rootstocks.length} planted rootstock.` +
+  (allPlanted ? ` All ${fruitCount} fruit trees are planted${plantedMonth ? ` (${plantedMonth})` : ''}, so every box is checked.` :
+    plantedFruit.length ? ` ${plantedFruit.length} of the fruit trees ${plantedFruit.length === 1 ? 'is' : 'are'} already planted.` : '');
 const updates = document.getElementById('planting-updates');
-records.filter(tree => tree.orchardUpdate || tree.rootstockOnly || tree.planted).forEach(tree => {
+records.filter(tree => tree.orchardUpdate || tree.rootstockOnly || (tree.planted && !allPlanted)).forEach(tree => {
   const paragraph = document.createElement('p');
   if (tree.rootstockOnly || tree.planted) {
     paragraph.textContent = `${tree.r && `R${tree.r}-C${tree.c}`}: ${tree.name} (${tree.tag}) is already planted; its checkbox is checked.`;

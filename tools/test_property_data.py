@@ -20,7 +20,7 @@ def plan_item(orchard, item_id):
 
 def add_plan_item_with_dayton_profile(orchard):
     item = copy.deepcopy(plan_item(orchard, "dayton"))
-    item.update(id="dayton-two", code="DYT", quantity=1, spots=["R12-C5"])
+    item.update(id="dayton-two", code="DYT", quantity=1, spots=["R13-C1"])
     orchard["rules"]["PLANTING_PLAN"]["items"].append(item)
 
 
@@ -49,14 +49,14 @@ class PropertyDataTest(unittest.TestCase):
     def test_current_orchard_and_open_spots(self):
         rows = query("SELECT state, COUNT(*) AS n FROM orchard_spots GROUP BY state", self.root)
         counts = {r["state"]: r["n"] for r in rows}
-        self.assertEqual(counts, {"open": 73, "planned": 107, "planted": 2, "reserved": 13})
+        self.assertEqual(counts, {"open": 75, "planted": 107, "reserved": 13})
         root = query("SELECT * FROM current_plantings WHERE plant_id = 'i56-1'", self.root)[0]
         self.assertEqual(root["site_ref"], "B10-E33-S35")
         self.assertEqual(root["status"], "planted")
-        self.assertIsNone(root["planted_on"], "Do not invent a planting date from a report date")
+        self.assertIsNone(root["planted_on"], "The rootstock was reported planted with no date")
         pear = query("SELECT * FROM current_plantings WHERE plant_id = 'i94-1'", self.root)[0]
         self.assertEqual((pear["status"], pear["location_name"], pear["site_ref"]), ("planted", "R8-C3", "B9-E33-S45"))
-        self.assertIsNone(pear["planted_on"], "Do not invent a planting date from a report date")
+        self.assertEqual(pear["planted_on"], "2026-10", "The owner gave the month, so no day is invented")
         self.assertEqual(query("SELECT state FROM orchard_spots WHERE name = 'R8-C1'", self.root)[0]["state"], "open")
         outside = query("SELECT * FROM current_plantings WHERE plant_group = 'outside-orchard'", self.root)
         self.assertEqual(len(outside), 3)
@@ -64,32 +64,67 @@ class PropertyDataTest(unittest.TestCase):
         dead = query("SELECT * FROM current_plantings WHERE plant_id = 'i108-1'", self.root)[0]
         self.assertEqual(dead["status"], "dead")
         self.assertEqual(dead["site_ref"], "PENDING", "A vacant planned spot is not the dead plant's current location")
-        for plant_id, spot in (("i80-1", "R9-C2"), ("i88-1", "R11-C10")):
+        for plant_id, spot in (("i80-1", "R9-C2"), ("i88-1", "R11-C10"), ("i84-1", "R11-C12"), ("i83-1", "R12-C11")):
             lost = query(f"SELECT status, health_status, site_ref FROM current_plantings WHERE plant_id = '{plant_id}'", self.root)[0]
             self.assertEqual((lost["status"], lost["health_status"], lost["site_ref"]), ("dead", "dead", "PENDING"), plant_id)
             self.assertEqual(query(f"SELECT state FROM orchard_spots WHERE name = '{spot}'", self.root)[0]["state"], "open")
+        # Two Italian plums were moved (R11-C7 to R11-C6 and R12-C7 to R12-C5), which leaves their old spots open.
+        for plant_id, spot, old_spot in (("i111-1", "R11-C6", "R11-C7"), ("i111-3", "R12-C5", "R12-C7")):
+            moved = query(f"SELECT status, location_name, health_status FROM current_plantings WHERE plant_id = '{plant_id}'", self.root)[0]
+            self.assertEqual((moved["status"], moved["location_name"], moved["health_status"]), ("planted", spot, "living"), plant_id)
+            self.assertEqual(query(f"SELECT state FROM orchard_spots WHERE name = '{old_spot}'", self.root)[0]["state"], "open")
+        self.assertEqual(query("SELECT location_name FROM current_plantings WHERE plant_id = 'i111-2'", self.root)[0]["location_name"], "R12-C6")
         vacancies = query("SELECT name, replacement_year, replacement_type FROM orchard_spots WHERE replacement_year IS NOT NULL", self.root)
-        self.assertEqual({r["name"] for r in vacancies}, {"R4-C9", "R5-C9", "R5-C10", "R8-C1", "R9-C2", "R11-C10"})
+        self.assertEqual({r["name"] for r in vacancies},
+                         {"R4-C9", "R5-C9", "R5-C10", "R8-C1", "R9-C2", "R11-C7", "R11-C10", "R11-C12", "R12-C7", "R12-C11"})
         self.assertTrue(all(r["replacement_year"] == 2027 for r in vacancies))
         self.assertEqual({r["name"]: r["replacement_type"] for r in vacancies},
-                         {"R4-C9": "Apple", "R5-C9": "Apple", "R5-C10": "Apple", "R8-C1": "Pear", "R9-C2": "Cherry", "R11-C10": "Peach"})
+                         {"R4-C9": "Apple", "R5-C9": "Apple", "R5-C10": "Apple", "R8-C1": "Pear", "R9-C2": "Cherry", "R11-C7": "Plum",
+                          "R11-C10": "Peach", "R11-C12": "Peach", "R12-C7": "Plum", "R12-C11": "Peach"})
+
+    def test_every_orchard_fruit_tree_is_planted_in_october_2026(self):
+        # The owner finished the last block on 2026-10-18 and gave only the month, so no day is invented.
+        planted = query("SELECT plant_id, planted_on, notes FROM plantings WHERE status = 'planted' AND plant_id != 'i56-1' "
+                        "AND location_id LIKE 'orchard-%'", self.root)
+        self.assertEqual(len(planted), 106)
+        self.assertEqual({r["planted_on"] for r in planted}, {"2026-10"})
+        self.assertTrue(all("October 2026" in r["notes"] for r in planted))
+        self.assertEqual(query("SELECT COUNT(*) AS n FROM plantings WHERE status = 'planned'", self.root)[0]["n"], 0)
+        # The rootstock was reported planted earlier with no date; dead trees and the outside-orchard apples are not planted.
+        self.assertIsNone(query("SELECT planted_on FROM plantings WHERE plant_id = 'i56-1'", self.root)[0]["planted_on"])
+        dead = query("SELECT plant_id, planted_on FROM plantings WHERE status = 'dead'", self.root)
+        self.assertEqual(sorted(r["plant_id"] for r in dead), ["i108-1", "i80-1", "i83-1", "i84-1", "i88-1"])
+        self.assertTrue(all(r["planted_on"] is None for r in dead))
+        outside = query("SELECT plant_id, planted_on FROM plantings WHERE status = 'outside-orchard'", self.root)
+        self.assertEqual(sorted(r["plant_id"] for r in outside), ["i63-1", "i64-1", "i65-1"])
+        self.assertTrue(all(r["planted_on"] is None for r in outside))
+
+    def test_planting_dates_may_be_a_day_a_month_or_unknown(self):
+        for planted_on in ("2026-10-18", "2026-10", None):
+            data = copy.deepcopy(self.data)
+            data["plantings"]["records"][0]["planted_on"] = planted_on
+            with self.subTest(planted_on=planted_on):
+                validate_data(data)
 
     def test_planting_plan_is_queryable_and_matches_the_open_spots(self):
         plan = self.data["orchard"]["rules"]["PLANTING_PLAN"]
         self.assertEqual((plan["year"], plan["covers_rows"]), (2027, 12))
         items = query("SELECT id, type, method, quantity, profile_id FROM planting_plan_items ORDER BY id", self.root)
         self.assertEqual(len(items), len(plan["items"]))
-        self.assertEqual(len(items), 24)
-        self.assertEqual(sum(r["quantity"] for r in items), 47)
+        self.assertEqual(len(items), 26)
+        self.assertEqual(sum(r["quantity"] for r in items), 49)
         spots = query("SELECT spot, state, type, method, cultivar FROM planned_spots ORDER BY orchard_row, orchard_column", self.root)
-        self.assertEqual(len(spots), 47)
+        self.assertEqual(len(spots), 49)
         self.assertTrue(all(r["state"] in ("open", "reserved") for r in spots), "Planned spots are still empty")
         by_type = {}
         for r in spots:
             by_type[r["type"]] = by_type.get(r["type"], 0) + 1
-        self.assertEqual(by_type, {"Apple": 26, "Pear": 2, "Cherry": 11, "Peach": 1, "Plum": 7})
-        self.assertEqual({r["spot"]: r["cultivar"] for r in spots if r["spot"] in ("R8-C1", "R8-C13", "R9-C2", "R11-C10", "R12-C8")},
-                         {"R8-C1": "Harrow Delight", "R8-C13": "Seckel", "R9-C2": "Black Gold", "R11-C10": "Intrepid", "R12-C8": "Damson"})
+        self.assertEqual(by_type, {"Apple": 26, "Pear": 2, "Cherry": 11, "Peach": 3, "Plum": 7})
+        self.assertEqual({r["spot"]: r["cultivar"] for r in spots if r["spot"] in ("R8-C1", "R8-C13", "R9-C2", "R11-C7", "R11-C10", "R12-C7", "R12-C8")},
+                         {"R8-C1": "Harrow Delight", "R8-C13": "Seckel", "R9-C2": "Black Gold", "R11-C7": "Mount Royal",
+                          "R11-C10": "Intrepid", "R12-C7": "Stanley", "R12-C8": "Damson"})
+        # The moved plums' new spots hold living trees, so the plan does not use them.
+        self.assertFalse({r["spot"] for r in spots} & {"R11-C6", "R12-C5"})
         # Grafts go only in the 13 reserved spots of R1, and bought trees only in the others.
         self.assertEqual({(r["method"], r["state"]) for r in spots}, {("graft", "reserved"), ("buy", "open")})
         grafts = [r for r in spots if r["method"] == "graft"]
@@ -105,7 +140,7 @@ class PropertyDataTest(unittest.TestCase):
         self.assertTrue({r["name"] for r in held} <= {r["spot"] for r in spots}, "Every held replacement spot has a planned cultivar")
         linked = query("SELECT COUNT(*) AS n FROM planting_plan_items i JOIN cultivar_profiles p ON p.id = i.profile_id "
                        "WHERE p.type = i.type", self.root)[0]["n"]
-        self.assertEqual(linked, 24)
+        self.assertEqual(linked, 26)
         validate_data(self.data)
 
     def test_features_terrain_water_and_gps_are_queryable(self):
@@ -233,6 +268,15 @@ class PropertyDataTest(unittest.TestCase):
             ("plantings", lambda d: d["records"][0].update(location_id="missing"), "location"),
             ("locations", lambda d: d["records"][0].update(x_ft=float("nan")), "finite"),
             ("plant_events", lambda d: d["records"][0].update(recorded_on="yesterday"), "date"),
+            ("plantings", lambda d: d["records"][0].update(planted_on="2026-13"), "planted_on must be YYYY-MM-DD, YYYY-MM, or null"),
+            ("plantings", lambda d: d["records"][0].update(planted_on="2026-1"), "planted_on must be YYYY-MM-DD, YYYY-MM, or null"),
+            ("plantings", lambda d: d["records"][0].update(planted_on="2026-10-32"), "planted_on must be YYYY-MM-DD, YYYY-MM, or null"),
+            ("plantings", lambda d: d["records"][0].update(planted_on="0000-10"), "planted_on must be YYYY-MM-DD, YYYY-MM, or null"),
+            ("plantings", lambda d: d["records"][0].update(planted_on="2026-00"), "planted_on must be YYYY-MM-DD, YYYY-MM, or null"),
+            ("plantings", lambda d: d["records"][0].update(planted_on="\uff12\uff10\uff12\uff16-10"), "planted_on must be YYYY-MM-DD, YYYY-MM, or null"),
+            ("plantings", lambda d: d["records"][0].update(planted_on=2026), "planted_on must be YYYY-MM-DD, YYYY-MM, or null"),
+            ("plantings", lambda d: d["records"][0].update(planted_on="October 2026"), "planted_on must be YYYY-MM-DD, YYYY-MM, or null"),
+            ("plantings", lambda d: d["records"][0].update(recorded_on="2026-10"), "recorded_on must be an ISO date or null|YYYY-MM-DD"),
             ("terrain", lambda d: d["grid"]["z"].pop(), "sample"),
             ("water_harvesting", lambda d: d["months"].pop(), "12"),
             ("water_harvesting", lambda d: d["months"].reverse(), "order"),
@@ -393,7 +437,7 @@ class PropertyDataTest(unittest.TestCase):
         counts = query("SELECT COUNT(*) AS profiles, "
                        "(SELECT COUNT(*) FROM cultivar_profile_links WHERE link_type = 'inventory') AS inventory_links "
                        "FROM cultivar_profiles", self.root)[0]
-        self.assertEqual((counts["profiles"], counts["inventory_links"]), (161, 114))
+        self.assertEqual((counts["profiles"], counts["inventory_links"]), (162, 114))
         cortland = query("SELECT profile_name, ripening FROM plant_profiles WHERE plant_id = 'i29-1'", self.root)[0]
         self.assertEqual((cortland["profile_name"], cortland["ripening"]), ("Cortland", "Mid"))
         unknown = query("SELECT profile_id FROM plant_profiles WHERE plant_id = 'i62-1'", self.root)[0]

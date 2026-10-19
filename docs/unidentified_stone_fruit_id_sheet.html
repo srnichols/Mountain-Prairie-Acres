@@ -239,11 +239,17 @@ document.getElementById('subtitle').textContent =
   `${treeCount} untagged trees (${lines.map(line => `${line.trees.length} ${noun(line.type, line.trees.length)} tagged ${line.tag}`).join(', ')}), ` +
   `each one of the purchased trees below. Status as of ${OrchardModel.STATUS_DATE}.`;
 
+const allTrees = lines.flatMap(line => line.trees);
+const allPlanted = allTrees.every(tree => tree.status === 'planted');
+const plantedWhen = OrchardModel.plantedWhen(allTrees);
+const labels = lines.map(range).join('; ');
 const summary = document.getElementById('summary');
 summary.append(
   labelled('What this is:', `${treeCount} trees lost their labels and carry only a general tag. Each is one of the purchased trees below that has no tagged tree. Bloom timing and fruit will tell them apart over the next few years.`),
   labelled('Assumption (not yet confirmed by you):', info.assumption),
-  labelled('Numbering:', `Trees with the same tag share it. When each is planted, add a number tag (${lines.map(range).join('; ')}) and write down its actual spot so an ID stays with the right tree. Their planned spots are on the `)
+  labelled('Numbering:', allPlanted
+    ? `Trees with the same tag share it. They are planted${plantedWhen ? ` (${plantedWhen})` : ''}, so add a number tag (${labels}) to each and write down its actual spot so an ID stays with the right tree. Their spots are on the `
+    : `Trees with the same tag share it. When each is planted, add a number tag (${labels}) and write down its actual spot so an ID stays with the right tree. Their planned spots are on the `)
 );
 const gridLink = element('a', 'pollination grid');
 gridLink.href = 'orchard_pollination_grid.html';
@@ -358,9 +364,9 @@ lines.forEach(line => line.trees.forEach(tree => {
   const card = element('article', undefined, 'tree-card');
   const head = element('div', undefined, 'tree-head');
   head.append(element('span', tree.label, 'tree-label'), element('span', tree.id, 'mono'), element('span', `${NOUNS[line.type][0]}, tag ${tree.tag}`),
-    element('span', `Planned spot ${tree.spot || 'pending'}${tree.siteRef ? ` · SiteRef ${tree.siteRef}` : ''}`, 'mono'));
+    element('span', `${tree.status === 'planted' ? 'Spot' : 'Planned spot'} ${tree.spot || 'pending'}${tree.siteRef ? ` · SiteRef ${tree.siteRef}` : ''}`, 'mono'));
   const where = element('div', undefined, 'final');
-  where.append(field('Actual spot / SiteRef:', 'long'), field('Planted on:', 'short'), checkbox('Number tag added'));
+  where.append(field('Actual spot / SiteRef:', 'long'), field(tree.plantedOn ? `Exact planting date (${OrchardModel.plantedWhen([tree])}):` : 'Planted on:', 'short'), checkbox('Number tag added'));
   const bloom = logTable(`${tree.label} bloom log`, ['Bloom year', 'First bloom', 'Full bloom', 'Last bloom', 'Compared with (tagged tree) / notes'], 3);
   const form = logTable(`${tree.label} bark and leaf log`, ['Date', 'Habit and branching', 'Bark and twigs', 'Leaves (size, shape, underside)', 'Compared with (tagged tree)'], 2);
   const fruit = logTable(`${tree.label} fruit log`, ['Fruit year', 'Ripe on', 'Size', 'Skin color / fuzz', 'Flesh color', 'Stone (free or cling)', 'Taste'], 3);

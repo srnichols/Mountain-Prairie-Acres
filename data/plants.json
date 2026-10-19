@@ -2358,14 +2358,14 @@
       "inventory_row": 83,
       "instance": 1,
       "group": "orchard",
-      "health_status": "living"
+      "health_status": "dead"
     },
     {
       "id": "i84-1",
       "inventory_row": 84,
       "instance": 1,
       "group": "orchard",
-      "health_status": "living"
+      "health_status": "dead"
     },
     {
       "id": "i85-1",

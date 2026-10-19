@@ -80,6 +80,38 @@
       "recorded_on": "2026-10-17",
       "occurred_on": null,
       "notes": "Owner update: PC-Hale in R11-C10 is dead, so R11-C10 is open. Exact event date not supplied."
+    },
+    {
+      "id": "owner-2026-10-18-i84-1",
+      "plant_id": "i84-1",
+      "event_type": "death_reported",
+      "recorded_on": "2026-10-18",
+      "occurred_on": null,
+      "notes": "Owner update: PC-Can Harm in R11-C12 is dead, so R11-C12 is open. Exact event date not supplied."
+    },
+    {
+      "id": "owner-2026-10-18-i83-1",
+      "plant_id": "i83-1",
+      "event_type": "death_reported",
+      "recorded_on": "2026-10-18",
+      "occurred_on": null,
+      "notes": "Owner update: PC-Blaz Star in R12-C11 is dead, so R12-C11 is open. Exact event date not supplied."
+    },
+    {
+      "id": "owner-2026-10-18-i111-1",
+      "plant_id": "i111-1",
+      "event_type": "planting_reported",
+      "recorded_on": "2026-10-18",
+      "occurred_on": null,
+      "notes": "Owner update: a PM- It Lov plum was moved from R11-C7 to R11-C6, so R11-C7 is open. Exact event date not supplied."
+    },
+    {
+      "id": "owner-2026-10-18-i111-3",
+      "plant_id": "i111-3",
+      "event_type": "planting_reported",
+      "recorded_on": "2026-10-18",
+      "occurred_on": null,
+      "notes": "Owner update: a PM- It Lov plum was moved from R12-C7 to R12-C5, so R12-C7 is open. Exact event date not supplied."
     }
   ]
 }

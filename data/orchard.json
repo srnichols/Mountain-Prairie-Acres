@@ -2,7 +2,7 @@
   "schema_version": 1,
   "rules": {
     "PLAN_DATE": "October 4, 2026",
-    "STATUS_DATE": "October 17, 2026",
+    "STATUS_DATE": "October 18, 2026",
     "INVENTORY_MATCH": {
       "3": {
         "rows": [],
@@ -576,6 +576,15 @@
             "perRow": [
               1,
               2
+            ],
+            "columns": [
+              [
+                6
+              ],
+              [
+                5,
+                6
+              ]
             ]
           },
           {
@@ -1192,7 +1201,7 @@
       "year": 2027,
       "covers_rows": 12,
       "status": "Recommended cultivars for every open spot in R1 to R12; nothing is bought or grafted yet",
-      "summary": "Chosen in October 2026 for a short-season U-pick orchard at about 4,750 ft with roughly 70 to 110 frost-free days. Disease-resistant apples that ripen early or in mid-season fill R4 to R6 and the grafted row R1; hardy tart and sweet cherries, European plums, a Seckel pear, and replacements for the dead pear, cherry and peach fill the rest. R13 to R15 stay open for later.",
+      "summary": "Chosen in October 2026 for a short-season U-pick orchard at about 4,750 ft with roughly 70 to 110 frost-free days. Disease-resistant apples that ripen early or in mid-season fill R4 to R6 and the grafted row R1; hardy tart and sweet cherries, European plums, a Seckel pear, and replacements for the dead pear, cherry and peaches fill the rest. R13 to R15 stay open for later.",
       "rootstock_advice": "Ask nurseries for semi-dwarf trees (about 60 to 75 percent of standard; G.890, G.214 or M.7 for apples). The grid is 18 x 20 ft and the site is dry and windy, so dwarf stocks (M.27, M.9, B.9) would need permanent stakes and leave gaps.",
       "graft_advice": "The 13 grafts in R1 go onto rootstocks you already own: 11 M-111 (vigorous, semi-standard), 2 EMLA 7 (semi-dwarf) and 1 of unknown type, so one rootstock is left as a spare. Order scionwood in winter from a nursery that sells it for spring 2027 (some sell out early), keep it cold and damp until grafting, and graft in early spring as the rootstock buds begin to swell. Use the two EMLA 7 rootstocks for Redfree, a vigorous scion (its third tree goes on an M-111), and put lower-vigor scions such as Pixie Crunch on the vigorous M-111. Grafted trees take longer to bear than bought trees. Check that a cultivar may be propagated at home before ordering scionwood.",
       "shipping_note": "Confirm that each nursery ships the item to Idaho before ordering; some retailers exclude Idaho for some items.",
@@ -1357,10 +1366,42 @@
           "spots": [
             "R11-C10"
           ],
-          "rootstock": "Krymsk 86 was suggested (cold-hardy, anchors well, near-standard size); canker tolerance of the rootstock is unverified",
+          "rootstock": "Lovell or Bailey peach seedling stock (best survival in the NC-140 trials, per Penn State); a hybrid stock such as Krymsk 86, suggested earlier, had more cold injury and canker in those trials",
           "self_fertile": true,
           "role": "Bud-hardy, self-fertile mid-season freestone",
           "caution": "Peaches here carry bacterial canker (untreated positives). Prune only in dry weather, use dormant copper, and buy clean certified stock."
+        },
+        {
+          "id": "contender",
+          "type": "Peach",
+          "method": "buy",
+          "cultivar": "Contender",
+          "code": "CR",
+          "profile": "peach-contender",
+          "quantity": 1,
+          "spots": [
+            "R11-C12"
+          ],
+          "rootstock": "Lovell or Bailey peach seedling stock (best survival in the NC-140 trials, per Penn State)",
+          "self_fertile": true,
+          "role": "Very cold-hardy, late-blooming yellow freestone with excellent flavor, ripe 16 to 20 days after Redhaven",
+          "caution": "A second Contender, so you can compare it with the tree you already have. Utah State lists it as very cold hardy and tolerant of spring frost, but it ripens a few weeks after Redhaven, so it is a mid-season peach in a short season. Peaches here carry bacterial canker (untreated positives): prune only in dry weather, use dormant copper, and buy clean certified stock."
+        },
+        {
+          "id": "harrow-diamond",
+          "type": "Peach",
+          "method": "buy",
+          "cultivar": "Harrow Diamond",
+          "code": "HRD",
+          "profile": "peach-harrow-diamond",
+          "quantity": 1,
+          "spots": [
+            "R12-C11"
+          ],
+          "rootstock": "Lovell or Bailey peach seedling stock (best survival in the NC-140 trials, per Penn State)",
+          "self_fertile": true,
+          "role": "Early yellow freestone, ripe about 11 days before Redhaven, with good hardiness and bacterial spot resistance (University of Kentucky)",
+          "caution": "The breeder's trial winters were -26 and -28 C, with 43 percent flower bud loss at -26 C, so zone 5a is a test. It sets a heavy crop that needs early thinning. No source rates bacterial canker (the breeder gives only moderate tolerance to the fungal perennial canker), and peaches here carry bacterial canker (untreated positives): prune only in dry weather, use dormant copper, and buy clean certified stock."
         },
         {
           "id": "redfree",
@@ -1575,7 +1616,7 @@
           "spots": [
             "R11-C4",
             "R11-C5",
-            "R11-C6"
+            "R11-C7"
           ],
           "rootstock": "Semi-dwarf tree (Raintree sells it as a semi-dwarf)",
           "self_fertile": true,
@@ -1593,7 +1634,7 @@
           "spots": [
             "R12-C3",
             "R12-C4",
-            "R12-C5"
+            "R12-C7"
           ],
           "rootstock": "Semi-dwarf tree",
           "self_fertile": true,
