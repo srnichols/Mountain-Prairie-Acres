@@ -228,6 +228,30 @@ class SiteGridTest(unittest.TestCase):
         self.assertEqual(self.grid.size("container_solar"), (8, 40))
         self.assertEqual(self.grid.size("container_storage"), (40, 8))
 
+    def test_planned_greenhouses_are_south_of_the_orchard_and_clear_of_everything_else(self):
+        g = self.grid
+        gothic, pit, orchard = g.feature("greenhouse_gothic"), g.feature("greenhouse_pit"), g.feature("orchard_area")
+        for f in (gothic, pit):
+            self.assertEqual((f["group"], f["status"]), ("planned", "planned"), f["id"])
+        self.assertEqual(g.size("greenhouse_gothic"), (76, 27))
+        self.assertEqual(g.size("greenhouse_pit"), (36, 20))
+        self.assertEqual(g.cells("greenhouse_gothic"), ["A13", "B13", "C13"])
+        self.assertEqual(g.cells("greenhouse_pit"), ["B14"])
+        self.assertEqual(g.center("greenhouse_pit")[0], g.center("greenhouse_gothic")[0], "the pit is centered on the tunnel")
+        self.assertGreater(pit["y0"], gothic["y1"], "the pit is south of the tunnel")
+        self.assertEqual(gothic["y0"] - orchard["y1"], 20, "the tunnel stands 20 ft south of the orchard strip")
+        pipes = [f for f in g.features("utility") if f.get("kind") == "water_pipe"]
+        stands = [f for f in g.features("utility") if f.get("kind") in ("hydrant", "valve_box")]
+        for f in (gothic, pit):
+            x0, y0, x1, y1 = g.bbox(f)
+            outline = [(x0, y0), (x1, y0), (x1, y1), (x0, y1), (x0, y0)]
+            self.assertGreaterEqual(y0, orchard["y1"], f"{f['id']} stays out of the orchard strip")
+            for pipe in pipes:
+                inside = any(x0 <= x <= x1 and y0 <= y <= y1 for x, y in pipe["pts"])
+                self.assertFalse(inside or _lines_cross(pipe["pts"], outline), f"{pipe['id']} runs through {f['id']}")
+            for stand in stands:
+                self.assertFalse(x0 <= stand["x"] <= x1 and y0 <= stand["y"] <= y1, f"{stand['id']} stands inside {f['id']}")
+
     def test_cells_a_feature_touches(self):
         g = self.grid
         self.assertEqual(g.cells("pump_house"), ["B19"])
@@ -296,6 +320,7 @@ class SiteGridTest(unittest.TestCase):
                  (["site-ref", "C17-E12-S18"], "x 112, y 818"),
                  (["site-ref", "B10-E33-S35"], "x 83, y 485"),
                  (["feature", "shed"], "dji_0073, dji_0065"),
+                 (["where", "B14"], "greenhouse_pit"), (["list", "planned"], "greenhouse_gothic"),
                  (["site-ref", "PENDING"], "location not yet known")]
         for argv, expected in cases:
             out = io.StringIO()

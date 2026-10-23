@@ -34,6 +34,7 @@
   .diagram .t-note { fill: #5F5E5A; }
   .diagram .t-water { fill: #0B5F7C; font-weight: 600; }
   .diagram .t-valve { fill: #0E6B5C; font-weight: 700; }
+  .diagram .t-planned { fill: #4E3A68; font-weight: 600; }
   .diagram .halo { paint-order: stroke; stroke: #fff; stroke-width: 2.4px; stroke-linejoin: round; }
 
   .facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
@@ -76,7 +77,7 @@
     figure figcaption { font-size: 9pt; margin-bottom: 1mm; }
     .fact { padding: 1.2mm 1.8mm; } .fact .value { font-size: 9.5pt; } .fact .label { font-size: 6.5pt; } .fact .hint { font-size: 7pt; }
     .howto svg { width: 1.25in; }
-    table.detail { font-size: 6.8pt; margin: 1mm 0 1.5mm; } table.detail th, table.detail td { padding: 0.1mm 1.1mm; line-height: 1.25; }
+    table.detail { font-size: 6.7pt; margin: 1mm 0 1.5mm; } table.detail th, table.detail td { padding: 0.1mm 1.1mm; line-height: 1.2; }
     table.detail code { font-size: 6.1pt; color: #6F6D66; }
     table.detail .site-ref { white-space: nowrap; }
     table.detail tr { break-inside: avoid; }
@@ -172,7 +173,7 @@ function makeMap() {
   const V = { west: -34, east: lot.width + 40, top: -46, bottom: 1340 }, S = 0.62;
   const X = x => +((x - V.west) * S).toFixed(2), Y = y => +((y - V.top) * S).toFixed(2);
   const svg = svgNode('svg', { viewBox: `0 0 ${(V.east - V.west) * S} ${(V.bottom - V.top) * S}`, class: 'diagram', role: 'img', 'aria-labelledby': 'grid-title' });
-  svg.append(svgNode('title', { id: 'grid-title' }, `The whole lot, ${fmt(lot.width)} by ${fmt(lot.depth)} ft, divided into 50 ft cells A–G west to east and 1–26 north to south, with the roads, driveway, orchard block, homestead, buried water lines and hydrants, the ${HEAD_STATIONS.length} row laterals with their valve boxes along the main, and high and low points.`));
+  svg.append(svgNode('title', { id: 'grid-title' }, `The whole lot, ${fmt(lot.width)} by ${fmt(lot.depth)} ft, divided into 50 ft cells A–G west to east and 1–26 north to south, with the roads, driveway, orchard block, homestead, the planned gothic tunnel and pit greenhouse south of the orchard, buried water lines and hydrants, the ${HEAD_STATIONS.length} row laterals with their valve boxes along the main, and high and low points.`));
   const defs = svgNode('defs'), clip = svgNode('clipPath', { id: 'mg-lot' });
   clip.append(svgNode('rect', { x: X(0), y: Y(0), width: lot.width * S, height: lot.depth * S }));
   defs.append(clip); svg.append(defs);
@@ -204,7 +205,7 @@ function makeMap() {
   // Buried water lines: 2 in PVC solid, 1.5 in PVC dashed (the row laterals are 1.5 in, so they show dashed too)
   PIPES.forEach(f => line(f.pts, { stroke: COLOR.waterLine, 'stroke-width': f.size_in >= 2 ? 1.5 : 1, 'stroke-linejoin': 'round',
     ...(f.size_in >= 2 ? {} : { 'stroke-dasharray': '3.5 1.6' }) }, inLot));
-  ['house', 'garage', 'workshop'].forEach(id => box(F(id), { fill: 'none', stroke: COLOR.planned, 'stroke-width': 0.8, 'stroke-dasharray': '2.5 1.5' }, inLot));
+  ['house', 'garage', 'workshop', 'greenhouse_gothic', 'greenhouse_pit'].forEach(id => box(F(id), { fill: 'none', stroke: COLOR.planned, 'stroke-width': 0.8, 'stroke-dasharray': '2.5 1.5' }, inLot));
   [['shed', '#A9372B'], ['outhouse', '#2F6EB5'], ['container_solar', '#2F4A6E'], ['container_storage', '#BDBDB5'], ['pump_house', '#5D6D7E'], ['rv', '#FFFFFF']]
     .forEach(([id, fill]) => box(F(id), { fill, stroke: '#3D3D3A', 'stroke-width': 0.4 }, inLot));
   const tank = F('irrigation_tank');
@@ -237,6 +238,11 @@ function makeMap() {
   label(72, 763, 'shed', 't-title', 6.2, 'end');
   label(168, 980, 'house pad', 't-title', 6.2);
   label(61, 836, 'workshop pad', 't-note', 5.6);
+  // The planned greenhouses (footprints from the greenhouse pages), each named just east of its outline
+  [['greenhouse_gothic', 'gothic tunnel'], ['greenhouse_pit', 'pit greenhouse']].forEach(([id, name]) => {
+    const f = F(id), [w, h] = SG.size(f);
+    label(f.x1 + 4, (f.y0 + f.y1) / 2 + 2.5, `${name} ${fmt(w)} × ${fmt(h)} ft`, 't-planned', 5.6, 'start');
+  });
   vlabel(310.8, 420, 'driveway', 't-note', 6);
   // South of the orchard block, clear of the row laterals
   vlabel(281, 655, '2 in water main', 't-water', 5.8);
@@ -440,7 +446,7 @@ function renderConventions() {
     'Feet throughout. Elevations are above sea level (NAVD88) from USGS 3DEP lidar flown before the homestead pads were graded.',
     'SiteRef uses the master cell, then east and south offsets from that cell\'s northwest corner. Offsets are nonnegative, less than 50 ft, and must stay inside the fence, including the partial edge cells. Generated codes use up to two decimal places. E and S are compass directions, even on the orchard map drawn south up.',
     'Planting records should identify each individual plant, not assign one coordinate to a quantity group. SiteRef is calculated from its location; it is not a metal tag or a permanent Plant ID. Keep unlocated plants PENDING and vacant spots separate from dead or moved plants.',
-    'Status is existing or planned; planned buildings move once staked. Edit canonical data/site.json (rect x0/y0/x1/y1, circle cx/cy/r, polygon/line pts, point x/y), then run python tools/property_data.py build and the tests. Browser files in docs/data/ are generated, not independently editable.',
+    'Status is existing or planned; planned buildings (the house, garage, workshop, and the two greenhouses) move once staked. The greenhouse outlines are the footprints from the greenhouse pages, drawn dashed with the other planned buildings: the pit greenhouse\'s berm, retaining wall, cut slopes, and swales are on the greenhouse site plan, not here. Edit canonical data/site.json (rect x0/y0/x1/y1, circle cx/cy/r, polygon/line pts, point x/y), then run python tools/property_data.py build and the tests. Browser files in docs/data/ are generated, not independently editable.',
     'Latitude and longitude come from the fitted lot frame, good to about 10 ft: fine for maps and directions, not for boundary questions. For precise layout, measure from the fences.',
     `Buried water lines (2 in PVC solid, 1.5 in dashed) and the ${HYDRANTS.length} frost-free hydrants (blue dots) are traced from the owner's hand-drawn map (October 2026): good to about 5 ft around the homestead and 10 ft at the north end, so dig by hand near them.`,
     `The ${HEAD_STATIONS.length} row laterals (10 ft, 1.5 in, west off the 2 in main) end in a 1 in riser and a valve box (teal squares numbered 1–${HEAD_STATIONS.length}, south to north). Their spacing is read from the owner's drone photo (October 2026), so the positions along the main are good to about 8 ft. ${HYDRANT_BOXES.length} of the ${HYDRANTS.length} hydrants also have a valve box 4 ft back on their line${NO_BOX.length ? ` (none at ${NO_BOX.map(h => SG.cellOf(h.x, h.y)).join(', ')})` : ''}: a small teal chip on the hydrant dot here, drawn apart on the homestead plot map, and listed under Row laterals and valve boxes.`

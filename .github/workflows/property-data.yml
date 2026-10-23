@@ -23,5 +23,5 @@ jobs:
         run: python tools/property_data.py check
       - name: Run Python database, CLI, and grid tests
         run: python -m unittest discover -s tools
-      - name: Run JavaScript model, SiteRef, menu, map photo, photo map, and workshop tests
-        run: node --test tools/test_site_grid.js tools/test_property_data.js tools/test_site_nav.js tools/test_site_photos.js tools/test_photo_map.js tools/test_workshop_model.js
+      - name: Run JavaScript model, SiteRef, menu, map photo, photo map, greenhouse footprint, and workshop tests
+        run: node --test tools/test_site_grid.js tools/test_property_data.js tools/test_site_nav.js tools/test_site_photos.js tools/test_photo_map.js tools/test_greenhouse_site.js tools/test_workshop_model.js

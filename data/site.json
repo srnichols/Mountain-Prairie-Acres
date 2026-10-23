@@ -1394,6 +1394,30 @@
       "notes": "32 x 48 ft shop, long side east-west, centered on its pad."
     },
     {
+      "id": "greenhouse_gothic",
+      "name": "Gothic tunnel greenhouse (planned)",
+      "group": "planned",
+      "status": "planned",
+      "shape": "rect",
+      "x0": 37,
+      "y0": 620,
+      "x1": 113,
+      "y1": 647,
+      "notes": "27 x 76 ft unheated polycarbonate tunnel (two bays of the CatchSunlight 27 x 38 ft kit), long side east-west across cells A13 to C13, its west end 37 ft off the west fence beside the windbreak alley and 20 ft south of the orchard strip. Planned for 2028 or 2029; a draft position, not staked. Matches GOTHIC in docs/greenhouse_model.js."
+    },
+    {
+      "id": "greenhouse_pit",
+      "name": "Pit greenhouse (planned)",
+      "group": "planned",
+      "status": "planned",
+      "shape": "rect",
+      "x0": 57,
+      "y0": 680,
+      "x1": 93,
+      "y1": 700,
+      "notes": "20 x 36 ft unheated pit greenhouse sunk 6 ft into the ground, south of the tunnel and centered on it (both on x 75), in cell B14. This is the room inside the posts; its berm on the north side, retaining wall, cut slopes, and swales are on the greenhouse site plan. Planned for 2028 or 2029; a draft position, not staked. Matches PIT in docs/greenhouse_model.js."
+    },
+    {
       "id": "rv_pad",
       "key": "8",
       "name": "RV pad",
