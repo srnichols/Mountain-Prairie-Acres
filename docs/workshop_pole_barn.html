@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workshop Pole Barn, 32 × 48 ft (planned for 2028) — Mountain Prairie Acres</title>
+<link rel="stylesheet" href="workshop.css">
+<style>
+  @page {
+    size: 8.5in 11in;
+    margin: 10mm 10mm 12mm;
+    @bottom-left { content: "Mountain Prairie Acres - Workshop pole barn: overview"; font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+  }
+  @media print { .hero .dwg { max-height: 3.9in; } }
+</style>
+</head>
+<body>
+<script src="site_nav.js"></script>
+<nav class="home-link" aria-label="Back to the home page"><a href="index.html">← Mountain Prairie Acres — Orchard and Ranch Projects</a></nav>
+
+<div class="notice print-help" role="note"><strong>Print setup:</strong> Letter (8.5 × 11 in), portrait, 100% scale. Turn on background graphics and turn off the browser's headers and footers.</div>
+<noscript><div class="notice error">JavaScript is required to draw the pictures and to fill in the sizes and counts on these pages.</div></noscript>
+<div class="notice error" id="render-error" hidden></div>
+
+<section aria-labelledby="page-title">
+<h1 id="page-title">Workshop Pole Barn</h1>
+<p class="subtitle">Mountain Prairie Acres · <span data-m="footprint">32 × 48 ft</span> gambrel pole barn: RV garage, workshop, and storage loft · <span class="tag planned">planned for 2028</span> · owner-build</p>
+<p class="source-note">Every drawing, count, and price in this package is computed from one design model at the planned footprint in the <a href="site_master_grid.html">site data</a>. <a href="#county">County rules</a> sets the building against what Elmore County's ordinance says.</p>
+<p class="pager screen-only"><strong>The package:</strong> <strong>Overview</strong> · <a href="workshop_specs.html">Specs</a> · <a href="workshop_plans.html">Plans and elevations</a> · <a href="workshop_sections.html">Sections and details</a> · <a href="workshop_materials.html">Materials and cost</a></p>
+
+<div class="notice ask" role="note"><strong>Planned for 2028. Nothing is ordered, permitted, or built.</strong> These are planning drawings and figures. Have Elmore County and an Idaho-licensed engineer confirm every load and dimension, and get quotes, before anything is ordered. Prices are 2026 ballpark figures.</div>
+
+<h2>The Building in Brief</h2>
+<figure class="plot hero">
+  <div data-fig="eastElevation"></div>
+  <figcaption>East elevation, the front: the <span data-m="footprintPrime">32′ × 48′</span> building seen from the driveway side. Every picture in the package is drawn from one design model, so the length lives in one place.</figcaption>
+</figure>
+
+<dl class="facts">
+  <dt>Use</dt><dd>RV garage, workshop, and storage loft. What the building really holds decides its permit path: see <a href="#county">County rules</a></dd>
+  <dt>Footprint</dt><dd><span data-m="footprint">32 × 48 ft</span>: <span data-m="floorSqFt">1,536</span> sq ft on the main floor and the same on the loft floor, of which about <span data-m="loft7Gross">950</span> sq ft has 7 ft or more of headroom (<span data-m="loft7Width">19.75</span> ft wide down the middle)</dd>
+  <dt>Bays</dt><dd>Sidewall posts at 8 ft: <span data-m="bays">8-8-8-8-8-8</span>, with <span data-m="piers">19</span> piers and <span data-m="trusses">25</span> trusses at 2 ft OC. The length is a whole number of 8 ft bays, so the posts, the 16 ft girts, the 4×8 sheets, and the 36 in steel panels land on a clean module</dd>
+  <dt>Heights</dt><dd><span data-m="eave">16</span> ft eave (the loft floor), <span data-m="knuckle">24</span> ft at the pitch break, <span data-m="peak">28</span> ft at the ridge, all above the floor. The floor is 1′-1″ above the pad, so the ridge is <span data-m="ridgeAbovePad">29′-1″</span> above the pad and the mid-point of the gable <span data-m="gableMid">23′-1″</span>. The gambrel slopes are <span data-m="lowerAngle">49</span>° below the break and <span data-m="upperAngle">24</span>° above it</dd>
+  <dt>Orientation</dt><dd>Long side east–west; the main door is on the <strong>east</strong> gable, facing the paths and the RV pad, so a prevailing west wind meets the closed back wall. <a href="site_baselines.html">The baselines</a> do not settle which way the winter wind blows</dd>
+  <dt>Design loads</dt><dd><span data-m="snow">120</span> psf ground snow (the county's zone; confirm) · <span data-m="wind">115</span> mph wind, Exposure C · <span data-m="loftLive">40</span>+ psf loft floor · seismic category set by the engineer</dd>
+  <dt>Main door</dt><dd>14′ × 14′ insulated, wind-rated sectional overhead door, centered on the east gable</dd>
+  <dt>Loft doors</dt><dd>5′ × 6′ insulated double doors on the east gable, above the main door at loft-floor level, opening onto the deck</dd>
+  <dt>Hoist beam</dt><dd>Cantilevered W6 steel I-beam, 3 ft out over the deck, for a 500–1,000 lb chain fall</dd>
+  <dt>Landing deck</dt><dd>14′ × 10′, free-standing on 6×6 posts to grade, 42″ rail; reached from the loft only (no outside stairs)</dd>
+  <dt>Walk door</dt><dd>3′ × 7′ insulated steel, south wall near the east end</dd>
+  <dt>Windows</dt><dd><span data-m="windowsNorth">3</span> in the north wall and <span data-m="windowsSouth">3</span> in the south wall, <span data-m="windowSize">4′ × 3′</span> insulated sliders with the sill <span data-m="windowSill">5′</span> above the floor, centered in their bays and clear of the stair and the walk door; one <span data-m="loftWindowSize">3′ × 4′</span> single-hung in the west gable at the loft. About <span data-m="windowsLow">$1,900</span> to <span data-m="windowsHigh">$3,500</span> in materials with their flashing and trim</dd>
+  <dt>Loft access</dt><dd>L-shaped stairs: first flight along the south wall, a landing at the southwest corner, second flight up the west wall</dd>
+  <dt>Heat and power</dt><dd>Wood stove and a mini-split heat pump (cooling too) · 200 A sub-panel; where it is fed from is still open</dd>
+  <dt>Colors</dt><dd><span class="chip" style="background:#d9c9a3"></span>beige roof and trim · <span class="chip" style="background:#7a1f1f"></span>barn-red walls</dd>
+  <dt>Build approach</dt><dd>Owner-build with pre-fab stamped trusses, in phases if needed. The goal is weather-tight before snow flies</dd>
+  <dt>Budget</dt><dd>Materials about <span data-m="materialsLow">$80,900</span> to <span data-m="materialsHigh">$125,100</span>; about <span data-m="budgetLow">$105,500</span> to <span data-m="budgetHigh">$179,500</span> all in, with tax, permits, engineering, utilities, rentals, and a 15% contingency (<a href="workshop_materials.html">materials and cost</a>)</dd>
+</dl>
+
+<h2>Where It Sits</h2>
+<p class="lead">The workshop goes on the graded pad north of the pump house and the containers, with its east door lined up with the road-mix path and the RV path. Its footprint is in <code>data/site.json</code> at <span data-m="footprint">32 × 48 ft</span>, centered on the pad.</p>
+<figure class="plot">
+  <div data-fig="sitePlan"></div>
+  <figcaption>The pad, the planned building, and what is around it, drawn from <code>data/site.json</code> on the 50 ft master grid. Distances are measured on the grid. Compare the <a href="homestead_plot_map.html">homestead plot map</a>.</figcaption>
+</figure>
+<div data-site="table"></div>
+
+<div class="notice note"><h3>Notes on the pad and the foundation</h3>
+  <ul>
+    <li><strong>Fill and compaction.</strong> Ask the engineer whether the fill was placed in compacted lifts. If that is not documented, plan to compact and test it, or to deepen the gravel base, before the slab goes on it.</li>
+    <li><strong>The pier holes go through the fill.</strong> The 60 in is measured from the pad surface, so the north row's holes pass through about 2 ft of fill and end about 3 ft into native soil, and the south row's end about 4 to 4½ ft into it. Each pier pad should bear on undisturbed native soil, or on fill the engineer accepts. <a href="workshop_sections.html#detail-3">Detail 3</a> and <a href="workshop_sections.html#section-a">Section A</a> draw this.</li>
+    <li><strong>The north edge.</strong> The fill is thickest along the north edge, where the pad reaches only 5 ft beyond the wall (4 ft past each end). Check that the edge is firm and not slumping, and keep the north wall's piers and the slab edge well inside it.</li>
+    <li><strong>The pad surface.</strong> The lidar predates the pad, so shoot the finished surface with a level and record it here. The slab, foam, and gravel stack up about 13 in above it, so the floor sits about 1′-1″ above the pad.</li>
+  </ul>
+</div>
+
+<h2 id="county">County Rules and What They Mean Here</h2>
+<p class="source-note">From Elmore County's published Zoning and Development Ordinance (Title 7, chapters 1 and 2, adopted May 2018, amended 2023 and 2024), the building regulations (Title 9), and the county's Notice of Proposed New Agricultural Building, read in October 2026 at elmorecounty.org. The ordinance is being amended (case ZOA-2026-01, to match the updated Comprehensive Plan; the staff report for the October 22, 2026 hearing recommends continuing the review to November 18, 2026). The draft keeps the height table and the accessory- and agricultural-structure standards cited below, but it reorganizes chapter 2, so section numbers may change. This is a planning summary, not legal advice and not the county's answer: read the current text and get each answer in writing.</p>
+<div data-site="county"></div>
+
+<div class="notice ask"><h3>Which permit path is this building on?</h3>
+  <p>The county sorts a building by what it is used for, not by its name.</p>
+  <ul>
+    <li><strong>Accessory building: the design as drawn.</strong> An RV garage, a workshop, and a storage loft. The house comes first, and the height, size, and matching rules above apply. It needs a building permit, plan review, and inspections.</li>
+    <li><strong>Agricultural building.</strong> A barn for orchard equipment, a tractor, bins, and harvest storage. It is exempt from the building code, but not from zoning: it needs zoning approval before construction and the county's agricultural exemption in place of a building permit, and the district's setbacks and height still apply. It must stand on a farm (5 acres or more in agricultural use, tied to the assessor's tax categories), so ask whether the parcel qualifies. The owner signs a notarized statement, recorded with the county, that the building is used solely for agriculture.</li>
+  </ul>
+  <p>The two cannot be mixed: the definition says <em>solely</em>. With the RV inside, the building is on the first path, and a building later put to another use can be required to obtain every permit and prove it meets the code. If the plan changes to a farm barn, the package should be redrawn for that use (a different name, no camper clearances), and the application should describe what the building will hold.</p>
+</div>
+
+<h2>Before Any Site Work</h2>
+<ol class="points">
+  <li><strong>Call the Elmore County Land Use and Building Department</strong> (208-587-2130, extension 6500): confirm the ground snow load, wind speed, frost depth, and exposure for this parcel, and which rules apply at about 4,750 ft.</li>
+  <li><strong>Settle the permit path with the county, in writing</strong> (see <a href="#county">County rules</a>): the parcel's zoning district (some of the rules apply only in residential districts); whether this is an accessory building or an agricultural building, which follows from what it will really hold; how the height is measured, from what grade, and how a gambrel is averaged; the front-yard size cap; and whether the house must be permitted first.</li>
+  <li><strong>Get stamped truss drawings</strong> from a pre-fab truss company, with the loft stair opening, the loft doors, and the hoist-beam loads on them.</li>
+  <li><strong>Get stamped foundation and structural plans</strong> from an Idaho-licensed engineer, including what to do about the pad's fill.</li>
+  <li><strong>Pull the building permit.</strong></li>
+  <li><strong>Call 811</strong> before any digging. The buried 1.5 in water line is about 11 ft south of the south wall and the west-fence line about 16 ft west.</li>
+  <li><strong>Settle the power source</strong> and run the sub-feed conduit before backfill.</li>
+  <li><strong>Shoot the pad's elevation</strong> with a level and get the fill checked before the footings.</li>
+</ol>
+
+<h2>Open Questions</h2>
+<ol class="points">
+  <li><strong>What will the building really hold?</strong> That decides the permit path (see <a href="#county">County rules</a>). An RV garage and a workshop make it an accessory building, which is what these drawings show. A barn for orchard equipment and harvest could be an agricultural building. It cannot be both.</li>
+  <li><strong>Which snow load applies?</strong> The county's 120 psf zone is used here; the permit page ties it to buildings above about 5,000 ft.</li>
+  <li><strong>Where does the power come from?</strong> The pump house with its solar inverters and batteries, or the house? A 200 A panel is a panel rating, not a supply: check that the source can run the welder (50 A), the compressor (30 A), and the mini-split together.</li>
+  <li><strong>What is the hoist for?</strong> Lifting from the deck needs only the 3 ft beam. Lifting from the ground has to clear the 10 ft deck, so the beam would reach about 12 ft out and the engineer would size it and its back-span.</li>
+  <li><strong>How far does the slab slope?</strong> The slab slopes toward the east door. At ¼ in per ft over <span data-m="length">48</span> ft that is <span data-m="slabSlope">12</span> in, which is a lot. Slope only the 12 to 16 ft nearest the door, or use ⅛ in per ft; decide with the concrete subcontractor.</li>
+  <li><strong>Stove, condenser, and panel.</strong> The wood stove's spot is not chosen. The mini-split condenser goes on the west or the south wall.</li>
+  <li><strong>The winter wind.</strong> The door is on the east end on the idea that a prevailing west wind hits the closed back wall. If the winter wind comes from the east instead, the door and the deck take it and the drifts pile up there. The weather station's first year should settle it.</li>
+  <li><strong>Camper height.</strong> The drawings use an 11′-10″ camper roof, which leaves 2′-2″ under the door head and 3′-4″ under the loft. Measure yours.</li>
+</ol>
+
+<h2>How to Use This Package</h2>
+<ol class="points">
+  <li>Verify the design loads and the county rules (see <a href="workshop_pole_barn.html#county">County rules</a>) with Elmore County before any orders go out.</li>
+  <li>Use the <a href="workshop_specs.html">specs</a> when calling the truss plant or the steel vendor; read straight off the page.</li>
+  <li>Use the <a href="workshop_plans.html">plans and elevations</a> for layout on site and with the permit.</li>
+  <li>Use the <a href="workshop_sections.html">sections and details</a> when framing, sheathing, and siding; the numbered and lettered markers match the legends.</li>
+  <li>Use the <a href="workshop_materials.html">materials list</a> as the shopping and check-off list. Firm prices replace the estimates as quotes come in.</li>
+</ol>
+
+<h2>Sources</h2>
+<ul class="source-list">
+  <li>Site records: <a href="site_master_grid.html">site master grid</a> and <a href="homestead_plot_map.html">homestead plot map</a> (<code>data/site.json</code>: the planned workshop, its pad, the paths, the water lines, and the neighbors), and the USGS lidar terrain.</li>
+  <li>County building values: <a href="site_baselines.html">site baselines</a> (Elmore County Land Use and Building Department: snow zone, frost depth, wind, and seismic zone).</li>
+  <li>County zoning and building rules: Elmore County Zoning and Development Ordinance, Title 7 chapters 1 and 2 (definitions; table 7-2-27; sections 7-2-42 and 7-2-46), Title 9 section 9-1-7, the Notice of Proposed New Agricultural Building with its exemption statement (elmorecounty.org, October 2026), and the staff report and draft text for ZOA-2026-01 (October 22, 2026 hearing).</li>
+  <li>The pad's fill, level, and thickness: the owner, October 23, 2026.</li>
+</ul>
+
+<div class="footer">Mountain Prairie Acres · Workshop pole barn overview · updated October 23, 2026 · every figure is drawn from <code>docs/workshop_model.js</code>, and <code>tools/test_workshop_model.js</code> checks it against <code>data/site.json</code> and the county values in <code>data/site_baselines.json</code>.</div>
+</section>
+
+<script src="workshop_model.js"></script>
+<script src="workshop_draw.js"></script>
+<script src="workshop_elevations.js"></script>
+<script src="workshop_site.js"></script>
+<script src="data/site_grid.js"></script>
+<script src="data/site_terrain.js"></script>
+<script src="workshop_page.js"></script>
+</body>
+</html>

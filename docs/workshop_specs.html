@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workshop Pole Barn: Spec Quick Reference — Mountain Prairie Acres</title>
+<link rel="stylesheet" href="workshop.css">
+<style>
+  @page {
+    size: 8.5in 11in;
+    margin: 10mm 10mm 12mm;
+    @bottom-left { content: "Mountain Prairie Acres - Workshop pole barn: spec quick reference"; font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+  }
+</style>
+</head>
+<body>
+<script src="site_nav.js"></script>
+<nav class="home-link" aria-label="Back to the home page"><a href="index.html">← Mountain Prairie Acres — Orchard and Ranch Projects</a></nav>
+
+<div class="notice print-help" role="note"><strong>Print setup:</strong> Letter (8.5 × 11 in), portrait, 100% scale. Turn on background graphics and turn off the browser's headers and footers.</div>
+<noscript><div class="notice error">JavaScript is required to fill in the sizes and counts on this page.</div></noscript>
+<div class="notice error" id="render-error" hidden></div>
+
+<section aria-labelledby="page-title">
+<h1 id="page-title">Workshop Pole Barn: Spec Quick Reference</h1>
+<p class="subtitle">Print this page and take it to every vendor call · <span data-m="footprint">32 × 48 ft</span> · <span data-m="eave">16</span> ft eave · gambrel · Prairie, Idaho · planned for 2028</p>
+<p class="pager screen-only"><strong>The package:</strong> <a href="workshop_pole_barn.html">Overview</a> · <strong>Specs</strong> · <a href="workshop_plans.html">Plans and elevations</a> · <a href="workshop_sections.html">Sections and details</a> · <a href="workshop_materials.html">Materials and cost</a></p>
+<div class="notice ask" role="note"><strong>Verify with the county and an Idaho engineer before ordering.</strong> The snow, wind, frost, and seismic values below are Elmore County's published ones (<a href="site_baselines.html">site baselines</a>); the rest are design requirements to confirm with the engineer.</div>
+
+<h2>Design Loads (verify with the county)</h2>
+<table class="detail">
+<colgroup><col style="width:24%"><col style="width:18%"><col style="width:58%"></colgroup>
+<thead><tr><th>Parameter</th><th>Value</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Ground snow load (Pg)</td><td><strong><span data-m="snow">120</span> psf</strong></td><td>The county's snow-load map puts Prairie in the 120 psf zone and requires an Idaho engineer's design there. The county ties the rule to buildings above about 5,000 ft; the lot is at about 4,750 ft, so confirm.</td></tr>
+<tr><td>Flat-roof snow (approx.)</td><td>≈ <span data-m="roofSnow">84</span> psf</td><td>0.7 × Pg. The truss designer calculates the real figure, with the reductions for the slopes.</td></tr>
+<tr><td>Snow drift at the pitch break</td><td>Per engineering</td><td>Gambrels collect drift at the knuckle.</td></tr>
+<tr><td>Basic wind speed (V)</td><td><strong><span data-m="wind">115</span> mph</strong></td><td>The county's residential figure (IRC); commercial uses 95 to 120 mph (IBC). ASCE 7, Risk Category II.</td></tr>
+<tr><td>Wind exposure</td><td><strong>C</strong></td><td>Open ranch land.</td></tr>
+<tr><td>Seismic</td><td>County zone C</td><td>Prairie is south of Featherville. The engineer sets the design category.</td></tr>
+<tr><td>Frost</td><td>County 30 in zone</td><td>The county asks for footings "30 in below the frost line," which is <strong><span data-m="footing">60</span> in</strong> below grade. Footings are specified to 60 in below the pad surface. Confirm the wording.</td></tr>
+<tr><td>Loft live load</td><td><span data-m="loftLive">40</span> psf minimum (60 is better)</td><td>Spec to the truss plant.</td></tr>
+<tr><td>Height (county)</td><td>Mid-gable <span data-m="gableMid">23′-1″</span> above the pad; ridge <span data-m="ridgeAbovePad">29′-1″</span></td><td>An accessory building may be no taller than the house or <span data-m="accessoryHeight">24</span> ft, whichever is greater, measured to the mid-point of the gable: <span data-m="accessoryReading">under by 11″</span> from the pad surface (about <span data-m="gableAverage">24.5</span> ft if the county averages the gambrel's whole gable). The zone limit is <span data-m="zoneHeight">35</span> ft. See County rules on the overview page.</td></tr>
+</tbody>
+</table>
+
+<h2>Pad and Foundation</h2>
+<table class="detail">
+<colgroup><col style="width:24%"><col style="width:76%"></colgroup>
+<thead><tr><th>Item</th><th>Spec</th></tr></thead>
+<tbody>
+<tr><td>The pad</td><td>About 56 × 42 ft, level, built of imported fill. The fill is almost 2 ft over the original ground on the north edge and 6 in to 1 ft on the south edge (owner, October 2026). The building is centered on it with 4 ft of pad at each end and 5 ft along the long sides.</td></tr>
+<tr><td>Fill</td><td>Ask the engineer whether it was compacted in lifts. If that is not documented, compact and test it before the slab, or deepen the gravel base. Check the north edge, where the fill is thickest and the margin is only 5 ft.</td></tr>
+<tr><td>Pier holes</td><td><strong>30 in Ø × 60 in deep</strong> minimum, measured from the pad surface. They pass through the fill and bear on undisturbed native soil, or on fill the engineer accepts. About 3 ft of native soil under the north row, 4 to 4½ ft under the south row.</td></tr>
+<tr><td>Footing pad</td><td>30 in Ø × 12 in thick, 4,000 psi concrete, with an 18 in Ø tube pier above it, to the bracket.</td></tr>
+<tr><td>Posts and brackets</td><td>3-ply 2×8 laminated, <strong>wet-set on concrete piers</strong> (Perma-Column or Sturdi-Wall Plus). <span data-m="posts">19</span> in all: <span data-m="sidePosts">14</span> on the sidewalls, <span data-m="gablePosts">3</span> on the west gable (between the corners), and 2 door jambs on the east gable.</td></tr>
+<tr><td>Post spacing</td><td><strong>8 ft OC maximum</strong> on the sidewalls. Layout <span data-m="bays">8-8-8-8-8-8</span> for the <span data-m="length">48</span> ft length, so the 16 ft girts land on posts; the west gable posts are 8 ft apart.</td></tr>
+<tr><td>Slab</td><td><strong>5 in</strong>, 4,000 psi, #4 rebar at 16 in OC each way, with control joints at about 11 ft. It slopes toward the east door; the amount is open, because ¼ in/ft would drop 12 in over this length (see the overview's open questions).</td></tr>
+<tr><td>Under the slab</td><td>4 in compacted gravel, then a 10 mil vapor barrier, then 4 in rigid foam, on the compacted pad fill. The stack puts the floor about 1′-1″ above the pad surface.</td></tr>
+</tbody>
+</table>
+
+<h2>Structure</h2>
+<table class="detail">
+<colgroup><col style="width:24%"><col style="width:76%"></colgroup>
+<thead><tr><th>Item</th><th>Spec</th></tr></thead>
+<tbody>
+<tr><td>Girts</td><td>2×6 SPF #2, <strong>bookshelf at 24 in OC</strong></td></tr>
+<tr><td>Trusses</td><td>Pre-engineered gambrel attic truss, <span data-m="width">32</span> ft span, <strong>2 ft OC</strong>, PE stamped: <span data-m="trusses">25</span> in all (<span data-m="commonTrusses">23</span> common and 2 gable-end). The loft stair opening, the loft doors, and the hoist beam go on the truss drawings.</td></tr>
+<tr><td>Truss heel height</td><td>12 in minimum (for insulation depth)</td></tr>
+<tr><td>Truss carriers</td><td>(3) 1¾″ × 9¼″ LVL, side-bolted to each post with (3) ½ in galvanized through-bolts (<a href="workshop_sections.html#detail-7">Detail 7</a>)</td></tr>
+<tr><td>Purlins</td><td>2×6 SPF, 16–24 in OC per the truss design</td></tr>
+<tr><td>Splash board</td><td>2×10 PT</td></tr>
+<tr><td>Door header</td><td>(3) 2×12 LVL or an engineered steel beam (PE-sized)</td></tr>
+<tr><td>Hurricane ties</td><td>H2.5A or stronger, <strong>2 per truss bearing</strong> (<span data-m="ties">100</span> in all)</td></tr>
+</tbody>
+</table>
+
+<h2>Envelope</h2>
+<h3>Wall assembly (outside → inside)</h3>
+<table class="detail">
+<colgroup><col style="width:24%"><col style="width:76%"></colgroup>
+<thead><tr><th>Layer</th><th>Spec</th></tr></thead>
+<tbody>
+<tr><td>1. Siding</td><td>26 ga steel, vertical panels, <strong>barn red</strong></td></tr>
+<tr><td>2. Rainscreen</td><td><strong>1×4 PT furring at 24 in OC, vertical</strong> (critical: do not skip)</td></tr>
+<tr><td>3. WRB</td><td>Tyvek CommercialWrap, taped seams</td></tr>
+<tr><td>4. Sheathing</td><td><strong>½ in OSB</strong>, APA Exposure 1, 8d ring-shank at 6 in on the edges and 12 in in the field (4 in at corners)</td></tr>
+<tr><td>5. Framing</td><td>2×6 girts, bookshelf, at 24 in OC</td></tr>
+<tr><td>6. Posts</td><td>3-ply laminated at 8 ft OC</td></tr>
+</tbody>
+</table>
+<h3>Roof assembly (outside → inside)</h3>
+<table class="detail">
+<colgroup><col style="width:24%"><col style="width:76%"></colgroup>
+<thead><tr><th>Layer</th><th>Spec</th></tr></thead>
+<tbody>
+<tr><td>1. Roofing</td><td>26 ga steel with <strong>factory Dripstop</strong>, <strong>beige</strong></td></tr>
+<tr><td>2. Underlayment</td><td>Synthetic (Titanium UDL30 or equal) over the entire roof</td></tr>
+<tr><td>3. Ice and water shield</td><td>FULL coverage on the lower (steep) slope; at the pitch break and around penetrations on the upper slope</td></tr>
+<tr><td>4. Deck</td><td><strong>⅝ in OSB</strong> with H-clips between the purlins</td></tr>
+<tr><td>5. Purlins</td><td>2×6 per the truss design</td></tr>
+<tr><td>6. Trusses</td><td>Gambrel attic, <span data-m="width">32</span> ft at 2 ft OC</td></tr>
+<tr><td>Snow guards</td><td>On the lower slope over the walk door, and over any other door under a roof edge. The east gable has no roof slope above it, so it needs none. The engineer or the steel supplier lays out the rows for the snow zone.</td></tr>
+</tbody>
+</table>
+
+<h2>Openings</h2>
+<table class="detail">
+<colgroup><col style="width:17%"><col style="width:50%"><col style="width:33%"></colgroup>
+<thead><tr><th>Opening</th><th>Spec</th><th>Location</th></tr></thead>
+<tbody>
+<tr><td>Overhead door</td><td>14′ × 14′ insulated, R-12 or better, <strong>wind rated for <span data-m="wind">115</span> mph</strong></td><td>Centered on the EAST gable</td></tr>
+<tr><td>Loft double doors</td><td>5′ × 6′ insulated double doors (French or barn-door style), upper lites optional</td><td>EAST gable, <strong>centered above the main door at loft-floor level</strong></td></tr>
+<tr><td>Landing deck</td><td>14′ wide × 10′ deep (matches the main door), free-standing: 6×6 PT posts to grade piers, doubled 2×10 PT beams east-west, 2×10 PT joists at 12 in OC north-south, 5/4 or 2×6 PT decking, 42″ rail, diagonal knee braces</td><td>Free-standing off the east gable at the loft doors</td></tr>
+<tr><td>Walk door</td><td>3′ × 7′ insulated steel, pre-hung</td><td>SOUTH sidewall, near the east end</td></tr>
+<tr><td>Sidewall windows</td><td><span data-m="windowSize">4′ × 3′</span> (wide × tall) insulated vinyl sliders, low-E glass, <strong>sill <span data-m="windowSill">5′</span> above the floor</strong>, DP-30 or better (ask the engineer for the rating at <span data-m="wind">115</span> mph). Nail-fin frames with jamb extensions for the wall, which is about 6¾″ thick.</td><td>NORTH wall: <span data-m="windowsNorth">3</span>, centered in bays 2, 4, and 6, counting from the west end. SOUTH wall: <span data-m="windowsSouth">3</span>, in bays 3, 4, and 5, clear of the stair and the walk door.</td></tr>
+<tr><td>Loft window</td><td><span data-m="loftWindowSize">3′ × 4′</span> (wide × tall) insulated vinyl single-hung, low-E glass, <strong>sill 3′ above the loft floor</strong></td><td>WEST gable, centered, at the loft</td></tr>
+</tbody>
+</table>
+<div class="notice note"><h3>Window pre-planning</h3>
+  <ul>
+    <li>Each window is centered <strong>between two posts</strong>, so no post is moved. At each opening cut the girts, set a <strong>doubled 2×6 header</strong> on jack framing, and add a 2×6 sill and blocking for the J-trim.</li>
+    <li>Flash every window the same way: <strong>sill pan first, then the jamb tape, then the head tape</strong>, lapped under the housewrap above and over it below. The rainscreen cavity stays open behind the trim, and the steel is finished around each window with J-trim and a head flashing.</li>
+  </ul>
+</div>
+<div class="notice note"><h3>Loft door and deck pre-planning</h3>
+  <ul>
+    <li>Tell the truss plant the <strong>loft door rough opening</strong> on the east gable: about 5′-6″ wide × 6′-6″ tall, centered, bottom at the loft floor.</li>
+    <li>Header above the loft doors: (2) 2×10 LVL, or as the engineer says.</li>
+    <li><strong>Hoist beam included:</strong> a cantilevered steel I-beam (or doubled LVL) projecting about 3 ft beyond the loft doors, sized by the engineer for a 500–1,000 lb working load. Anchor it to the truss top chord and to blocking inside the loft, with an eye plate or trolley track for the chain fall.</li>
+    <li>Deck piers: 4 concrete piers below frost (60 in), 18 in Ø tubes with a belled footing. Anchor the 6×6 posts with post bases. The posts stand on the door-jamb lines, so they do not narrow the door.</li>
+    <li>The deck is <strong>free-standing</strong> (no ledger on the building), which protects the rainscreen and the siding from leaks.</li>
+    <li>The four posts need lateral bracing (14 ft wide and 16 ft tall is tall and narrow): diagonal knee braces or X-bracing per the engineer.</li>
+    <li>Decking: PT, composite, or Trex, the owner's choice, with stainless or hot-dip galvanized fasteners.</li>
+    <li><strong>No awning</strong> over the deck. <strong>No exterior stairs</strong> to grade: the deck is reached from the loft only.</li>
+  </ul>
+</div>
+
+<h2>Loft Stairs</h2>
+<table class="detail">
+<colgroup><col style="width:24%"><col style="width:76%"></colgroup>
+<thead><tr><th>Item</th><th>Spec</th></tr></thead>
+<tbody>
+<tr><td>Layout</td><td>L-shape with a 4′ × 4′ landing at the <strong>southwest corner</strong></td></tr>
+<tr><td>First flight</td><td>SOUTH sidewall, east to west, about 12 ft of run, rising 8 ft</td></tr>
+<tr><td>Second flight</td><td>WEST gable wall, south to north, about 12 ft of run, rising 8 ft</td></tr>
+<tr><td>Width</td><td>48 in clear minimum</td></tr>
+<tr><td>Rise and tread</td><td>7 in rise and 11 in tread (target): 14 risers and 13 treads in each flight</td></tr>
+<tr><td>Handrails</td><td>Both sides, full length, 34–38 in</td></tr>
+<tr><td>Guard at the loft</td><td>42 in minimum around the loft opening</td></tr>
+<tr><td>Stringers</td><td>2×12 PT or LVL</td></tr>
+<tr><td>Opening in the trusses</td><td>About 4 × 8 ft at the west wall, off the southwest landing: tell the truss plant when ordering</td></tr>
+</tbody>
+</table>
+
+<h2>Mechanical and Electrical</h2>
+<table class="detail">
+<colgroup><col style="width:24%"><col style="width:76%"></colgroup>
+<thead><tr><th>Item</th><th>Spec</th></tr></thead>
+<tbody>
+<tr><td>Service</td><td>200 A sub-panel. <strong>The feed source is not settled:</strong> the pump house (inverters and batteries) is about 29 ft south of the south wall, the solar container about 33 ft south, and the planned house about 54 ft to the southeast. Check that the source can supply the loads below.</td></tr>
+<tr><td>Feeder conduit</td><td>2 in PVC Schedule 40 underground, before backfill, entering at the panel</td></tr>
+<tr><td>Welder</td><td>240 V / 50 A dedicated</td></tr>
+<tr><td>Air compressor</td><td>240 V / 30 A dedicated</td></tr>
+<tr><td>RV plug</td><td>30 A TT-30R, near the RV bay</td></tr>
+<tr><td>Mini-split</td><td>240 V / 15–30 A per the condenser's nameplate</td></tr>
+<tr><td>Wood stove blower</td><td>120 V / 15 A near the stove</td></tr>
+<tr><td>Lighting</td><td>LED high-bay, 4000–5000 K, 15,000+ lm each, on several circuits</td></tr>
+<tr><td>Heat</td><td>Wood stove (primary) plus a mini-split heat pump</td></tr>
+<tr><td>Cooling</td><td>The mini-split (same unit)</td></tr>
+<tr><td>Plumbing and drains</td><td>NONE, and no floor drain</td></tr>
+</tbody>
+</table>
+
+<h2>Colors</h2>
+<table class="detail">
+<colgroup><col style="width:24%"><col style="width:76%"></colgroup>
+<thead><tr><th>Surface</th><th>Color</th></tr></thead>
+<tbody>
+<tr><td><span class="chip" style="background:#d9c9a3"></span>Roof steel</td><td>Beige</td></tr>
+<tr><td><span class="chip" style="background:#7a1f1f"></span>Wall steel</td><td>Barn red (dark, deep)</td></tr>
+<tr><td><span class="chip" style="background:#d9c9a3"></span>Trim</td><td>Beige (matches the roof)</td></tr>
+<tr><td>Wainscot</td><td>None</td></tr>
+</tbody>
+</table>
+
+<div class="notice error"><h3>What NOT to do</h3>
+  <ul>
+    <li>❌ Steel screwed straight to the OSB (no rainscreen): a sure condensation failure</li>
+    <li>❌ 15 or 30 lb felt behind the wall steel: it tears and traps moisture</li>
+    <li>❌ Poly vapor barrier outside the OSB: it traps moisture and rots the sheathing</li>
+    <li>❌ Foil-faced bubble wrap as the WRB: it is not a real WRB</li>
+    <li>❌ Ice and water shield on the walls: a vapor trap, the wrong tool</li>
+    <li>❌ Wood posts buried in the dirt at this snow load: use brackets on piers</li>
+    <li>❌ Skipping the H2.5A hurricane ties: <span data-m="wind">115</span> mph wind needs them</li>
+    <li>❌ Skipping the rebar in the slab: 5 in of concrete under stored loads will crack</li>
+    <li>❌ Pouring the slab or setting footings on uncompacted fill without the engineer's say-so</li>
+  </ul>
+</div>
+
+<div class="footer">Mountain Prairie Acres · Workshop pole barn spec quick reference · updated October 23, 2026 · counts and sizes are filled in from <code>docs/workshop_model.js</code>.</div>
+</section>
+
+<script src="workshop_model.js"></script>
+<script src="workshop_page.js"></script>
+</body>
+</html>

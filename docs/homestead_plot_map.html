@@ -276,8 +276,9 @@ function makeMap() {
   label(103.5, 761, 'Red shed', 't-title', { 'font-size': 8.5 });
   label(89, 815.5, 'Outhouse', 't-note', { 'font-size': 7.5 });
   const [wx, wy] = SG.center('workshop'), [hx, hy] = SG.center('house'), [gx, gy] = SG.center('garage');
+  const [shopLength, shopWidth] = SG.size('workshop');
   label(wx, wy - 4, 'Workshop (planned)', 't-planned', { 'text-anchor': 'middle', 'font-size': 8 });
-  label(wx, wy + 3.5, '32 × 46 ft', 't-planned', { 'text-anchor': 'middle', 'font-size': 7.5 });
+  label(wx, wy + 3.5, `${shopWidth} × ${shopLength} ft`, 't-planned', { 'text-anchor': 'middle', 'font-size': 7.5 });
   label(wx, F('workshop_pad').y1 - 2.5, 'workshop pad', 't-note', { 'text-anchor': 'middle', 'font-size': 7.2 });
   label(hx, hy - 3.5, 'House (planned)', 't-planned', { 'text-anchor': 'middle', 'font-size': 9 });
   label(hx, hy + 4.5, 'KIT Pinehurst 2512, 40 × 66 ft', 't-planned', { 'text-anchor': 'middle', 'font-size': 7.5 });
@@ -447,7 +448,7 @@ function renderNotes() {
   const entrance = SG.toLatLon(F('driveway_entrance').x, F('driveway_entrance').y);
   [
     'Placed from the owner\'s drone photos (October 2026), fitted to USGS aerial imagery and lidar: buildings, containers, tank, and pump house to about 3 ft; pad edges and paths to 5–10 ft.',
-    'Planned house (40 × 66), garage (east end, flush with the house\'s south wall, about 30 × 26 placeholder), and workshop (32 × 46, long side east–west) are drawn where the owner described them; move them in data/site_grid.js once their final spots are staked.',
+    'Planned house (40 × 66), garage (east end, flush with the house\'s south wall, about 30 × 26 placeholder), and workshop (32 × 48, long side east–west) are drawn where the owner described them; move them in data/site_grid.js once their final spots are staked.',
     'Old ditch: the lidar, flown before the pads were graded, shows a shallow ditch with a berm on its north side running west along the north edge of the house pad and past the containers. If any of it remains, grade so runoff passes around the house, containers, and pump house, not against them.',
     'Water lines and hydrants are traced from the owner\'s hand-drawn map (October 2026), to about 5 ft; the 1.5 in line along the west fence is the covered trench in the drone photo. Keep posts, tree holes, and other digging off them.',
     'The homestead sits near the top of the lot: the house pad is about 1–2 ft below the highest ground (east fence) and roughly 20 ft above the NW corner, so water lines to the orchard run downhill.'

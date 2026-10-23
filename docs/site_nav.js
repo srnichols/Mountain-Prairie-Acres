@@ -17,6 +17,13 @@ window.SITE_NAV = /* BEGIN SITE_NAV JSON */
       {"href": "gothic_greenhouse_plan.html", "label": "Gothic tunnel, 27 \u00d7 76 ft"},
       {"href": "pit_greenhouse_plan.html", "label": "Pit greenhouse, 20 \u00d7 36 ft"}
     ]},
+    {"id": "workshop", "label": "Workshop", "items": [
+      {"href": "workshop_pole_barn.html", "label": "Workshop pole barn, 32 \u00d7 48 ft"},
+      {"href": "workshop_specs.html", "label": "Workshop specs"},
+      {"href": "workshop_plans.html", "label": "Workshop plans and elevations"},
+      {"href": "workshop_sections.html", "label": "Workshop sections and details"},
+      {"href": "workshop_materials.html", "label": "Workshop materials and cost"}
+    ]},
     {"id": "land", "label": "Land & water", "items": [
       {"href": "site_terrain_water_map.html", "label": "Terrain and water maps"},
       {"href": "homestead_plot_map.html", "label": "Homestead plot map"},

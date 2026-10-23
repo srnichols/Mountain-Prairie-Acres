@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workshop Pole Barn: Materials and Cost Estimate — Mountain Prairie Acres</title>
+<link rel="stylesheet" href="workshop.css">
+<style>
+  @page {
+    size: 11in 8.5in;
+    margin: 10mm 10mm 12mm;
+    @bottom-left { content: "Mountain Prairie Acres - Workshop pole barn: materials and cost (2026 ballpark prices)"; font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+  }
+  table.bom td, table.bom th { font-size: 11px; }
+  @media print { table.bom { table-layout: fixed; } table.bom td { overflow-wrap: anywhere; } }
+</style>
+</head>
+<body>
+<script src="site_nav.js"></script>
+<nav class="home-link" aria-label="Back to the home page"><a href="index.html">← Mountain Prairie Acres — Orchard and Ranch Projects</a></nav>
+
+<div class="notice print-help" role="note"><strong>Print setup:</strong> Letter (8.5 × 11 in), landscape, 100% scale. Turn on background graphics and turn off the browser's headers and footers.</div>
+<noscript><div class="notice error">JavaScript is required to build the tables and the totals.</div></noscript>
+<div class="notice error" id="render-error" hidden></div>
+
+<section aria-labelledby="page-title">
+<h1 id="page-title">Workshop Pole Barn: Materials and Cost Estimate</h1>
+<p class="subtitle">Bill of materials with Home Depot, Lowe's, and specialty-supplier ballpark prices (Mountain West, 2026) · <span data-m="footprint">32 × 48 ft</span> · planned for 2028</p>
+<p class="pager screen-only"><strong>The package:</strong> <a href="workshop_pole_barn.html">Overview</a> · <a href="workshop_specs.html">Specs</a> · <a href="workshop_plans.html">Plans and elevations</a> · <a href="workshop_sections.html">Sections and details</a> · <strong>Materials and cost</strong></p>
+<p class="source-note">Source codes: <span class="src hd">HD</span> Home Depot · <span class="src lo">LO</span> Lowe's · <span class="src sp">SP</span> specialty supplier · <span class="src q">Q</span> vendor quote required. Every quantity is computed from the building's dimensions in <code>docs/workshop_model.js</code>, and every total is the quantity times the unit price, summed. Prices are 2026 ballpark ranges, not quotes.</p>
+
+<div class="notice ask" role="note"><h3>This is a planning estimate, not a fixed-price bid</h3>
+  <p>Prices are 2026 ballpark ranges for the Treasure Valley and Boise area. Lumber moves with commodity prices; steel and trusses must be quoted by your supplier with current numbers. The <strong>Midpoint</strong> column is halfway between each line's low and high, so it is a planning number, not a prediction.</p>
+  <p>Items marked <span class="src q">Q</span> <strong>must be quoted</strong>: the pre-fabricated trusses, the steel package, the laminated columns, and the wind-rated overhead door together are roughly 40–50% of the materials cost, and prices vary a lot by supplier.   The truss price in particular is a placeholder until quotes arrive.</p>
+  </div>
+
+<h2>Summary by Phase</h2>
+<div data-bom="summary"></div>
+
+<div class="notice note"><h3>Not in the materials total</h3>
+  <ul>
+    <li><strong>Labor.</strong> Owner-build assumes you provide it; a hired contractor adds 30–50%.</li>
+    <li><strong>Permits, plan review, and engineering</strong>, <strong>pier holes and dirt work</strong>, <strong>the power feeder trench and connection</strong> (the specs call for no water or septic), <strong>equipment rental</strong>, and <strong>sales tax</strong>: these are in the budget table at the end of this page.</li>
+    <li><strong>Solar, generator, and batteries</strong> are an owner-future item and are not in either table.</li>
+  </ul>
+</div>
+
+<div data-bom="phases"></div>
+
+<h2>Shopping Strategy and Sourcing</h2>
+<div class="cards">
+  <div class="card"><h3>From Home Depot or Lowe's</h3>
+    <ul>
+      <li>Dimensional lumber (2×4, 2×6, 2×8, 2×10): open accounts at both, and check prices weekly</li>
+      <li>OSB sheathing (½″ and ⅝″): get the Pro-desk price and ask about bunk pricing</li>
+      <li>PT lumber (1×4 furring, 2×10 splash board, 6×6 deck posts)</li>
+      <li>Tyvek and Tyvek tape (Tyvek brand, not generic)</li>
+      <li>Ice and water shield and synthetic underlayment</li>
+      <li>Simpson connectors (hangers, hurricane ties, structural screws)</li>
+      <li>Rigid foam (XPS) for under the slab</li>
+      <li>Electrical: panel, breakers, wire, conduit, devices, LED fixtures</li>
+      <li>The 3070 walk door (in stock or a one-week order)</li>
+      <li>Concrete extras (rebar, Sonotube, sealer), caulk, adhesive, fasteners, and hardware</li>
+    </ul>
+  </div>
+  <div class="card"><h3>From a specialty or regional supplier</h3>
+    <ul>
+      <li><strong>Trusses:</strong> Western Truss (Caldwell), BMC, Builders FirstSource. 4–8 week lead time. PE stamp.</li>
+      <li><strong>Laminated columns:</strong> Perma-Column, Sturdi-Wall (Mid-States Building), Hansen Buildings, or site-build.</li>
+      <li><strong>Steel package:</strong> Idaho Steel Products (Caldwell), Boise Steel Roofing, Metal Sales (Twin Falls). Get an itemized quote with the full trim package.</li>
+      <li><strong>Wet-set brackets:</strong> usually ship with the laminated column order.</li>
+      <li><strong>14×14 overhead door:</strong> a local overhead-door dealer, with an installed quote.</li>
+      <li><strong>Insulated chimney:</strong> a fireplace specialty shop (Idaho Hearth).</li>
+      <li><strong>Ready-mix concrete:</strong> the closest plant to Prairie (CalPortland Boise, Idaho Concrete in Mountain Home).</li>
+      <li><strong>Snow guards:</strong> direct from the manufacturer (SnowTrapper, S-5!).</li>
+      <li><strong>Crushed gravel:</strong> a local pit, much cheaper than bagged.</li>
+    </ul>
+  </div>
+  <div class="card wide"><h3>Quote-required items: do these first</h3>
+    <ol>
+      <li>Trusses (engineered and stamped)</li>
+      <li>The laminated column package and brackets</li>
+      <li>The steel roof, wall, and trim package</li>
+      <li>The 14×14 overhead door (installed)</li>
+      <li>Ready-mix concrete (per-yard price and short-load fees)</li>
+    </ol>
+    <p>These five items determine about half of the project cost. Get them quoted before you swing a hammer.</p>
+  </div>
+  <div class="card"><h3>Cost-cut levers (if the budget is tight)</h3>
+    <ul>
+      <li>Site-build the posts instead of buying them laminated ($1,500 saved)</li>
+      <li>Skip the interior finish for now ($1,800 saved)</li>
+      <li>Skip the insulation and install it when needed ($3,000 saved)</li>
+      <li>Skip the mini-split and run the wood stove only ($2,500 saved)</li>
+      <li>A 3070 walk door without windows, or lower grade ($300 saved)</li>
+      <li>Fewer windows: the <span data-m="windows">7</span> windows with their flashing and trim are about <span data-m="windowsLow">$1,900</span> to <span data-m="windowsHigh">$3,500</span> together</li>
+      <li>A standard (non-insulated) wind-rated overhead door ($800 saved, but you will regret it in winter)</li>
+      <li>A single-color steel package ($300 saved)</li>
+      <li>PT plywood instead of 5/4 PT decking ($200 saved)</li>
+      <li>Defer the landing deck to a later phase ($1,800 saved)</li>
+    </ul>
+  </div>
+  <div class="card"><h3>Do NOT cut these</h3>
+    <ul>
+      <li><strong>Engineered trusses with a PE stamp.</strong> <span data-m="snow">120</span> psf snow is non-negotiable.</li>
+      <li><strong>Wet-set brackets.</strong> Direct-burial posts rot in 15–25 years.</li>
+      <li><strong>Rainscreen furring.</strong> The whole reason for OSB behind the steel is wasted without it.</li>
+      <li><strong>Tyvek, not Typar or a cheap generic.</strong> Commercial-grade WRB lasts 50 years.</li>
+      <li><strong>Ice and water shield on the full lower slope.</strong> Failure here puts water in the loft.</li>
+      <li><strong>The 2×10 PT splash board.</strong> Do not substitute a 2×8 or skip it.</li>
+      <li><strong>4″ rigid foam under the slab</strong> (or at least 2″ XPS). Without it the slab will sweat.</li>
+      <li><strong>A wind-rated overhead door.</strong> Very few off-the-shelf doors meet 115 mph.</li>
+    </ul>
+  </div>
+</div>
+
+<h2 id="budget">Contingency and Total Project Budget</h2>
+<div data-bom="budget"></div>
+<div class="notice ask"><strong>Reality check:</strong> plan on the <strong>Midpoint</strong> column (about <span data-m="budgetMid">$139,900</span>) as your real budget, and on the <strong>High</strong> column (about <span data-m="budgetHigh">$179,500</span>) as the number that makes you stop and reassess. Material costs are volatile: lumber alone can swing 30% in one quarter. Locking in the steel and truss prices early protects about half of the spend.</div>
+
+<h2 id="length">Length and Cost</h2>
+<div class="notice note"><h3>Each foot of length</h3>
+  <ul>
+    <li><strong>Each foot adds about <span data-m="lengthFoot">$970</span> of materials</strong> at the midpoint, about <span data-m="lengthFootAllIn">$1,200</span> all in. The trusses, the steel, the concrete, the foam, the wrap, and the ice-and-water shield grow with the length; the doors, the stair, the deck, and the hoist do not, so a longer building costs less per square foot. Materials come to about <span data-m="materialsPerSqFt">$67</span> per sq ft of floor.</li>
+    <li><strong>The estimate takes no credit for less waste.</strong> The length is a whole number of 8 ft bays, so the posts, the 16 ft girts, the 4×8 sheets, and the 36 in steel panels land on a clean module and need little trimming. Every quantity here scales with the length, so the real cost is probably a few hundred dollars lower. Ask the steel and truss suppliers to quote the package at the length you build.</li>
+  </ul>
+</div>
+
+<div class="footer">Mountain Prairie Acres · Workshop pole barn materials and cost · updated October 23, 2026 · prices are 2026 ballpark figures and will drift; get quotes before ordering.</div>
+</section>
+
+<script src="workshop_model.js"></script>
+<script src="workshop_page.js"></script>
+</body>
+</html>

@@ -991,11 +991,11 @@
       "group": "planned",
       "status": "planned",
       "shape": "rect",
-      "x0": 38,
+      "x0": 37,
       "y0": 847,
-      "x1": 84,
+      "x1": 85,
       "y1": 879,
-      "notes": "32 x 46 ft shop, long side east-west, centered on its pad."
+      "notes": "32 x 48 ft shop, long side east-west, centered on its pad."
     },
     {
       "id": "rv_pad",

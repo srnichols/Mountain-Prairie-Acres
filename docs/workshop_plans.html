@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workshop Pole Barn: Plans and Elevations — Mountain Prairie Acres</title>
+<link rel="stylesheet" href="workshop.css">
+<style>
+  @page {
+    size: 11in 8.5in;
+    margin: 10mm 10mm 12mm;
+    @bottom-left { content: "Mountain Prairie Acres - Workshop pole barn: plans and elevations"; font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+  }
+  @media print { .dwg { max-height: 5.7in; } }
+</style>
+</head>
+<body>
+<script src="site_nav.js"></script>
+<nav class="home-link" aria-label="Back to the home page"><a href="index.html">← Mountain Prairie Acres — Orchard and Ranch Projects</a></nav>
+
+<div class="notice print-help" role="note"><strong>Print setup:</strong> Letter (8.5 × 11 in), landscape, 100% scale. Turn on background graphics and turn off the browser's headers and footers.</div>
+<noscript><div class="notice error">JavaScript is required to draw the plans and elevations.</div></noscript>
+<div class="notice error" id="render-error" hidden></div>
+
+<section aria-labelledby="page-title">
+<h1 id="page-title">Workshop Pole Barn: Plans and Elevations</h1>
+<p class="subtitle">Floor plan, loft plan, and all four elevations · <span data-m="footprint">32 × 48 ft</span> · <span data-m="eave">16</span> ft eave · gambrel · numbered markers match the legend below</p>
+<p class="pager screen-only"><strong>The package:</strong> <a href="workshop_pole_barn.html">Overview</a> · <a href="workshop_specs.html">Specs</a> · <strong>Plans and elevations</strong> · <a href="workshop_sections.html">Sections and details</a> · <a href="workshop_materials.html">Materials and cost</a></p>
+<p class="source-note">Drawn from the design model at <span data-m="footprint">32 × 48 ft</span>, so the posts, trusses, doors, and windows fall where the dimensions say. The drawings show the design intent for the engineer and the truss plant; they are not construction documents. North is up in the plans. The compass and the scale bar give the direction and the size.</p>
+
+<h2>Build Marker Legend</h2>
+<table class="detail legend">
+<colgroup><col style="width:7%"><col style="width:40%"><col style="width:53%"></colgroup>
+<thead><tr><th class="center">Marker</th><th>Component</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td class="mk-cell"><span class="nums">1</span></td><td>3-ply 2×8 laminated post on a wet-set bracket</td><td>Sidewalls at <span data-m="bays">8-8-8-8-8-8</span> ft; the west gable at 8 ft; two door-jamb posts on the east gable</td></tr>
+<tr><td class="mk-cell"><span class="nums">2</span></td><td>14′ × 14′ insulated overhead door</td><td>Wind rated for 115 mph, R-12 or better, centered on the east gable</td></tr>
+<tr><td class="mk-cell"><span class="nums">3</span></td><td>3070 insulated walk door</td><td>South sidewall, near the east end</td></tr>
+<tr><td class="mk-cell"><span class="nums">4</span></td><td>Stair landing, 4′ × 4′, at the southwest corner</td><td>Between the first and second flights</td></tr>
+<tr><td class="mk-cell"><span class="nums">5</span></td><td>Loft floor opening, about 4′ × 8′, at the west wall</td><td>Where the second flight enters the loft: tell the truss plant</td></tr>
+<tr><td class="mk-cell"><span class="nums">6</span></td><td>Wood stove pad (location to be chosen)</td><td>Non-combustible base; Class A chimney through the wall or the roof</td></tr>
+<tr><td class="mk-cell"><span class="nums">7</span></td><td>200 A electrical sub-panel</td><td>East wall inside, south of the main door</td></tr>
+<tr><td class="mk-cell"><span class="nums">8</span></td><td>Mini-split condenser pad</td><td>Outside the west or the south wall (the owner's pick)</td></tr>
+<tr><td class="mk-cell"><span class="nums">9</span></td><td>5′ × 6′ loft double doors</td><td>East gable, centered above the main door at loft level</td></tr>
+<tr><td class="mk-cell"><span class="nums">10</span></td><td>14′ × 10′ landing deck at loft level</td><td>Free-standing on 4 PT posts to pier footings</td></tr>
+<tr><td class="mk-cell"><span class="nums">11</span></td><td>Cantilevered hoist beam (W6 I-beam)</td><td>Projects about 3 ft east of the loft doors, about 9 ft inside</td></tr>
+<tr><td class="mk-cell"><span class="nums">12</span></td><td>Concrete apron (camper approach)</td><td>14 ft wide, 10–20 ft east of the main door</td></tr>
+<tr><td class="mk-cell"><span class="nums">13</span></td><td>200 A sub-feed conduit</td><td>Underground, from the south (the pump house is about 29 ft away); the source is to be confirmed</td></tr>
+<tr><td class="mk-cell"><span class="nums">14</span></td><td>Snow guards on the lower slope</td><td>Over the walk door, on the south slope</td></tr>
+<tr><td class="mk-cell"><span class="nums">15</span></td><td>Windows: <span data-m="windows">7</span> in all</td><td><span data-m="windowsNorth">3</span> in the north wall and <span data-m="windowsSouth">3</span> in the south wall, <span data-m="windowSize">4′ × 3′</span> sliders with the sill <span data-m="windowSill">5′</span> above the floor; one <span data-m="loftWindowSize">3′ × 4′</span> single-hung in the west gable at the loft</td></tr>
+</tbody>
+</table>
+
+<h2 class="page-break" id="floor-plan">Floor Plan (Main Level)</h2>
+<figure class="plot">
+  <div data-fig="floorPlan"></div>
+  <figcaption>Floor plan, main level. Posts are filled squares, drawn larger than they are. The windows (marker 15) sit in the middle of their bays: three in the north wall and three in the south wall. The dashed outline over the apron is the deck above. The stair's second flight climbs north along the west wall to the dashed opening in the loft floor. The east wall dimensions are the 9′ + 14′ door + 9′ that add up to the <span data-m="width">32</span>′ width.</figcaption>
+</figure>
+
+<h2 class="page-break" id="loft-plan">Loft Plan</h2>
+<figure class="plot">
+  <div data-fig="loftPlan"></div>
+  <figcaption>Loft plan. The stair opening is at the west wall, with the loft window centered in the west wall beside it; the loft double doors and the 14′ × 10′ landing deck are at the east end, and the hoist beam reaches about 3 ft past the doors. Headroom falls from the pitch-break line toward each sidewall: about <span data-m="loft7Gross">950</span> sq ft of the loft has 7 ft or more of headroom.</figcaption>
+</figure>
+
+<h2 class="page-break" id="east-elevation">East Elevation (Front)</h2>
+<figure class="plot">
+  <div data-fig="eastElevation"></div>
+  <figcaption>East (front) elevation. The gambrel gable wall with the 14′ × 14′ overhead door, the loft double doors above it, the 14′ × 10′ deck on free-standing posts, and the hoist beam seen end-on. The deck posts stand on the door-jamb lines.</figcaption>
+</figure>
+
+<h2 class="page-break" id="west-elevation">West Elevation (Back)</h2>
+<figure class="plot">
+  <div data-fig="westElevation"></div>
+  <figcaption>West (back) elevation. A gambrel gable with one window at the loft (marker 15), centered, and no openings on the main floor. The mini-split condenser is shown at the base; the owner may put it on the south wall instead.</figcaption>
+</figure>
+
+<h2 class="page-break" id="north-elevation">North Elevation (Left Sidewall)</h2>
+<figure class="plot">
+  <div data-fig="northElevation"></div>
+  <figcaption>North sidewall, seen from the north, so east is on the left. Three windows (marker 15), in bays 2, 4, and 6 counted from the west end; the rest is plain steel. The dashed lines are the post locations behind the siding. The deck and the hoist beam show at the east end.</figcaption>
+</figure>
+
+<h2 class="page-break" id="south-elevation">South Elevation (Right Sidewall)</h2>
+<figure class="plot">
+  <div data-fig="southElevation"></div>
+  <figcaption>South sidewall, seen from the south, so west is on the left. Three windows (marker 15) in bays 3, 4, and 5, with none at the west end, where the stair is. The 3070 walk door is near the east end, well clear of the first stair flight (dashed, inside) and of the last window. The snow guards sit on the lower slope over the door.</figcaption>
+</figure>
+
+<div class="footer">Mountain Prairie Acres · Workshop pole barn plans and elevations · updated October 23, 2026 · drawn from <code>docs/workshop_model.js</code>.</div>
+</section>
+
+<script src="workshop_model.js"></script>
+<script src="workshop_draw.js"></script>
+<script src="workshop_elevations.js"></script>
+<script src="workshop_page.js"></script>
+</body>
+</html>

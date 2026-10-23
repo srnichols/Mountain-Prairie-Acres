@@ -175,7 +175,7 @@ class SiteGridTest(unittest.TestCase):
         self.assertTrue(inside("workshop", "workshop_pad"))
         self.assertTrue(inside("rv", "rv_pad"))
         self.assertEqual(self.grid.size("house"), (66, 40))
-        self.assertEqual(self.grid.size("workshop"), (46, 32))
+        self.assertEqual(self.grid.size("workshop"), (48, 32))
         self.assertEqual(self.grid.size("container_solar"), (8, 40))
         self.assertEqual(self.grid.size("container_storage"), (40, 8))
 

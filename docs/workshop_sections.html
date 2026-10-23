@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workshop Pole Barn: Sections and Construction Details — Mountain Prairie Acres</title>
+<link rel="stylesheet" href="workshop.css">
+<style>
+  @page {
+    size: 11in 8.5in;
+    margin: 10mm 10mm 12mm;
+    @bottom-left { content: "Mountain Prairie Acres - Workshop pole barn: sections and details"; font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+  }
+  @media print {
+    .dwg { max-height: 4.9in; } figure.plot > div { text-align: center; } .dwg { width: auto; margin: 0 auto; }
+    .pair { display: grid; grid-template-columns: 6.5in minmax(0, 1fr); gap: 5mm; align-items: start; }
+    .pair figure.plot { margin: 0; }
+    .pair .dwg { max-height: 6.1in; }
+    .pair table.detail { margin: 2mm 0 0; }
+  }
+  .letter-key td:first-child { width: 34px; text-align: center; }
+</style>
+</head>
+<body>
+<script src="site_nav.js"></script>
+<nav class="home-link" aria-label="Back to the home page"><a href="index.html">← Mountain Prairie Acres — Orchard and Ranch Projects</a></nav>
+
+<div class="notice print-help" role="note"><strong>Print setup:</strong> Letter (8.5 × 11 in), landscape, 100% scale. Turn on background graphics and turn off the browser's headers and footers.</div>
+<noscript><div class="notice error">JavaScript is required to draw the sections and details.</div></noscript>
+<div class="notice error" id="render-error" hidden></div>
+
+<section aria-labelledby="page-title">
+<h1 id="page-title">Workshop Pole Barn: Sections and Construction Details</h1>
+<p class="subtitle">Cross-sections through the building, the two framing plans, and seven layer-by-layer details · <span data-m="footprint">32 × 48 ft</span> · <span data-m="eave">16</span> ft eave · gambrel</p>
+<p class="pager screen-only"><strong>The package:</strong> <a href="workshop_pole_barn.html">Overview</a> · <a href="workshop_specs.html">Specs</a> · <a href="workshop_plans.html">Plans and elevations</a> · <strong>Sections and details</strong> · <a href="workshop_materials.html">Materials and cost</a></p>
+<p class="source-note">These are design-intent drawings for the engineer, the truss plant, and the builder. Truss members and connections are placeholders until the truss designer and the engineer size them. Layers in the details are exaggerated where they say so. The markers match the tables under each drawing.</p>
+
+<h2>What Is in This Section</h2>
+<ol class="points">
+  <li><a href="#section-a"><strong>Section A, across the width</strong></a>, looking east: the gambrel truss, the loft floor, the camper in the door, and the pad's fill under the slab.</li>
+  <li><a href="#section-b"><strong>Section B, along the length</strong></a>, looking north: the loft floor, the stairs, the main door, the hoist beam, and the deck.</li>
+  <li><a href="#plan-f1"><strong>Plan F1, foundation and base framing</strong></a>: piers, posts, the splash board, and the slab joints, on the pad.</li>
+  <li><a href="#plan-f2"><strong>Plan F2, loft floor framing</strong></a>: the <span data-m="trusses">25</span> truss bottom chords at 2′ OC, the stair opening, the loft door header, the hoist beam, and the deck.</li>
+  <li><a href="#detail-1"><strong>Detail 1</strong></a> wall assembly · <a href="#detail-2"><strong>2</strong></a> roof assembly · <a href="#detail-3"><strong>3</strong></a> pier and post base · <a href="#detail-4"><strong>4</strong></a> rainscreen base · <a href="#detail-5"><strong>5</strong></a> eave vent-out · <a href="#detail-6"><strong>6</strong></a> loft door, hoist beam, and deck · <a href="#detail-7"><strong>7</strong></a> truss bearing.</li>
+</ol>
+
+<h2 class="page-break" id="section-a">Section A: Across the Width (looking east)</h2>
+<figure class="plot">
+  <div data-fig="sectionA"></div>
+  <figcaption>Section A cuts across the <span data-m="width">32</span> ft width and looks east at the gable wall. The 14′ × 14′ door and the loft doors on the east gable are drawn dashed behind the cut. The camper has <span data-m="rvClearDoor">2′-2″</span> under the door head and <span data-m="rvClearLoft">3′-4″</span> under the loft with an 11′-10″ roof; measure yours. The truss is a schematic envelope.</figcaption>
+</figure>
+<table class="detail legend letter-key"><thead><tr><th>Marker</th><th>What it shows</th></tr></thead><tbody>
+<tr><td class="mk-cell"><span class="nums">1</span></td><td>3-ply 2×8 laminated post on its pier, with the wall layers outside it (steel, rainscreen, sheathing) and the splash board at the base</td></tr>
+<tr><td class="mk-cell"><span class="nums">5</span></td><td>¾″ T&amp;G plywood loft floor on the truss bottom chords, <span data-m="eave">16</span>′ above the floor</td></tr>
+<tr><td class="mk-cell"><span class="nums">a</span></td><td>The floor stack: 5″ slab on 4″ rigid foam and a 10 mil vapor barrier on 4″ compacted gravel, about 1′-1″ above the pad surface</td></tr>
+<tr><td class="mk-cell"><span class="nums">b</span></td><td>Imported fill, the level pad: almost 2′ thick at the north edge and 6″ to 1′ at the south edge. The shoulders are drawn at 2:1 and are not surveyed</td></tr>
+<tr><td class="mk-cell"><span class="nums">c</span></td><td>Native soil. The pier pads bear here, about 3′ down into it at the north row and 4′ to 4½′ at the south row</td></tr>
+</tbody></table>
+
+<h2 class="page-break" id="section-b">Section B: Along the Length (looking north)</h2>
+<figure class="plot">
+  <div data-fig="sectionB"></div>
+  <figcaption>Section B cuts along the <span data-m="length">48</span> ft length at the center line and looks north. Sidewall posts are at <span data-m="bays">8-8-8-8-8-8</span> ft; the trusses (2′ OC) are seen edge-on; the loft floor and the ridge are cut. The three windows in the north wall show between the posts. The east gable shows the main door, the loft doors, the hoist beam, and the deck. The stair is south of the cut, so it is drawn dashed.</figcaption>
+</figure>
+<table class="detail legend letter-key"><thead><tr><th>Marker</th><th>What it shows</th></tr></thead><tbody>
+<tr><td class="mk-cell"><span class="nums">1</span></td><td>Sidewall post (the north wall seen from inside, with its 2×6 girts)</td></tr>
+<tr><td class="mk-cell"><span class="nums">2</span></td><td>The 14′ × 14′ main door opening in the east gable, with its LVL header above</td></tr>
+<tr><td class="mk-cell"><span class="nums">9</span></td><td>The 5′ × 6′ loft doors at the loft floor, with their header</td></tr>
+<tr><td class="mk-cell"><span class="nums">10</span></td><td>The 14′ × 10′ landing deck, 10′ deep, on posts to grade</td></tr>
+<tr><td class="mk-cell"><span class="nums">11</span></td><td>The W6 hoist beam through the east wall, about 3 ft out and 9 ft in, with the chain fall at its tip</td></tr>
+<tr><td class="mk-cell"><span class="nums">15</span></td><td>The north wall's windows, <span data-m="windowSize">4′ × 3′</span>, sill <span data-m="windowSill">5′</span> above the floor, centered between the posts in bays 2, 4, and 6</td></tr>
+</tbody></table>
+
+<h2 class="page-break" id="plan-f1">Plan F1: Foundation and Base Framing</h2>
+<figure class="plot">
+  <div data-fig="foundationPlan"></div>
+  <figcaption>Plan F1, at grade. <strong><span data-m="piers">19</span> building piers</strong> (<span data-m="sidePosts">14</span> on the sidewalls at <span data-m="bays">8-8-8-8-8-8</span>, 3 on the west gable, 2 door-jamb piers) plus 4 deck piers. All are 30″ Ø × 12″ pads, bottom 60″ below the pad surface.</figcaption>
+</figure>
+
+<h2 class="page-break" id="plan-f2">Plan F2: Loft Floor Framing</h2>
+<figure class="plot">
+  <div data-fig="loftFramingPlan"></div>
+  <figcaption>Plan F2, at +<span data-m="eave">16</span>′-0″. <strong><span data-m="trusses">25</span> attic-truss bottom chords at 2′ OC act as the loft joists</strong>, spanning the full <span data-m="width">32</span> ft width with no bearing between the walls. Floor build-up: ¾″ T&amp;G plywood, glued and screwed, its long edge across the chords; foam or insulation between the chords is optional because the loft is conditioned on both sides.</figcaption>
+</figure>
+
+<h2 class="page-break" id="detail-1">Detail 1: Wall Assembly</h2>
+<div class="pair">
+<figure class="plot">
+  <div data-fig="detail1"></div>
+  <figcaption>Detail 1, a horizontal slice through the wall at a girt, layers exaggerated. The ¾″ furring cavity is the most important detail in the wall: it lets the wall dry behind the steel and keeps moisture from reaching the sheathing.</figcaption>
+</figure>
+<table class="detail legend letter-key"><thead><tr><th>Marker</th><th>Layer</th></tr></thead><tbody>
+<tr><td class="mk-cell"><span class="nums">A</span></td><td>26 ga steel siding, vertical panels, barn red, fastened to the furring with #10 × 1½″ hex screws with EPDM washers</td></tr>
+<tr><td class="mk-cell"><span class="nums">B</span></td><td>1×4 PT furring at 24″ OC, vertical: makes a ¾″ ventilated rainscreen cavity</td></tr>
+<tr><td class="mk-cell"><span class="nums">C</span></td><td>Tyvek CommercialWrap, taped seams, shingle-lapped, fastened with cap nails</td></tr>
+<tr><td class="mk-cell"><span class="nums">D</span></td><td>½″ OSB sheathing, APA Exposure 1, 8d ring-shank nails at 6″ on the edges and 12″ in the field (4″ at corners and openings)</td></tr>
+<tr><td class="mk-cell"><span class="nums">E</span></td><td>3-ply 2×8 laminated PT post at 8′ OC, on a wet-set bracket (Detail 3)</td></tr>
+<tr><td class="mk-cell"><span class="nums">F</span></td><td>2×6 SPF #2 girt, bookshelf orientation (5½″ deep), 24″ OC, hung or notched to the posts</td></tr>
+</tbody></table>
+</div>
+
+<h2 class="page-break" id="detail-2">Detail 2: Roof Assembly</h2>
+<div class="pair">
+<figure class="plot">
+  <div data-fig="detail2"></div>
+  <figcaption>Detail 2, the stack-up on the lower (steep) gambrel slope, shown flat with the layers exaggerated. The real stack is under 4″ thick, plus the truss chord. The snow guards are mounted separately over the walk door.</figcaption>
+</figure>
+<table class="detail legend letter-key"><thead><tr><th>Marker</th><th>Layer</th></tr></thead><tbody>
+<tr><td class="mk-cell"><span class="nums">A</span></td><td>26 ga steel roof panel, factory Dripstop on the underside, beige, cut to the full slope length; #10 × 1½″ hex screws with EPDM washers in the manufacturer's high-snow pattern</td></tr>
+<tr><td class="mk-cell"><span class="nums">B</span></td><td>Synthetic underlayment (Titanium UDL30 or equal) over the entire roof</td></tr>
+<tr><td class="mk-cell"><span class="nums">C</span></td><td>Ice and water shield: FULL on the lower (steep) slope; at the pitch break and around penetrations on the upper slope</td></tr>
+<tr><td class="mk-cell"><span class="nums">D</span></td><td>⅝″ OSB roof deck with H-clips between the purlins</td></tr>
+<tr><td class="mk-cell"><span class="nums">E</span></td><td>2×6 SPF purlins on top of the truss chords, 16–24″ OC per the truss design</td></tr>
+<tr><td class="mk-cell"><span class="nums">F</span></td><td>Pre-engineered gambrel attic truss, <span data-m="width">32</span>′ span, 2′ OC, PE stamped for <span data-m="snow">120</span> psf ground snow</td></tr>
+</tbody></table>
+</div>
+
+<h2 class="page-break" id="detail-3">Detail 3: Foundation, Pier, and Post Base</h2>
+<div class="pair">
+<figure class="plot">
+  <div data-fig="detail3"></div>
+  <figcaption>Detail 3, a vertical section through a sidewall post, drawn at the north edge of the pad where the fill is thickest. The wet-set bracket lifts the post above the concrete, so wood never touches the ground. The pier passes through the imported fill and bears on native soil. The slab stands on its own, with an isolation strip against the post.</figcaption>
+</figure>
+<table class="detail legend letter-key"><thead><tr><th>Marker</th><th>What it is</th></tr></thead><tbody>
+<tr><td class="mk-cell"><span class="nums">A</span></td><td>3-ply 2×8 laminated post (4½″ × 7¼″)</td></tr>
+<tr><td class="mk-cell"><span class="nums">B</span></td><td>Perma-Column or Sturdi-Wall wet-set bracket, set in the wet pier concrete</td></tr>
+<tr><td class="mk-cell"><span class="nums">C</span></td><td>4,000 psi concrete pier: an 18″ tube on a 30″ Ø × 12″ pad, bottom 60″ below the pad surface (the county's 30″ below the frost line)</td></tr>
+<tr><td class="mk-cell"><span class="nums">D</span></td><td>2×10 PT splash board on the outside of the post</td></tr>
+<tr><td class="mk-cell"><span class="nums">E</span></td><td>5″ slab, #4 rebar at 16″ OC each way</td></tr>
+<tr><td class="mk-cell"><span class="nums">F</span></td><td>4″ rigid foam, 10 mil vapor barrier, and 4″ compacted gravel, on the compacted fill</td></tr>
+<tr><td class="mk-cell"><span class="nums">G</span></td><td>Imported fill, the level pad: up to about 2′ at the north edge, 6″ to 1′ at the south edge</td></tr>
+<tr><td class="mk-cell"><span class="nums">H</span></td><td>Native soil: the pier pad bears here, or on fill the engineer accepts</td></tr>
+</tbody></table>
+</div>
+
+<h2 class="page-break" id="detail-4">Detail 4: Rainscreen Base</h2>
+<div class="pair">
+<figure class="plot">
+  <div data-fig="detail4"></div>
+  <figcaption>Detail 4, the base of the wall where the rainscreen takes in air. The wrap shingle-laps over the top of the splash board. The furring stops short of the splash board, leaving a vent slot covered by the drip flashing and an insect screen. Air enters here, rises through the cavity, and leaves at the eave (Detail 5).</figcaption>
+</figure>
+<table class="detail legend letter-key"><thead><tr><th>Marker</th><th>What it is</th></tr></thead><tbody>
+<tr><td class="mk-cell"><span class="nums">A</span></td><td>26 ga steel panel, bottom edge about 1″ above the splash board's top</td></tr>
+<tr><td class="mk-cell"><span class="nums">B</span></td><td>1×4 PT furring, stopping 2″ above the splash board</td></tr>
+<tr><td class="mk-cell"><span class="nums">C</span></td><td>Tyvek WRB, lapping over the top of the splash board, shingle style</td></tr>
+<tr><td class="mk-cell"><span class="nums">D</span></td><td>½″ OSB sheathing</td></tr>
+<tr><td class="mk-cell"><span class="nums">E</span></td><td>Drip flashing and insect screen: the rainscreen's air inlet</td></tr>
+<tr><td class="mk-cell"><span class="nums">F</span></td><td>2×10 PT splash board, proud of the steel, keeping the siding off the ground and the snow</td></tr>
+<tr><td class="mk-cell"><span class="nums">G</span></td><td>5″ concrete slab on foam and gravel</td></tr>
+</tbody></table>
+</div>
+
+<h2 class="page-break" id="detail-5">Detail 5: Eave (the Rainscreen Vents Out)</h2>
+<div class="pair">
+<figure class="plot">
+  <div data-fig="detail5"></div>
+  <figcaption>Detail 5, a vertical section where the rainscreen vents out at the eave. Air that entered at the splash board (Detail 4) rises through the furring cavity and leaves at the vented soffit closure. Without that top vent the cavity becomes a dead-air pocket that traps moisture.</figcaption>
+</figure>
+<table class="detail legend letter-key"><thead><tr><th>Marker</th><th>What it is</th></tr></thead><tbody>
+<tr><td class="mk-cell"><span class="nums">A</span></td><td>26 ga steel siding, up to the eave trim</td></tr>
+<tr><td class="mk-cell"><span class="nums">B</span></td><td>1×4 PT furring, continuous to the soffit</td></tr>
+<tr><td class="mk-cell"><span class="nums">C</span></td><td>Vented soffit closure: the rainscreen's air outlet</td></tr>
+<tr><td class="mk-cell"><span class="nums">D</span></td><td>Eave trim: laps under the roof and over the wall, and wraps onto the sub-fascia</td></tr>
+<tr><td class="mk-cell"><span class="nums">E</span></td><td>Roof assembly on the truss top chord: steel, underlayment, ice and water shield, OSB, and purlin</td></tr>
+<tr><td class="mk-cell"><span class="nums">F</span></td><td>Truss bottom chord and ¾″ T&amp;G loft floor</td></tr>
+</tbody></table>
+</div>
+
+<h2 class="page-break" id="detail-6">Detail 6: Loft Door, Hoist Beam, and Landing Deck</h2>
+<div class="pair">
+<figure class="plot">
+  <div data-fig="detail6"></div>
+  <figcaption>Detail 6, a vertical section through the east gable at the loft. The loft doors have an LVL header; the cantilevered W6 hoist beam passes through the wall and out over the deck, anchored to the truss top chord inside with a weather boot at the penetration; the free-standing 14′ × 10′ deck stands on 6×6 posts to pier footings, braced with diagonal knees.</figcaption>
+</figure>
+<table class="detail legend letter-key"><thead><tr><th>Marker</th><th>What it is</th></tr></thead><tbody>
+<tr><td class="mk-cell"><span class="nums">A</span></td><td>5′ × 6′ insulated double doors at the loft floor, locking from inside, opening clear for the hoist</td></tr>
+<tr><td class="mk-cell"><span class="nums">B</span></td><td>(2) 2×10 LVL header above the loft doors (engineer-sized)</td></tr>
+<tr><td class="mk-cell"><span class="nums">C</span></td><td>W6×9 or W6×12 steel hoist beam, about 12 ft: about 9 ft inside and 3 ft out, 9′ above the loft floor, rated for 500–1,000 lb</td></tr>
+<tr><td class="mk-cell"><span class="nums">D</span></td><td>EPDM weather boot and flashing where the beam passes through the wall: a CRITICAL detail</td></tr>
+<tr><td class="mk-cell"><span class="nums">E</span></td><td>Anchor plate and bolt-through hardware to the truss top chord, with blocking between trusses to spread the load. The truss manufacturer reviews it</td></tr>
+<tr><td class="mk-cell"><span class="nums">F</span></td><td>Deck framing: doubled 2×10 PT beams, 2×10 PT joists at 12″ OC, decking on top</td></tr>
+<tr><td class="mk-cell"><span class="nums">G</span></td><td>6×6 PT posts on 18″ Ø piers, 60″ below grade, in post bases</td></tr>
+<tr><td class="mk-cell"><span class="nums">H</span></td><td>42″ railing (fall protection above 30″)</td></tr>
+<tr><td class="mk-cell"><span class="nums">I</span></td><td>Diagonal knee braces: a 16 ft tall deck will sway without them</td></tr>
+</tbody></table>
+</div>
+
+<h2 class="page-break" id="detail-7">Detail 7: Truss Bearing at the Top of a Post</h2>
+<div class="pair">
+<figure class="plot">
+  <div data-fig="detail7"></div>
+  <figcaption>Detail 7, a transverse section through one sidewall post at the eave. The gambrel attic truss's bottom chord <strong>is</strong> the loft joist: it spans the full <span data-m="width">32</span> ft with no bearing between the walls and lands on a <strong>(3) 1¾″ × 9¼″ LVL truss carrier</strong> side-bolted to the inside face of every post. The member sizes are placeholders.</figcaption>
+</figure>
+<table class="detail legend letter-key"><thead><tr><th>Marker</th><th>What it is</th></tr></thead><tbody>
+<tr><td class="mk-cell"><span class="nums">1</span></td><td>3-ply 2×8 laminated post (4½″ × 7¼″) on a wet-set bracket below</td></tr>
+<tr><td class="mk-cell"><span class="nums">2</span></td><td>(3) 1¾″ × 9¼″ LVL truss carrier, side-bolted to the post with (3) ½″ galvanized through-bolts per post</td></tr>
+<tr><td class="mk-cell"><span class="nums">3</span></td><td>Truss bottom chord (2×10, a placeholder size), bearing on the carrier and acting as the loft joist across the span</td></tr>
+<tr><td class="mk-cell"><span class="nums">4</span></td><td>¾″ T&amp;G plywood loft floor, long edge across the chords</td></tr>
+<tr><td class="mk-cell"><span class="nums">5</span></td><td>Truss top chord (2×8, a placeholder size), the lower gambrel slope rising to the knuckle</td></tr>
+<tr><td class="mk-cell"><span class="nums">6</span></td><td>H2.5A hurricane ties, 2 per chord bearing, one on each side</td></tr>
+<tr><td class="mk-cell"><span class="nums">7</span></td><td>2×6 sub-fascia closing the end of the truss tail (about 12″ of overhang) over the vented soffit</td></tr>
+<tr><td class="mk-cell"><span class="nums">8</span></td><td>Wall steel stops at the eave; the metal trim wraps onto the sub-fascia</td></tr>
+<tr><td class="mk-cell"><span class="nums">9</span></td><td>Wall assembly outside the post: steel, rainscreen, wrap, and OSB (Detail 1)</td></tr>
+</tbody></table>
+</div>
+
+<div class="footer">Mountain Prairie Acres · Workshop pole barn sections and details · updated October 23, 2026 · drawn from <code>docs/workshop_model.js</code>.</div>
+</section>
+
+<script src="workshop_model.js"></script>
+<script src="workshop_draw.js"></script>
+<script src="workshop_elevations.js"></script>
+<script src="workshop_sections.js"></script>
+<script src="workshop_details.js"></script>
+<script src="workshop_page.js"></script>
+</body>
+</html>
