@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pit Greenhouse: Hybrid 20 × 36 ft — Mountain Prairie Acres</title>
+<link rel="stylesheet" href="greenhouse.css">
+<style>
+  @page {
+    @bottom-left { content: "Mountain Prairie Acres - Pit greenhouse"; font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+  }
+  .key-list { font-size: 12px; padding-left: 0; list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 24px; margin: 6px 0 12px; }
+  .key-list li { margin: 3px 0; padding-left: 26px; position: relative; }
+  .key-list li b { position: absolute; left: 0; top: 0; width: 20px; height: 20px; border: 1.6px solid #8A3B12; border-radius: 50%; color: #8A3B12; font-size: 11.5px; line-height: 17px; text-align: center; }
+  @media (max-width: 860px) { .key-list { grid-template-columns: 1fr; } }
+  @media print { .key-list { font-size: 8pt; } #pit-plan .diagram { max-height: 5.2in; } .key-list li { padding-left: 6mm; } .key-list li b { width: 4.6mm; height: 4.6mm; font-size: 7pt; line-height: 4mm; } }
+</style>
+</head>
+<body>
+<script src="site_nav.js"></script>
+<nav class="home-link" aria-label="Back to the home page"><a href="index.html">← Mountain Prairie Acres — Orchard and Ranch Projects</a></nav>
+
+<div class="notice print-help" role="note"><strong>Print setup:</strong> Letter (8.5 × 11 in), portrait, 100% scale. Turn on background graphics and turn off the browser's headers and footers.</div>
+<noscript><div class="notice error">JavaScript is required to draw the figures and fill in the tables.</div></noscript>
+<div class="notice error" id="render-error" hidden></div>
+
+<section aria-labelledby="page-title">
+<h1 id="page-title">Pit Greenhouse: Hybrid 20 × 36 ft</h1>
+<p class="subtitle">An unheated, earth-sheltered greenhouse sunk 6 ft into the ground south of the gothic tunnel and centered on it, in cell B14 · Oehler's post, shoring, and polyethylene method, scaled up · planned for 2028 or 2029 · a draft for review</p>
+<p class="source-note">This page redraws the owner's two "hybrid 20 × 36" drawings (a floor plan and a side profile, 2026), which stretch the "Large Greenhouse" in Mike Oehler's <em>The Earth-Sheltered Solar Greenhouse Book</em> (second edition, Mole Publishing Company, pages 204 and 205) from a 16 × 16 ft room to 20 × 36 ft. The book's pages are not reproduced here; the drawings are new. Where the redraw differs from the owner's drawings, <a href="#changes">the change table</a> says so. For where it sits on the lot, how the water runs, and what the berm needs, see the <a href="greenhouse_site_plan.html">site plan</a>; for the tunnel it is centered on, the <a href="gothic_greenhouse_plan.html">gothic tunnel page</a>.</p>
+
+<h2>The Design in Brief</h2>
+<ul class="points">
+  <li><strong>Room:</strong> <span id="d-size"></span> inside the posts. From the north wall: a 2 ft strip for water drums, two growing beds each 15 × 12 ft, a 2 ft walk, then a 4 ft cold zone along the south wall. Walks run between the beds (2 ft) and along the east and west walls (2 ft).</li>
+  <li><strong>Depths below the original grade:</strong> beds <span id="d-bed"></span> ft (the soil is left in place), walks <span id="d-walk"></span> ft, the cold zone's floor <span id="d-sink"></span> ft, post bottoms <span id="d-post"></span> ft. The owner chose 6 ft for the cold zone in front and 4 ft for the beds; the cold zone's floor is <span id="d-cz"></span>, and a bed stands <span id="d-step"></span> ft above the walk beside it.</li>
+  <li><strong>Posts:</strong> 4 ft apart both ways, <span id="d-posts"></span>, charred and wrapped in plastic where they stand in the ground, with shoring boards and polyethylene holding back the cut earth.</li>
+  <li><strong>Roof:</strong> one slope facing south, rigid poly glazing panels (the owner's drawing says "hard-ridge poly panels"), rising 10 ft over a 19.5 ft run (<span id="d-angle"></span>), from <span id="d-eave"></span> ft above grade at the south eave to <span id="d-north"></span> ft at the north wall.</li>
+  <li><strong>North:</strong> an earth berm up to the roof line, so only the 4 ft vent posts stand clear of the ground (<span id="d-vent"></span> ft above grade). A <span id="d-wall"></span> ft retaining wall holds the berm's foot, so its slopes stop at the wall instead of tapering all the way to the ground: the berm is <span id="d-run"></span> ft deep north to south instead of <span id="d-run0"></span>, and takes about <span id="d-saved"></span> cu yd less soil.</li>
+  <li><strong>Unheated:</strong> the earth around it, the water drums, and the low cold zone do the work; no heater is planned.</li>
+</ul>
+</section>
+
+<section aria-labelledby="plan-heading">
+<h2 id="plan-heading">Floor Plan</h2>
+<figure class="plot">
+  <figcaption>Figure 1. Floor plan, north up (inside the posts; the berm lies beyond the north wall)</figcaption>
+  <div id="pit-plan"></div>
+  <p class="caption-note">Dark posts stand on the walls (<span id="f-wall-posts"></span>); light posts stand in the room (<span id="f-room-posts"></span>). The blue-gray strip along the north wall holds the water drums, one standing between each pair of posts. Beds are green, walks tan, and the cold zone blue. The red stair runs west along the south wall inside the cold zone. Depths are below the original grade.</p>
+</figure>
+</section>
+
+<section class="page-break" aria-labelledby="section-heading">
+<h2 id="section-heading">North–South Section</h2>
+<figure class="plot">
+  <figcaption>Figure 2. Section through the middle, looking east (north on the left), at one scale for distance and height</figcaption>
+  <div id="pit-section"></div>
+  <p class="caption-note">The ground is drawn flat, as on the owner's drawing; on the lot it climbs about 2% to the south (see the site plan). The retaining wall is drawn 1 ft thick, as a block or poured wall might be; its material is not chosen. Orange arrows are noon sun on Dec 21 and Mar 21, with the share of the direct beam the roof catches.</p>
+</figure>
+<ol class="key-list" aria-label="What the numbers on the section mean">
+  <li><b>1</b><span><strong>Earth berm</strong> up to the roof, a 2 ft flat top and 2:1 slopes that stop at the top of a <span id="k-wall"></span> ft <strong>retaining wall</strong> at the berm's foot, instead of tapering all the way to the ground. On this lot the uphill sides are south and east, so the diversion mound goes there.</span></li>
+  <li><b>2</b><span><strong>Posts</strong> every 4 ft, charred and bagged below grade; bottoms <span id="k-post"></span> ft down, <span id="k-below"></span> ft below the floor and <span id="k-rock-gap"></span> ft above the rock the owner reports at about <span id="k-rock"></span> ft.</span></li>
+  <li><b>3</b><span><strong>Shoring and polyethylene:</strong> boards held by the posts, with poly between the boards and the cut earth.</span></li>
+  <li><b>4</b><span><strong>Roof:</strong> rigid poly glazing panels on rafters between the posts, 27°, about 21.9 ft of slope.</span></li>
+  <li><b>5</b><span><strong>Vent:</strong> the north posts stand 4 ft above the roof, and the vent flap hooks open on them.</span></li>
+  <li><b>6</b><span><strong>Drum strip:</strong> standing 55 gal drums at the walk level, <span id="k-walk6"></span> ft below grade, hold warmth.</span></li>
+  <li><b>7</b><span><strong>Growing bed:</strong> native soil left <span id="k-bed"></span> ft below grade, <span id="k-bed-up"></span> ft above the walk.</span></li>
+  <li><b>8</b><span><strong>Walks:</strong> <span id="k-walk"></span> ft below grade; the cold zone's floor is <span id="k-cz"></span>.</span></li>
+  <li><b>9</b><span><strong>Cold zone:</strong> 4 ft wide, floor <span id="k-sink"></span> ft below grade, <span id="k-sink-bed"></span> ft below the bed tops; the coldest air settles here, below the beds.</span></li>
+  <li><b>10</b><span><strong>Sump:</strong> a gravel dry well at the cold zone's floor, in the sandy loam, after a perc test.</span></li>
+</ol>
+
+<h3>Depths and heights</h3>
+<table class="detail" id="depths">
+  <thead><tr><th>Item</th><th class="num">From original grade</th><th class="num">From the lowest floor</th></tr></thead>
+  <tbody></tbody>
+</table>
+</section>
+
+<section aria-labelledby="posts-heading">
+<h2 id="posts-heading">Posts and Quantities</h2>
+<table class="detail" id="posts">
+  <caption id="posts-caption"></caption>
+  <thead><tr><th>Row</th><th class="num">Feet from the north wall</th><th>Stands at</th><th class="num">Top above grade</th><th class="num">Length</th><th class="num">Row total</th></tr></thead>
+  <tbody></tbody>
+  <tfoot><tr><td colspan="4">All 60 posts</td><td class="num" id="posts-count"></td><td class="num" id="posts-total"></td></tr></tfoot>
+</table>
+<table class="detail" id="quantities">
+  <caption>Quantities taken off the drawing</caption>
+  <thead><tr><th>Item</th><th class="num">Amount</th><th>Basis</th></tr></thead>
+  <tbody></tbody>
+</table>
+</section>
+
+<section aria-labelledby="roof-heading">
+<h2 id="roof-heading">The Roof Slope and Winter Sun</h2>
+<p>The 27° roof is a compromise between the light it catches in winter and how tall the earthwork must be. The table shows the share of the direct sunbeam a south-facing surface catches at solar noon (the climate page's noon sun heights for the lot), before glazing losses; a steeper face catches more in winter and less in summer.</p>
+<table class="detail" id="tilt">
+  <thead><tr><th>Roof or wall tilt</th><th class="num">Dec 21 noon</th><th class="num">Mar 21 noon</th><th class="num">Jun 21 noon</th><th class="num">North end above grade over the same 19.5 ft run</th></tr></thead>
+  <tbody></tbody>
+</table>
+<p>At 27° the roof catches about <span id="t-dec"></span> of the December beam and <span id="t-mar"></span> at the equinox. A 45° roof would catch <span id="t-dec45"></span> in December but would lift the north end about <span id="t-45"></span> ft above grade, nearly doubling the berm's height and so several times its soil. Keeping 27° and the 10.5 ft berm is a reasonable middle, and the owner's drawings already assume it.</p>
+</section>
+
+<section aria-labelledby="changes-heading">
+<h2 id="changes-heading">What Changed From the Owner's Drawings</h2>
+<table class="detail" id="changes">
+  <thead><tr><th>Item</th><th>The drawings showed</th><th>This page shows</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr><td>Bed width</td><td>about 13.2 ft north to south</td><td>12 ft</td><td>The zones then add up to exactly 20 ft, and 12 ft is the width of the bed in the book's plan.</td></tr>
+    <tr><td>South walk</td><td>about 0.7 ft wide</td><td>2 ft</td><td>0.7 ft is too narrow to walk on; 2 ft matches the other walks.</td></tr>
+    <tr><td>North walk and drums</td><td>drums drawn over a north walk</td><td>one 2 ft drum strip, no north walk</td><td>A 2 ft strip cannot be both a walk and a row of 23 in drums. The beds are reached from the south walk, the center walk, and the end walks.</td></tr>
+    <tr><td>Water drums</td><td>15 in the plan, a stack of 4 in the profile</td><td>9 standing, one in each 4 ft bay between the north posts</td><td>Fifteen drums at 2.4 ft spacing run into posts 4 ft apart. Stacking needs a rack; see the review items.</td></tr>
+    <tr><td>Depths</td><td>beds 3 ft, walks 6 ft, cold sink 8 ft, post bottoms 10 ft</td><td>beds <span id="c-bed"></span> ft, walks <span id="c-walk"></span> ft, cold zone <span id="c-sink"></span> ft, post bottoms <span id="c-post"></span> ft</td><td>The owner's later decision: a 6 ft cold zone and 4 ft beds. Posts end 2 ft below the lowest floor, as in the book.</td></tr>
+    <tr><td>Berm foot</td><td>the berm's slopes ran out to the ground</td><td>a <span id="c-wall"></span> ft retaining wall at the foot; the slopes stop at its top</td><td>The owner's later decision. The berm is <span id="c-run"></span> ft deep north to south instead of <span id="c-run0"></span>, with about <span id="c-saved"></span> cu yd less soil; the wall itself is new material and labor (see the items to settle).</td></tr>
+    <tr><td>Stair</td><td>8 treads for an 8 ft drop</td><td><span id="c-stair"></span>, inside the cold zone along the south wall</td><td>Eight steps over the new <span id="c-drop"></span> ft drop would still be <span id="c-riser8"></span> in each, far steeper than a normal stair; 7¾ in is the usual limit for houses.</td></tr>
+    <tr><td>Post lengths</td><td>about 10 ft 6 in, 16 ft, and 22 to 24 ft</td><td id="c-lengths"></td><td>Worked out from the roof line, with every bottom <span id="c-post2"></span> ft below grade.</td></tr>
+    <tr><td>Section direction</td><td>south on the left, labeled "looking east"</td><td>north on the left</td><td>Looking east puts north on the left, as on the site plan.</td></tr>
+    <tr><td>Kept as drawn</td><td colspan="3">36 × 20 ft, 4 ft post spacing, a 4 ft cold zone along the south wall (the drawings call it a sink), 27° roof (10 ft over 19.5 ft), 4 ft vent posts, the 10.5 ft berm crest, and an optional east door at walk level.</td></tr>
+  </tbody>
+</table>
+</section>
+
+<section aria-labelledby="review-heading">
+<h2 id="review-heading">Items to Settle</h2>
+<div class="cards">
+  <div class="card pit"><h3>The entry, and a second way out</h3><ul>
+    <li>The south wall stands only 0.5 ft above grade, so a door cannot go in it. The stair needs a hatch or a raised frame at the top, with a curb and a drain, because that spot is uphill.</li>
+    <li><strong>Snow slides south off a 27° roof,</strong> straight onto that stair. Either the entry moves to the downhill west end, or the top of the stair gets a pitched cover that throws the snow clear.</li>
+    <li>A room <span id="r-depth"></span> ft deep should have two exits. The east door at walk level is drawn as optional; it should be built, which means a ramp or stair cut outside it.</li>
+  </ul></div>
+  <div class="card pit"><h3>Posts inside the room</h3><ul>
+    <li>The book's 16 × 16 ft plan puts posts only around the edge. At 20 × 36 ft, the owner's 4 ft grid puts <span id="r-room-posts"></span> posts in the beds, walks, and sink.</li>
+    <li>Beams that span north to south from the wall posts, or fewer, stouter interior posts, would free the beds. Roof framing at 4 ft centers has not been checked against snow; the county's <span id="r-snow"></span> lb/sq ft zone is unconfirmed for the lot.</li>
+  </ul></div>
+  <div class="card pit"><h3>Water, drainage, and rock</h3><ul>
+    <li>The floor cannot drain by gravity; plan a gravel sump in the sandy loam and perc-test it first. Divert surface water around the south and east sides (see the site plan).</li>
+    <li>The owner reports rock about <span id="r-rock"></span> ft down, <span id="r-rock-gap"></span> ft below the post bottoms. A test hole to about <span id="r-hole"></span> ft comes before any design is final.</li>
+    <li>An unheated, closed room will collect moisture: plan a high vent (the roof vent) and a low opening (the east door) for summer air.</li>
+  </ul></div>
+  <div class="card pit"><h3>Heat, mass, and the ends</h3><ul>
+    <li>Nine standing drums hold <span id="r-gal"></span> gal, about <span id="r-btu"></span> Btu for each degree of temperature change. More mass means a second layer on a proper rack; a full 55 gal drum weighs about 460 lb.</li>
+    <li>The east and west walls rise from 0.5 ft to 10.5 ft above grade, about <span id="r-end"></span> sq ft each. Glazed, insulated, or banked with earth? Banking adds soil (see the site plan).</li>
+    <li>The cold zone's floor is <span id="r-cz"></span> and only <span id="r-sink-bed"></span> ft below the bed tops; the owner's first drawings had the sink 5 ft below them. Cold air still settles at the lowest floor, but the beds now sit closer to that pool: a judgment, not a calculation. Sensors at bed height and on the cold zone's floor through the first winter will show whether it matters.</li>
+  </ul></div>
+  <div class="card pit wide"><h3>The berm and its retaining wall</h3><ul>
+    <li><strong>The load.</strong> The <span id="w-wall"></span> ft wall holds a slope that climbs another <span id="w-above"></span> ft above it, so it carries more than the same wall would with level soil behind it. This page does not size it. Interlocking blocks with geogrid, poured concrete, and stone-filled gabions are the usual ways to build one; each needs a base prepared to its own rules, and the county's <span id="w-frost"></span> in frost depth decides how deep a rigid footing goes.</li>
+    <li><strong>The permit.</strong> <a href="https://elmorecounty.org/land-use-and-building-department/building-permit-requirements/">Elmore County's exempt-work list</a> reads "Retaining walls under 4 feet (unless supporting surcharge)". The wall is under 4 ft, but the sloping earth above it is the kind of surcharge that exception leaves out. Ask the county in writing whether the wall needs a permit or an engineer's design, along with the question about the greenhouse itself.</li>
+    <li><strong>Drainage.</strong> Gravel and a perforated drain pipe behind the wall, running out to daylight (the ground falls to the northwest), keep water from building up against it. Keep the toe swale out from its face; the site plan draws it about <span id="w-swale"></span> ft away.</li>
+    <li><strong>Shape and length.</strong> The wall follows the berm's outline: <span id="w-north"></span> ft along the north face, two quarter-circle ends of <span id="w-radius"></span> ft radius, and a <span id="w-return"></span> ft return at each end to the pit's north wall line, about <span id="w-length"></span> ft in all and <span id="w-face"></span> sq ft of face. A material that cannot curve can be built in straight facets. Creosote-treated ties are a poor choice beside food beds.</li>
+    <li><strong>Timing.</strong> The wall's end arcs pass about <span id="w-cut"></span> ft from the open cut's north corners, so build the wall after the shoring is in and the cut is backfilled and compacted, then place the berm in lifts behind it.</li>
+  </ul></div>
+</div>
+
+<h2>How It Gets Built</h2>
+<ol class="points">
+  <li><strong>Before anything:</strong> a perc test and a test hole to about <span id="b-hole"></span> ft; call 811; stake the corners from the fence.</li>
+  <li><strong>Swales first,</strong> so water has somewhere to go while the ground is open.</li>
+  <li><strong>Dig,</strong> keeping spoil and machines at least 2 ft back from the edge. The open cut is about <span id="b-cut"></span> at the surface if sloped at 1.5:1 (OSHA's figure for the weakest soil), or narrower if the walls are shored as they are dug. Nobody works alone in an unprotected cut deeper than about 4 ft, and the walls are inspected after every storm.</li>
+  <li><strong>Posts and walls,</strong> as the book describes: set the posts, charred and bagged below grade, then hold the earth back with boards over polyethylene.</li>
+  <li><strong>Beams, rafters, and roof,</strong> then the retaining wall at the berm's foot, with its drain and gravel, and the berm placed in lifts behind it and against the north wall.</li>
+  <li><strong>Drums, beds, stair, and sump;</strong> seed the berm before winter.</li>
+</ol>
+<p class="source-note">The rules and the schedule are on the <a href="greenhouse_site_plan.html#rules-heading">site plan</a>: Idaho Code 39-4116(5) (agricultural building exemption), Idaho Code 55-2205 (811), Elmore County's exempt-work list (retaining walls under 4 feet, unless supporting surcharge), and OSHA 29 CFR 1926.651 and 1926.652 (excavations).</p>
+</section>
+
+<section aria-labelledby="sources-heading">
+<h2 id="sources-heading">Sources</h2>
+<ul class="source-list">
+  <li>Mike Oehler, <em>The Earth-Sheltered Solar Greenhouse Book</em> (second edition, Mole Publishing Company), "Large Greenhouse," pages 204 and 205: the 12 × 16 ft growing area with a 4 ft cold sink, beds 3 ft below grade, walks 2 ft above the sink floor, posts 4 ft apart and sunk 2 ft, shoring and polyethylene, and the vent posts. The book is the owner's copy and is not reproduced here.</li>
+  <li>The owner's "Hybrid 20 × 36" floor plan and "Hybrid 20 ft" side profile (2026): the footprint, roof pitch, berm height, and first depths (3, 6, 8, and 10 ft); the 6 ft cold zone, the 4 ft beds, and the 3 ft retaining wall at the berm's foot are the owner's later decisions. Not in this repository.</li>
+  <li>Soil, rock, frost depth, and ground: the <a href="soil/WebSoilSurvey_PrairieID.pdf">NRCS soil survey</a>, the water plan's note that rock lies about 10 ft down (owner), Elmore County's 30 in frost depth (<a href="site_baselines.html">site baselines</a>), and the USGS lidar ground (<a href="greenhouse_site_plan.html">site plan</a>).</li>
+  <li>Retaining wall rule: <a href="https://elmorecounty.org/land-use-and-building-department/building-permit-requirements/">Elmore County, building permit requirements</a>, "Work Exempt from Permit (IRC R105.2)," read October 2026.</li>
+  <li>Sun heights at noon on Dec 21, Mar 21, and Jun 21: the <a href="site_climate.html">site climate</a> page.</li>
+</ul>
+</section>
+
+<div class="footer">Mountain Prairie Acres · Pit greenhouse · created October 22, 2026 · quantities are calculated from the design numbers in <code>greenhouse_model.js</code>; the design is a draft for review and has not been engineered.</div>
+
+<script src="data/site_grid.js"></script>
+<script src="data/site_terrain.js"></script>
+<script src="data/water_harvesting.js"></script>
+<script src="data/site_climate.js"></script>
+<script src="data/site_baselines.js"></script>
+<script src="greenhouse_model.js"></script>
+<script>
+(function () {
+  'use strict';
+  const errorBox = document.getElementById('render-error');
+  function fail(message) { errorBox.textContent = 'This page could not finish drawing: ' + message; errorBox.hidden = false; }
+  window.addEventListener('error', event => fail(event.message));
+  try { main(); } catch (error) { fail(error.message); }
+
+  function main() {
+    const G = window.Greenhouse;
+    const { PIT, BERM, SYM, fmt } = G, T = G.setText, times = SYM.times, minus = SYM.minus, d = PIT.depth;
+    const cell = spec => {
+      const td = document.createElement('td');
+      if (spec !== null && typeof spec === 'object') { if (spec.h !== undefined) td.innerHTML = spec.h; else td.textContent = spec.t; if (spec.c) td.className = spec.c; }
+      else td.textContent = spec;
+      return td;
+    };
+    const fill = (id, rows) => {
+      const body = document.querySelector('#' + id + ' tbody');
+      rows.forEach(row => { const tr = document.createElement('tr'); row.forEach(spec => tr.append(cell(spec))); body.append(tr); });
+    };
+    G.pitPlan(document.getElementById('pit-plan'));
+    G.pitSection(document.getElementById('pit-section'));
+
+    // Posts: rows from the south wall to the north wall
+    const roofAt = u => PIT.eave + Math.min(PIT.width - u, PIT.run) * PIT.rise / PIT.run;
+    const bedN = PIT.northStrip, bedS = bedN + PIT.bedWidth, sinkN = PIT.width - PIT.sinkWidth;
+    const rowNames = ['South wall row', 'Row 2', 'Row 3', 'Row 4', 'Row 5', 'North wall row (vent posts)'];
+    const postRows = [];
+    for (let k = PIT.postRows - 1; k >= 0; k--) {
+      const u = k * PIT.postSpacing, top = k === 0 ? PIT.ventTop : roofAt(u), length = top + d.post;
+      const at = u <= bedN ? `drum strip walk, ${minus}${d.walk} ft` : u < bedS ? `a bed, ${minus}${d.bed} ft` : u <= sinkN ? `south walk edge, ${minus}${d.walk} ft` : `cold zone floor, ${minus}${d.sink} ft`;
+      postRows.push({ name: rowNames[PIT.postRows - 1 - k], u, at, top, length, total: length * PIT.postColumns });
+    }
+    fill('posts', postRows.map(r => [r.name, { t: fmt(r.u), c: 'num' }, r.at, { t: `+${fmt(r.top, 1)} ft`, c: 'num' }, { t: `${fmt(r.length, 1)} ft`, c: 'num' }, { t: `${fmt(r.total)} ft`, c: 'num' }]));
+    const postCount = PIT.postRows * PIT.postColumns, postTotal = postRows.reduce((a, r) => a + r.total, 0);
+    const wallPosts = 2 * PIT.postColumns + 2 * (PIT.postRows - 2), roomPosts = postCount - wallPosts;
+    T({ 'posts-count': `${postCount} posts`, 'posts-total': `${fmt(postTotal)} ft`,
+      'posts-caption': `The ${postCount} posts, from the south wall to the north wall (${PIT.postColumns} in each row, bottoms ${d.post} ft below grade)`,
+      'c-lengths': `${postRows.map(r => fmt(r.length, 1)).join(', ')} ft by row`, 'c-post2': String(d.post) });
+
+    // Brief
+    const berm = G.bermVolume(), bermNoWall = G.bermVolume(0.1, 0), saved = bermNoWall.cuYd - berm.cuYd, run0 = BERM.slope * BERM.crest + BERM.top;
+    const lowest = Math.max(d.walk, d.sink), czText = d.sink === d.walk ? 'level with the walks' : `${fmt(Math.abs(d.sink - d.walk), 0)} ft ${d.sink > d.walk ? 'below' : 'above'} the walks`;
+    const stairText = `${PIT.stair.steps} steps of ${fmt(PIT.stair.riseIn, 1)} in, about ${fmt(PIT.stair.runFt, 1)} ft long`;
+    T({
+      'd-size': `${PIT.length} ft east to west by ${PIT.width} ft north to south`, 'd-posts': `${PIT.postColumns} columns by ${PIT.postRows} rows, ${postCount} in all`,
+      'd-angle': `about ${fmt(PIT.angleDeg, 0)}${SYM.deg}`, 'd-eave': fmt(PIT.eave, 1), 'd-north': fmt(PIT.northHeight, 1), 'd-vent': fmt(PIT.ventTop, 1),
+      'd-wall': String(BERM.wall), 'd-run': fmt(BERM.run + BERM.top), 'd-run0': fmt(run0), 'd-saved': fmt(saved, 0),
+      'f-wall-posts': `${wallPosts} posts`, 'f-room-posts': `${roomPosts} posts`, 'r-room-posts': String(roomPosts),
+      'd-bed': String(d.bed), 'd-walk': String(d.walk), 'd-sink': String(d.sink), 'd-post': String(d.post), 'd-cz': czText, 'd-step': fmt(d.walk - d.bed, 0),
+      'k-wall': String(BERM.wall), 'k-post': String(d.post), 'k-below': fmt(d.post - lowest, 0), 'k-rock-gap': fmt(G.SOIL.rockFt - d.post, 0), 'k-rock': String(G.SOIL.rockFt), 'k-walk6': String(d.walk), 'k-bed': String(d.bed),
+      'k-bed-up': fmt(d.walk - d.bed, 0), 'k-walk': String(d.walk), 'k-cz': czText, 'k-sink': String(d.sink), 'k-sink-bed': fmt(d.sink - d.bed, 0),
+      'c-bed': String(d.bed), 'c-walk': String(d.walk), 'c-sink': String(d.sink), 'c-post': String(d.post), 'c-stair': stairText, 'c-drop': String(d.sink), 'c-riser8': fmt(d.sink * 12 / 8, 0),
+      'c-wall': String(BERM.wall), 'c-run': fmt(BERM.run + BERM.top), 'c-run0': fmt(run0), 'c-saved': fmt(saved, 0),
+      'r-depth': String(lowest), 'r-rock': String(G.SOIL.rockFt), 'r-rock-gap': fmt(G.SOIL.rockFt - d.post, 0), 'r-hole': String(G.SOIL.rockFt), 'b-hole': String(G.SOIL.rockFt), 'r-cz': czText, 'r-sink-bed': fmt(d.sink - d.bed, 0),
+      'w-wall': String(BERM.wall), 'w-above': fmt(BERM.crest - BERM.wall, 1), 'w-frost': String(G.SOIL.frostIn), 'w-swale': fmt(BERM.toeY - G.SWALE.toe[1][1], 0),
+      'w-north': fmt(PIT.length), 'w-radius': fmt(BERM.run), 'w-return': fmt(BERM.top), 'w-length': fmt(BERM.wallLength, 0), 'w-face': fmt(BERM.wallLength * BERM.wall, 0), 'w-cut': fmt(G.wallToCut(), 0)
+    });
+
+    // Depths
+    const up = v => v === 0 ? '0 ft' : `${v > 0 ? '+' : minus}${fmt(Math.abs(v), 1)} ft`;
+    const floors = d.walk === d.sink
+      ? [['Walks, the drum strip, and the cold zone floor: the lowest point', up(-d.walk), up(lowest - d.walk)]]
+      : [['Walks and the drum strip', up(-d.walk), up(lowest - d.walk)], ['Cold zone floor', up(-d.sink), up(lowest - d.sink)]];
+    fill('depths', [
+      ['Original grade; the south eave stands 0.5 ft above it', up(0), up(lowest)],
+      ['North end of the roof, and the berm crest', up(PIT.northHeight), up(PIT.northHeight + lowest)],
+      ['Vent post tops, 4 ft above the roof', up(PIT.ventTop), up(PIT.ventTop + lowest)],
+      ['Growing beds (soil left in place)', up(-d.bed), up(lowest - d.bed)],
+      ...floors,
+      ['Post bottoms', up(-d.post), up(-(d.post - lowest))],
+      ['Stair', `down ${d.sink} ft`, `${PIT.stair.steps} steps of ${fmt(PIT.stair.riseIn, 1)} in`]
+    ].map(([a, b, c]) => [a, { t: b, c: 'num' }, { t: c, c: 'num' }]));
+
+    // Quantities
+    const dig = G.pitExcavation(), cut = G.openCut('C');
+    const drumLb = 9 * PIT.drumGal * 8.345;
+    const nonSink = PIT.width - PIT.sinkWidth, sink = d.sink;
+    const wallArea = PIT.length * d.walk + PIT.length * sink + 2 * (nonSink * d.walk + PIT.sinkWidth * sink), endArea = (PIT.eave + PIT.northHeight) / 2 * PIT.width;
+    fill('quantities', [
+      ['Posts', `${postCount} (${wallPosts} on the walls, ${roomPosts} in the room); ${fmt(postTotal)} ft of post`, 'Four-foot grid; lengths by row above.'],
+      ['Roof glazing', `${fmt(PIT.length * PIT.roofLength)} sq ft`, `${PIT.length} ft long by ${fmt(PIT.roofLength, 1)} ft of slope.`],
+      ['Growing beds', `${fmt(2 * PIT.bedLength * PIT.bedWidth)} sq ft`, 'Two beds, 15 × 12 ft.'],
+      ['Water drums', `9 standing, ${fmt(9 * PIT.drumGal)} gal, about ${fmt(drumLb, 0)} lb of water`, 'One in each 4 ft bay along the north wall.'],
+      ['Earth wall to shore and wrap', `about ${fmt(wallArea)} sq ft`, `Cut walls below grade: north ${PIT.length} × ${d.walk}, south ${PIT.length} × ${sink}, east and west ${nonSink} × ${d.walk} plus ${PIT.sinkWidth} × ${sink} each.`],
+      ['End walls above grade', `about ${fmt(endArea)} sq ft each`, 'Trapezoids between the 0.5 ft eave and the 10.5 ft north end.'],
+      ['Excavation', `${fmt(dig.cuYd, 0)} cu yd in the ground (about ${fmt(dig.looseCuYd, 0)} loose)`, `Beds ${d.bed} ft, walks ${d.walk} ft, cold zone ${sink} ft below grade; loose soil takes about 25% more room.`],
+      ['Berm', `${fmt(berm.cuYd, 0)} cu yd`, `North face and both ends at 2:1 from a 2 ft top, stopping at the top of the ${BERM.wall} ft retaining wall: about ${fmt(saved, 0)} cu yd less than a berm that tapers to the ground. Fill comes in from the owner's local source (site plan).`],
+      ['Retaining wall at the berm\'s foot', `about ${fmt(BERM.wallLength, 0)} ft long, ${BERM.wall} ft high (${fmt(BERM.wallLength * BERM.wall, 0)} sq ft of face)`, `${PIT.length} ft along the north face, two quarter-circle ends of ${BERM.run} ft radius, and a ${BERM.top} ft return at each end. The footing or base, drain gravel, and drain pipe are extra, and the material is not chosen.`]
+    ].map(([a, b, c]) => [a, { t: b, c: 'num' }, c]));
+    T({ 'r-gal': fmt(9 * PIT.drumGal), 'r-btu': fmt(drumLb, 0), 'r-end': fmt(endArea), 'b-cut': `${cut.x1 - cut.x0} ${times} ${cut.y1 - cut.y0} ft`, 'r-snow': String(window.SiteBaselines.buildingValue('ground-snow-load').value) });
+
+    // Roof tilt and winter sun, from the climate page's noon altitudes
+    const keys = window.SiteClimate.data.daylight.key_dates, noon = id => keys.find(k => k.id === id).noon_altitude_deg;
+    const alts = { dec: noon('december-solstice'), mar: noon('march-equinox'), jun: noon('june-solstice') };
+    const tilts = [PIT.angleDeg, 35, 45, G.latitude() + 15, 90];
+    const share = (tilt, alt) => `${fmt(G.beamShare(tilt, alt) * 100, 0)}%`;
+    fill('tilt', tilts.map((tilt, i) => [
+      { t: i === 0 ? `${fmt(tilt, 0)}${SYM.deg} (this design)` : i === 3 ? `${fmt(tilt, 0)}${SYM.deg} (latitude + 15${SYM.deg})` : i === 4 ? 'vertical' : `${fmt(tilt, 0)}${SYM.deg}`, c: '' },
+      { t: share(tilt, alts.dec), c: 'num' }, { t: share(tilt, alts.mar), c: 'num' }, { t: share(tilt, alts.jun), c: 'num' },
+      { t: i === 4 ? 'not a roof' : `+${fmt(PIT.eave + PIT.run * Math.tan(tilt * Math.PI / 180), 1)} ft`, c: 'num' }
+    ]));
+    T({ 't-dec': share(PIT.angleDeg, alts.dec), 't-mar': share(PIT.angleDeg, alts.mar), 't-dec45': share(45, alts.dec), 't-45': fmt(PIT.eave + PIT.run * Math.tan(45 * Math.PI / 180), 0) });
+  }
+})();
+</script>
+</body>
+</html>

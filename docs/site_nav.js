@@ -12,6 +12,11 @@ window.SITE_NAV = /* BEGIN SITE_NAV JSON */
       {"href": "unidentified_apple_id_sheet.html", "label": "Unidentified apples"},
       {"href": "unidentified_stone_fruit_id_sheet.html", "label": "Unidentified cherries, peaches, apricot"}
     ]},
+    {"id": "greenhouses", "label": "Greenhouses", "items": [
+      {"href": "greenhouse_site_plan.html", "label": "Greenhouse site plan"},
+      {"href": "gothic_greenhouse_plan.html", "label": "Gothic tunnel, 27 \u00d7 76 ft"},
+      {"href": "pit_greenhouse_plan.html", "label": "Pit greenhouse, 20 \u00d7 36 ft"}
+    ]},
     {"id": "land", "label": "Land & water", "items": [
       {"href": "site_terrain_water_map.html", "label": "Terrain and water maps"},
       {"href": "homestead_plot_map.html", "label": "Homestead plot map"},

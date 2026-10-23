@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greenhouse Site Plan: Gothic Tunnel and Pit Greenhouse — Mountain Prairie Acres</title>
+<link rel="stylesheet" href="greenhouse.css">
+<style>
+  @page {
+    @bottom-left { content: "Mountain Prairie Acres - Greenhouse site plan"; font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+  }
+  tr.chosen td { font-weight: 600; }
+</style>
+</head>
+<body>
+<script src="site_nav.js"></script>
+<nav class="home-link" aria-label="Back to the home page"><a href="index.html">← Mountain Prairie Acres — Orchard and Ranch Projects</a></nav>
+
+<div class="notice print-help" role="note"><strong>Print setup:</strong> Letter (8.5 × 11 in), portrait, 100% scale. Turn on background graphics and turn off the browser's headers and footers.</div>
+<noscript><div class="notice error">JavaScript is required to draw the maps and fill in the tables.</div></noscript>
+<div class="notice error" id="render-error" hidden></div>
+
+<section aria-labelledby="page-title">
+<h1 id="page-title">Greenhouse Site Plan: Gothic Tunnel and Pit Greenhouse</h1>
+<p class="subtitle">Two unheated, season-extending greenhouses south of the orchard, in grid cells A13 to C14 · planned for 2028 or 2029 · nothing is ordered, staked, or dug</p>
+<p class="source-note">Companion pages: the <a href="gothic_greenhouse_plan.html">gothic tunnel</a> and the <a href="pit_greenhouse_plan.html">pit greenhouse</a>. Positions are proposals placed with the <a href="site_master_grid.html">site master grid</a> and the USGS lidar terrain, and every distance, elevation, and quantity here is calculated from them. Anything not measured on the lot is marked as an estimate or as something to confirm.</p>
+
+<h2>The Plan in Brief</h2>
+<p class="lead">A <strong><span id="b-tunnel-size"></span> gothic tunnel</strong>, a polycarbonate kit from <a href="https://catchsunlight.com/">CatchSunlight</a>, runs east to west across cells A13, B13, and C13, <span id="b-gap"></span> south of the orchard. Its west end stands <span id="b-west"></span> off the west fence, beside the tractor alley of the west windbreak. A <strong><span id="b-pit-size"></span> pit greenhouse</strong>, built the way Mike Oehler describes (posts, shoring, and polyethylene) and scaled up, sits south of the tunnel and centered on it (both on x <span id="b-center"></span>), in B14, with its earth berm on the north side toward the tunnel and its glazed roof facing south. Neither is heated.</p>
+<ul class="points">
+  <li><strong>Tunnel (A13 to C13):</strong> <span id="b-tunnel-where"></span>; <span id="b-tunnel-area"></span> sq ft, 12 ft at the peak, two 38 ft bays of the vendor's standard 27 × 38 ft kit, a door in each end wall. What the position brings is under <a href="#alley-heading">Both Buildings at the Windbreak Alley</a>.</li>
+  <li><strong>Pit (B14):</strong> <span id="b-pit-where"></span>; the cold zone along the south wall is <span id="b-floor"></span> ft below grade, the walks <span id="b-walk"></span> ft, the beds <span id="b-bed"></span> ft. The berm along the north wall is <span id="b-crest"></span> ft high at the crest, with 2:1 slopes that stop at the top of a <span id="b-wall"></span> ft retaining wall instead of tapering to the ground; the wall's face lies at y <span id="b-toe"></span> and its ends at x <span id="b-berm-x0"></span> and <span id="b-berm-x1"></span>, just inside the tunnel's ends. The berm spreads into A14 and C14.</li>
+  <li><strong>Why the pit sits at the south end of row 14:</strong> the berm reaches <span id="b-reach"></span> ft north from its crest (2 ft flat top plus <span id="b-slope-run"></span> ft of slope above the wall). A crest at y <span id="b-y680"></span> leaves <span id="b-clear680"></span> ft of clear strip to the tunnel for a swale and snow slide, and keeps the berm's Dec 21 noon shadow (it ends at y <span id="b-tip680"></span>) off the tunnel's south wall (y <span id="b-wall-y"></span>); a crest at y <span id="b-y672"></span> would leave <span id="b-clear672"></span> ft of strip but put the noon shadow at y <span id="b-tip672"></span>, onto the wall. The pit's stair, cut slopes, and uphill swale reach into row 15.</li>
+  <li><strong>The ground</strong> rises <span id="b-slope"></span>, so water arrives from the pit's uphill south and east sides: the diversion mound in Oehler's drawings belongs there, not on the north.</li>
+  <li><strong>Timing:</strong> 2027 is paperwork and data; then dirt work first (test hole, pit, berm, swales) and the tunnel after it, in 2028 or 2029.</li>
+</ul>
+</section>
+
+<section aria-labelledby="map-heading">
+<h2 id="map-heading">Where It Goes</h2>
+<div class="map-layout wide">
+  <figure class="plot">
+    <figcaption>Figure 1. Plan view, north up, on the 50 ft grid</figcaption>
+    <div id="site-map"></div>
+  </figure>
+  <div>
+    <h3>Key</h3>
+    <div class="legend" id="map-legend" aria-label="Map key">
+      <div class="row"><svg viewBox="0 0 30 16"><rect x="2" y="2" width="26" height="12" fill="rgba(80,160,200,0.18)" stroke="#1D6F96" stroke-width="2"/></svg>Gothic tunnel, 27 × 76 ft</div>
+      <div class="row"><svg viewBox="0 0 30 16"><rect x="6" y="1.5" width="18" height="13" fill="#F1E7D2" stroke="#6B4A2B" stroke-width="2"/><rect x="6" y="11.5" width="18" height="3" fill="#A9D0E1"/></svg>Pit greenhouse, 20 × 36 ft (blue: cold zone)</div>
+      <div class="row"><svg viewBox="0 0 30 16"><path d="M3,14 L3,9 A8,8 0 0 1 11,2 L19,2 A8,8 0 0 1 27,9 L27,14Z" fill="#D9C7A0" stroke="none"/></svg>Earth berm, 10.5 ft at the crest</div>
+      <div class="row"><svg viewBox="0 0 30 16"><path d="M3,14 L3,9 A8,8 0 0 1 11,2 L19,2 A8,8 0 0 1 27,9 L27,14" fill="none" stroke="#4D4B45" stroke-width="3" stroke-linejoin="round"/></svg>Retaining wall, 3 ft, at the berm's foot</div>
+      <div class="row"><svg viewBox="0 0 30 16"><rect x="3" y="2" width="24" height="12" fill="none" stroke="#B59B6A" stroke-width="1.4" stroke-dasharray="4 3"/></svg>Open cut while digging (1.5:1 slopes)</div>
+      <div class="row"><svg viewBox="0 0 30 16"><defs><pattern id="lg-h" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="5" stroke="#7A7970" stroke-width="1.4"/></pattern></defs><rect x="2" y="2" width="26" height="12" fill="url(#lg-h)" opacity="0.6"/></svg>Tunnel's shadow at noon on Dec 21</div>
+      <div class="row"><svg viewBox="0 0 30 16"><path d="M2,12 L26,5" stroke="#2B8FD6" stroke-width="2.4" stroke-dasharray="6 3" fill="none"/></svg>Swales (schematic; arrows show the flow)</div>
+      <div class="row"><svg viewBox="0 0 30 16"><path d="M26,3 L5,13" stroke="#5F7F95" stroke-width="2" fill="none"/><path d="M5,13 L10,13.2 L7.5,9.5Z" fill="#5F7F95"/></svg>Which way the ground falls</div>
+      <div class="row"><svg viewBox="0 0 30 16"><circle cx="15" cy="8" r="5" fill="#1B4F9C"/><text x="15" y="10.4" text-anchor="middle" font-size="7" font-weight="700" fill="#fff">H</text></svg>Frost-free hydrant (1.5 in line, dashed)</div>
+      <div class="row"><svg viewBox="0 0 30 16"><circle cx="15" cy="8" r="5" fill="#CFE3C0" stroke="#7BA15A" stroke-width="1.2"/></svg>Orchard trees (R1 is the south row)</div>
+      <div class="row"><svg viewBox="0 0 30 16"><rect x="2" y="2" width="26" height="12" fill="#CFE3C0"/><rect x="11" y="2" width="9" height="12" fill="#DDD0B8"/></svg>West windbreak (green) and its tractor alley (tan)</div>
+      <div class="row"><svg viewBox="0 0 30 16"><path d="M15,2 L21,8 L15,14 L9,8Z" fill="#185FA5" stroke="#C2412F" stroke-width="2"/></svg>WS90 pole site in the weather plan</div>
+      <div class="row"><svg viewBox="0 0 30 16"><path d="M1,12 C8,10 14,5 29,3" stroke="#9A8670" stroke-width="1.2" fill="none"/></svg>One-foot contours from lidar (feet above sea level)</div>
+      <div class="row"><svg viewBox="0 0 30 16"><rect x="2" y="2" width="26" height="12" fill="rgba(24,95,165,0.07)" stroke="rgba(24,95,165,0.6)" stroke-width="1.6"/></svg>The cells the buildings use: A13 to C14</div>
+    </div>
+    <h3>Reading the map</h3>
+    <ul class="points">
+      <li>The gap to the orchard and the clear strip beside the berm are labeled on the map; Figure 2 gives the whole stack of distances from north to south.</li>
+      <li>Contours are one foot apart from the lidar flown before any building. The ground falls toward the northwest corner of the lot.</li>
+      <li>The swales are schematic: where the water should go, not a surveyed design.</li>
+      <li>The hatched band north of the tunnel is as far as its shadow reaches at solar noon on the shortest day.</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<section class="page-break" aria-labelledby="section-heading">
+<h2 id="section-heading">A North–South Slice Through Both Buildings</h2>
+<figure class="plot">
+  <figcaption>Figure 2. Section along x = <span id="sec-x"></span>, the middle of both buildings, looking east (north on the left), at one scale for distance and height</figcaption>
+  <div id="site-section"></div>
+  <p class="caption-note">The ground is drawn at its true slope, which is gentle: it climbs about 2% to the south along this line. Both buildings are cut through their middles, so the tunnel's level pad stays within about <span id="sec-pad"></span> ft of the ground here. Orange lines are sunlight at solar noon on Dec 21, the shortest day, just clearing the tunnel's arch and the berm crest; the dots are where those shadows end. Soil layers are from the <a href="soil/WebSoilSurvey_PrairieID.pdf">NRCS soil survey</a> and the owner's note that rock lies about 10 ft down.</p>
+</figure>
+
+<h3>Where the berm crest can go</h3>
+<table class="detail" id="berm-options">
+  <caption>A 2:1 berm above a <span id="bo-wall"></span> ft retaining wall reaches <span id="bo-reach2"></span> ft north from its crest (2 ft flat top plus <span id="bo-slope2"></span> ft of slope above the wall); a gentler 3:1 slope above the wall would need <span id="bo-reach3"></span> ft, and the 2:1 berm with no wall would need <span id="bo-reach0"></span> ft. The foot is the face of the wall. The tunnel's south wall is at y <span id="bo-wall-y"></span>.</caption>
+  <thead><tr><th class="num">Crest at y</th><th class="num">Pit south wall at y</th><th class="num">Foot, 2:1</th><th class="num">Room to tunnel wall, 2:1</th><th class="num">Foot, 3:1</th><th class="num">Room, 3:1</th><th class="num">Dec 21 noon shadow ends at y</th><th>Pit stays in row 14?</th></tr></thead>
+  <tbody></tbody>
+</table>
+<p class="source-note">Green means 8 ft or more to spare, amber under 8 ft, red that the berm would bury the tunnel's south wall; in the shadow column, amber means the noon shadow reaches the tunnel's south wall. The chosen crest (bold) gives the swale and the snow-slide strip room, keeps the berm's noon shadow off the tunnel, and keeps the pit's walls inside row 14.</p>
+
+<h3>Corners and key points, for staking later</h3>
+<table class="detail" id="points">
+  <thead><tr><th>Point</th><th class="num">x, y (ft)</th><th><a href="site_master_grid.html">SiteRef</a></th><th class="num">Ground, ft</th></tr></thead>
+  <tbody></tbody>
+</table>
+<p class="source-note">Ground elevations are from the USGS lidar (feet above sea level, NAVD88), flown before anything was built. SiteRef codes name a spot by its master cell and feet east and south of that cell's northwest corner. The GPS tie to the fence lines is good to about 10 ft, so measure from the fence when staking.</p>
+</section>
+
+<section aria-labelledby="alley-heading">
+<h2 id="alley-heading">Both Buildings at the Windbreak Alley</h2>
+<p>The tunnel's west end stands <span id="a-west"></span> from the west fence, beside the windbreak's tractor alley: the <span id="a-alley"></span> lane between the edge of the hazelnut row and the limbs of the first orchard column. Its northwest corner is <span id="a-south-of"></span> south of where the windbreak ends. The pit greenhouse is centered on the tunnel, both on x <span id="a-center"></span>, and the berm's retaining wall ends at x <span id="a-berm-x0"></span> and <span id="a-berm-x1"></span>, just inside the tunnel's ends. Together they make one block, roughly <span id="a-block-w"></span> ft east to west and <span id="a-block-h"></span> ft north to south, set across the slope. The position brings these things to settle:</p>
+<ul class="points">
+  <li><strong>Access.</strong> The west door opens toward the alley, 5 ft beyond its east edge, so a cart, or a tractor bringing a load as far as the door, can come down the alley and turn in front of it without crossing a tree row; only carts go inside. Keep that lane free of trees and basins from the windbreak's end to the door, and build the water plan's water bars (zone 8) as drivable humps. In a straight line the nearest corners of the yard are about <span id="a-yard-w"></span> ft from the west door and <span id="a-yard-e"></span> ft from the east door. The east door's approach is open ground: the berm's wall ends at x <span id="a-berm-x1b"></span> and the open cut at x <span id="a-cut-x1"></span>. The straight line to the west door runs through the pit, so a cart goes around it, through the <span id="a-lane"></span> ft lane between the west fence and the berm's west end, which also holds the hydrant, its water line, and the diversion swale.</li>
+    <li><strong>The west property line.</strong> The tunnel's west wall stands <span id="a-line"></span> from the fence and the berm's retaining wall <span id="a-line-berm"></span>, with the neighbor's land beyond. Zoning setbacks are separate from the building-code exemption described below, and this draft does not know which one applies at the west line: ask Elmore County for it in writing before the positions are fixed.</li>
+  <li><strong>Snow and wind.</strong> The water plan expects the windbreak to drop west-wind drifts just east of the hazelnut row, over the alley and the C1 berry guilds, and to keep the alley blocked until they melt (<a href="orchard_water_harvesting_plan.html">zone 7</a>). The windbreak ends <span id="a-south-of2"></span> north of the tunnel, so those drifts mostly stop short of it, but wind curling around the end can still pile snow against the west door. The <a href="site_baselines.html">site baselines</a> say the nearest stations and a weather model disagree about winter wind direction, so watch where snow lies in the first winter before settling the door.</li>
+  <li><strong>Cold air.</strong> The ground falls to the northwest, so the tunnel's long south wall and the berm lie across the way cold air drains. The downhill ways out are the lane between that block and the west fence, with the alley in it, and the open ground east of x <span id="a-berm-x1c"></span>. That is not measured or modeled here: keep the west lane free of a solid hedge or fence, and let the temperature sensor planned for the site (see the <a href="weather_station_plan.html">weather plan</a>) show whether cold air pools on the tunnel's south side.</li>
+  <li><strong>Water.</strong> The diversion swale is drawn around the pit's south and west sides to the windbreak's south end, passing about <span id="a-swale-cut"></span> ft from the open cut, <span id="a-swale-berm"></span> ft from the berm's foot, <span id="a-swale-hyd"></span> ft from the hydrant, and <span id="a-swale"></span> ft from the tunnel's west end. Whether the alley's water bars and the walking lane (zones 8 and 9) can take that extra flow needs checking in the <a href="orchard_water_harvesting_plan.html">water plan</a>.</li>
+</ul>
+</section>
+
+<section aria-labelledby="sun-heading">
+<h2 id="sun-heading">Sun and Shade</h2>
+<p>Shadows run north, so the tunnel can shade the orchard and the pit's tall north end can shade the tunnel. Both effects are smallest where it matters most, in the growing season, and largest in midwinter when the trees are bare.</p>
+<table class="detail" id="shade-dec">
+  <caption>Dec 21, the shortest day, by solar time (the sun is due south at noon; before noon the shadows slide west as they lengthen, and after noon they slide east)</caption>
+  <thead><tr><th>Solar time</th><th class="num">Sun height</th><th class="num">Sun bearing</th><th>Tunnel's shadow ends at</th><th>R1 trunks (y 585)</th><th>Berm's shadow ends at</th><th>Tunnel's south wall (y 647)</th></tr></thead>
+  <tbody></tbody>
+</table>
+<table class="detail" id="shade-noon">
+  <caption>Solar noon on later dates</caption>
+  <thead><tr><th>Date</th><th class="num">Sun height</th><th>Tunnel's shadow ends at</th><th>Berm's shadow ends at</th></tr></thead>
+  <tbody></tbody>
+</table>
+<ul class="points">
+  <li><strong>The orchard.</strong> At solar noon on the shortest day the tunnel's shadow ends at <span id="s-tip-noon"></span>, and the R1 trunks stay in sun. The shadow reaches the R1 row only before about <span id="s-r1-am"></span> and after about <span id="s-r1-pm"></span> solar time, when the sun is low and the trees are dormant: in the morning it lies over <span id="s-r1-trees-am"></span>, in the afternoon over <span id="s-r1-trees-pm"></span>. By March 21 it shrinks to about <span id="s-mar21"></span> ft.</li>
+  <li><strong>The tunnel.</strong> The berm's shadow stays off the tunnel's south wall from about <span id="s-from"></span> to <span id="s-to"></span> solar time on Dec 21. Earlier it lies on the wall's strip at the west end (<span id="s-wall-am"></span> at 8:30, reaching <span id="s-onwall-am"></span> ft north of the wall); later it lies on the east end (<span id="s-wall-pm"></span> at 15:30, <span id="s-onwall-pm"></span> ft). The pit is centered, so the morning and afternoon patches mirror each other about x <span id="s-center"></span>, and both fade through January as the sun climbs.</li>
+  <li><strong>The pit.</strong> Nothing stands south of it, and the tunnel's shadow falls to the north, so the pit's roof gets all the winter sun that reaches the lot.</li>
+</ul>
+<p class="source-note">Method: sun positions from the latitude and the climate page's key dates (<a href="site_climate.html">site climate</a>); a flat horizon with no trees or hills; shadow tips found by following each ray to the lidar ground along x = <span id="s-x"></span>, so the ground falling to the north lengthens them a little. A shadow also slides sideways as the sun swings: for each foot it runs north it moves east or west by the tangent of the sun's bearing from south, which is how the east-west ranges above are found. The tunnel's hoop is drawn from the vendor's end-wall drawing, so its shadow is an estimate.</p>
+</section>
+
+<section aria-labelledby="water-heading">
+<h2 id="water-heading">Water and Drainage</h2>
+<ul class="points">
+  <li><strong>Uphill is south and east.</strong> Across the tunnel the ground rises <span id="w-slope-tunnel"></span>; across the pit, <span id="w-slope-pit"></span>. Runoff therefore arrives at the pit's stair side and east side and leaves toward the northwest, past the tunnel's west end (the swales carry it there) and on toward the windbreak and the southwest corner of the orchard.</li>
+  <li><strong>How much.</strong> Lidar flow paths on 5 ft cells put roughly <span id="w-acres"></span> acre (<span id="w-sqft"></span> sq ft) of hillside upslope of the open cut and a 10 ft margin around it, where the diversion swale runs, arriving from the south and east. That is a rough figure: it moves by a few thousand sq ft with the margin chosen. The runoff below uses the standard curve-number method with a curve number of 70 to 85 for this soil group (C, loam over clay loam) in range condition, an assumption rather than a measurement; the rain depths are NOAA Atlas 14 values for the lot.</li>
+</ul>
+<table class="detail" id="storms">
+  <caption>Rain on that hillside in a 24-hour storm, and what runs off toward the pit</caption>
+  <thead><tr><th>Storm</th><th class="num">Rain</th><th class="num">Runoff, CN 70</th><th class="num">CN 78</th><th class="num">CN 85</th><th class="num">Gallons arriving (CN 70 to 85)</th></tr></thead>
+  <tbody></tbody>
+</table>
+<ul class="points">
+  <li><strong>Divert it, because it cannot drain by gravity.</strong> A buried drain from the pit's <span id="w-floor"></span> ft deep floor to daylight would have to run roughly <span id="w-drain"></span> ft at the ground's fall, so the floor drains to a gravel sump in the sandy loam that begins 42 in down (the soil survey shows no water table within 80 in). Test that with a perc test before digging. Spring melt over frozen ground sheds water too, and the nearest SNOTEL station's median peak snowpack holds <span id="w-swe"></span> in of water.</li>
+  <li><strong>Roof water.</strong> The tunnel's glazing is about <span id="w-glaze"></span> sq ft, so each inch of rain on it is roughly <span id="w-galin"></span> gal, and an average year (<span id="w-annual"></span> in) would be about <span id="w-galyr"></span> gal if every drop were caught, which it will not be. The 3,000 gal irrigation tank is <span id="w-tank"></span> in of rain. The north half of the roof can feed the "Spreader above R1" in the <a href="orchard_water_harvesting_plan.html">water-harvesting plan</a> through the gap, and snow sliding off that side lands in basins instead of on a path, as that plan wants. The pit's roof (about <span id="w-pitroof"></span> sq ft) sheds south into the uphill swale.</li>
+</ul>
+</section>
+
+<section aria-labelledby="earth-heading">
+<h2 id="earth-heading">Grading and Earthwork</h2>
+<table class="detail" id="earthwork">
+  <thead><tr><th>Item</th><th class="num">Quantity</th><th>Basis</th></tr></thead>
+  <tbody></tbody>
+</table>
+<p>The berm is the big earthwork: a 10.5 ft crest with 2:1 slopes above the retaining wall takes about <span id="e-ratio"></span> times what the pit yields, and the wall alone saves about <span id="e-saved"></span> cu yd against a berm that tapers to the ground. Fill comes from the owner's local source, so this is a quantity to plan hauling around (at 10 cu yd a load, <span id="e-loads"></span> truckloads), not a problem. A shorter or steeper berm, or banking the end walls with framing instead of soil, would trim it further; those are open design choices on the <a href="pit_greenhouse_plan.html">pit page</a>.</p>
+</section>
+
+<section aria-labelledby="near-heading">
+<h2 id="near-heading">What Else Is Nearby</h2>
+<table class="detail" id="nearby">
+  <thead><tr><th>Item</th><th>Where</th><th>What it means</th></tr></thead>
+  <tbody></tbody>
+</table>
+</section>
+
+<section aria-labelledby="rules-heading">
+<h2 id="rules-heading">Rules, Approvals, and Safety</h2>
+<ul class="points">
+  <li><strong>Building permit.</strong> Idaho Code <a href="https://legislature.idaho.gov/statutesrules/idstat/Title39/T39CH41/SECT39-4116/">39-4116(5)</a> tells counties to exempt agricultural buildings from the state building codes, and its list includes "horticultural structures, including detached production greenhouses and crop protection shelters." It excludes places of human habitation, workplaces where farm products are processed or packaged, and places used by the public. A county may still issue a permit to check road setbacks and utility easements, for no more than its cost. <a href="https://elmorecounty.org/land-use-and-building-department/building-permit-requirements/">Elmore County's permit page</a> lists its own exempt work (sheds under 200 sq ft, fences, retaining walls under 4 ft unless supporting surcharge, tanks under 5,000 gal) and does not mention greenhouses, so get the exemption confirmed in writing. The <span id="r-wall"></span> ft retaining wall at the berm's foot is under that 4 ft line, but it holds a slope that climbs another <span id="r-wall-above"></span> ft above it, which is the kind of surcharge the list leaves out, so ask about the wall in the same letter. With no code review, the pit's shoring and roof are the owner's own engineering.</li>
+  <li><strong>Snow and wind.</strong> The county's maps put Prairie in the <span id="r-snow"></span> lb/sq ft ground snow load zone and set a <span id="r-wind"></span> mph design wind for houses (see <a href="site_baselines.html">site baselines</a>; the snow figure is still unconfirmed for the lot). An exempt greenhouse is not held to them, but they are an honest measure of what it will see. Ask the vendor what ground snow load and wind speed a 76 ft run is designed for.</li>
+  <li><strong>Before digging.</strong> Call 811 two to ten business days ahead (Idaho Code <a href="https://legislature.idaho.gov/statutesrules/idstat/Title55/T55CH22/SECT55-2205/">55-2205</a>); the marks last four weeks, and the call must be repeated if digging has not begun within three. OSHA's excavation rules require cave-in protection at 5 ft deep (<a href="https://www.ecfr.gov/current/title-29/subtitle-B/chapter-XVII/part-1926/subpart-P/section-1926.652">29 CFR 1926.652</a>), a ladder or stair within 25 ft of anyone in a trench 4 ft deep or more, and spoil and equipment at least 2 ft back from the edge (<a href="https://www.law.cornell.edu/cfr/text/29/1926.651">1926.651</a>); its maximum slopes by soil type are 3/4:1, 1:1, and 1½:1. Those are rules for employers, but the physics is the same for anyone, and a 6 ft wall of soil can fall faster than anyone can climb out.</li>
+  <li><strong>Grant.</strong> The vendor says its kit qualifies for the USDA NRCS EQIP high-tunnel grant, about $8,000 for 1,000 sq ft. From a web search, and not confirmed with NRCS: payments in Idaho are capped near 2,178 sq ft (this tunnel is <span id="r-area"></span>), only unheated tunnels qualify, and the contract has to be approved before anything is bought or dug. The pit is not a kit and probably does not qualify. Ask your USDA Service Center what records and deadlines apply.</li>
+</ul>
+</section>
+
+<section aria-labelledby="timeline-heading">
+<h2 id="timeline-heading">Timeline and Checklist</h2>
+<table class="detail" id="timeline">
+  <thead><tr><th>When</th><th>What</th></tr></thead>
+  <tbody>
+    <tr><td><strong>2027</strong><span class="where">paperwork and data, no digging</span></td><td>
+      <ul class="points">
+        <li>Ask the USDA Service Center about EQIP (records, ranking dates, whether a 76 ft custom length qualifies) and apply before buying or digging anything.</li>
+        <li>Ask Elmore County in writing for the agricultural exemption, the setback and easement check, and whether the retaining wall at the berm's foot needs a permit, and for the ground snow load that applies at the lot.</li>
+        <li>Ask CatchSunlight for the design snow and wind loads, the clear space wanted on each side, and a quote for two bays.</li>
+        <li>Put a temperature sensor at the site when the <a href="weather_station_plan.html">weather station</a> goes in, and watch a full winter before committing. Move the WS90 pole site while the weather plan is still a plan.</li>
+        <li>Run a perc test where the pit's sump would go; the water plan already calls for perc tests.</li>
+        <li>Keep roughly <span id="t-keep"></span> free of trees, pipes, and basins; build the 2027 spreader along the orchard edge only. Line up the local fill.</li>
+      </ul></td></tr>
+    <tr><td><strong>2028</strong><span class="where">dirt first</span></td><td>
+      <ul class="points">
+        <li>Call 811, then dig a test hole about <span id="t-hole"></span> ft deep at the pit to find the rock: the owner reports it there, and the posts end <span id="t-posts"></span> ft down. Go or no-go.</li>
+        <li>Build the swales, the pit, the retaining wall, and the berm in July and August, the driest months at the lot (<span id="t-jul"></span> and <span id="t-aug"></span> in of rain, against <span id="t-dec"></span> in in December). Have the shoring and roof on before the October rains and seed the berm before winter.</li>
+      </ul></td></tr>
+    <tr><td><strong>2028 or 2029</strong><span class="where">the tunnel</span></td><td>Pad, kit, doors, and vents, after the EQIP contract if applying, and not while an excavator works <span id="t-gap"></span> ft from a polycarbonate wall.</td></tr>
+    <tr><td><strong>After the first winter</strong></td><td>Compare the sensor logs with the baselines; adjust vents, doors, and swales; decide whether the berm needs more or less soil on its ends.</td></tr>
+  </tbody>
+</table>
+
+<h2>Open Questions</h2>
+<ol class="points">
+  <li><strong>EQIP or self-funded?</strong> It sets the timing (apply first) and keeps the tunnel unheated.</li>
+  <li><strong>The retaining wall.</strong> The wall at the berm's foot is about <span id="q-wall-len"></span> ft long and 3 ft high, and the slope it holds climbs another <span id="q-wall-above"></span> ft above it. What is it made of (interlocking blocks with geogrid, poured concrete, or gabions), who designs it, and does Elmore County treat it as exempt? Its exempt list says "retaining walls under 4 feet (unless supporting surcharge)," and the sloping soil above this wall is likely to count. See the <a href="pit_greenhouse_plan.html#review-heading">pit page</a>.</li>
+  <li><strong>Which end gets the wide door?</strong> The <a href="gothic_greenhouse_plan.html#endwalls-heading">gothic page</a> now draws the wide center door the vendor shows at both ends, so a cart can run straight through the 76 ft, door to door; only carts go inside, no tractor. The west door faces the alley, and its path from the yard goes around the pit; the east door faces the yard side over open ground. Does each end need the wide door, or can one end keep the standard 80 in door if the cart fits it?</li>
+  <li><strong>The pit's open design items,</strong> such as the stair, the second exit, and the 32 posts standing inside the room, are listed on the <a href="pit_greenhouse_plan.html">pit page</a>.</li>
+</ol>
+</section>
+
+<section aria-labelledby="sources-heading">
+<h2 id="sources-heading">Sources</h2>
+<ul class="source-list">
+  <li>Site coordinates, features, terrain, climate, baselines, and the water-harvesting plan: <code>data/site.json</code>, <code>data/terrain.json</code> (USGS 3DEP 1 m lidar), <code>data/climate.json</code>, <code>data/site_baselines.json</code>, and <code>data/water_harvesting.json</code>, through the shared helpers; the NRCS <a href="soil/WebSoilSurvey_PrairieID.pdf">Web Soil Survey report</a>.</li>
+  <li>Tunnel: <a href="https://catchsunlight.com/">CatchSunlight</a>, home page and <a href="https://catchsunlight.com/commercial.html">high-tunnel kit page</a> (27 × 38 ft standard kit, 12 ft end-wall drawing, adjustable hoop spacing, "no limit on length"), read October 2026. See the <a href="gothic_greenhouse_plan.html">tunnel page</a>.</li>
+  <li>Pit: Mike Oehler, <em>The Earth-Sheltered Solar Greenhouse Book</em> (second edition, Mole Publishing Company), the "Large Greenhouse" plans on pages 204 and 205, and the owner's two "hybrid 20 × 36" drawings built on them. See the <a href="pit_greenhouse_plan.html">pit page</a>.</li>
+  <li>Rules: <a href="https://legislature.idaho.gov/statutesrules/idstat/Title39/T39CH41/SECT39-4116/">Idaho Code 39-4116</a> and <a href="https://legislature.idaho.gov/statutesrules/idstat/Title55/T55CH22/SECT55-2205/">55-2205</a>; <a href="https://elmorecounty.org/land-use-and-building-department/building-permit-requirements/">Elmore County building permit requirements</a>; OSHA <a href="https://www.law.cornell.edu/cfr/text/29/1926.651">29 CFR 1926.651</a> and <a href="https://www.ecfr.gov/current/title-29/subtitle-B/chapter-XVII/part-1926/subpart-P/section-1926.652">1926.652</a> (Subpart P, Excavations).</li>
+  <li>Grant: the NRCS <a href="https://www.nrcs.usda.gov/sites/default/files/2022-12/HighTunnelFactSheet.pdf">High Tunnel System Initiative FAQs</a> and the <a href="https://www.nrcs.usda.gov/state-offices/idaho/payment-schedule">Idaho payment schedule</a> are where to confirm the size cap and the rules; the size and timing details above came from a web search, not from reading those documents in full.</li>
+</ul>
+</section>
+
+<div class="footer">Mountain Prairie Acres · Greenhouse site plan · created October 22, 2026 · positions, distances, elevations, and quantities are calculated from the site data and the lidar terrain by <code>greenhouse_model.js</code>; the pit and tunnel designs are drafts for review.</div>
+
+<script src="data/site_grid.js"></script>
+<script src="data/site_terrain.js"></script>
+<script src="data/water_harvesting.js"></script>
+<script src="data/site_climate.js"></script>
+<script src="data/site_baselines.js"></script>
+<script src="greenhouse_model.js"></script>
+<script>
+(function () {
+  'use strict';
+  const errorBox = document.getElementById('render-error');
+  function fail(message) { errorBox.textContent = 'This page could not finish drawing: ' + message; errorBox.hidden = false; }
+  window.addEventListener('error', event => fail(event.message));
+  try { main(); } catch (error) { fail(error.message); }
+
+  function main() {
+    const G = window.Greenhouse, SG = window.SiteGrid, SB = window.SiteBaselines;
+    const { GOTHIC, PIT, BERM, SYM, fmt } = G;
+    const T = G.setText, times = SYM.times;
+    const cell = spec => {
+      const td = document.createElement('td');
+      if (spec !== null && typeof spec === 'object') { if (spec.h !== undefined) td.innerHTML = spec.h; else td.textContent = spec.t; if (spec.c) td.className = spec.c; }
+      else td.textContent = spec;
+      return td;
+    };
+    const fill = (id, rows, rowClass) => {
+      const body = document.querySelector('#' + id + ' tbody');
+      rows.forEach((row, i) => { const tr = document.createElement('tr'); if (rowClass && rowClass(i)) tr.className = rowClass(i); row.forEach(spec => tr.append(cell(spec))); body.append(tr); });
+    };
+    const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+    const ground = (x, y) => SG.elevationFt(x, y);
+    const slopeText = plane => `${fmt(plane.east * 100, 1)}% to the east and ${fmt(plane.south * 100, 1)}% to the south`;
+
+    G.siteMap(document.getElementById('site-map'));
+    G.siteSection(document.getElementById('site-section'));
+
+    // Brief
+    const tunnelPlane = G.fitPlane(GOTHIC.x0, GOTHIC.x1, GOTHIC.y0, GOTHIC.y1), pitPlane = G.fitPlane(PIT.x0, PIT.x1, PIT.y0, PIT.y1);
+    const blockPlane = G.fitPlane(GOTHIC.x0, BERM.endX1, GOTHIC.y0, PIT.y1);
+    const o672 = G.bermOption(672), o680 = G.bermOption(680);
+    T({
+      'b-tunnel-size': `${GOTHIC.span} ${times} ${GOTHIC.length} ft`, 'b-pit-size': `${PIT.width} ${times} ${PIT.length} ft`, 'b-gap': `${GOTHIC.y0 - G.ORCHARD_EDGE_Y} ft`, 'b-west': `${GOTHIC.x0} ft`,
+      'b-tunnel-where': `x ${GOTHIC.x0} to ${GOTHIC.x1}, y ${GOTHIC.y0} to ${GOTHIC.y1}`, 'b-tunnel-area': fmt(GOTHIC.footprint),
+      'b-pit-where': `x ${PIT.x0} to ${PIT.x1}, y ${PIT.y0} to ${PIT.y1}`, 'b-floor': String(PIT.depth.sink), 'b-walk': String(PIT.depth.walk), 'b-bed': String(PIT.depth.bed),
+      'b-crest': fmt(BERM.crest, 1), 'b-toe': fmt(BERM.toeY),
+      'b-wall': String(BERM.wall), 'b-reach': fmt(BERM.top + BERM.run), 'b-slope-run': fmt(BERM.run), 'b-wall-y': String(GOTHIC.y1),
+      'b-y680': '680', 'b-clear680': fmt(o680.clear), 'b-tip680': fmt(o680.noonTip, 0), 'b-y672': '672', 'b-clear672': fmt(o672.clear), 'b-tip672': fmt(o672.noonTip, 0),
+      'b-slope': `about ${fmt(blockPlane.south * 100, 0)}% to the south and ${fmt(blockPlane.east * 100, 0)}% to the east across the block`,
+      'b-center': fmt(GOTHIC.centerX), 'b-berm-x0': fmt(BERM.endX0), 'b-berm-x1': fmt(BERM.endX1),
+      'bo-wall': String(BERM.wall), 'bo-reach2': fmt(BERM.top + BERM.run), 'bo-slope2': fmt(BERM.run), 'bo-reach3': fmt(BERM.top + 3 * (BERM.crest - BERM.wall), 1), 'bo-reach0': fmt(BERM.top + BERM.slope * BERM.crest), 'bo-wall-y': String(GOTHIC.y1),
+      'sec-x': fmt(G.SECTION_X), 'sec-pad': fmt(Math.abs(G.groundFt(G.SECTION_X, GOTHIC.ridgeY) - G.site().zTunnel), 1)
+    });
+
+    // Berm crest options
+    const roomClass = room => room >= 8 ? 'clear' : room >= 0 ? 'close' : 'touch';
+    const crests = [664, 668, 672, 676, 680, 684];
+    fill('berm-options', crests.map(y => {
+      const a = G.bermOption(y, 2), b = G.bermOption(y, 3);
+      return [{ t: String(y), c: 'num' }, { t: String(a.southWall), c: 'num' }, { t: fmt(a.toe, 1), c: 'num' }, { t: `${fmt(a.clear, 1)} ft`, c: 'num ' + roomClass(a.clear) },
+        { t: fmt(b.toe, 1), c: 'num' }, { t: `${fmt(b.clear, 1)} ft`, c: 'num ' + roomClass(b.clear) }, { t: fmt(a.noonTip, 1), c: a.noonTip < GOTHIC.y1 ? 'num close' : 'num' }, a.southWall <= 700 ? 'yes' : { t: `no, ${a.southWall - 700} ft into row 15`, c: '' }];
+    }), i => crests[i] === 680 ? 'chosen' : '');
+
+    // Points table
+    const cut = G.openCut('C');
+    const POINTS = [
+      ['Planned orchard edge, above the tunnel\'s middle', GOTHIC.centerX, 600], ['Tunnel, NW corner', GOTHIC.x0, GOTHIC.y0], ['Tunnel, NE corner', GOTHIC.x1, GOTHIC.y0], ['Tunnel, ridge, middle', GOTHIC.centerX, GOTHIC.ridgeY],
+      ['Tunnel, SW corner', GOTHIC.x0, GOTHIC.y1], ['Tunnel, SE corner', GOTHIC.x1, GOTHIC.y1], ['Retaining wall, north face, middle (the berm\'s foot)', PIT.centerX, BERM.toeY],
+      ['Retaining wall, west end (at the pit\'s north wall line)', BERM.endX0, PIT.y0], ['Retaining wall, east end', BERM.endX1, PIT.y0],
+      ['Pit, NW corner (berm crest)', PIT.x0, PIT.y0], ['Pit, NE corner', PIT.x1, PIT.y0], ['Pit, SW corner', PIT.x0, PIT.y1], ['Pit, SE corner', PIT.x1, PIT.y1],
+      ['Open cut, NW top corner (1.5:1)', cut.x0, cut.y0], ['Open cut, SE top corner (1.5:1)', cut.x1, cut.y1]
+    ];
+    fill('points', POINTS.map(([name, x, y]) => [name, { t: `${fmt(x, 1)}, ${fmt(y, 1)}`, c: 'num' }, { t: SG.siteRef(x, y), c: 'mono' }, { t: fmt(ground(x, y), 1), c: 'num' }]));
+
+    // Sun and shade
+    const treeText = range => {
+      const cols = [];
+      for (let c = 1; c <= 13; c++) { const x = SG.treeXY(1, c)[0]; if (x >= range[0] && x <= range[1]) cols.push(c); }
+      const parts = [];
+      if (cols.length === 1) parts.push(`tree C${cols[0]}`); else if (cols.length === 2) parts.push(`trees C${cols[0]} and C${cols[1]}`); else if (cols.length > 2) parts.push(`trees C${cols[0]} to C${cols[cols.length - 1]}`);
+      if (range[0] < 35) parts.push('the windbreak\'s south end');
+      return parts.length ? parts.join(' and ') : 'no trees';
+    };
+    const xText = range => `x ${fmt(range[0], 0)} to ${fmt(range[1], 0)}`;
+    const rowsDec = [8.5, 9, 10, 12, 14, 15, 15.5].map(h => G.shadowRow('dec21', h));
+    fill('shade-dec', rowsDec.map(r => {
+      const reachesR1 = r.tunnelTip <= G.R1_Y, onWall = r.bermOnTunnel;
+      return [G.clock(r.hour), { t: `${fmt(r.sun.alt, 1)}${SYM.deg}`, c: 'num' }, { t: `${fmt(r.sun.bearing, 0)}${SYM.deg}`, c: 'num' },
+        `y ${fmt(r.tunnelTip, 0)} (${fmt(r.tunnelReach, 0)} ft past the wall)`,
+        { t: reachesR1 ? `reached, ${fmt(G.R1_Y - r.tunnelTip, 0)} ft past: ${treeText(r.r1X)}` : `clear by ${fmt(r.tunnelTip - G.R1_Y, 0)} ft`, c: reachesR1 ? 'close' : 'clear' },
+        `y ${fmt(r.bermTip, 0)} (${fmt(r.bermReach, 0)} ft past the crest)`,
+        { t: onWall > 0 ? `shaded ${fmt(onWall, 0)} ft up the strip, ${xText(r.wallX)}` : `clear by ${fmt(r.bermTip - GOTHIC.y1, 0)} ft`, c: onWall > 0 ? 'close' : 'clear' }];
+    }));
+    fill('shade-noon', ['feb1', 'mar1', 'mar21'].map(d => {
+      const r = G.shadowRow(d, 12);
+      return [G.SUN_DATES[d].label, { t: `${fmt(r.sun.alt, 1)}${SYM.deg}`, c: 'num' }, `y ${fmt(r.tunnelTip, 0)} (${fmt(r.tunnelReach, 0)} ft past the wall)`, `y ${fmt(r.bermTip, 0)} (${fmt(r.bermReach, 0)} ft past the crest)`];
+    }));
+    const win = G.bermClearWindow(), r1h = G.r1ShadeHours(), noon = G.shadowRow('dec21', 12), early = G.shadowRow('dec21', 8.5), late = G.shadowRow('dec21', 15.5);
+    T({
+      's-tip-noon': `y ${fmt(noon.tunnelTip, 0)}, ${fmt(noon.tunnelTip - G.ORCHARD_EDGE_Y, 0)} ft short of the orchard's planned edge`, 's-mar21': fmt(G.shadowRow('mar21', 12).tunnelReach, 0),
+      's-r1-am': G.clock(r1h.before), 's-r1-pm': G.clock(r1h.after), 's-r1-trees-am': treeText(early.r1X), 's-r1-trees-pm': treeText(late.r1X),
+      's-from': G.clock(win.from), 's-to': G.clock(win.to), 's-wall-am': xText(early.wallX), 's-wall-pm': xText(late.wallX),
+      's-onwall-am': fmt(early.bermOnTunnel, 0), 's-onwall-pm': fmt(late.bermOnTunnel, 0), 's-center': fmt(GOTHIC.centerX), 's-x': fmt(G.SECTION_X)
+    });
+
+    // Water
+    const baseRain = (years) => SB.stormDepth('24-hr', years);
+    const CNS = [70, 78, 85], area = G.UPSLOPE_SQFT;
+    fill('storms', [2, 10, 25, 100].map(years => {
+      const p = baseRain(years), q = CNS.map(cn => G.runoffInches(p, cn));
+      return [`${years}-year`, { t: `${fmt(p, 2)} in`, c: 'num' }, ...q.map(v => ({ t: `${fmt(v, 2)} in`, c: 'num' })), { t: `${fmt(Math.round(G.gallons(area, q[0]) / 100) * 100)} to ${fmt(Math.round(G.gallons(area, q[2]) / 100) * 100)}`, c: 'num' }];
+    }));
+    const annual = G.annualRainIn(), galIn = G.ARCH.glazing * 0.623;
+    const drainFall = Math.hypot(pitPlane.east, pitPlane.south);
+    const months = window.WATER_HARVESTING.months, swe = SB.data.snow.summary.peak_swe_in.p50;
+    T({
+      'w-slope-tunnel': slopeText(tunnelPlane), 'w-slope-pit': slopeText(pitPlane), 'w-acres': fmt(area / 43560, 1), 'w-sqft': fmt(area),
+      'w-floor': String(PIT.depth.sink), 'w-drain': fmt(Math.round(PIT.depth.sink / (drainFall - 0.01) / 10) * 10, 0), 'w-swe': fmt(swe, 1),
+      'w-glaze': fmt(Math.round(G.ARCH.glazing / 10) * 10), 'w-galin': fmt(Math.round(galIn / 10) * 10), 'w-annual': fmt(annual, 1), 'w-galyr': fmt(Math.round(galIn * annual / 100) * 100), 'w-tank': fmt(3000 / galIn, 1), 'w-pitroof': fmt(Math.round(PIT.length * PIT.roofLength / 10) * 10)
+    });
+
+    // Earthwork
+    const pad = G.padCutFill(GOTHIC.x0, GOTHIC.x1, GOTHIC.y0, GOTHIC.y1), dig = G.pitExcavation(), berm = G.bermVolume(), bermNoWall = G.bermVolume(0.1, 0), padCut = pad.cutCuYd;
+    const fillLow = berm.cuYd - dig.cuYd - padCut, fillHigh = berm.cuYd - dig.cuYd, saved = bermNoWall.cuYd - berm.cuYd;
+    fill('earthwork', [
+      ['Tunnel pad: level, cut and fill balanced', { t: `${fmt(padCut, 0)} cu yd each way`, c: 'num' }, `Lidar ground at the footprint; a level pad at its mean height of ${fmt(pad.mean, 1)} ft. Corners stand ${fmt(pad.high, 1)} ft high and ${fmt(pad.low, 1)} ft low against it. Posts can instead step with the ground.`],
+      ['Pit excavation', { t: `${fmt(dig.cuYd, 0)} cu yd in the ground (about ${fmt(dig.looseCuYd, 0)} loose)`, c: 'num' }, `The owner's depths: beds ${PIT.depth.bed} ft, walks ${PIT.depth.walk} ft, cold zone ${PIT.depth.sink} ft below grade (see the pit page). Loose soil takes about 25% more room.`],
+      ['Earth berm', { t: `${fmt(berm.cuYd, 0)} cu yd (${fmt(berm.straightCuYd, 0)} along the wall, ${fmt(berm.endsCuYd, 0)} for the two sloped ends)`, c: 'num' }, `${fmt(BERM.crest, 1)} ft crest, 2 ft flat top, 2:1 slope on the north face and both ends, stopping at the top of the ${BERM.wall} ft retaining wall. A berm that tapered to the ground would take ${fmt(bermNoWall.cuYd, 0)} cu yd.`],
+      ['Retaining wall at the berm\'s foot', { t: `about ${fmt(BERM.wallLength, 0)} ft long, ${BERM.wall} ft high`, c: 'num' }, `${fmt(BERM.wallLength * BERM.wall, 0)} sq ft of face: ${PIT.length} ft along the north face, two quarter-circle ends of ${BERM.run} ft radius, and a ${BERM.top} ft return at each end. Footing or base, drain gravel, and drain pipe are extra; the material is open (see the pit page).`],
+      ['Fill to bring in', { t: `about ${fmt(fillLow, 0)} to ${fmt(fillHigh, 0)} cu yd`, c: 'num' }, 'The berm minus the pit (and minus the pad cut, if that goes to the berm too). The owner has a local source.'],
+      ['Open cut while digging', { t: `${cut.x1 - cut.x0} ${times} ${cut.y1 - cut.y0} ft at the surface`, c: 'num' }, `x ${cut.x0} to ${cut.x1}, y ${cut.y0} to ${cut.y1}: slopes of 1.5:1 (OSHA's figure for the weakest soil) down to the floor, ${Math.max(PIT.depth.walk, PIT.depth.sink)} ft below grade at its deepest. Less if the soil classes as type A or B, or if the walls are shored as they are dug.`]
+    ]);
+    T({ 'e-loads': `${fmt(fillLow / 10, 0)} to ${fmt(fillHigh / 10, 0)}`, 'e-ratio': fmt(berm.cuYd / dig.cuYd, 1), 'e-saved': fmt(saved, 0) });
+
+    // Nearby
+    const shedN = [88, SG.feature('shed').y0], hyd = SG.feature('hydrant_fence_north'), wb = SG.feature('windbreak');
+    const wsX = 38 + 6 * 18, wsY = 640;
+    fill('nearby', [
+      ['Orchard R1 trunks and the planned edge', 'y 585 and y 600', { t: `The tunnel's north wall is ${GOTHIC.y0 - G.R1_Y} ft from R1 and ${GOTHIC.y0 - G.ORCHARD_EDGE_Y} ft from the planned edge: room for the spreader basins, snow sliding off the roof, and a path.` }],
+      ['Spreader above R1 (water plan, zone 2)', 'along the orchard\'s south edge', 'Catches sheet flow from upslope and spills into the R1 and R2 basins. The tunnel now stands upslope of it, so its roof water and the toe and diversion swales can feed it.'],
+      ['WS90 wind and rain pole site (weather plan)', `x ${wsX}, y ${wsY}`, { h: `<strong>Still close.</strong> ${wsX - GOTHIC.x1} ft east of the tunnel's east end, only ${fmt((wsX - GOTHIC.x1) / GOTHIC.peak, 1)} times its ${GOTHIC.peak} ft height, and in the tunnel's lee in a west wind: a 76 ft wall upwind would still disturb its wind and rain readings. The <a href="weather_station_plan.html">weather plan</a> can move it farther east or south while it is still a plan.` }],
+      ['Frost-free hydrant at the west fence', `x ${hyd.x}, y ${hyd.y}`, `${fmt(dist([hyd.x, hyd.y], [GOTHIC.x0, GOTHIC.ridgeY]), 0)} ft to the tunnel's west door and ${fmt(dist([hyd.x, hyd.y], [PIT.x0, PIT.y1 - 8]), 0)} ft to the pit's west wall: the water source. The buried 1.5 in line starts at the hydrant and runs south along x ${fmt(hyd.x, 0)}, ${fmt(cut.x0 - hyd.x, 0)} ft west of the open cut (x ${cut.x0}); the berm's retaining wall (x ${fmt(BERM.endX0)} at its west end) is ${fmt(BERM.endX0 - hyd.x, 0)} ft east of the hydrant.`],
+      ['Red shed (power; the weather gateway)', `north wall at y ${shedN[1]}`, `${fmt(dist(shedN, [PIT.centerX, PIT.y1]), 0)} ft to the pit's south wall and ${fmt(dist(shedN, [GOTHIC.centerX, GOTHIC.y1]), 0)} ft to the tunnel's: the nearest power. Check its radio range to a sensor inside each building (the metal frame may cost range).`],
+      ['West windbreak and its tractor alley', `windbreak x 0 to 35, y 299 to ${wb.y1}; alley x ${G.ALLEY.x0} to ${G.ALLEY.x1}`, `The windbreak ends ${GOTHIC.y0 - wb.y1} ft north of the tunnel's northwest corner, and the alley runs down to the tunnel's west end, ${GOTHIC.x0 - G.ALLEY.x1} ft east of the alley's edge. See the alley section above.`],
+      ['Planned house, garage, and workshop', 'south of y 840', 'No conflict.']
+    ]);
+
+    // The alley section, the open questions, and the timeline
+    const yardPts = SG.feature('yard').pts, nearYard = door => Math.min(...yardPts.map(p => dist(p, door)));
+    const keep = { x0: 15, x1: 180, y0: G.ORCHARD_EDGE_Y, y1: 730 }, sw = G.swaleClearance();
+    T({
+      'a-west': `${GOTHIC.x0} ft`, 'a-alley': `${G.ALLEY.x1 - G.ALLEY.x0} ft (x ${G.ALLEY.x0} to ${G.ALLEY.x1})`,
+      'a-south-of': `${GOTHIC.y0 - wb.y1} ft`, 'a-south-of2': `${GOTHIC.y0 - wb.y1} ft`,
+      'a-center': fmt(GOTHIC.centerX), 'a-berm-x0': fmt(BERM.endX0), 'a-berm-x1': fmt(BERM.endX1), 'a-berm-x1b': fmt(BERM.endX1), 'a-berm-x1c': fmt(BERM.endX1),
+      'a-block-w': fmt(Math.max(GOTHIC.x1, BERM.endX1) - Math.min(GOTHIC.x0, BERM.endX0)), 'a-block-h': fmt(PIT.y1 - GOTHIC.y0), 'a-cut-x1': fmt(cut.x1), 'a-lane': fmt(BERM.endX0),
+      'a-yard-w': fmt(nearYard([GOTHIC.x0, GOTHIC.ridgeY]), 0), 'a-yard-e': fmt(nearYard([GOTHIC.x1, GOTHIC.ridgeY]), 0),
+      'a-line': `${GOTHIC.x0} ft`, 'a-line-berm': `${fmt(BERM.endX0)} ft`,
+      'a-swale-cut': fmt(sw.cut, 0), 'a-swale-berm': fmt(sw.berm, 0), 'a-swale-hyd': fmt(sw.hydrant, 0), 'a-swale': fmt(sw.tunnel, 0),
+      'q-wall-len': fmt(BERM.wallLength, 0), 'q-wall-above': fmt(BERM.crest - BERM.wall, 1),
+      't-keep': `x ${keep.x0} to ${keep.x1}, y ${keep.y0} to ${keep.y1}`, 't-hole': fmt(G.SOIL.rockFt), 't-posts': String(PIT.depth.post), 't-gap': fmt(BERM.toeY - GOTHIC.y1)
+    });
+
+    // Rules and timeline numbers
+    T({ 'r-snow': String(SB.buildingValue('ground-snow-load').value), 'r-wind': String(SB.buildingValue('wind-speed').value), 'r-area': `${fmt(GOTHIC.footprint)} sq ft`,
+      'r-wall': String(BERM.wall), 'r-wall-above': fmt(BERM.crest - BERM.wall, 1),
+      't-jul': fmt(months[6].precipitation_in, 2), 't-aug': fmt(months[7].precipitation_in, 2), 't-dec': fmt(months[11].precipitation_in, 1) });
+  }
+})();
+</script>
+</body>
+</html>
