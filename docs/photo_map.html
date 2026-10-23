@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Photo Map — Mountain Prairie Acres</title>
+<style>
+  :root {
+    --bg: #ffffff; --bg2: #f5f4f0; --bg3: #eae8e1;
+    --text: #2C2C2A; --text2: #5F5E5A; --text3: #888780;
+    --border: #d3d1c7; --link: #185FA5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.5;
+    padding: 20px; max-width: 1400px; margin: 0 auto;
+  }
+  body.pm-lock { overflow: hidden; }
+  a { color: var(--link); }
+  h1 { font-size: 22px; font-weight: 600; }
+  h2 { font-size: 13px; font-weight: 600; color: var(--text2); margin: 0 0 6px; }
+  p, li { font-size: 12px; }
+  .home-link { font-size: 12px; margin: 0 0 8px; }
+  .subtitle { font-size: 13px; color: var(--text2); margin: 2px 0 12px; max-width: 900px; }
+  .source-note { font-size: 11px; color: var(--text2); margin: 6px 0 0; max-width: 1000px; }
+  .notice { background: var(--bg2); border-left: 4px solid #BA7517; border-radius: 4px; padding: 8px 12px; margin: 0 0 12px; font-size: 12px; }
+  .notice.error { border-left-color: #E24B4A; }
+  footer { margin-top: 18px; padding-top: 8px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text3); }
+
+  .pm-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; margin: 0 0 6px; }
+  .pm-group { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .pm-group-name { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.4px; }
+  .pm-chip { font: inherit; font-size: 12px; min-height: 30px; padding: 4px 11px; border: 1px solid var(--border); border-radius: 999px; background: #fff; color: var(--text); cursor: pointer; }
+  .pm-chip:hover { background: var(--bg3); }
+  .pm-chip[aria-pressed="true"], .pm-chip[aria-pressed="true"]:hover { background: #2C2C2A; border-color: #2C2C2A; color: #fff; }
+  .pm-chip:focus-visible, .pm-step:focus-visible, .pm-close:focus-visible, .pm-thumb:focus-visible, .pm-full:focus-visible, .pm-photo-link:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+  .pm-chip-count { color: var(--text3); font-size: 11px; }
+  .pm-chip[aria-pressed="true"] .pm-chip-count { color: #d3d1c7; }
+  .pm-swatch { display: inline-block; width: 10px; height: 10px; margin-right: 5px; border: 1px solid rgba(255, 255, 255, 0.7); border-radius: 50%; vertical-align: -1px; }
+  .pm-status { font-size: 12px; color: var(--text2); margin: 0 0 8px; }
+  .pm-key { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 0 0 10px; font-size: 11px; color: var(--text2); }
+  .pm-key span { display: inline-flex; align-items: center; gap: 5px; }
+  .pm-key i { display: inline-block; width: 12px; height: 12px; background: #5F5E5A; }
+  .pm-key .pm-key-circle { border-radius: 50%; }
+  .pm-key .pm-key-square { border-radius: 3px; }
+  .pm-key .pm-key-shade { background: rgba(0, 89, 160, 0.2); border: 1px dashed #0059A0; }
+
+  .pm-body { display: grid; grid-template-columns: minmax(300px, 0.8fr) minmax(0, 1.4fr); gap: 18px; align-items: start; }
+  .pm-left { min-width: 0; }
+  .pm-mapbox { margin: 0; }
+  .pm-mapbox figcaption { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  #pm-map svg { display: block; width: 100%; height: auto; border: 1px solid var(--border); border-radius: 6px; background: #ECEAE2; }
+  .pm-svg text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  .pm-label-text { font-size: 7.5px; font-weight: 600; letter-spacing: 0.4px; fill: #6F6D66; paint-order: stroke; stroke: #F7F5EE; stroke-width: 2.4px; stroke-linejoin: round; }
+  .pm-label-big { font-size: 11px; font-weight: 700; fill: #8A6A3A; opacity: 0.85; }
+  .pm-cell-text { font-size: 7px; font-weight: 400; letter-spacing: 0; fill: #8B897F; stroke: none; }
+  .pm-north-text, .pm-scale-text { font-size: 9px; font-weight: 600; fill: #2C2C2A; }
+  .pm-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  .pm-dot { cursor: pointer; outline: none; }
+  .pm-hit { fill: transparent; stroke: none; }
+  .pm-dot .pm-shape { stroke: #fff; stroke-width: 1.8; }
+  .pm-num { font-size: 9.5px; font-weight: 700; fill: #fff; pointer-events: none; }
+  .pm-ring { stroke: #2C2C2A; stroke-width: 2.4; opacity: 0; }
+  .pm-dot.pm-sel .pm-ring { opacity: 1; }
+  .pm-dot.pm-hot .pm-shape, .pm-dot:hover .pm-shape { stroke: #2C2C2A; stroke-width: 2; }
+  .pm-dot:focus-visible .pm-hit { fill: rgba(24, 95, 165, 0.14); stroke: #185FA5; stroke-width: 2; stroke-dasharray: 4 2; }
+  .pm-leader { stroke: rgba(44, 44, 42, 0.55); stroke-width: 1; stroke-dasharray: 2 2; }
+  .pm-true { stroke: #fff; stroke-width: 0.8; }
+  .pm-view { fill-opacity: 0.14; stroke-width: 1.2; stroke-linejoin: round; pointer-events: none; }
+  .pm-view-selected { fill-opacity: 0.2; stroke-width: 1.8; stroke-dasharray: 7 4; }
+  .pm-view-hot { fill-opacity: 0.12; stroke-opacity: 0.8; }
+
+  .pm-side { position: sticky; top: 8px; display: flex; flex-direction: column; max-height: calc(100vh - 16px); overflow-y: auto; overscroll-behavior: contain; }
+  .pm-viewer { flex: none; margin: 0 0 12px; padding: 10px; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; }
+  .pm-side h2 { flex: none; }
+  .pm-close { display: none; font: inherit; font-size: 13px; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: #fff; cursor: pointer; }
+  .pm-empty-viewer { padding: 18px 8px; font-size: 13px; color: var(--text2); text-align: center; }
+  .pm-figure { position: relative; }
+  .pm-photo-link { display: block; }
+  .pm-photo { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; max-height: min(52vh, 560px); object-fit: contain; border-radius: 6px; background: #2C2C2A center / cover no-repeat; }
+  .pm-north { position: absolute; top: 8px; right: 8px; width: 44px; height: 44px; pointer-events: none; }
+  .pm-caption { margin: 8px 0 2px; font-size: 14px; font-weight: 600; line-height: 1.35; }
+  .pm-meta { font-size: 12px; color: var(--text2); }
+  .pm-original { font-size: 11px; color: var(--text3); overflow-wrap: anywhere; }
+  .pm-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-top: 8px; }
+  .pm-step { font: inherit; font-size: 12px; min-height: 30px; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--text); cursor: pointer; }
+  .pm-step:hover:not(:disabled) { background: var(--bg3); }
+  .pm-step:disabled { opacity: 0.5; cursor: default; }
+  .pm-position { min-width: 52px; font-size: 12px; color: var(--text2); text-align: center; }
+  .pm-full { margin-left: auto; font-size: 12px; }
+  .pm-thumbs { flex: 1 1 auto; min-height: 150px; overflow-y: auto; padding: 3px; list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); grid-auto-rows: max-content; gap: 8px; }
+  .pm-empty { grid-column: 1 / -1; font-size: 12px; color: var(--text2); }
+  .pm-thumb { position: relative; display: block; width: 100%; padding: 0; overflow: hidden; font: inherit; text-align: left; background: #fff; border: 2px solid transparent; border-radius: 8px; box-shadow: 0 0 0 1px var(--border); cursor: pointer; }
+  .pm-thumb img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; background: #eceae3; }
+  .pm-num-badge { position: absolute; top: 4px; left: 4px; display: flex; align-items: center; justify-content: center; min-width: 21px; height: 21px; padding: 0 5px; border: 1.5px solid #fff; border-radius: 11px; color: #fff; font-size: 11px; font-weight: 700; }
+  .pm-when { display: block; padding: 3px 6px 4px; font-size: 11px; color: var(--text2); }
+  .pm-thumb.pm-hot { box-shadow: 0 0 0 2px var(--link); }
+  .pm-thumb[aria-current="true"] { border-color: #2C2C2A; }
+  .pm-card { position: fixed; z-index: 1100; width: 250px; padding: 6px; background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 10px 28px rgba(44, 44, 42, 0.24); pointer-events: none; }
+  .pm-card[hidden] { display: none; }
+  .pm-card img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 4px; background: #eceae3; }
+  .pm-card-caption { margin: 5px 2px 0; font-size: 12px; line-height: 1.35; }
+  .pm-card-meta { margin: 2px 2px 0; font-size: 11px; color: var(--text2); }
+
+  @media screen and (max-width: 899px) {
+    body { padding: 12px; }
+    .pm-body { grid-template-columns: 1fr; }
+    .pm-side { position: static; display: block; max-height: none; overflow: visible; }
+    .pm-thumbs { overflow: visible; min-height: 0; padding: 3px; }
+    .pm-viewer { display: none; }
+    .pm-viewer.pm-open { display: block; position: fixed; inset: 0; z-index: 2000; margin: 0; padding: 12px; overflow-y: auto; background: #fff; border: 0; border-radius: 0; }
+    .pm-viewer.pm-open .pm-close { display: block; margin: 0 0 8px auto; }
+    .pm-photo { max-height: 70vh; }
+    .pm-card { display: none; }
+  }
+  @media (pointer: coarse) {
+    .pm-chip, .pm-step, .pm-close { min-height: 40px; }
+  }
+  @media print {
+    body { padding: 0; max-width: none; }
+    .pm-controls, .pm-status, .pm-key, .pm-side, .pm-card { display: none !important; }
+    .pm-body { grid-template-columns: 1fr; }
+    #pm-map svg { max-height: 9in; width: auto; max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+<script src="site_nav.js"></script>
+<nav class="home-link" aria-label="Back to the home page"><a href="index.html">← Mountain Prairie Acres — Orchard and Ranch Projects</a></nav>
+<noscript><div class="notice error">JavaScript is required to draw the map and show the photos.</div></noscript>
+<div class="notice error" id="render-error" hidden></div>
+
+<section aria-labelledby="page-title">
+  <h1 id="page-title">Mountain Prairie Acres: Photo Map</h1>
+  <p class="subtitle">Where each drone photo was taken, drawn on the lot with north up. Pick a numbered marker or a thumbnail to see the photo; the shaded patch shows roughly the ground the camera was looking at. The photos show the homestead, the orchard rows going in, and the water-line trenches, from the owner's drone flights in the fall of 2026.</p>
+  <div class="pm-body">
+    <div class="pm-left">
+      <div class="pm-controls" id="pm-controls"></div>
+      <p class="pm-status" id="pm-status" role="status"></p>
+      <p class="pm-sr" id="pm-announce" role="status" aria-live="polite"></p>
+      <div class="pm-key" aria-label="How to read the markers">
+        <span><i class="pm-key-circle"></i>Circle: an angled shot. The pointer shows the way the camera faced.</span>
+        <span><i class="pm-key-square"></i>Square: a straight-down shot. The pointer shows the top of the photo.</span>
+        <span><i class="pm-key-shade"></i>Shaded patch: roughly the ground in view.</span>
+      </div>
+      <figure class="pm-mapbox"><figcaption>Camera positions, 50 ft grid cells (see the <a href="site_master_grid.html">Site Master Grid</a>)</figcaption><div id="pm-map"></div></figure>
+    </div>
+    <aside class="pm-side" aria-label="Photo viewer and thumbnails">
+      <div class="pm-viewer" id="pm-viewer" role="region" aria-label="Selected photo"></div>
+      <h2>All photos, oldest first</h2>
+      <ul class="pm-thumbs" id="pm-thumbs"></ul>
+    </aside>
+  </div>
+  <p class="source-note">Each marker is the drone's GPS position when the photo was taken, placed on the master grid; it is good to roughly 10 to 30 ft. Heights are above the point where the drone took off, not above the ground under it. Markers that would overlap are moved apart, with a dotted line back to the true spot. The photos here are web-sized copies of the owner's originals, which stay in the owner's files, and the copies carry no location or camera data. The blue dots and teal squares on the map are the hydrants and valve boxes, as on the other maps.</p>
+</section>
+
+<footer>Mountain Prairie Acres · Prairie, Idaho · <a href="index.html">Project home</a> · <a href="site_master_grid.html">Site master grid</a> · <a href="homestead_plot_map.html">Homestead plot map</a> · <a href="https://github.com/srnichols/Mountain-Prairie-Acres">GitHub</a></footer>
+
+<script src="data/site_grid.js"></script>
+<script src="data/photos.js"></script>
+<script src="site_photos.js"></script>
+<script src="photo_map.js"></script>
+<script>
+'use strict';
+try {
+  window.photoMap = PhotoMap.start();
+} catch (error) {
+  const box = document.getElementById('render-error');
+  box.textContent = `The photo map could not be drawn: ${error.message}`;
+  box.hidden = false;
+}
+</script>
+</body>
+</html>

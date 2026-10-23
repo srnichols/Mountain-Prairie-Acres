@@ -30,7 +30,8 @@ Queries are read-only: writes, attachment of another database, and extension loa
 | `workbook_rows`, `purchases` | Lossless structured workbook cells and purchase-list projections; headers are not purchases, dates not supplied stay null |
 | `planting_plan_items`, `planting_plan_spots` | The planting plan (`PLANTING_PLAN` in `orchard.json`): one row per recommended cultivar with its fruit type, whether it is bought or grafted (`method`), quantity, rootstock note, and library profile, and one row per planned orchard spot (reserved R1 spots for grafts). A recommendation, not a record of trees: nothing here is bought, grafted, or planted |
 | `grid_cells` | All master cells, clipped to the actual fence, with their northwest-corner latitude/longitude |
-| `site_features`, `feature_points` | Full mapped geometry and queryable vertices, including water pipes and hydrants |
+| `site_features`, `feature_points` | Full mapped geometry and queryable vertices, including water pipes, hydrants, and valve boxes |
+| `photos`, `feature_photos` | The drone photos (the files, the original's name, the local time taken, the camera's place in lot feet and grid `cell`, its height above the take-off point, heading, tilt, and field of view, a caption, and alt text), and which photos each mapped item shows. `cell` is `NULL` for a camera outside the fence |
 | `terrain_samples`, `terrain_lines`, `terrain_points`, `drainage_areas` | All 18,009 lidar mesh points, contours/flows/split/ridge/ditch, and eight drainage-area values |
 | `climate_months`, `soil_layers` | Twelve PRISM/ERA5 monthly records and three NRCS soil horizons |
 | `climate_site`, `frost_thresholds`, `climate_sources` | The site climate record: the lot's coordinates and normals period, the four frost thresholds (36, 32, 28, and 24 °F), and the data sources, one `primary` (the Prairie SNOTEL station; a partial unique index allows only one) and the rest `check` sources, each with its average coldest night and USDA zone |
@@ -59,6 +60,7 @@ inventory_batches -> plants -> plantings -> locations
 inventory_batches / cultivars / workbook_rows (seed list) -> cultivar_profile_links -> cultivar_profiles -> aliases, uses, sources
 planting_plan_items -> cultivar_profiles; planting_plan_spots -> planting_plan_items, locations
 site_features -> feature_points
+site_features -> feature_photos -> photos
 terrain_lines -> terrain_points
 climate_sources -> temperature_months, frost_summary, frost_days, frost_years (thresholds from frost_thresholds)
 water_observations -> locations (when supplied)

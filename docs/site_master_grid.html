@@ -33,6 +33,7 @@
   .diagram .t-title { font-weight: 600; }
   .diagram .t-note { fill: #5F5E5A; }
   .diagram .t-water { fill: #0B5F7C; font-weight: 600; }
+  .diagram .t-valve { fill: #0E6B5C; font-weight: 700; }
   .diagram .halo { paint-order: stroke; stroke: #fff; stroke-width: 2.4px; stroke-linejoin: round; }
 
   .facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
@@ -47,6 +48,7 @@
   table.detail td { padding: 3px 6px; border: 1px solid var(--border); vertical-align: top; }
   table.detail td.num, table.detail th.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
   table.detail tr.group td { background: var(--bg2); font-weight: 600; color: var(--text2); }
+  table.detail tr.note td { color: var(--text2); font-style: italic; }
   table.detail tr.planned td { color: #4E3A68; }
   code, pre { font-family: Consolas, "SF Mono", Menlo, monospace; font-size: 11px; }
   pre { background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; padding: 6px 8px; margin: 4px 0 8px; white-space: pre-wrap; overflow-wrap: anywhere; }
@@ -79,7 +81,7 @@
     table.detail .site-ref { white-space: nowrap; }
     table.detail tr { break-inside: avoid; }
     code, pre { font-size: 7pt; } pre { padding: 1mm 1.5mm; margin: 0.8mm 0 1.5mm; break-inside: avoid; }
-    #code-title { break-before: page; margin-top: 0; }
+    #water-title { break-before: page; margin-top: 0; }
     .source-note { font-size: 7.2pt; }
     a { text-decoration: none; color: inherit; }
     footer { display: none; }
@@ -113,6 +115,9 @@
       <h3>Feature coordinates and SiteRefs</h3>
       <p class="source-note">SiteRefs below identify feature centers, not the full extent of a building or water line. Generated codes round to 0.01 ft; this does not improve the map's roughly 10 ft GPS accuracy.</p>
       <table class="detail" id="features"></table>
+      <h3 id="water-title">Row laterals and valve boxes</h3>
+      <p class="source-note">Eight 10 ft, 1.5 in laterals (<code>water_lateral_row_1</code> to <code>8</code>) run west off the 2 in main, each ending in a 1 in riser into a valve box (a row head station), numbered south to north on the map. Their spacing along the main is read from the owner's drone photo (October 2026): the five in the south are about 60 ft apart and the three in the north about 70 ft apart. The hydrants' valve boxes (4 ft back on the hydrant's line, where it has one) follow the head stations.</p>
+      <table class="detail" id="water-detail"></table>
       <h3 id="code-title">SiteRef Location Codes and Shared Helpers</h3>
       <p><strong>Format:</strong> <code>CELL-Eoffset-Soffset</code> fits a precise location in one printed column. <code>C17-E12-S18</code> means 12 ft east and 18 ft south of <strong>C17's northwest corner</strong>: x 112, y 818. Decimals are feet, not inches; <code>C17-E12.5-S18</code> is valid.</p>
       <p><strong>Planted example:</strong> the M-111 rootstock at orchard R6-C3 is <code>B10-E33-S35</code> (x 83, y 485) in the current layout. SiteRef locates the spot, not the plant: keep the metal tag and individual Plant ID separately. A replacement plant can reuse the spot's code.</p>
@@ -132,6 +137,8 @@
 
 <script src="data/site_grid.js"></script>
 <script src="data/site_terrain.js"></script>
+<script src="data/photos.js"></script>
+<script src="site_photos.js"></script>
 <script>
 'use strict';
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -150,8 +157,14 @@ function element(tag, text, className) {
 const fmt = (value, digits = 0) => Number(value).toLocaleString('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits });
 const SG = window.SiteGrid, F = id => SG.feature(id);
 const COLOR = { road: '#DDD0B8', roadEdge: '#B6A385', pad: '#EEE4CF', padEdge: '#A8906A', fence: '#6B5A45', planned: '#7A5CA5',
-  orchard: '#B07A3E', windbreak: '#5E8F3E', ditch: '#2B8FD6', waterLine: '#1B4F9C', contour: '#B4A48F' };
+  orchard: '#B07A3E', windbreak: '#5E8F3E', ditch: '#2B8FD6', waterLine: '#1B4F9C', valveBox: '#1F9E89', contour: '#B4A48F' };
 const PIPES = SG.features({ kind: 'water_pipe' }), HYDRANTS = SG.features({ kind: 'hydrant' });
+// Valve boxes: one at the end of each row lateral (the head stations, numbered south to north) and one 4 ft back from each hydrant that has one
+const VALVE_BOXES = SG.features({ kind: 'valve_box' });
+const HEAD_STATIONS = VALVE_BOXES.filter(f => f.lateral), HYDRANT_BOXES = VALVE_BOXES.filter(f => f.hydrant);
+const NO_BOX = HYDRANTS.filter(h => !HYDRANT_BOXES.some(b => b.hydrant === h.id));
+// The laterals and valve boxes have their own table, so the feature table keeps one row for them
+const isRowDetail = f => f.kind === 'valve_box' || Boolean(f.head_station);
 const pathLength = pts => pts.slice(1).reduce((sum, p, i) => sum + Math.hypot(p[0] - pts[i][0], p[1] - pts[i][1]), 0);
 
 function makeMap() {
@@ -159,7 +172,7 @@ function makeMap() {
   const V = { west: -34, east: lot.width + 40, top: -46, bottom: 1340 }, S = 0.62;
   const X = x => +((x - V.west) * S).toFixed(2), Y = y => +((y - V.top) * S).toFixed(2);
   const svg = svgNode('svg', { viewBox: `0 0 ${(V.east - V.west) * S} ${(V.bottom - V.top) * S}`, class: 'diagram', role: 'img', 'aria-labelledby': 'grid-title' });
-  svg.append(svgNode('title', { id: 'grid-title' }, `The whole lot, ${fmt(lot.width)} by ${fmt(lot.depth)} ft, divided into 50 ft cells A–G west to east and 1–26 north to south, with the roads, driveway, orchard block, homestead, buried water lines and hydrants, and high and low points.`));
+  svg.append(svgNode('title', { id: 'grid-title' }, `The whole lot, ${fmt(lot.width)} by ${fmt(lot.depth)} ft, divided into 50 ft cells A–G west to east and 1–26 north to south, with the roads, driveway, orchard block, homestead, buried water lines and hydrants, the ${HEAD_STATIONS.length} row laterals with their valve boxes along the main, and high and low points.`));
   const defs = svgNode('defs'), clip = svgNode('clipPath', { id: 'mg-lot' });
   clip.append(svgNode('rect', { x: X(0), y: Y(0), width: lot.width * S, height: lot.depth * S }));
   defs.append(clip); svg.append(defs);
@@ -188,7 +201,7 @@ function makeMap() {
   add(svgNode('path', { d: `${d(F('house_pad').pts)}Z`, fill: COLOR.pad, stroke: COLOR.padEdge, 'stroke-width': 0.6 }), inLot);
   ['workshop_pad', 'rv_pad'].forEach(id => box(F(id), { fill: COLOR.pad, stroke: COLOR.padEdge, 'stroke-width': 0.6 }, inLot));
   line(F('old_ditch').pts, { stroke: COLOR.ditch, 'stroke-width': 1, 'stroke-dasharray': '4 2.5', opacity: 0.8 }, inLot);
-  // Buried water lines: 2 in PVC solid, 1.5 in PVC dashed
+  // Buried water lines: 2 in PVC solid, 1.5 in PVC dashed (the row laterals are 1.5 in, so they show dashed too)
   PIPES.forEach(f => line(f.pts, { stroke: COLOR.waterLine, 'stroke-width': f.size_in >= 2 ? 1.5 : 1, 'stroke-linejoin': 'round',
     ...(f.size_in >= 2 ? {} : { 'stroke-dasharray': '3.5 1.6' }) }, inLot));
   ['house', 'garage', 'workshop'].forEach(id => box(F(id), { fill: 'none', stroke: COLOR.planned, 'stroke-width': 0.8, 'stroke-dasharray': '2.5 1.5' }, inLot));
@@ -198,6 +211,12 @@ function makeMap() {
   add(svgNode('circle', { cx: X(tank.cx), cy: Y(tank.cy), r: tank.r * S, fill: '#1E1E1E' }), inLot);
   // Frost-free yard hydrants
   HYDRANTS.forEach(h => add(svgNode('circle', { cx: X(h.x), cy: Y(h.y), r: 2.3, fill: COLOR.waterLine, stroke: '#fff', 'stroke-width': 0.7 }), inLot));
+  // Row head stations: a valve box at the end of each row lateral. Each hydrant's valve box is 4 ft back on its line, so it
+  // is drawn small, over the edge of the hydrant dot (the homestead plot map shows them apart).
+  HEAD_STATIONS.forEach(f => add(svgNode('rect', { x: +(X(f.x) - 1.9).toFixed(2), y: +(Y(f.y) - 1.9).toFixed(2), width: 3.8, height: 3.8,
+    fill: COLOR.valveBox, stroke: '#fff', 'stroke-width': 0.6 }), inLot));
+  HYDRANT_BOXES.forEach(f => add(svgNode('rect', { x: +(X(f.x) - 1.3).toFixed(2), y: +(Y(f.y) - 1.3).toFixed(2), width: 2.6, height: 2.6,
+    fill: COLOR.valveBox, stroke: '#fff', 'stroke-width': 0.5 }), inLot));
 
   // The 50 ft master grid, with every cell labeled
   for (let c = 1; c * 50 < lot.width; c++) line([[c * 50, 0], [c * 50, lot.depth]], { stroke: 'rgba(40,40,40,0.38)', 'stroke-width': 0.55 }, inLot);
@@ -219,7 +238,10 @@ function makeMap() {
   label(168, 980, 'house pad', 't-title', 6.2);
   label(61, 836, 'workshop pad', 't-note', 5.6);
   vlabel(310.8, 420, 'driveway', 't-note', 6);
-  vlabel(293, 230, '2 in water main', 't-water', 5.8);
+  // South of the orchard block, clear of the row laterals
+  vlabel(281, 655, '2 in water main', 't-water', 5.8);
+  // The number of each row head station sits just above its valve box
+  HEAD_STATIONS.forEach((f, i) => label(f.x, f.y - 5.4, String(i + 1), 't-valve', 5.4, 'middle'));
   vlabel(31, 760, '1.5 in water line', 't-water', 5.4);
   label(F('hydrant_north').x - 5, F('hydrant_north').y + 2, 'hydrant', 't-water', 5.4, 'end');
   label(236, 908, 'old ditch (lidar)', 't-water', 5.6, 'start');
@@ -230,6 +252,16 @@ function makeMap() {
   label(hi.x - 2, hi.y - 8, `${fmt(SG.elevationFt(hi.x, hi.y))} ft`, 't-title', 5.6, 'end');
   add(svgNode('path', { d: `M${X(lo.x + 2)},${Y(lo.y - 5)} l${3.6},${8} l${3.6},${-8} z`, fill: '#2C2C2A' }), inLot);
   label(lo.x + 10, lo.y + 3, `low point ${fmt(SG.elevationFt(lo.x, lo.y))} ft`, 't-title', 5.8, 'start');
+
+  // Key to the water symbols, in the open ground north of the orchard
+  const kx = 100, ky = 61;
+  add(svgNode('rect', { x: X(kx), y: Y(ky), width: 156 * S, height: 37 * S, rx: 1.5, fill: '#fff', 'fill-opacity': 0.9, stroke: '#B6B3A8', 'stroke-width': 0.5 }), inLot);
+  line([[kx + 5, ky + 9], [kx + 21, ky + 9]], { stroke: COLOR.waterLine, 'stroke-width': 1, 'stroke-dasharray': '3.5 1.6' }, inLot);
+  add(svgNode('rect', { x: +(X(kx + 13) - 1.9).toFixed(2), y: +(Y(ky + 20) - 1.9).toFixed(2), width: 3.8, height: 3.8, fill: COLOR.valveBox, stroke: '#fff', 'stroke-width': 0.6 }), inLot);
+  add(svgNode('circle', { cx: X(kx + 13), cy: Y(ky + 31), r: 2.3, fill: COLOR.waterLine, stroke: '#fff', 'stroke-width': 0.7 }), inLot);
+  add(svgNode('rect', { x: +(X(kx + 17) - 1.3).toFixed(2), y: +(Y(ky + 31) - 1.3).toFixed(2), width: 2.6, height: 2.6, fill: COLOR.valveBox, stroke: '#fff', 'stroke-width': 0.5 }), inLot);
+  [[11, '1.5 in row lateral (10 ft)'], [22, `valve box (head stations 1–${HEAD_STATIONS.length})`], [33, 'hydrant (valve box 4 ft back)']]
+    .forEach(([dy, str]) => text(kx + 26, ky + dy, str, { class: 't-note', 'font-size': 5.2 }, inLot));
 
   // Margins: column letters, row numbers, foot marks, north arrow, scale bar
   for (let c = 0; c < cols.length; c++) {
@@ -250,6 +282,8 @@ function makeMap() {
   [[0, 50, '#2C2C2A'], [50, 100, '#fff']].forEach(([a, b, fill]) => add(svgNode('rect', { x: X(a), y: Y(sy - 2), width: (b - a) * S, height: 4 * S, fill, stroke: '#2C2C2A', 'stroke-width': 0.6 })));
   text(108, sy + 2, '100 ft', { 'font-size': 6.4, class: 't-note' });
   text(lot.width, sy + 2, `fence ${fmt(lot.width, 1)} × ${fmt(lot.depth, 1)} ft`, { 'font-size': 6.4, class: 't-note', 'text-anchor': 'end' });
+  // Items with photos get a camera badge; hovering or tapping one shows them (site_photos.js)
+  if (window.SitePhotos) SitePhotos.attach(svg, SG, { toSvg: (x, y) => [X(x), Y(y)], within: { x0: 0, y0: 0, x1: lot.width, y1: lot.depth }, minHit: 14, badge: 5 });
   return svg;
 }
 
@@ -290,6 +324,8 @@ function renderFacts() {
   });
 }
 
+const FEATURE_COLUMNS = [['Feature (id)', ''], ['Cells', ''], ['SiteRef (center)', ''], ['Size, ft', 'num'], ['Ground, ft', 'num'], ['Lat, long', 'num']];
+
 function cellRange(f) {
   const cells = SG.cellsOf(f);
   if (!cells.length) return 'off grid';
@@ -303,36 +339,64 @@ function cellRange(f) {
   return `${cols[Math.min(...cs)]}${Math.min(...rs)}–${cols[Math.max(...cs)]}${Math.max(...rs)}`;
 }
 
-function renderFeatures() {
-  const table = document.getElementById('features'), head = element('tr');
-  [['Feature (id)', ''], ['Cells', ''], ['SiteRef (center)', ''], ['Size, ft', 'num'], ['Ground, ft', 'num'], ['Lat, long', 'num']]
-    .forEach(([h, c]) => { const th = element('th', h); if (c) th.className = c; head.append(th); });
+function featureHead(table) {
+  const head = element('tr');
+  FEATURE_COLUMNS.forEach(([h, c]) => { const th = element('th', h); if (c) th.className = c; head.append(th); });
   const thead = element('thead'); thead.append(head); table.append(thead);
+}
+
+function groupRow(title) {
+  const tr = element('tr', null, 'group'), td = element('td', title);
+  td.colSpan = FEATURE_COLUMNS.length; tr.append(td);
+  return tr;
+}
+
+function featureRow(f) {
+  const [cx, cy] = SG.center(f), tr = element('tr'), name = element('td');
+  if (f.status === 'planned') tr.className = 'planned';
+  name.append(document.createTextNode(`${f.key ? `${f.key} · ` : ''}${f.name} `), element('code', f.id));
+  const [w, h] = SG.size(f);
+  const area = pts => Math.abs(pts.reduce((sum, [x, y], i) => { const [x2, y2] = pts[(i + 1) % pts.length]; return sum + x * y2 - x2 * y; }, 0)) / 2;
+  const size = f.kind === 'water_pipe' ? `${f.size_in} in pipe, ${fmt(Math.round(pathLength(f.pts) / 5) * 5)} long`
+    : f.kind === 'valve_box' ? (f.lateral ? `${f.riser_in} in riser, ${fmt(Math.round(pathLength(F(f.lateral).pts)))} ft lateral` : `${f.setback_ft} ft back on the line`)
+    : f.shape === 'point' ? '—' : f.shape === 'line' ? `${fmt(f.width)} wide` : f.shape === 'circle' ? `${fmt(w)} across`
+    : f.shape === 'polygon' && f.group === 'access' ? `${fmt(Math.round(area(f.pts) / 100) * 100)} sq ft` : `${fmt(w, w % 1 ? 1 : 0)} × ${fmt(h, h % 1 ? 1 : 0)}`;
+  const inside = SG.inLot(cx, cy) && f.id !== 'fence';
+  const ll = SG.toLatLon(cx, cy);
+  tr.append(name);
+  const site = element('td');
+  site.append(element('code', SG.inLot(cx, cy) ? SG.siteRef(cx, cy) : 'OUTSIDE LOT', 'site-ref'));
+  site.title = `Center: x ${fmt(cx, 2)}, y ${fmt(cy, 2)} ft from the northwest fence corner`;
+  tr.append(element('td', cellRange(f)), site);
+  [[size, 'num'], [inside ? fmt(SG.elevationFt(cx, cy), 1) : '—', 'num'], [`${ll[0].toFixed(5)}, ${ll[1].toFixed(5)}`, 'num']]
+    .forEach(([v, c]) => { const td = element('td', v); if (c) td.className = c; tr.append(td); });
+  return tr;
+}
+
+function renderFeatures() {
+  const table = document.getElementById('features');
+  featureHead(table);
   const tbody = element('tbody');
   const groups = [['boundary', 'Boundary and access'], ['access', null], ['homestead', 'Homestead'], ['planned', 'Planned buildings'], ['utility', 'Utilities'], ['orchard', 'Orchard'], ['terrain', 'Terrain']];
   groups.forEach(([group, title]) => {
-    if (title) { const tr = element('tr', null, 'group'); const td = element('td', title); td.colSpan = 6; tr.append(td); tbody.append(tr); }
-    SG.features({ group }).forEach(f => {
-      const [cx, cy] = SG.center(f), tr = element('tr'), name = element('td');
-      if (f.status === 'planned') tr.className = 'planned';
-      name.append(document.createTextNode(`${f.key ? `${f.key} · ` : ''}${f.name} `), element('code', f.id));
-      const [w, h] = SG.size(f);
-      const area = pts => Math.abs(pts.reduce((sum, [x, y], i) => { const [x2, y2] = pts[(i + 1) % pts.length]; return sum + x * y2 - x2 * y; }, 0)) / 2;
-      const size = f.kind === 'water_pipe' ? `${f.size_in} in pipe, ${fmt(Math.round(pathLength(f.pts) / 5) * 5)} long`
-        : f.shape === 'point' ? '—' : f.shape === 'line' ? `${fmt(f.width)} wide` : f.shape === 'circle' ? `${fmt(w)} across`
-        : f.shape === 'polygon' && f.group === 'access' ? `${fmt(Math.round(area(f.pts) / 100) * 100)} sq ft` : `${fmt(w, w % 1 ? 1 : 0)} × ${fmt(h, h % 1 ? 1 : 0)}`;
-      const inside = SG.inLot(cx, cy) && f.id !== 'fence';
-      const ll = SG.toLatLon(cx, cy);
-      tr.append(name);
-      const site = element('td');
-      site.append(element('code', SG.inLot(cx, cy) ? SG.siteRef(cx, cy) : 'OUTSIDE LOT', 'site-ref'));
-      site.title = `Center: x ${fmt(cx, 2)}, y ${fmt(cy, 2)} ft from the northwest fence corner`;
-      tr.append(element('td', cellRange(f)), site);
-      [[size, 'num'], [inside ? fmt(SG.elevationFt(cx, cy), 1) : '—', 'num'], [`${ll[0].toFixed(5)}, ${ll[1].toFixed(5)}`, 'num']]
-        .forEach(([v, c]) => { const td = element('td', v); if (c) td.className = c; tr.append(td); });
-      tbody.append(tr);
-    });
+    if (title) tbody.append(groupRow(title));
+    SG.features({ group }).filter(f => !isRowDetail(f)).forEach(f => tbody.append(featureRow(f)));
+    if (group === 'utility') {
+      const tr = element('tr', null, 'note'), td = element('td', `${HEAD_STATIONS.length} row laterals (1.5 in, 10 ft) with their head-station valve boxes, and ${HYDRANT_BOXES.length} hydrant valve boxes: see Row laterals and valve boxes, below.`);
+      td.colSpan = FEATURE_COLUMNS.length; tr.append(td); tbody.append(tr);
+    }
   });
+  table.append(tbody);
+}
+
+function renderWaterDetail() {
+  const table = document.getElementById('water-detail');
+  featureHead(table);
+  const tbody = element('tbody');
+  tbody.append(groupRow('Row head stations: the valve box at the end of each row lateral, south to north'));
+  HEAD_STATIONS.forEach(box => tbody.append(featureRow(box)));
+  tbody.append(groupRow('Hydrant valve boxes, 4 ft back on the hydrant\'s line'));
+  HYDRANT_BOXES.forEach(box => tbody.append(featureRow(box)));
   table.append(tbody);
 }
 
@@ -378,14 +442,16 @@ function renderConventions() {
     'Planting records should identify each individual plant, not assign one coordinate to a quantity group. SiteRef is calculated from its location; it is not a metal tag or a permanent Plant ID. Keep unlocated plants PENDING and vacant spots separate from dead or moved plants.',
     'Status is existing or planned; planned buildings move once staked. Edit canonical data/site.json (rect x0/y0/x1/y1, circle cx/cy/r, polygon/line pts, point x/y), then run python tools/property_data.py build and the tests. Browser files in docs/data/ are generated, not independently editable.',
     'Latitude and longitude come from the fitted lot frame, good to about 10 ft: fine for maps and directions, not for boundary questions. For precise layout, measure from the fences.',
-    `Buried water lines (2 in PVC solid, 1.5 in dashed) and the ${HYDRANTS.length} frost-free hydrants (blue dots) are traced from the owner's hand-drawn map (October 2026): good to about 5 ft around the homestead and 10 ft at the north end, so dig by hand near them.`
+    `Buried water lines (2 in PVC solid, 1.5 in dashed) and the ${HYDRANTS.length} frost-free hydrants (blue dots) are traced from the owner's hand-drawn map (October 2026): good to about 5 ft around the homestead and 10 ft at the north end, so dig by hand near them.`,
+    `The ${HEAD_STATIONS.length} row laterals (10 ft, 1.5 in, west off the 2 in main) end in a 1 in riser and a valve box (teal squares numbered 1–${HEAD_STATIONS.length}, south to north). Their spacing is read from the owner's drone photo (October 2026), so the positions along the main are good to about 8 ft. ${HYDRANT_BOXES.length} of the ${HYDRANTS.length} hydrants also have a valve box 4 ft back on their line${NO_BOX.length ? ` (none at ${NO_BOX.map(h => SG.cellOf(h.x, h.y)).join(', ')})` : ''}: a small teal chip on the hydrant dot here, drawn apart on the homestead plot map, and listed under Row laterals and valve boxes.`
   ].forEach(t => document.getElementById('conventions').append(element('li', t)));
 }
 
 try {
   if (!window.SiteGrid) throw new Error('data/site_grid.js did not load');
   document.getElementById('map').append(makeMap());
-  renderHowTo(); renderFacts(); renderFeatures(); renderCode(); renderConventions();
+  if (window.SitePhotos) SitePhotos.hint(document.getElementById('map'));
+  renderHowTo(); renderFacts(); renderFeatures(); renderWaterDetail(); renderCode(); renderConventions();
 } catch (error) {
   const box = document.getElementById('render-error');
   box.hidden = false;

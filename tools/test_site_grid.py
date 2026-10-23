@@ -130,8 +130,9 @@ class SiteGridTest(unittest.TestCase):
         hydrants = [f for f in g.features("utility") if f.get("kind") == "hydrant"]
         self.assertEqual(len(hydrants), 8)
         self.assertTrue(all(f["shape"] == "line" and f["size_in"] in (1.5, 2) for f in pipes.values()))
-        self.assertEqual({k for k, f in pipes.items() if f["size_in"] == 1.5}, {"water_tee_west", "water_line_west", "water_lateral_north"},
-                         "the line teed west, the line along the west fence, and the north lateral are 1.5 in; the rest is 2 in")
+        self.assertEqual({k for k, f in pipes.items() if f["size_in"] == 1.5},
+                         {"water_tee_west", "water_line_west", "water_lateral_north"} | {f"water_lateral_row_{n}" for n in range(1, 9)},
+                         "the line teed west, the line along the west fence, the north lateral, and the eight row laterals are 1.5 in; the rest is 2 in")
         main_pts = pipes["water_main"]["pts"]
         x0, y0, x1, y1 = g.bbox("pump_house")
         self.assertTrue(x0 - 2 <= main_pts[0][0] <= x1 + 2 and y0 - 2 <= main_pts[0][1] <= y1 + 2, "the 2 in main starts at the pump house")
@@ -145,9 +146,12 @@ class SiteGridTest(unittest.TestCase):
         for h in hydrants:
             self.assertLess(min(math.dist((h["x"], h["y"]), e) for e in ends), 0.5, f"{h['id']} sits at the end of a water line")
 
-        # Every line ends at a hydrant, runs into another line, or starts at the pump house
+        # Every line ends at a hydrant, at a valve box, runs into another line, or starts at the pump house
+        valve_boxes = [f for f in g.features("utility") if f.get("kind") == "valve_box"]
+
         def closed(p, fid):
             return (min(math.dist(p, (h["x"], h["y"])) for h in hydrants) < 0.5
+                    or min(math.dist(p, (b["x"], b["y"])) for b in valve_boxes) < 0.5
                     or any(_dist_to_line(p, q["pts"]) < 0.5 for k, q in pipes.items() if k != fid)
                     or (x0 - 2 <= p[0] <= x1 + 2 and y0 - 2 <= p[1] <= y1 + 2))
         for fid, f in pipes.items():
@@ -156,6 +160,51 @@ class SiteGridTest(unittest.TestCase):
         wl = pipes["water_line_west"]["pts"]
         self.assertTrue(all(15 < x < 25 for x, _ in wl), "the west fence line stays about 20 ft inside the fence")
         self.assertEqual([g.cell_of(*wl[0]), g.cell_of(*wl[-1])], ["A14", "A20"])
+        west = g.feature("hydrant_west")
+        self.assertEqual(g.cell_of(west["x"], west["y"]), "A18")
+        self.assertLess(west["x"], 10, "the A18 hydrant stands right at the west fence, west of the buried line")
+
+    def test_row_laterals_head_stations_and_hydrant_valve_boxes(self):
+        g = self.grid
+        utility = g.features("utility")
+        pipes = {f["id"]: f for f in utility if f.get("kind") == "water_pipe"}
+        boxes = {f["id"]: f for f in utility if f.get("kind") == "valve_box"}
+        hydrants = {f["id"]: f for f in utility if f.get("kind") == "hydrant"}
+        main_pts = pipes["water_main"]["pts"]
+        block_east = g.bbox("orchard_block")[2]
+
+        # Eight 10 ft, 1.5 in laterals run west off the main, each ending in a 1 in riser into a head-station valve box
+        stations = [boxes[f"head_station_{n}"] for n in range(1, 9)]
+        for n, box in enumerate(stations, start=1):
+            lateral = pipes[f"water_lateral_row_{n}"]
+            (x0, y0), (x1, y1) = lateral["pts"]
+            self.assertEqual(lateral["size_in"], 1.5, lateral["id"])
+            self.assertAlmostEqual(math.dist((x0, y0), (x1, y1)), 10, places=6, msg=lateral["id"])
+            self.assertEqual(y0, y1, f"{lateral['id']} runs due west")
+            self.assertLess(x1, x0, f"{lateral['id']} runs west")
+            self.assertLess(_dist_to_line((x0, y0), main_pts), 0.5, f"{lateral['id']} comes off the main")
+            self.assertEqual((box["x"], box["y"]), (x1, y1), f"{box['id']} sits at the end of its lateral")
+            self.assertEqual((box["lateral"], lateral["head_station"], box["riser_in"]), (lateral["id"], box["id"], 1))
+            self.assertGreater(box["x"], block_east, f"{box['id']} stays east of the orchard block")
+        # Spacing along the main, south to north: the five southern laterals about 60 ft apart, the northern ones about 70 ft
+        ys = [box["y"] for box in stations]
+        gaps = [a - b for a, b in zip(ys, ys[1:])]
+        self.assertTrue(all(55 <= gap <= 65 for gap in gaps[:4]), f"the five southern laterals are about 60 ft apart: {gaps}")
+        self.assertTrue(all(65 <= gap <= 80 for gap in gaps[4:]), f"the three northern laterals are about 70 ft apart: {gaps}")
+        self.assertTrue(65 <= ys[-1] - hydrants["hydrant_north"]["y"] <= 80, "the last one is about 70 ft from the north hydrant lateral")
+        self.assertEqual(sum(1 for f in pipes.values() if "head_station" in f), 8)
+
+        # Seven of the eight hydrants have a valve box 4 ft back on the line that ends at it; the south end of the west fence line has none
+        by_hydrant = {b["hydrant"]: b for b in boxes.values() if "hydrant" in b}
+        self.assertEqual(set(by_hydrant), set(hydrants) - {"hydrant_fence_south"}, "every hydrant but the A20 one has exactly one valve box")
+        self.assertEqual(len(boxes), 15, "eight head stations and seven hydrant valve boxes")
+        for hid, box in by_hydrant.items():
+            h = hydrants[hid]
+            self.assertEqual(box["setback_ft"], 4, box["id"])
+            self.assertAlmostEqual(math.dist((box["x"], box["y"]), (h["x"], h["y"])), 4, delta=0.1, msg=box["id"])
+            feeding = [p["pts"] for p in pipes.values() if min(math.dist(e, (h["x"], h["y"])) for e in (p["pts"][0], p["pts"][-1])) < 0.5]
+            self.assertTrue(feeding, f"{hid} sits at the end of a line")
+            self.assertLess(min(_dist_to_line((box["x"], box["y"]), pts) for pts in feeding), 0.1, f"{box['id']} sits on the line to {hid}")
 
     def test_structures_do_not_overlap(self):
         ids = ["shed", "outhouse", "container_solar", "container_storage", "irrigation_tank", "pump_house", "rv"]
@@ -243,9 +292,10 @@ class SiteGridTest(unittest.TestCase):
         cases = [(["cell", "63", "921"], "B19"), (["where", "b19"], "pump_house"), (["feature", "irrigation_tank"], "3,000 gal"),
                  (["latlon", "0", "0"], "43.475452"), (["fromlatlon", "43.473383", "-115.594507"], "B16"),
                  (["dist", "irrigation_tank", "house"], "ft"), (["list", "planned"], "garage"), (["tree", "5", "3"], "B11"),
-                 (["list", "utility"], "hydrant_north"), (["where", "G17"], "hydrant_east"),
+                 (["list", "utility"], "hydrant_north"), (["list", "utility"], "head_station_8"), (["where", "G17"], "hydrant_east"),
                  (["site-ref", "C17-E12-S18"], "x 112, y 818"),
                  (["site-ref", "B10-E33-S35"], "x 83, y 485"),
+                 (["feature", "shed"], "dji_0073, dji_0065"),
                  (["site-ref", "PENDING"], "location not yet known")]
         for argv, expected in cases:
             out = io.StringIO()

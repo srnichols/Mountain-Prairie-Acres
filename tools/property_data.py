@@ -19,7 +19,7 @@ from site_grid import M_TO_FT, SiteGrid
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 DOCUMENTS = (
     "site", "terrain", "inventory", "catalog", "orchard", "plants", "locations",
-    "plantings", "plant_events", "water_harvesting", "cultivar_library", "climate", "site_baselines",
+    "plantings", "plant_events", "water_harvesting", "cultivar_library", "climate", "site_baselines", "photos",
 )
 INVENTORY_FIELDS = (
     "source_row", "quantity", "category", "subcategory", "type", "variety", "metal_tag",
@@ -31,6 +31,13 @@ FRUIT_FIELDS = (
 )
 MONTH_NAMES = ("January", "February", "March", "April", "May", "June", "July", "August",
                "September", "October", "November", "December")
+# A photo is a plain WebP file name in docs/images/, so a data edit cannot point outside that folder.
+PHOTO_FILE = re.compile(r"[a-z0-9][a-z0-9_]*\.webp")
+PHOTO_ID = re.compile(r"[a-z0-9][a-z0-9_]*")
+PHOTO_TIME = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}")
+PHOTO_FIELDS = ("id", "file", "thumb", "original", "taken", "x", "y", "height_ft", "heading", "pitch", "fov", "caption", "alt")
+# The photo map shows a camera up to this far outside the fence; tools/import_photos.py refuses a shot from farther away.
+MAX_OFF_LOT_FT = 600
 
 
 def _unique_keys(pairs):
@@ -1425,6 +1432,78 @@ def _validate_site_baselines(data):
     _validate_hail(document["hail"], site)
 
 
+def _validate_photo_records(document, site):
+    """The photo list: each record is one web photo in docs/images/ with where the drone was, which way it faced, and its caption.
+
+    Returns the set of photo ids, which items on the maps use to name their photos."""
+    _require(document, ("source_page", "source", "records"), "photos")
+    _text(document["source_page"], "photos source page", False)
+    _text(document["source"], "photos source", False)
+    records = _index(document["records"], "photo")
+    fence = site["lot"]["fence"]
+    names = {}
+    for record in records.values():
+        label = f"photo {record['id']}"
+        _require(record, PHOTO_FIELDS, label)
+        if set(record) - set(PHOTO_FIELDS):
+            raise ValueError(f"{label} has unknown fields: {sorted(set(record) - set(PHOTO_FIELDS))}")
+        if not PHOTO_ID.fullmatch(record["id"]):
+            raise ValueError(f"{label} id must be lowercase letters, digits, and underscores")
+        for key in ("file", "thumb"):
+            name = record[key]
+            if not isinstance(name, str) or not PHOTO_FILE.fullmatch(name):
+                raise ValueError(f"{label} {key} must be a lowercase .webp file name, with no folder, in docs/images/")
+            if name in names:
+                raise ValueError(f"{label} {key} {name} is already used by {names[name]}")
+            names[name] = label
+        _text(record["original"], f"{label} original", False)
+        if "/" in record["original"] or "\\" in record["original"]:
+            raise ValueError(f"{label} original must be a file name, with no folder")
+        taken = record["taken"]
+        if not isinstance(taken, str) or not PHOTO_TIME.fullmatch(taken):
+            raise ValueError(f"{label} taken must be a local time like 2026-10-19T17:52:20")
+        try:
+            datetime.datetime.fromisoformat(taken)
+        except ValueError as error:
+            raise ValueError(f"{label} taken must be a real date and time") from error
+        for key, low, high in (("x", -MAX_OFF_LOT_FT, fence["width"] + MAX_OFF_LOT_FT), ("y", -MAX_OFF_LOT_FT, fence["depth"] + MAX_OFF_LOT_FT)):
+            _number(record[key], f"{label} {key}")
+            if not low <= record[key] <= high:
+                raise ValueError(f"{label} {key} is more than {MAX_OFF_LOT_FT} ft from the lot")
+        _number(record["height_ft"], f"{label} height", 0)
+        if record["height_ft"] > 5000:
+            raise ValueError(f"{label} height must be no more than 5,000 ft")
+        _integer(record["heading"], f"{label} heading", 0)
+        if record["heading"] > 359:
+            raise ValueError(f"{label} heading must be a compass heading from 0 to 359 degrees")
+        _number(record["pitch"], f"{label} pitch", -90)
+        if record["pitch"] > 90:
+            raise ValueError(f"{label} pitch must be between -90 and 90 degrees")
+        _number(record["fov"], f"{label} field of view", 5)
+        if record["fov"] > 120:
+            raise ValueError(f"{label} field of view must be between 5 and 120 degrees")
+        for key, longest in (("caption", 240), ("alt", 400)):
+            _text(record[key], f"{label} {key}", False)
+            if len(record[key]) > longest:
+                raise ValueError(f"{label} {key} must be no longer than {longest} characters")
+    return set(records)
+
+
+def _validate_photos(photos, owner, known):
+    """The photos of a mapped item: a nonempty list of ids from data/photos.json, shown when the item is hovered on a map."""
+    if not isinstance(photos, list) or not photos:
+        raise ValueError(f"{owner} photos must be a nonempty list")
+    seen = set()
+    for photo in photos:
+        if not isinstance(photo, str):
+            raise ValueError(f"{owner} photos must be photo ids from data/photos.json")
+        if photo not in known:
+            raise ValueError(f"{owner} lists an unknown photo: {photo}")
+        if photo in seen:
+            raise ValueError(f"{owner} lists the photo {photo} twice")
+        seen.add(photo)
+
+
 def validate_data(data):
     if set(data) != set(DOCUMENTS):
         raise ValueError("Missing or unexpected canonical collections")
@@ -1449,6 +1528,7 @@ def validate_data(data):
         for v in site["georef"][axis]:
             _number(v, "georef " + axis)
     grid = SiteGrid(data=site, terrain=terrain)
+    photo_ids = _validate_photo_records(data["photos"], site)
     features = _index(site["features"], "feature")
     for feature in features.values():
         _require(feature, ("name", "group", "status", "shape"), "feature")
@@ -1476,6 +1556,8 @@ def validate_data(data):
                 _point(point, "feature geometry")
         else:
             raise ValueError(f"Unknown feature shape: {shape}")
+        if "photos" in feature:
+            _validate_photos(feature["photos"], feature["id"], photo_ids)
     inventory = _index(data["inventory"]["records"], "inventory", "source_row")
     for record in inventory.values():
         _require(record, (*INVENTORY_FIELDS, "zone"), "inventory")
@@ -1817,6 +1899,12 @@ def _populate(connection, data, digest):
     _insert(connection, "site_features", ("id", "name", "feature_group", "status", "shape", "kind",
                                           "center_x_ft", "center_y_ft", "geometry_json", "notes"), features)
     _insert(connection, "feature_points", ("feature_id", "point_index", "x_ft", "y_ft"), points)
+    _insert(connection, "photos", ("id", "file", "thumb", "original", "taken", "x_ft", "y_ft", "cell", "height_ft", "heading_deg",
+                                   "pitch_deg", "fov_deg", "caption", "alt"),
+            [(p["id"], p["file"], p["thumb"], p["original"], p["taken"], p["x"], p["y"], grid.cell_of(p["x"], p["y"]), p["height_ft"],
+              p["heading"], p["pitch"], p["fov"], p["caption"], p["alt"]) for p in data["photos"]["records"]])
+    _insert(connection, "feature_photos", ("feature_id", "photo_id", "position"),
+            [(feature["id"], photo, i) for feature in grid.data["features"] for i, photo in enumerate(feature.get("photos", []))])
     terrain = data["terrain"]
     mesh = terrain["grid"]
     samples = []
@@ -2077,15 +2165,17 @@ def generated_outputs(data, root, digest):
     climate += (root / "web" / "site_climate.js").read_text(encoding="utf-8")
     baselines = heading + "window.SITE_BASELINES = " + _json(data["site_baselines"]) + ";\n"
     baselines += (root / "web" / "site_baselines.js").read_text(encoding="utf-8")
+    photos = heading + "window.SITE_PHOTOS = " + _json(data["photos"]) + ";\n"
     checklist = heading + (root / "web" / "planting_checklist.js").read_text(encoding="utf-8")
     manifest = json.dumps({"schema_version": 1, "source_digest": digest,
                            "plants": len(data["plants"]["records"]), "orchard_spots": len(data["locations"]["records"]),
                            "terrain_samples": len(data["terrain"]["grid"]["z"]),
-                           "cultivar_profiles": len(data["cultivar_library"]["records"])}, indent=2) + "\n"
+                           "cultivar_profiles": len(data["cultivar_library"]["records"]),
+                           "photos": len(data["photos"]["records"])}, indent=2) + "\n"
     return {name: text.encode("utf-8") for name, text in {
         "site_grid.js": site, "site_terrain.js": terrain, "orchard_model.js": orchard,
         "water_harvesting.js": water, "site_climate.js": climate, "site_baselines.js": baselines, "planting_checklist.js": checklist,
-        "cultivar_library.js": library, "manifest.json": manifest,
+        "cultivar_library.js": library, "photos.js": photos, "manifest.json": manifest,
     }.items()}
 
 

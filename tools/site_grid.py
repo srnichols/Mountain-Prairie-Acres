@@ -286,6 +286,8 @@ def _describe(grid, f):
         lines.append(f"  ground   {grid.elevation_ft(cx, cy):,.1f} ft ({grid.elevation_m(cx, cy):.2f} m), lidar")
     if f.get("notes"):
         lines.append(f"  notes    {f['notes']}")
+    if f.get("photos"):
+        lines.append(f"  photos   {', '.join(f['photos'])} (data/photos.json; files in docs/images/)")
     return "\n".join(lines)
 
 

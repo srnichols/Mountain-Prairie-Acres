@@ -28,6 +28,7 @@ window.SITE_NAV = /* BEGIN SITE_NAV JSON */
       {"href": "site_terrain_water_map.html", "label": "Terrain and water maps"},
       {"href": "homestead_plot_map.html", "label": "Homestead plot map"},
       {"href": "site_master_grid.html", "label": "Site master grid"},
+      {"href": "photo_map.html", "label": "Photo map"},
       {"href": "orchard_water_harvesting_plan.html", "label": "Rain and snowmelt harvesting"}
     ]},
     {"id": "climate", "label": "Climate & weather", "items": [

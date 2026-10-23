@@ -56,6 +56,10 @@ def named(sources, name):
     return next(source for source in sources if source["id"] == name)
 
 
+def shed_photos(site):
+    return next(f for f in site["features"] if f["id"] == "shed")["photos"]
+
+
 def drop_storm_duration(baselines, name):
     storms = baselines["storms"]
     index = storms["durations"].index(name)
@@ -207,7 +211,8 @@ class PropertyDataTest(unittest.TestCase):
         validate_data(self.data)
 
     def test_features_terrain_water_and_gps_are_queryable(self):
-        self.assertEqual(query("SELECT COUNT(*) AS n FROM site_features", self.root)[0]["n"], 44)
+        self.assertEqual(query("SELECT COUNT(*) AS n FROM site_features", self.root)[0]["n"], 67)
+        self.assertEqual(query("SELECT COUNT(*) AS n FROM site_features WHERE kind = 'valve_box'", self.root)[0]["n"], 15)
         self.assertEqual(query("SELECT COUNT(*) AS n FROM terrain_samples", self.root)[0]["n"], 18009)
         self.assertEqual(query("SELECT COUNT(*) AS n FROM climate_months", self.root)[0]["n"], 12)
         self.assertEqual(query("SELECT COUNT(*) AS n FROM soil_layers", self.root)[0]["n"], 3)
@@ -611,6 +616,54 @@ class PropertyDataTest(unittest.TestCase):
             ("climate", lambda d: d["notes"].pop(), "at least three notes"),
             ("climate", lambda d: d["notes"].__setitem__(2, "Plant nothing before June."), "about cold air"),
             ("plant_events", lambda d: d["records"][0].update(event_type="bloom_obsrved"), "Unknown plant event type"),
+            ("site", lambda d: shed_photos(d).clear(), "photos must be a nonempty list"),
+            ("site", lambda d: next(f for f in d["features"] if f["id"] == "shed").update(photos="dji_0073"), "photos must be a nonempty list"),
+            ("site", lambda d: shed_photos(d).append("dji_9999"), "lists an unknown photo: dji_9999"),
+            ("site", lambda d: shed_photos(d).append(shed_photos(d)[0]), "lists the photo dji_0073 twice"),
+            ("site", lambda d: shed_photos(d).append({"file": "dji_0073.webp"}), "must be photo ids"),
+            ("site", lambda d: shed_photos(d).append(["dji_0073"]), "must be photo ids"),
+            ("site", lambda d: shed_photos(d).append(None), "must be photo ids"),
+            ("photos", lambda d: d["records"].__delitem__(next(i for i, r in enumerate(d["records"]) if r["id"] == "dji_0073")), "lists an unknown photo: dji_0073"),
+            ("photos", lambda d: d.pop("source"), "missing fields"),
+            ("photos", lambda d: d.update(source_page=" "), "source page must be nonempty text"),
+            ("photos", lambda d: d.update(source=3), "source must be nonempty text"),
+            ("photos", lambda d: d.update(records=None), "photo records must be an array"),
+            ("photos", lambda d: d["records"].append(copy.deepcopy(d["records"][0])), "duplicate photo id: dji_0003"),
+            ("photos", lambda d: d["records"][0].update(id="Dji_0003"), "id must be lowercase letters, digits, and underscores"),
+            ("photos", lambda d: d["records"][0].update(id="dji 0003"), "id must be lowercase letters, digits, and underscores"),
+            ("photos", lambda d: d["records"][0].update(file="../dji_0003.webp"), "file must be a lowercase .webp file name"),
+            ("photos", lambda d: d["records"][0].update(file="images/dji_0003.webp"), "file must be a lowercase .webp file name"),
+            ("photos", lambda d: d["records"][0].update(file="DJI_0003.webp"), "file must be a lowercase .webp file name"),
+            ("photos", lambda d: d["records"][0].update(file="dji_0003.jpg"), "file must be a lowercase .webp file name"),
+            ("photos", lambda d: d["records"][0].update(file=None), "file must be a lowercase .webp file name"),
+            ("photos", lambda d: d["records"][0].update(thumb="dji_0003_t.png"), "thumb must be a lowercase .webp file name"),
+            ("photos", lambda d: d["records"][0].update(file=d["records"][1]["file"]), "dji_0010.webp is already used by photo dji_0003"),
+            ("photos", lambda d: d["records"][0].update(thumb=d["records"][0]["file"]), "is already used by photo dji_0003"),
+            ("photos", lambda d: d["records"][0].update(original="photos/DJI_0003.JPG"), "original must be a file name"),
+            ("photos", lambda d: d["records"][0].update(original=""), "original must be nonempty text"),
+            ("photos", lambda d: d["records"][0].update(taken="2026-09-27"), "taken must be a local time like"),
+            ("photos", lambda d: d["records"][0].update(taken="2026-09-27 15:36:23"), "taken must be a local time like"),
+            ("photos", lambda d: d["records"][0].update(taken="2026-13-27T15:36:23"), "taken must be a real date and time"),
+            ("photos", lambda d: d["records"][0].update(x=2000), "x is more than 600 ft from the lot"),
+            ("photos", lambda d: d["records"][0].update(y=-700), "y is more than 600 ft from the lot"),
+            ("photos", lambda d: d["records"][0].update(y=1291.9 + 601), "y is more than 600 ft from the lot"),
+            ("photos", lambda d: d["records"][0].update(x="141.6"), "x must be a finite number"),
+            ("photos", lambda d: d["records"][0].update(height_ft=-5), "height must be at least 0"),
+            ("photos", lambda d: d["records"][0].update(height_ft=5001), "height must be no more than 5,000 ft"),
+            ("photos", lambda d: d["records"][0].update(heading=360), "heading must be a compass heading from 0 to 359"),
+            ("photos", lambda d: d["records"][0].update(heading=-1), "heading must be at least 0"),
+            ("photos", lambda d: d["records"][0].update(heading=12.5), "heading must be an integer"),
+            ("photos", lambda d: d["records"][0].update(pitch=-91), "pitch must be at least -90"),
+            ("photos", lambda d: d["records"][0].update(pitch=91), "pitch must be between -90 and 90 degrees"),
+            ("photos", lambda d: d["records"][0].update(fov=4), "field of view must be at least 5"),
+            ("photos", lambda d: d["records"][0].update(fov=121), "field of view must be between 5 and 120 degrees"),
+            ("photos", lambda d: d["records"][0].update(caption=" "), "caption must be nonempty text"),
+            ("photos", lambda d: d["records"][0].update(caption="x" * 241), "caption must be no longer than 240 characters"),
+            ("photos", lambda d: d["records"][0].update(alt=""), "alt must be nonempty text"),
+            ("photos", lambda d: d["records"][0].update(alt="x" * 401), "alt must be no longer than 400 characters"),
+            ("photos", lambda d: d["records"][0].pop("alt"), "missing fields"),
+            ("photos", lambda d: d["records"][0].update(credit="drone"), "has unknown fields"),
+            ("plant_events", lambda d: d["records"][0].update(event_type="bloom_obsrved"), "Unknown plant event type"),
             ("plant_events", lambda d: d["records"].append({"id": "x", "plant_id": "i90-1", "event_type": "full_bloom", "recorded_on": "2027-05-04",
                                                             "occurred_on": None, "notes": "No date given"}), "needs the date it happened"),
             ("plant_events", lambda d: d["records"].append({"id": "x", "plant_id": "i90-1", "event_type": "lost_in_ground", "recorded_on": "2027-05-04",
@@ -852,6 +905,28 @@ class PropertyDataTest(unittest.TestCase):
     def test_malformed_plant_events_fail_with_a_clear_error_not_a_crash(self):
         # The middle of the vocabulary is a growth stage, so its order field is exercised too.
         self.malformed_records_raise_value_errors("plant_events", 50, middle=True)
+
+    def test_malformed_photos_fail_with_a_clear_error_not_a_crash(self):
+        self.malformed_records_raise_value_errors("photos", 150, middle=True, numbers=True)
+
+    def test_the_photo_list_reaches_sqlite_and_the_website_data(self):
+        count = len(self.data["photos"]["records"])
+        photos = query("SELECT id, cell, taken, height_ft FROM photos ORDER BY taken, id", self.root)
+        self.assertEqual(len(photos), count)
+        self.assertEqual({p["taken"][:10] for p in photos}, {"2026-09-27", "2026-10-10", "2026-10-19"})
+        by_id = {p["id"]: p for p in photos}
+        self.assertEqual(by_id["dji_0073"]["cell"], "D16")
+        self.assertIsNone(by_id["dji_0013"]["cell"], "A photo taken from outside the fence has no grid cell")
+        links = query("SELECT feature_id, photo_id FROM feature_photos ORDER BY feature_id, position", self.root)
+        self.assertEqual([(link["feature_id"], link["photo_id"]) for link in links],
+                         [("outhouse", "dji_0071"), ("shed", "dji_0073"), ("shed", "dji_0065")])
+        self.assertEqual(query("SELECT COUNT(*) AS n FROM source_documents WHERE name = 'photos'", self.root)[0]["n"], 1)
+        build(self.root)
+        generated = (self.root / "docs" / "data" / "photos.js").read_text(encoding="utf-8")
+        self.assertTrue(generated.startswith("// Generated by tools/property_data.py build."))
+        self.assertIn('window.SITE_PHOTOS = {"schema_version":1,', generated)
+        manifest = json.loads((self.root / "docs" / "data" / "manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["photos"], count)
 
     def test_not_pollinated_by_names_must_match_a_living_or_planned_cultivar(self):
         # The names the shipped plan relies on, in any letter case, and a planned cultivar's name all validate.

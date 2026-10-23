@@ -122,6 +122,17 @@ CREATE TABLE feature_points (
     feature_id TEXT NOT NULL REFERENCES site_features(id), point_index INTEGER NOT NULL,
     x_ft REAL NOT NULL, y_ft REAL NOT NULL, PRIMARY KEY (feature_id, point_index)
 ) STRICT;
+CREATE TABLE photos (
+    id TEXT PRIMARY KEY, file TEXT NOT NULL UNIQUE, thumb TEXT NOT NULL UNIQUE, original TEXT NOT NULL,
+    taken TEXT NOT NULL, x_ft REAL NOT NULL, y_ft REAL NOT NULL, cell TEXT,
+    height_ft REAL NOT NULL, heading_deg INTEGER NOT NULL CHECK (heading_deg BETWEEN 0 AND 359),
+    pitch_deg REAL NOT NULL CHECK (pitch_deg BETWEEN -90 AND 90), fov_deg REAL NOT NULL,
+    caption TEXT NOT NULL, alt TEXT NOT NULL
+) STRICT;
+CREATE TABLE feature_photos (
+    feature_id TEXT NOT NULL REFERENCES site_features(id), photo_id TEXT NOT NULL REFERENCES photos(id),
+    position INTEGER NOT NULL, PRIMARY KEY (feature_id, photo_id)
+) STRICT;
 CREATE TABLE terrain_samples (
     row_index INTEGER NOT NULL, column_index INTEGER NOT NULL,
     x_ft REAL NOT NULL, y_ft REAL NOT NULL, cell TEXT,

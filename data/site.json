@@ -1,6 +1,6 @@
 {
   "name": "Mountain Prairie Acres",
-  "updated": "2026-10-19",
+  "updated": "2026-10-23",
   "units": "ft",
   "frame": {
     "origin": "NW fence corner",
@@ -560,7 +560,7 @@
           40.0
         ]
       ],
-      "notes": "Buried 2 in PVC from the pump house: north to the tee for the 1.5 in west line, east along the south edge of the yard, northeast inside the driveway curve, then north about 13-16 ft west of the driveway centerline to an elbow about 40 ft from the north fence. Traced from the owner's hand-drawn map (October 2026): about 5 ft near the homestead, 10 ft at the north end.",
+      "notes": "Buried 2 in PVC from the pump house: north to the tee for the 1.5 in west line, east along the south edge of the yard, northeast inside the driveway curve, then north about 13-16 ft west of the driveway centerline to an elbow about 40 ft from the north fence. Traced from the owner's hand-drawn map (October 2026): about 5 ft near the homestead, 10 ft at the north end. Eight 10 ft row laterals (water_lateral_row_1 to 8) and the north hydrant lateral tee off its west side between y 40 and y 560.",
       "accuracy_ft": 8
     },
     {
@@ -578,11 +578,11 @@
           890.0
         ],
         [
-          14.0,
+          5.0,
           890.0
         ]
       ],
-      "notes": "Tees off the 2 in main north of the pump house and runs west between the workshop pad and the tank, across the west fence line, to the hydrant about 14 ft inside the west fence.",
+      "notes": "Tees off the 2 in main north of the pump house and runs west between the workshop pad and the tank, across the buried line along the west fence, to the hydrant at the fence line, about 5 ft inside the fence.",
       "accuracy_ft": 5
     },
     {
@@ -730,15 +730,199 @@
       "accuracy_ft": 10
     },
     {
+      "id": "water_lateral_row_1",
+      "name": "Row lateral 1, 1.5 in",
+      "group": "utility",
+      "status": "existing",
+      "kind": "water_pipe",
+      "size_in": 1.5,
+      "shape": "line",
+      "width": 3,
+      "pts": [
+        [
+          288.3,
+          560.0
+        ],
+        [
+          278.3,
+          560.0
+        ]
+      ],
+      "head_station": "head_station_1",
+      "notes": "10 ft, 1.5 in lateral west off the 2 in main to head station 1, ending in a 1 in riser into the valve box. The five southern laterals (1 to 5) are about 60 ft apart. Placed from the owner's drone photo (October 2026).",
+      "accuracy_ft": 8
+    },
+    {
+      "id": "water_lateral_row_2",
+      "name": "Row lateral 2, 1.5 in",
+      "group": "utility",
+      "status": "existing",
+      "kind": "water_pipe",
+      "size_in": 1.5,
+      "shape": "line",
+      "width": 3,
+      "pts": [
+        [
+          288.8,
+          500.0
+        ],
+        [
+          278.8,
+          500.0
+        ]
+      ],
+      "head_station": "head_station_2",
+      "notes": "10 ft, 1.5 in lateral west off the 2 in main to head station 2, ending in a 1 in riser into the valve box.",
+      "accuracy_ft": 8
+    },
+    {
+      "id": "water_lateral_row_3",
+      "name": "Row lateral 3, 1.5 in",
+      "group": "utility",
+      "status": "existing",
+      "kind": "water_pipe",
+      "size_in": 1.5,
+      "shape": "line",
+      "width": 3,
+      "pts": [
+        [
+          291.3,
+          440.0
+        ],
+        [
+          281.3,
+          440.0
+        ]
+      ],
+      "head_station": "head_station_3",
+      "notes": "10 ft, 1.5 in lateral west off the 2 in main to head station 3, ending in a 1 in riser into the valve box.",
+      "accuracy_ft": 8
+    },
+    {
+      "id": "water_lateral_row_4",
+      "name": "Row lateral 4, 1.5 in",
+      "group": "utility",
+      "status": "existing",
+      "kind": "water_pipe",
+      "size_in": 1.5,
+      "shape": "line",
+      "width": 3,
+      "pts": [
+        [
+          295.5,
+          380.0
+        ],
+        [
+          285.5,
+          380.0
+        ]
+      ],
+      "head_station": "head_station_4",
+      "notes": "10 ft, 1.5 in lateral west off the 2 in main to head station 4, ending in a 1 in riser into the valve box.",
+      "accuracy_ft": 8
+    },
+    {
+      "id": "water_lateral_row_5",
+      "name": "Row lateral 5, 1.5 in",
+      "group": "utility",
+      "status": "existing",
+      "kind": "water_pipe",
+      "size_in": 1.5,
+      "shape": "line",
+      "width": 3,
+      "pts": [
+        [
+          297.6,
+          320.0
+        ],
+        [
+          287.6,
+          320.0
+        ]
+      ],
+      "head_station": "head_station_5",
+      "notes": "10 ft, 1.5 in lateral west off the 2 in main to head station 5, ending in a 1 in riser into the valve box.",
+      "accuracy_ft": 8
+    },
+    {
+      "id": "water_lateral_row_6",
+      "name": "Row lateral 6, 1.5 in",
+      "group": "utility",
+      "status": "existing",
+      "kind": "water_pipe",
+      "size_in": 1.5,
+      "shape": "line",
+      "width": 3,
+      "pts": [
+        [
+          298.5,
+          250.0
+        ],
+        [
+          288.5,
+          250.0
+        ]
+      ],
+      "head_station": "head_station_6",
+      "notes": "10 ft, 1.5 in lateral west off the 2 in main to head station 6, ending in a 1 in riser into the valve box. Laterals 5 to 8 and the north hydrant lateral are about 70 ft apart by the drone photo (the owner thought closer to 75 ft).",
+      "accuracy_ft": 8
+    },
+    {
+      "id": "water_lateral_row_7",
+      "name": "Row lateral 7, 1.5 in",
+      "group": "utility",
+      "status": "existing",
+      "kind": "water_pipe",
+      "size_in": 1.5,
+      "shape": "line",
+      "width": 3,
+      "pts": [
+        [
+          299.3,
+          180.0
+        ],
+        [
+          289.3,
+          180.0
+        ]
+      ],
+      "head_station": "head_station_7",
+      "notes": "10 ft, 1.5 in lateral west off the 2 in main to head station 7, ending in a 1 in riser into the valve box.",
+      "accuracy_ft": 8
+    },
+    {
+      "id": "water_lateral_row_8",
+      "name": "Row lateral 8, 1.5 in",
+      "group": "utility",
+      "status": "existing",
+      "kind": "water_pipe",
+      "size_in": 1.5,
+      "shape": "line",
+      "width": 3,
+      "pts": [
+        [
+          300.2,
+          110.0
+        ],
+        [
+          290.2,
+          110.0
+        ]
+      ],
+      "head_station": "head_station_8",
+      "notes": "10 ft, 1.5 in lateral west off the 2 in main to head station 8, ending in a 1 in riser into the valve box.",
+      "accuracy_ft": 8
+    },
+    {
       "id": "hydrant_west",
       "name": "Hydrant, west end of the 1.5 in line",
       "group": "utility",
       "status": "existing",
       "kind": "hydrant",
       "shape": "point",
-      "x": 14.0,
+      "x": 5.0,
       "y": 890.0,
-      "notes": "Frost-free yard hydrant at the end of the 1.5 in line, about 14 ft inside the west fence.",
+      "notes": "Frost-free yard hydrant at the end of the 1.5 in line, right at the west fence line, about 5 ft inside the fence (moved west from 14 ft after the owner's drone-photo check, October 2026).",
       "accuracy_ft": 5
     },
     {
@@ -750,7 +934,7 @@
       "shape": "point",
       "x": 23.0,
       "y": 998.0,
-      "notes": "Frost-free yard hydrant at the south end of the line along the west fence, southwest of the containers.",
+      "notes": "Frost-free yard hydrant at the south end of the line along the west fence, southwest of the containers. The owner says it has no valve box.",
       "accuracy_ft": 6
     },
     {
@@ -826,6 +1010,216 @@
       "accuracy_ft": 10
     },
     {
+      "id": "head_station_1",
+      "name": "Head station 1, valve box",
+      "group": "utility",
+      "status": "existing",
+      "kind": "valve_box",
+      "shape": "point",
+      "x": 278.3,
+      "y": 560.0,
+      "riser_in": 1,
+      "lateral": "water_lateral_row_1",
+      "notes": "Row head station: valve box on a 1 in riser at the end of row lateral 1.",
+      "accuracy_ft": 8
+    },
+    {
+      "id": "head_station_2",
+      "name": "Head station 2, valve box",
+      "group": "utility",
+      "status": "existing",
+      "kind": "valve_box",
+      "shape": "point",
+      "x": 278.8,
+      "y": 500.0,
+      "riser_in": 1,
+      "lateral": "water_lateral_row_2",
+      "notes": "Row head station: valve box on a 1 in riser at the end of row lateral 2.",
+      "accuracy_ft": 8
+    },
+    {
+      "id": "head_station_3",
+      "name": "Head station 3, valve box",
+      "group": "utility",
+      "status": "existing",
+      "kind": "valve_box",
+      "shape": "point",
+      "x": 281.3,
+      "y": 440.0,
+      "riser_in": 1,
+      "lateral": "water_lateral_row_3",
+      "notes": "Row head station: valve box on a 1 in riser at the end of row lateral 3.",
+      "accuracy_ft": 8
+    },
+    {
+      "id": "head_station_4",
+      "name": "Head station 4, valve box",
+      "group": "utility",
+      "status": "existing",
+      "kind": "valve_box",
+      "shape": "point",
+      "x": 285.5,
+      "y": 380.0,
+      "riser_in": 1,
+      "lateral": "water_lateral_row_4",
+      "notes": "Row head station: valve box on a 1 in riser at the end of row lateral 4.",
+      "accuracy_ft": 8
+    },
+    {
+      "id": "head_station_5",
+      "name": "Head station 5, valve box",
+      "group": "utility",
+      "status": "existing",
+      "kind": "valve_box",
+      "shape": "point",
+      "x": 287.6,
+      "y": 320.0,
+      "riser_in": 1,
+      "lateral": "water_lateral_row_5",
+      "notes": "Row head station: valve box on a 1 in riser at the end of row lateral 5.",
+      "accuracy_ft": 8
+    },
+    {
+      "id": "head_station_6",
+      "name": "Head station 6, valve box",
+      "group": "utility",
+      "status": "existing",
+      "kind": "valve_box",
+      "shape": "point",
+      "x": 288.5,
+      "y": 250.0,
+      "riser_in": 1,
+      "lateral": "water_lateral_row_6",
+      "notes": "Row head station: valve box on a 1 in riser at the end of row lateral 6.",
+      "accuracy_ft": 8
+    },
+    {
+      "id": "head_station_7",
+      "name": "Head station 7, valve box",
+      "group": "utility",
+      "status": "existing",
+      "kind": "valve_box",
+      "shape": "point",
+      "x": 289.3,
+      "y": 180.0,
+      "riser_in": 1,
+      "lateral": "water_lateral_row_7",
+      "notes": "Row head station: valve box on a 1 in riser at the end of row lateral 7.",
+      "accuracy_ft": 8
+    },
+    {
+      "id": "head_station_8",
+      "name": "Head station 8, valve box",
+      "group": "utility",
+      "status": "existing",
+      "kind": "valve_box",
+      "shape": "point",
+      "x": 290.2,
+      "y": 110.0,
+      "riser_in": 1,
+      "lateral": "water_lateral_row_8",
+      "notes": "Row head station: valve box on a 1 in riser at the end of row lateral 8.",
+      "accuracy_ft": 8
+    },
+    {
+      "id": "valve_box_hydrant_west",
+      "name": "Valve box, west end of the 1.5 in line",
+      "group": "utility",
+      "status": "existing",
+      "kind": "valve_box",
+      "shape": "point",
+      "x": 9.0,
+      "y": 890.0,
+      "hydrant": "hydrant_west",
+      "setback_ft": 4,
+      "notes": "Valve box 4 ft back on the line from the west hydrant.",
+      "accuracy_ft": 5
+    },
+    {
+      "id": "valve_box_hydrant_fence_north",
+      "name": "Valve box, north end of the west fence line",
+      "group": "utility",
+      "status": "existing",
+      "kind": "valve_box",
+      "shape": "point",
+      "x": 22.3,
+      "y": 701.0,
+      "hydrant": "hydrant_fence_north",
+      "setback_ft": 4,
+      "notes": "Valve box 4 ft back on the line from the north hydrant on the west fence line.",
+      "accuracy_ft": 5
+    },
+    {
+      "id": "valve_box_hydrant_island",
+      "name": "Valve box, in the island",
+      "group": "utility",
+      "status": "existing",
+      "kind": "valve_box",
+      "shape": "point",
+      "x": 121.8,
+      "y": 823.9,
+      "hydrant": "hydrant_island",
+      "setback_ft": 4,
+      "notes": "Valve box 4 ft back on the line from the island hydrant.",
+      "accuracy_ft": 5
+    },
+    {
+      "id": "valve_box_hydrant_yard_south",
+      "name": "Valve box, south of the yard",
+      "group": "utility",
+      "status": "existing",
+      "kind": "valve_box",
+      "shape": "point",
+      "x": 189.0,
+      "y": 834.7,
+      "hydrant": "hydrant_yard_south",
+      "setback_ft": 4,
+      "notes": "Valve box 4 ft back on the line from the hydrant south of the yard.",
+      "accuracy_ft": 5
+    },
+    {
+      "id": "valve_box_hydrant_east",
+      "name": "Valve box, near the east fence",
+      "group": "utility",
+      "status": "existing",
+      "kind": "valve_box",
+      "shape": "point",
+      "x": 297.9,
+      "y": 843.7,
+      "hydrant": "hydrant_east",
+      "setback_ft": 4,
+      "notes": "Valve box 4 ft back on the line from the hydrant near the east fence.",
+      "accuracy_ft": 5
+    },
+    {
+      "id": "valve_box_hydrant_yard_north",
+      "name": "Valve box, north of the yard",
+      "group": "utility",
+      "status": "existing",
+      "kind": "valve_box",
+      "shape": "point",
+      "x": 236.6,
+      "y": 719.6,
+      "hydrant": "hydrant_yard_north",
+      "setback_ft": 4,
+      "notes": "Valve box 4 ft back on the line from the hydrant north of the yard.",
+      "accuracy_ft": 5
+    },
+    {
+      "id": "valve_box_hydrant_north",
+      "name": "Valve box, north end",
+      "group": "utility",
+      "status": "existing",
+      "kind": "valve_box",
+      "shape": "point",
+      "x": 295.0,
+      "y": 40.0,
+      "hydrant": "hydrant_north",
+      "setback_ft": 4,
+      "notes": "Valve box 4 ft back on the line from the hydrant at the north end.",
+      "accuracy_ft": 10
+    },
+    {
       "id": "shed",
       "key": "1",
       "name": "Red shed",
@@ -837,6 +1231,7 @@
       "x1": 101.5,
       "y1": 772,
       "notes": "Main building about 18 x 26 ft with an 8 ft lean-to on the west side; ridge about 14 ft high.",
+      "photos": ["dji_0073", "dji_0065"],
       "accuracy_ft": 3
     },
     {
@@ -851,6 +1246,7 @@
       "x1": 87,
       "y1": 815,
       "notes": "Blue outhouse south of the shed.",
+      "photos": ["dji_0071"],
       "accuracy_ft": 3
     },
     {
