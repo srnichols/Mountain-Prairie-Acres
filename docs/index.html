@@ -247,11 +247,11 @@
   <article class="card">
     <div class="meta"><span class="badge s-reference">Reference</span><span>Updated Oct 23, 2026</span></div>
     <h3><a href="site_master_grid.html">Site Master Grid</a></h3>
-    <p class="what">One coordinate system for every project: 50 ft cells, compact SiteRef codes such as B10-E33-S35, latitude and longitude, mapped features (including the water lines, hydrants, the eight row laterals with their head-station valve boxes, every valve box, the planned gothic tunnel and pit greenhouse, and the middle of the lot), and shared JavaScript and Python helpers. The guide explains cell offsets, individual planting records, and pending locations.</p>
+    <p class="what">One coordinate system for every project: 50 ft cells, compact SiteRef codes such as B10-E33-S35, latitude and longitude, mapped features (including the water lines, hydrants, the eight row laterals with their head-station valve boxes, every valve box, the planned gothic tunnel and pit greenhouse, the middle of the lot, and the front gate), and shared JavaScript and Python helpers. The guide explains cell offsets, individual planting records, and pending locations.</p>
     <p class="next"><strong>Next:</strong> check the row laterals' spacing along the main on the ground, and edit canonical data/site.json and rebuild the generated browser data as new projects start.</p>
     <div class="actions">
       <a class="btn primary" href="site_master_grid.html">Open page</a>
-      <a class="btn secondary" href="downloads/site_master_grid.pdf" download>Download PDF <span class="size">(0.9 MB, Tabloid)</span></a>
+      <a class="btn secondary" href="downloads/site_master_grid.pdf" download>Download PDF <span class="size">(1.0 MB, Tabloid)</span></a>
     </div>
   </article>
 
@@ -323,7 +323,7 @@
   <li><a href="downloads/workshop_materials.pdf" download>Workshop pole barn: materials and cost (PDF, landscape)</a> <span class="size">0.8 MB</span></li>
   <li><a href="downloads/site_terrain_water_map.pdf" download>Whole-site terrain and water maps (PDF, Tabloid)</a> <span class="size">1.2 MB</span></li>
   <li><a href="downloads/homestead_plot_map.pdf" download>Homestead plot map (PDF, Tabloid)</a> <span class="size">1.0 MB</span></li>
-  <li><a href="downloads/site_master_grid.pdf" download>Site master grid (PDF, Tabloid)</a> <span class="size">0.9 MB</span></li>
+  <li><a href="downloads/site_master_grid.pdf" download>Site master grid (PDF, Tabloid)</a> <span class="size">1.0 MB</span></li>
   <li><a href="soil/WebSoilSurvey_PrairieID.pdf" download>NRCS Web Soil Survey report (PDF)</a> <span class="size">95 KB</span></li>
   <li><a href="Inventory_PrairiePlants.xlsx" download>Prairie plant inventory (Excel)</a> <span class="size">21 KB</span></li>
   <li><a href="Trees.xlsx" download>Purchase list and fruit data (Excel)</a> <span class="size">48 KB</span></li>
@@ -332,6 +332,7 @@
 
 <h2 id="log">Project Log</h2>
 <ul class="log">
+  <li><strong>Oct 23, 2026:</strong> Added the front entrance gate to cell G1 of the <a href="site_master_grid.html">site master grid</a>: two 12 ft metal gates that swing both ways, hung on treated 8 × 8 posts set in concrete, drawn closed across the driveway with a post at each end. The position is read from two drone photos taken with both gates open (October 10 and 19): the east post stands at the east fence line and the gate is about 10 ft inside the north fence, good to about 8 ft, so a tape from the northeast fence corner would settle it. The PDF of the master grid is regenerated.</li>
   <li><strong>Oct 23, 2026:</strong> Marked the middle of the property on the <a href="site_master_grid.html">site master grid</a>: a red tick on the east and west fences, named in the margin, at 646 ft south of the north fence (half of the 1,291.9 ft fence). The owner's red lines on a drone photo read about 660 ft, which is half of the likely 1,320 ft parcel counted from the road; the north fence stands 18 to 20 ft inside the road line, and a rough scaling of the photo puts its lines at about 665 to 680 ft, so a tape from the northwest fence corner would settle where the middle really is. The PDF of the master grid is regenerated.</li>
   <li><strong>Oct 23, 2026:</strong> Added the planned gothic tunnel and pit greenhouse to the <a href="site_master_grid.html">site master grid</a>: two dashed outlines, named on the map and listed with the other planned buildings (cells A13 to C13 and B14), at the positions the <a href="greenhouse_site_plan.html">greenhouse site plan</a> draws. Only the buildings are outlined; the pit's berm, retaining wall, cut slopes, and swales are on that page. The PDF of the master grid is regenerated.</li>
   <li><strong>Oct 23, 2026:</strong> Added the framing in perspective to the <a href="workshop_plans.html">workshop pole barn plans</a> and extended the hoist. Two views of the frame, from the southeast and from the northwest, show every post, girt, truss, purlin, and deck joist as a solid member, drawn back to front so the near wall's girts hide what is behind them; the numbered markers match the plans legend. The hoist beam reaches 12′-6″ past the wall, 2 ft beyond the deck's outer edge, so a load is lifted from the ground at the deck's edge instead of through the deck, and two raking 6×6 braces rise from the deck's outer corners to the beam's tip. The plans, Section B, the loft framing plan, and Detail 6 show the braces, and the materials list gains the braces, a tip plate with shoes, and a longer beam and chain fall (131 lines): the all-in estimate is about $103,600 to $176,700. The PDFs of the five workshop pages are regenerated, and <code>tools/test_workshop_model.js</code> checks the hoist and the 3D members.</li>

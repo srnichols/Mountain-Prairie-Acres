@@ -267,6 +267,21 @@ class SiteGridTest(unittest.TestCase):
         parcel = g.data["lot"]["parcel_likely"]
         self.assertLess(abs((parcel["y0"] + parcel["y1"]) / 2 - wy), 5, "the parcel's middle is within a few feet of the fence's")
 
+    def test_front_gate_spans_the_driveway_at_the_northeast_corner(self):
+        g = self.grid
+        gate, drive, fence = g.feature("front_gate"), g.feature("driveway"), g.data["lot"]["fence"]
+        self.assertEqual((gate["group"], gate["kind"], gate["shape"]), ("access", "gate", "line"))
+        self.assertEqual((gate["leaves"], gate["leaf_ft"]), (2, 12))
+        (wx, wy), (ex, ey) = gate["pts"]
+        self.assertEqual(wy, ey, "the gate runs east-west across the driveway")
+        self.assertEqual(ex - wx, gate["leaves"] * gate["leaf_ft"], "two 12 ft leaves make a 24 ft opening")
+        self.assertEqual(g.cells("front_gate"), ["G1"])
+        self.assertLessEqual(ex, fence["width"], "the east post is not past the east fence")
+        (ax, ay), (bx, by) = drive["pts"][0], drive["pts"][1]
+        mid = ax + (bx - ax) * (wy - ay) / (by - ay)
+        self.assertLessEqual(wx, mid - drive["width"] / 2, "the opening clears the driveway's west edge")
+        self.assertGreaterEqual(ex, mid + drive["width"] / 2, "the opening clears the driveway's east edge")
+
     def test_master_grid_pdf_has_the_two_printed_pages_the_page_text_promises(self):
         pdf = (pathlib.Path(__file__).resolve().parent.parent / "docs" / "downloads" / "site_master_grid.pdf").read_bytes()
         pages = len(re.findall(rb"/Type\s*/Page(?![A-Za-z])", pdf))

@@ -72,3 +72,12 @@ test('The lot midline runs fence to fence at half the fence depth', () => {
   assert.equal(grid.siteRef(...east), 'G13-E31.3-S45.95');
   assert.deepEqual(Array.from(grid.cellsOf('lot_midline')), ['A13', 'B13', 'C13', 'D13', 'E13', 'F13', 'G13']);
 });
+
+test('The front gate is two 12 ft leaves across the driveway in cell G1', () => {
+  const gate = grid.feature('front_gate'), [west, east] = gate.pts;
+  assert.equal(gate.leaves * gate.leaf_ft, east[0] - west[0]);
+  assert.equal(west[1], east[1]);
+  assert.ok(east[0] <= grid.data.lot.fence.width, 'the east post is not past the east fence');
+  assert.deepEqual(Array.from(grid.cellsOf('front_gate')), ['G1']);
+  assert.equal(grid.siteRef(...grid.center(gate)), 'G1-E19.3-S10');
+});

@@ -160,7 +160,28 @@
       "shape": "point",
       "x": 317.6,
       "y": -18,
-      "notes": "Where the driveway leaves the north road; use for directions."
+      "notes": "Where the driveway leaves the north road; use for directions. The front gate (front_gate) is about 28 ft in from here."
+    },
+    {
+      "id": "front_gate",
+      "name": "Front entrance gate",
+      "group": "access",
+      "status": "existing",
+      "kind": "gate",
+      "shape": "line",
+      "leaves": 2,
+      "leaf_ft": 12,
+      "pts": [
+        [
+          307.3,
+          10
+        ],
+        [
+          331.3,
+          10
+        ]
+      ],
+      "notes": "Two 12 ft metal gates that swing both ways, hung on treated 8 x 8 posts set in concrete, across the driveway where it enters the lot in cell G1 (24 ft between the posts). In the October 10 and 19, 2026 drone photos both leaves stand open along the driveway: the east post is at the east fence line and the gate is about 10 ft inside the mapped north fence line, at the south edge of the grass strip along the road. Position read from those photos, good to about 8 ft."
     },
     {
       "id": "driveway",
