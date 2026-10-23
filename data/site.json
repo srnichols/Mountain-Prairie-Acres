@@ -96,6 +96,25 @@
       "notes": "Fenced lot, 331 x 1,292 ft (9.83 acres)."
     },
     {
+      "id": "lot_midline",
+      "name": "Middle of the lot (east-west midline)",
+      "group": "boundary",
+      "status": "existing",
+      "kind": "midline",
+      "shape": "line",
+      "pts": [
+        [
+          0,
+          645.95
+        ],
+        [
+          331.3,
+          645.95
+        ]
+      ],
+      "notes": "Halfway down the fenced lot: 645.95 ft south of the north fence, half of the 1,291.9 ft fence length, marked by a red tick on each fence on the site master grid. The owner's red lines on the October 2026 drone photo read about 660 ft, which is half of the likely 1,320 ft parcel counted from the road; the north fence stands about 18 to 20 ft inside the road line, so the lot's own middle is nearer 646. Tape from the northwest fence corner to check."
+    },
+    {
       "id": "road_north",
       "name": "North road",
       "group": "access",

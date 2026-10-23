@@ -4,6 +4,7 @@ import io
 import itertools
 import math
 import pathlib
+import re
 import sys
 import unittest
 
@@ -251,6 +252,26 @@ class SiteGridTest(unittest.TestCase):
                 self.assertFalse(inside or _lines_cross(pipe["pts"], outline), f"{pipe['id']} runs through {f['id']}")
             for stand in stands:
                 self.assertFalse(x0 <= stand["x"] <= x1 and y0 <= stand["y"] <= y1, f"{stand['id']} stands inside {f['id']}")
+
+    def test_lot_midline_runs_fence_to_fence_at_half_the_fence_depth(self):
+        g = self.grid
+        fence = g.data["lot"]["fence"]
+        mid = g.feature("lot_midline")
+        self.assertEqual((mid["group"], mid["kind"], mid["shape"]), ("boundary", "midline", "line"))
+        (wx, wy), (ex, ey) = mid["pts"]
+        self.assertEqual((wx, ex), (0, fence["width"]), "the midline runs from the west fence to the east fence")
+        self.assertEqual(wy, ey, "the midline is east-west")
+        self.assertAlmostEqual(wy, fence["depth"] / 2, places=6)
+        self.assertEqual((g.site_ref(wx, wy), g.site_ref(ex, ey)), ("A13-E0-S45.95", "G13-E31.3-S45.95"))
+        self.assertEqual(g.cells("lot_midline"), ["A13", "B13", "C13", "D13", "E13", "F13", "G13"])
+        parcel = g.data["lot"]["parcel_likely"]
+        self.assertLess(abs((parcel["y0"] + parcel["y1"]) / 2 - wy), 5, "the parcel's middle is within a few feet of the fence's")
+
+    def test_master_grid_pdf_has_the_two_printed_pages_the_page_text_promises(self):
+        pdf = (pathlib.Path(__file__).resolve().parent.parent / "docs" / "downloads" / "site_master_grid.pdf").read_bytes()
+        pages = len(re.findall(rb"/Type\s*/Page(?![A-Za-z])", pdf))
+        self.assertEqual(pages, 2, "the page sends readers to the SiteRef guide on the second printed page; if a new feature pushes the "
+                                   "feature table onto a third page, tighten the print layout in docs/site_master_grid.html and print again")
 
     def test_cells_a_feature_touches(self):
         g = self.grid

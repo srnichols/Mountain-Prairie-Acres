@@ -34,6 +34,7 @@
   .diagram .t-note { fill: #5F5E5A; }
   .diagram .t-water { fill: #0B5F7C; font-weight: 600; }
   .diagram .t-valve { fill: #0E6B5C; font-weight: 700; }
+  .diagram .t-mid { fill: #B3261E; font-weight: 600; }
   .diagram .t-planned { fill: #4E3A68; font-weight: 600; }
   .diagram .halo { paint-order: stroke; stroke: #fff; stroke-width: 2.4px; stroke-linejoin: round; }
 
@@ -77,7 +78,7 @@
     figure figcaption { font-size: 9pt; margin-bottom: 1mm; }
     .fact { padding: 1.2mm 1.8mm; } .fact .value { font-size: 9.5pt; } .fact .label { font-size: 6.5pt; } .fact .hint { font-size: 7pt; }
     .howto svg { width: 1.25in; }
-    table.detail { font-size: 6.7pt; margin: 1mm 0 1.5mm; } table.detail th, table.detail td { padding: 0.1mm 1.1mm; line-height: 1.2; }
+    table.detail { font-size: 6.7pt; margin: 1mm 0 1.5mm; } table.detail th, table.detail td { padding: 0 1.1mm; line-height: 1.2; }
     table.detail code { font-size: 6.1pt; color: #6F6D66; }
     table.detail .site-ref { white-space: nowrap; }
     table.detail tr { break-inside: avoid; }
@@ -158,7 +159,8 @@ function element(tag, text, className) {
 const fmt = (value, digits = 0) => Number(value).toLocaleString('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits });
 const SG = window.SiteGrid, F = id => SG.feature(id);
 const COLOR = { road: '#DDD0B8', roadEdge: '#B6A385', pad: '#EEE4CF', padEdge: '#A8906A', fence: '#6B5A45', planned: '#7A5CA5',
-  orchard: '#B07A3E', windbreak: '#5E8F3E', ditch: '#2B8FD6', waterLine: '#1B4F9C', valveBox: '#1F9E89', contour: '#B4A48F' };
+  orchard: '#B07A3E', windbreak: '#5E8F3E', ditch: '#2B8FD6', waterLine: '#1B4F9C', valveBox: '#1F9E89', midline: '#D62828', contour: '#B4A48F' };
+const MIDLINE = F('lot_midline');
 const PIPES = SG.features({ kind: 'water_pipe' }), HYDRANTS = SG.features({ kind: 'hydrant' });
 // Valve boxes: one at the end of each row lateral (the head stations, numbered south to north) and one 4 ft back from each hydrant that has one
 const VALVE_BOXES = SG.features({ kind: 'valve_box' });
@@ -173,7 +175,7 @@ function makeMap() {
   const V = { west: -34, east: lot.width + 40, top: -46, bottom: 1340 }, S = 0.62;
   const X = x => +((x - V.west) * S).toFixed(2), Y = y => +((y - V.top) * S).toFixed(2);
   const svg = svgNode('svg', { viewBox: `0 0 ${(V.east - V.west) * S} ${(V.bottom - V.top) * S}`, class: 'diagram', role: 'img', 'aria-labelledby': 'grid-title' });
-  svg.append(svgNode('title', { id: 'grid-title' }, `The whole lot, ${fmt(lot.width)} by ${fmt(lot.depth)} ft, divided into 50 ft cells A–G west to east and 1–26 north to south, with the roads, driveway, orchard block, homestead, the planned gothic tunnel and pit greenhouse south of the orchard, buried water lines and hydrants, the ${HEAD_STATIONS.length} row laterals with their valve boxes along the main, and high and low points.`));
+  svg.append(svgNode('title', { id: 'grid-title' }, `The whole lot, ${fmt(lot.width)} by ${fmt(lot.depth)} ft, divided into 50 ft cells A–G west to east and 1–26 north to south, with the roads, driveway, orchard block, homestead, the planned gothic tunnel and pit greenhouse south of the orchard, buried water lines and hydrants, the ${HEAD_STATIONS.length} row laterals with their valve boxes along the main, the middle of the lot marked on each fence, and high and low points.`));
   const defs = svgNode('defs'), clip = svgNode('clipPath', { id: 'mg-lot' });
   clip.append(svgNode('rect', { x: X(0), y: Y(0), width: lot.width * S, height: lot.depth * S }));
   defs.append(clip); svg.append(defs);
@@ -227,6 +229,12 @@ function makeMap() {
     text(c * 50 + 2, r * 50 + 8.5, `${cols[c]}${r + 1}`, { 'font-size': 5.6, style: 'fill:#8B897F' }, inLot);
   }
   add(svgNode('rect', { x: X(0), y: Y(0), width: lot.width * S, height: lot.depth * S, fill: 'none', stroke: COLOR.fence, 'stroke-width': 1.6 }));
+  // Red ticks where the middle of the lot meets each fence, named in the margin beside each one (the letters sit just west of x)
+  MIDLINE.pts.forEach(([x, y], i) => {
+    line([[x - 12, y], [x + 12, y]], { stroke: COLOR.midline, 'stroke-width': 1.6 });
+    const lx = i ? x + 33 : x - 21;
+    add(svgNode('text', { x: X(lx), y: Y(y), 'font-size': 5.2, 'text-anchor': 'middle', class: 't-mid', transform: `rotate(-90 ${X(lx)} ${Y(y)})` }, `middle of the lot, ${fmt(y)} ft`));
+  });
 
   // Labels for the main features
   const label = (x, y, str, cls = 't-title', size = 6.6, anchor = 'middle') => text(x, y, str, { class: `${cls} halo`, 'font-size': size, 'text-anchor': anchor }, inLot);
@@ -365,6 +373,7 @@ function featureRow(f) {
   const area = pts => Math.abs(pts.reduce((sum, [x, y], i) => { const [x2, y2] = pts[(i + 1) % pts.length]; return sum + x * y2 - x2 * y; }, 0)) / 2;
   const size = f.kind === 'water_pipe' ? `${f.size_in} in pipe, ${fmt(Math.round(pathLength(f.pts) / 5) * 5)} long`
     : f.kind === 'valve_box' ? (f.lateral ? `${f.riser_in} in riser, ${fmt(Math.round(pathLength(F(f.lateral).pts)))} ft lateral` : `${f.setback_ft} ft back on the line`)
+    : f.kind === 'midline' ? `${fmt(pathLength(f.pts), 1)} long`
     : f.shape === 'point' ? '—' : f.shape === 'line' ? `${fmt(f.width)} wide` : f.shape === 'circle' ? `${fmt(w)} across`
     : f.shape === 'polygon' && f.group === 'access' ? `${fmt(Math.round(area(f.pts) / 100) * 100)} sq ft` : `${fmt(w, w % 1 ? 1 : 0)} × ${fmt(h, h % 1 ? 1 : 0)}`;
   const inside = SG.inLot(cx, cy) && f.id !== 'fence';
@@ -447,6 +456,7 @@ function renderConventions() {
     'SiteRef uses the master cell, then east and south offsets from that cell\'s northwest corner. Offsets are nonnegative, less than 50 ft, and must stay inside the fence, including the partial edge cells. Generated codes use up to two decimal places. E and S are compass directions, even on the orchard map drawn south up.',
     'Planting records should identify each individual plant, not assign one coordinate to a quantity group. SiteRef is calculated from its location; it is not a metal tag or a permanent Plant ID. Keep unlocated plants PENDING and vacant spots separate from dead or moved plants.',
     'Status is existing or planned; planned buildings (the house, garage, workshop, and the two greenhouses) move once staked. The greenhouse outlines are the footprints from the greenhouse pages, drawn dashed with the other planned buildings: the pit greenhouse\'s berm, retaining wall, cut slopes, and swales are on the greenhouse site plan, not here. Edit canonical data/site.json (rect x0/y0/x1/y1, circle cx/cy/r, polygon/line pts, point x/y), then run python tools/property_data.py build and the tests. Browser files in docs/data/ are generated, not independently editable.',
+    `The red ticks on the east and west fences mark the middle of the fenced lot (lot_midline): ${fmt(MIDLINE.pts[0][1])} ft south of the north fence, half of ${fmt(SG.data.lot.fence.depth, 1)} ft. The parcel is likely 1,320 ft between the road centerlines and the north fence stands about 18 to 20 ft inside the north one, so 660 ft from the road is about 642 ft from the fence; the red lines on the owner's October 2026 drone photo read about 660 ft. A tape from the northwest fence corner settles it.`,
     'Latitude and longitude come from the fitted lot frame, good to about 10 ft: fine for maps and directions, not for boundary questions. For precise layout, measure from the fences.',
     `Buried water lines (2 in PVC solid, 1.5 in dashed) and the ${HYDRANTS.length} frost-free hydrants (blue dots) are traced from the owner's hand-drawn map (October 2026): good to about 5 ft around the homestead and 10 ft at the north end, so dig by hand near them.`,
     `The ${HEAD_STATIONS.length} row laterals (10 ft, 1.5 in, west off the 2 in main) end in a 1 in riser and a valve box (teal squares numbered 1–${HEAD_STATIONS.length}, south to north). Their spacing is read from the owner's drone photo (October 2026), so the positions along the main are good to about 8 ft. ${HYDRANT_BOXES.length} of the ${HYDRANTS.length} hydrants also have a valve box 4 ft back on their line${NO_BOX.length ? ` (none at ${NO_BOX.map(h => SG.cellOf(h.x, h.y)).join(', ')})` : ''}: a small teal chip on the hydrant dot here, drawn apart on the homestead plot map, and listed under Row laterals and valve boxes.`

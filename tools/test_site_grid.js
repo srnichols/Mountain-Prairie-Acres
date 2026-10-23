@@ -61,3 +61,14 @@ test('SiteRef round trips every orchard spot within half a hundredth of a foot',
     assert.equal(grid.siteRef(px, py), code);
   });
 });
+
+test('The lot midline runs fence to fence at half the fence depth', () => {
+  const fence = grid.data.lot.fence, [west, east] = grid.feature('lot_midline').pts;
+  assert.equal(west[0], 0);
+  assert.equal(east[0], fence.width);
+  assert.equal(west[1], east[1]);
+  assert.ok(Math.abs(west[1] - fence.depth / 2) < 1e-6, 'the middle is half of the fence depth');
+  assert.equal(grid.siteRef(...west), 'A13-E0-S45.95');
+  assert.equal(grid.siteRef(...east), 'G13-E31.3-S45.95');
+  assert.deepEqual(Array.from(grid.cellsOf('lot_midline')), ['A13', 'B13', 'C13', 'D13', 'E13', 'F13', 'G13']);
+});
