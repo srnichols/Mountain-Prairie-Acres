@@ -432,7 +432,7 @@
         "quote": "Building Plans for elevations above 5,000ft: Any plans for any building above Tollgate (areas above approximately 5,000ft in elevation) will require an engineer/design professional report ... stamped by an engineer showing the structure will withstand 120lbs per sq.ft snow load and wind speeds of 115mph. This requirement is due to the extreme snow load in the mountain areas."
       }
     ],
-    "reading": "On both zone maps the marked community of Prairie lies several miles from any zone line, inside the zone that the map labels 30 inch frost depth and 120 pounds per square foot. The permit application names Prairie only for a seasonal permit extension, and neither it nor the permit page says which snow load applies at the lot.",
+    "reading": "On both zone maps the marked community of Prairie lies several miles from any zone line, inside the zone that the map labels 30 inch frost depth and 120 pounds per square foot. The county required a neighbor's building to be designed for 120 (owner, October 23, 2026), so 120 is the design load at the lot.",
     "values": [
       {
         "id": "frost-depth",
@@ -448,7 +448,7 @@
         "value": 120,
         "unit": "lb per sq ft",
         "source_ids": ["snow-load-map", "permit-requirements", "permit-application"],
-        "note": "The snow map puts Prairie in the 120 zone, and the permit page says that zone must be designed by an Idaho engineer. The permit application ties the requirement to buildings above Tollgate, 'approximately 5,000 ft', and the lot is at about 4,750 ft, so confirm which load applies to a building at the lot."
+        "note": "The snow map puts Prairie in the 120 zone, and the permit page says that zone must be designed by an Idaho engineer. The permit application ties the requirement to buildings above Tollgate, 'approximately 5,000 ft', and the lot is at about 4,750 ft, but the county required a neighbor's building to be designed for 120 (owner, October 23, 2026)."
       },
       {
         "id": "wind-speed",

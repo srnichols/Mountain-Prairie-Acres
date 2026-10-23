@@ -266,20 +266,24 @@ class PropertyDataTest(unittest.TestCase):
         checks = query("SELECT id, status, resolved_on, result FROM climate_checks ORDER BY position", self.root)
         self.assertEqual([r["id"] for r in checks], ["usda-zone-map", "bloom-dates", "cold-air-drainage", "minimum-thermometer", "wind-direction",
                                                      "county-snow-load", "county-frost-depth", "station-vs-baselines"])
-        # The official USDA map was read on 2026-10-18; the other seven wait on the lot's own seasons, the county, or a year of station readings.
+        # The official USDA map was read on 2026-10-18 and the county snow load was settled on 2026-10-23; the other six wait on the lot's own seasons,
+        # the county, or a year of station readings.
         by_id = {r["id"]: r for r in checks}
         self.assertEqual((by_id["usda-zone-map"]["status"], by_id["usda-zone-map"]["resolved_on"]), ("done", "2026-10-18"))
         self.assertIn("zone 6a", by_id["usda-zone-map"]["result"])
         self.assertIn("-6.6 F", by_id["usda-zone-map"]["result"])
+        self.assertEqual((by_id["county-snow-load"]["status"], by_id["county-snow-load"]["resolved_on"]), ("done", "2026-10-23"))
+        self.assertIn("120 pounds per square foot", by_id["county-snow-load"]["result"])
+        self.assertIn("neighbor", by_id["county-snow-load"]["result"])
         self.assertTrue(all(r["status"] == "open" and r["resolved_on"] is None and r["result"] is None
-                            for r in checks if r["id"] != "usda-zone-map"))
+                            for r in checks if r["id"] not in ("usda-zone-map", "county-snow-load")))
         # Settling a check means a status, a date, and what was found; the database follows the JSON.
         path = self.root / "data" / "climate.json"
         climate = json.loads(path.read_text(encoding="utf-8"))
         climate["checks"][1].update(status="done", resolved_on="2027-05-10", result="First bloom was on April 29.")
         path.write_text(json.dumps(climate), encoding="utf-8")
         settled = query("SELECT id, status, resolved_on, result FROM climate_checks WHERE status = 'done' ORDER BY position", self.root)
-        self.assertEqual([r["id"] for r in settled], ["usda-zone-map", "bloom-dates"])
+        self.assertEqual([r["id"] for r in settled], ["usda-zone-map", "bloom-dates", "county-snow-load"])
         self.assertEqual(settled[1], {"id": "bloom-dates", "status": "done", "resolved_on": "2027-05-10", "result": "First bloom was on April 29."})
         validate_data(load_data(self.root))
 

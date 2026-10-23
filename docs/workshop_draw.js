@@ -78,9 +78,9 @@ function floorPlan(m) {
   // concrete apron and the deck overhead
   o.push(rect(X(L), Y(m.doorY0), apron * s, (m.doorY1 - m.doorY0) * s, 'c-conc'));
   o.push(line(X(L + 10), Y(m.doorY0), X(L + 10), Y(m.doorY1), 'l-dash'));
-  o.push(rect(X(L), Y(m.deckY0), m.deck.depth * s, (m.deckY1 - m.deckY0) * s, 'c-above'));
+  o.push(rect(X(m.deckX0), Y(m.deckY0), m.deck.depth * s, (m.deckY1 - m.deckY0) * s, 'c-above'));
   m.deckPosts.forEach(([x, y]) => o.push(rect(X(x) - 4, Y(y) - 4, 8, 8, 'c-ptwood')));
-  o.push(text(X(L + 5), Y(m.doorY0) + 14, 'deck above', 't-s t-m'));
+  o.push(text(X(m.deckX0 + m.deck.depth / 2), Y(m.doorY0) + 14, 'deck above', 't-s t-m'));
   o.push(lines(X(L + 15), Y(16) - 4, ['CONCRETE APRON', '14′ × 10–20′'], 't-s t-m', 11));
   // slab and walls
   o.push(rect(X(0), Y(0), L * s, W * s, 'c-slab'));
@@ -91,16 +91,16 @@ function floorPlan(m) {
   o.push(line(X(L), Y(0), X(L), Y(m.doorY0), 'l-wall'), line(X(L), Y(m.doorY1), X(L), Y(W), 'l-wall'));
   o.push(line(X(L), Y(m.doorY0), X(L), Y(m.doorY1), 'l-door'));
   // stairs: first flight along the south wall, landing at the southwest corner, second flight along the west wall
-  const tread = m.stair.tread / 12, n = m.stairTreads, sw = m.stair.width, ld = m.stair.landing;
-  o.push(rect(X(ld), Y(W - sw), n * tread * s, sw * s, 'c-stair'));
-  for (let k = 0; k <= n; k++) o.push(line(X(ld + k * tread), Y(W - sw), X(ld + k * tread), Y(W), 'l-tread'));
+  const tread = m.stair.tread / 12, [f1, f2] = m.flights, sw = m.stair.width, ld = m.stair.landing;
+  o.push(rect(X(ld), Y(W - sw), f1.run * s, sw * s, 'c-stair'));
+  for (let k = 0; k <= f1.treads; k++) o.push(line(X(ld + k * tread), Y(W - sw), X(ld + k * tread), Y(W), 'l-tread'));
   o.push(rect(X(0), Y(W - sw), ld * s, sw * s, 'c-landing'));
-  o.push(rect(X(0), Y(W - ld - n * tread), sw * s, n * tread * s, 'c-stair'));
-  for (let k = 0; k <= n; k++) o.push(line(X(0), Y(W - ld - k * tread), X(sw), Y(W - ld - k * tread), 'l-tread'));
-  o.push(arrow(X(ld + n * tread - 1), Y(W - sw / 2), X(ld + 1), Y(W - sw / 2)));
-  o.push(text(X(ld + 7), Y(W - sw / 2) - 6, `UP ${m.stair.rise}′`, 't-b t-m'));
-  o.push(arrow(X(sw / 2 + 0.7), Y(W - ld - 1), X(sw / 2 + 0.7), Y(W - ld - n * tread + 1)));
-  o.push(turned(X(0.9), Y(W - ld - 6), `UP ${m.stair.rise}′`, 't-b t-m'));
+  o.push(rect(X(0), Y(W - ld - f2.run), sw * s, f2.run * s, 'c-stair'));
+  for (let k = 0; k <= f2.treads; k++) o.push(line(X(0), Y(W - ld - k * tread), X(sw), Y(W - ld - k * tread), 'l-tread'));
+  o.push(arrow(X(ld + f1.run - 1), Y(W - sw / 2), X(ld + 1), Y(W - sw / 2)));
+  o.push(text(X(ld + f1.run / 2 + 1), Y(W - sw / 2) - 6, `UP ${feetInches(f1.rise)}`, 't-b t-m'));
+  o.push(arrow(X(sw / 2 + 0.7), Y(W - ld - 1), X(sw / 2 + 0.7), Y(W - ld - f2.run + 1)));
+  o.push(turned(X(0.9), Y(W - ld - f2.run / 2), `UP ${feetInches(f2.rise)}`, 't-b t-m'));
   o.push(rect(X(0), Y(m.loftOpening.fromNorth), m.loftOpening.width * s, m.loftOpening.length * s, 'c-open'));
   // equipment
   const stove = [L - 11.5, 24];
@@ -156,7 +156,7 @@ function loftPlan(m) {
   [5, 7].forEach(h => {
     const d = m.knuckleRun * h / m.knuckleRise, west = h === 7;
     o.push(line(X(0), Y(d), X(L), Y(d), 'l-head'), line(X(0), Y(W - d), X(L), Y(W - d), 'l-head'));
-    const tx = west ? X(0.4) : X(L - 0.4), cls = west ? 't-s' : 't-s t-e';
+    const tx = west ? X(m.loftOpening.width + 0.4) : X(L - 0.4), cls = west ? 't-s' : 't-s t-e';
     o.push(text(tx, Y(d) - 2, `${h}′ headroom`, cls), text(tx, Y(W - d) + 10, `${h}′ headroom`, cls));
   });
   o.push(line(X(0), Y(k), X(L), Y(k), 'l-knuckle'), line(X(0), Y(W - k), X(L), Y(W - k), 'l-knuckle'));
@@ -183,17 +183,19 @@ function loftPlan(m) {
   o.push(rect(X(L) - 2, Y(d0), 4, (d1 - d0) * s, 'c-gap'));
   o.push(path(`M ${r2(X(L))} ${r2(Y(d0))} A ${m.loftDoor.width / 2 * s} ${m.loftDoor.width / 2 * s} 0 0 1 ${r2(X(L + 2.5))} ${r2(Y(d0 + 2.5))}`, 'l-swing'),
     path(`M ${r2(X(L))} ${r2(Y(d1))} A ${m.loftDoor.width / 2 * s} ${m.loftDoor.width / 2 * s} 0 0 0 ${r2(X(L + 2.5))} ${r2(Y(d1 - 2.5))}`, 'l-swing'));
-  const dk = m.deck;
-  o.push(rect(X(L), Y(m.deckY0), dk.depth * s, (m.deckY1 - m.deckY0) * s, 'c-deck'));
-  for (let j = 0; j <= dk.depth; j += dk.joistSpacing) o.push(line(X(L + j), Y(m.deckY0), X(L + j), Y(m.deckY1), 'l-joist'));
-  o.push(line(X(L), Y(m.deckY0 + 0.6), X(L + dk.depth), Y(m.deckY0 + 0.6), 'l-beam'), line(X(L), Y(m.deckY1 - 0.6), X(L + dk.depth), Y(m.deckY1 - 0.6), 'l-beam'));
-  o.push(polyline([[X(L), Y(m.deckY0 + 0.25)], [X(L + dk.depth - 0.25), Y(m.deckY0 + 0.25)], [X(L + dk.depth - 0.25), Y(m.deckY1 - 0.25)], [X(L), Y(m.deckY1 - 0.25)]], 'l-rail'));
+  const dk = m.deck, dx0 = m.deckX0, dx1 = m.deckX1;
+  o.push(rect(X(dx0), Y(m.deckY0), dk.depth * s, (m.deckY1 - m.deckY0) * s, 'c-deck'));
+  for (let j = 0; j <= dk.depth; j += dk.joistSpacing) o.push(line(X(dx0 + j), Y(m.deckY0), X(dx0 + j), Y(m.deckY1), 'l-joist'));
+  o.push(line(X(dx0), Y(m.deckY0), X(dx1), Y(m.deckY0), 'l-beam'), line(X(dx0), Y(m.deckY1), X(dx1), Y(m.deckY1), 'l-beam'));
+  o.push(polyline([[X(dx0), Y(m.deckY0 + 0.25)], [X(dx1 - 0.25), Y(m.deckY0 + 0.25)], [X(dx1 - 0.25), Y(m.deckY1 - 0.25)], [X(dx0), Y(m.deckY1 - 0.25)]], 'l-rail'));
   m.deckPosts.forEach(([x, y]) => o.push(rect(X(x) - 4, Y(y) - 4, 8, 8, 'c-ptwood')));
-  const hx0 = L - m.hoist.inside, hx1 = L + m.hoist.out;
-  o.push(rect(X(hx0), Y(16) - 3, (hx1 - hx0) * s, 6, 'c-steel c-above-line'));
-  o.push(lines(X(L + 11), Y(m.deckY0) + 14, [`DECK ${dk.width}′ × ${dk.depth}′, free-standing`, '42″ rail · 2×10 joists', `${dk.joistSpacing * 12}″ OC, north-south`], 't-s', 11));
-  o.push(lines(X(L + 11), Y(16) + 12, ['W6 hoist beam, above the floor:', `${m.hoist.out}′ out past the wall, ${m.hoist.inside}′ in`], 't-s', 11));
-  o.push(mk(X(2), Y(lo.fromNorth) - 12, '5'), mk(X(L) - 14, Y(d0) - 12, '9'), mk(X(L + 5), Y(m.deckY0 + 5), '10'), mk(X(hx1) + 14, Y(16), '11'));
+  const hx0 = L - m.hoist.inside, hx1 = L + m.hoist.out, hy = m.half;
+  o.push(rect(X(hx0), Y(hy) - 3, (hx1 - hx0) * s, 6, 'c-steel c-above-line'));
+  m.hoistBraces.forEach(b => o.push(line(X(b.foot[0]), Y(b.foot[1]), X(b.tip[0]), Y(b.tip[1]), 'l-brace')));
+  o.push(lines(X(L + 14), Y(m.deckY0) + 14, [`DECK ${dk.width}′ × ${dk.depth}′, free-standing`, '42″ rail · 2×10 joists', `${dk.joistSpacing * 12}″ OC, north-south`], 't-s', 11));
+  o.push(lines(X(L + 14), Y(hy) + 26, ['W6 hoist beam, above the floor:', `${feetInches(m.hoist.out)} out past the wall, ${m.hoist.inside}′ in`, `(${m.hoist.beyondDeck}′ past the deck's edge)`, 'two braces rise from the deck\'s', 'outer corners to its tip'], 't-s', 11));
+  const bn = m.hoistBraces[0], bx = (bn.foot[0] + bn.tip[0]) / 2, by = (bn.foot[1] + bn.tip[1]) / 2;
+  o.push(mk(X(2), Y(lo.fromNorth) - 12, '5'), mk(X(L) - 14, Y(d0) - 12, '9'), mk(X(dx0 + 5), Y(m.deckY0 + 5), '10'), mk(X(hx1) + 14, Y(hy), '11'), mk(X(bx), Y(by), '17'));
   // dimensions
   o.push(dimH(X(0), X(L), 46, feetInches(L), { bold: true }), dimV(X(0) - 12, Y(0), Y(W), feetInches(W), { bold: true }));
   o.push(compass(X(L + 22), Y(W) - 8), scaleBar(X(0), Y(W) + 30, s));

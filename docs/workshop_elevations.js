@@ -81,8 +81,11 @@ function eastElevation(m) {
   o.push(line(kx, Z(rail), kx + kw, Z(rail), 'l-rail'), line(kx, Z(m.eave), kx, Z(rail), 'l-rail'), line(kx + kw, Z(m.eave), kx + kw, Z(rail), 'l-rail'));
   for (let y = m.deckY0 + 0.5; y < m.deckY1 - 1e-9; y += 0.5) o.push(line(Y(y), Z(m.eave), Y(y), Z(rail), 'l-joist'));
   o.push(text(edge - 8, Z(m.eave - 1.1) + 4, `${m.deck.width}′ × ${m.deck.depth}′ deck`, 't-s t-e t-white'));
+  // the two hoist braces meet at the bottom flange of the beam's tip
+  const apex = Z(m.hoistZ) + 5, bl = m.hoistBraces[1];
+  m.hoistBraces.forEach(b => o.push(line(Y(b.foot[1]), Z(b.foot[2]), Y(b.tip[1]), apex, 'l-brace')));
   o.push(hoistEnd(Y(m.half), Z(m.hoistZ)), v.trim);
-  o.push(mk(dx + dwpx / 2, Z(10), '2'), mk(lx + lw / 2, Z(m.eave + 3.3) + 4, '9'), mk(kx + 20, Z(m.eave) + 26, '10'), mk(Y(m.half) + 22, Z(m.hoistZ) - 2, '11'));
+  o.push(mk(dx + dwpx / 2, Z(10), '2'), mk(lx + lw / 2, Z(m.eave + 3.3) + 4, '9'), mk(kx + 20, Z(m.eave) + 26, '10'), mk(Y(m.half) + 22, Z(m.hoistZ) - 2, '11'), mk((Y(bl.foot[1]) + Y(bl.tip[1])) / 2, (Z(bl.foot[2]) + apex) / 2, '17'));
   // dimensions
   o.push(heightMarks(m, Z, edge + 60, edge, false));
   o.push(dimH(Y(W), edge, Z(grade) + 32, `${feetInches(W)} gable width`, { bold: true }));
@@ -148,23 +151,24 @@ function sideElevation(m, south) {
   for (let x = -rake + 3; x < L + rake; x += 3) o.push(line(X(x), Z(m.eave - tz), X(x), Z(m.peakZ), 'l-seam-d'));
   o.push(line(rx, Z(m.knuckleZ), rx + rw, Z(m.knuckleZ), 'l-dim'), line(rx, Z(m.peakZ), rx + rw, Z(m.peakZ), 'l-wall'));
   o.push(text(rx + rw / 2, Z((m.eave - tz + m.knuckleZ) / 2) + 3, 'lower slope', 't-s t-m t-i'), text(rx + rw / 2, Z((m.knuckleZ + m.peakZ) / 2) + 3, 'upper slope', 't-s t-m t-i'));
-  // the deck at the east end, with its posts, braces, rail, and the hoist beam outside the wall
-  const beam = 0.8, [dx, dw] = S(L, L + m.deck.depth);
+  // the deck at the east end, with its posts, braces, rail, and the hoist beam and its brace outside the wall
+  const beam = 0.8, [dx, dw] = S(m.deckX0, m.deckX1);
   o.push(rect(dx, Z(m.eave), dw, beam * s, 'c-deck'));
-  [L + m.deck.postInset, L + m.deck.depth - m.deck.postInset].forEach((x, i) => {
+  [m.deckX0 + m.deck.postInset, m.deckX1 - m.deck.postInset].forEach((x, i) => {
     o.push(rect(X(x) - 2.5, Z(m.eave - beam), 5, (m.eave - beam - grade) * s, 'c-ptwood'));
     const toward = i === 0 ? 1 : -1;
     o.push(line(X(x), Z(m.eave - beam - 4), X(x + toward * 4), Z(m.eave - beam), 'l-beam'));
   });
   const rail = m.eave + m.deck.rail;
-  o.push(railing(L, L + m.deck.depth, m.eave, rail, Z, X));
+  o.push(railing(m.deckX0, m.deckX1, m.eave, rail, Z, X));
   const [hx, hw] = S(L, L + m.hoist.out);
   o.push(rect(hx, Z(m.hoistZ + 0.35), hw, 0.7 * s, 'c-steel'));
-  const hookX = X(L + m.hoist.out - 0.4);
+  const bs = m.hoistBraces[0], onBrace = t => [X(bs.foot[0] + t * (bs.tip[0] - bs.foot[0])), Z(bs.foot[2] + t * (bs.tip[2] - bs.foot[2]))];
+  o.push(line(...onBrace(0), ...onBrace(1), 'l-brace'));
+  const hookX = X(m.hoistHookX);
   o.push(line(hookX, Z(m.hoistZ - 0.35), hookX, Z(m.hoistZ - 2.4), 'l-dim'), path(`M ${r2(hookX - 3)} ${r2(Z(m.hoistZ - 2.4))} q 0 6 3 6 q 3 0 3 -6`, 'l-dim', { fill: 'none' }));
-  const out = south ? 1 : -1;
-  o.push(text(X(L + m.hoist.out) + out * 8, Z(m.hoistZ) + 4, 'W6 hoist beam', south ? 't-s' : 't-s t-e'));
-  o.push(mk(X(L + m.deck.depth / 2), Z(m.eave) + 30, '10'), mk(X(L + m.hoist.out / 2), Z(m.hoistZ) - 20, '11'));
+  o.push(text(X(L + m.hoist.out / 2), Z(m.hoistZ + 0.35) - 8, 'W6 hoist beam', 't-s t-m'));
+  o.push(mk(X((m.deckX0 + m.deckX1) / 2), Z(m.eave) + 30, '10'), mk(X(L + 3), Z(m.hoistZ) + 20, '11'), mk(...onBrace(0.45), '17'));
   if (south) {
     // the walk door, the snow guards on the lower slope above it, and the stair behind the wall
     const [dx, ddw] = S(wx0, wx1), dh = m.walkDoor.height;
@@ -174,8 +178,8 @@ function sideElevation(m, south) {
     for (let x = m.walkX - 4.5; x <= m.walkX + 4.5 + 1e-9; x += 1.5) o.push(rect(X(x) - 2, Z(zGuard) - 3, 4, 6, 'c-steel'));
     o.push(text(X(m.walkX - 5.4), Z(zGuard) + 3, 'snow guards over the door', 't-s t-e'));
     o.push(mk(X(m.walkX), Z(dh) - 34, '3'), mk(X(m.walkX + 6.6), Z(zGuard), '14'));
-    const tread = m.stair.tread / 12, n = m.stairTreads, ld = m.stair.landing;
-    o.push(polyline([[X(ld + n * tread), Z(0)], [X(ld), Z(m.stair.rise)], [X(0), Z(m.stair.rise)], [X(0), Z(m.eave)], [X(m.stair.width), Z(m.eave)]], 'l-hidden', { stroke: '#e8d8d0' }));
+    const ld = m.stair.landing, [f1] = m.flights;
+    o.push(polyline([[X(ld + f1.run), Z(0)], [X(ld), Z(m.landingZ)], [X(0), Z(m.landingZ)], [X(0), Z(m.eave)], [X(m.stair.width), Z(m.eave)]], 'l-hidden', { stroke: '#e8d8d0' }));
     o.push(text(X(9.6), Z(4) + 4, 'stair inside (dashed)', 't-s t-white t-i'));
   }
   // dimensions: the post bays, the length, and the heights on the west end
@@ -190,5 +194,112 @@ function sideElevation(m, south) {
 const northElevation = m => sideElevation(m, false);
 const southElevation = m => sideElevation(m, true);
 
-root.WorkshopDraw = Object.assign(root.WorkshopDraw, { eastElevation, westElevation, northElevation, southElevation, gableZ, gradeOf });
+// ------------------------------------------------------------------ wall framing: the girts
+
+// Feet and inches to the half inch: 13′-6½″.
+const ftIn = z => {
+  const half = Math.round(z * 24), ft = Math.floor(half / 24), rest = (half - ft * 24) / 2;
+  return `${ft}′-${Number.isInteger(rest) ? rest : `${Math.floor(rest)}½`}″`;
+};
+const plainFeet = v => (Number.isInteger(v) ? `${v}′` : feetInches(v));
+
+// One wall's framing as seen from outside with the steel, furring, and sheathing taken off: the posts behind, the girts in front, and the openings cut through
+// the rows they cross. `o` is { ox, oy, s, flip, caption }: the left edge of the wall, the eave line, pixels per foot, whether plan positions run right to left.
+function framedWall(m, key, o) {
+  const g = m.girts, wall = g.walls[key], s = o.s, face = g.face / 12, pad = -m.padToFloor, jack = g.thick / 12;
+  const X = t => (o.flip ? o.ox + (wall.length - t) * s : o.ox + t * s);
+  const Z = z => o.oy + (m.eave - z) * s;
+  const S = (a, b) => [Math.min(X(a), X(b)), Math.abs(X(b) - X(a))];
+  const right = o.ox + wall.length * s, out = [];
+  out.push(text(o.ox, o.oy - 40, o.caption, 't-b'));
+  wall.posts.slice(1).forEach((p, i) => out.push(dimH(X(wall.posts[i]), X(p), o.oy - 22, plainFeet(p - wall.posts[i]))));
+  // the pad, the floor, and the openings (doors reach down to the pad)
+  out.push(line(o.ox - 6, Z(pad), right + 6, Z(pad), 'l-wall', { 'stroke-width': 1 }), line(o.ox - 6, Z(0), right + 6, Z(0), 'l-dash'));
+  out.push(text(right + 8, Z(pad) + 3, 'pad', 't-s'), text(right + 8, Z(0) + 3, 'floor', 't-s'));
+  wall.openings.forEach(op => { const [x, w] = S(op.a, op.b); out.push(rect(x, Z(op.z1), w, (op.z1 - op.z0) * s, 'c-opening')); });
+  wall.posts.forEach(p => { const [x, w] = S(p - 2.25 / 12, p + 2.25 / 12); out.push(rect(x, Z(m.eave), w, (m.eave - pad - 0.1) * s, 'c-post c-ghost')); });
+  // the splash board, a treated 2×10 on the posts at the foot of the wall, stopping at the doors
+  const splash = g.splashInches / 12, cuts = wall.openings.filter(op => op.z0 <= pad + 1e-9).map(op => [op.a, op.b]).sort((x, y) => x[0] - y[0]);
+  let from = 0;
+  [...cuts, [wall.length, wall.length]].forEach(([a, b]) => {
+    if (a > from + 1e-9) { const [x, w] = S(from, a); out.push(rect(x, Z(pad + splash), w, splash * s, 'c-ptwood')); }
+    from = Math.max(from, b);
+  });
+  out.push(text(o.ox - 8, Z(pad + splash / 2) + 3, 'splash board', 't-s t-e'));
+  // the girts, row by row: each piece is a rectangle, each butt joint over a post gets a tick, and each uncut board is labeled with its length
+  g.rows.forEach(row => {
+    const framed = wall.rows[row.index];
+    framed.boards.forEach(board => {
+      board.pieces.forEach(p => { const [x, w] = S(p.a, p.b); out.push(rect(x, Z(row.top), w, face * s, row.role === 'base' ? 'c-ptwood' : 'c-wood')); });
+      if (board.pieces.length === 1 && board.length >= 3) {
+        const next = wall.posts.find(p => p > board.a + 1e-9);
+        out.push(text(X((board.a + Math.min(next, board.b)) / 2), Z(row.bottom + face / 2) + 3, plainFeet(board.length), 't-s t-m halo'));   // in the first bay, clear of the posts and the joints
+      }
+    });
+    framed.joints.forEach(j => out.push(line(X(j), Z(row.top) - 2.5, X(j), Z(row.bottom) + 2.5, 'l-joint')));
+    out.push(text(o.ox - 8, Z(row.bottom + face / 2) + 3, row.role === 'base' ? 'base girt' : ftIn(row.bottom), 't-s t-e'));
+  });
+  // each opening's framing and label: a window gets a sill and two jack studs under the girt that is its header; doors get jacks and an LVL header
+  wall.openings.forEach(op => {
+    const [cx, cy] = [X((op.a + op.b) / 2), Z((Math.max(op.z0, pad) + op.z1) / 2)];
+    const header = (a, b, z0, z1) => { const [x, w] = S(a, b); out.push(rect(x, Z(z1), w, (z1 - z0) * s, 'c-lvl')); };
+    const jacks = (z0, z1) => [[op.a - jack, op.a], [op.b, op.b + jack]].forEach(([a, b]) => { const [x, w] = S(a, b); out.push(rect(x, Z(z1), w, (z1 - z0) * s, 'c-wood')); });
+    if (op.kind === 'window') {
+      const [x, w] = S(op.a - jack, op.b + jack);
+      out.push(rect(x, Z(op.z0), w, face * s, 'c-wood'));
+      jacks(op.z0, op.z1);
+      out.push(text(cx, cy + 3, `${plainFeet(op.b - op.a)} × ${plainFeet(op.z1 - op.z0)}`, 't-s t-m'));
+    } else if (op.kind === 'walk door') {
+      jacks(op.z0, op.z1);
+      header(op.a - jack, op.b + jack, op.z1, op.z1 + 9.25 / 12);
+      out.push(lines(cx, cy - 3, [`${plainFeet(op.b - op.a)} × ${plainFeet(op.z1)}`, 'door'], 't-s t-m', 11));
+    } else {
+      header(op.a, op.b, m.mainDoor.height, m.underLoft);
+      out.push(text(cx, Z(m.underLoft) + (m.underLoft - m.mainDoor.height) * s / 2 + 3, 'LVL header', 't-s t-m'));
+      const [bx, bw] = S(op.a, op.b);
+      out.push(rect(bx, Z(m.eave), bw, (m.eave - m.underLoft) * s, 'c-wood'));
+      out.push(lines(cx, cy, [`${plainFeet(op.b - op.a)} × ${plainFeet(m.mainDoor.height)} overhead door`, 'girt rows stop at the jambs'], 't-s t-m', 11));
+    }
+  });
+  return out;
+}
+
+// The key to the colors and marks the framing sheets share.
+function framingKey(x, y) {
+  const items = [['c-wood', '2×6 girt, laid flat'], ['c-ptwood', 'PT base girt, splash board'], ['joint', 'joint over a post'], ['c-post c-ghost', 'post behind'], ['c-lvl', 'LVL header'], ['c-opening', 'opening']];
+  const out = [];
+  let at = x;
+  items.forEach(([cls, label]) => {
+    out.push(cls === 'joint' ? line(at + 6, y - 7, at + 6, y + 3, 'l-joint') : rect(at, y - 6, 14, 8, cls));
+    out.push(text(at + 20, y + 2, label, 't-s'));
+    at += 28 + label.length * 5;
+  });
+  return out.join('');
+}
+
+// The north and south walls, one above the other: 24 in OC rows, 16 ft boards, and the two row patterns that keep neighboring joints on different posts.
+function sidewallFraming(m) {
+  const s = 13, ox = 80, oy = 96, block = (m.eave + m.padToFloor) * s + 62, L = m.length;
+  const width = ox + L * s + 44, o = [];
+  o.push(text(width / 2, 20, 'SIDEWALL FRAMING: 2×6 GIRTS SCREWED TO THE POSTS (SEEN FROM OUTSIDE, STEEL AND SHEATHING OFF)', 't-title t-m'), framingKey(ox, 42));
+  o.push(...framedWall(m, 'N', { ox, oy, s, flip: true, caption: 'NORTH WALL (east on the left)' }));
+  o.push(...framedWall(m, 'S', { ox, oy: oy + block, s, flip: false, caption: 'SOUTH WALL (west on the left)' }));
+  const rowY = Z => oy + (m.eave - Z) * s;
+  o.push(line(ox + L * s + 2, rowY(m.girts.rows[2].top - 0.23), ox + L * s + 14, rowY(m.girts.rows[2].top - 0.23), 'l-ext'), mk(ox + L * s + 22, rowY(m.girts.rows[2].top - 0.23), '16'));
+  return svg(width, Math.ceil(oy + block + (m.eave + m.padToFloor) * s + 14), o, 'Sidewall framing, the girts on the north and south walls');
+}
+
+// The west and east walls side by side.
+function endwallFraming(m) {
+  const s = 11, W = m.width, ox1 = 74, ox2 = ox1 + W * s + 118, oy = 96;
+  const width = ox2 + W * s + 44, o = [];
+  o.push(text(width / 2, 20, 'END WALL FRAMING: 2×6 GIRTS SCREWED TO THE POSTS (SEEN FROM OUTSIDE, STEEL AND SHEATHING OFF)', 't-title t-m'), framingKey(ox1, 42));
+  o.push(...framedWall(m, 'W', { ox: ox1, oy, s, flip: false, caption: 'WEST WALL (north on the left)' }));
+  o.push(...framedWall(m, 'E', { ox: ox2, oy, s, flip: true, caption: 'EAST WALL (north on the right)' }));
+  const y = oy + (m.eave - (m.girts.rows[2].top - 0.23)) * s;
+  o.push(line(ox1 + W * s + 2, y, ox1 + W * s + 14, y, 'l-ext'), mk(ox1 + W * s + 22, y, '16'));
+  return svg(Math.ceil(width), Math.ceil(oy + (m.eave + m.padToFloor) * s + 14), o, 'End wall framing, the girts on the west and east walls');
+}
+
+root.WorkshopDraw = Object.assign(root.WorkshopDraw, { eastElevation, westElevation, northElevation, southElevation, sidewallFraming, endwallFraming, gableZ, gradeOf });
 })(typeof window !== 'undefined' ? window : globalThis);

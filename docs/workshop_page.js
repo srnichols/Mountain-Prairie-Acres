@@ -112,6 +112,14 @@ function countyTable(m, grid) {
   const heightClass = padReading >= 0 && oldReading >= 0 && avgReading >= 0 ? 'good' : padReading >= 0 ? 'look' : 'stop';
   const longestUnderFigure = Math.floor(C.frontYardSqFt / m.width), longestUnderHalf = Math.floor(cap / m.width);
   const sizeOk = m.slabSqFt <= cap;
+  // The Pole Barn/Post and Beam Standards are for the 30 psf snow zone only, so at 120 psf they do not apply and the building is engineered.
+  // Their wall and peak limits are shown as the county's usual ones, for reference.
+  const B = C.poleBarn, ratio = m.length / m.width, snow = m.loads.groundSnow;
+  const peakMarginIn = Math.round((B.peak - h.roofPeakAbovePad) * 12), peakGroundMarginIn = Math.round((B.peak - h.roofPeakAbovePad - h.avgFill) * 12);
+  const against = inches => (inches >= 0 ? `${inches} in under` : `${-inches} in over`);
+  const guideHeight = [
+    peakMarginIn < 0 ? 'stop' : h.eaveAbovePad > B.wall + 1e-9 || m.eave > B.wall + 1e-9 || peakGroundMarginIn < 0 ? 'look' : 'good',
+    `The wall limit only decides whether a barn needs an engineer, and this one has one. The peak limit is a stated maximum that a stamped design may pass only if the Building Official accepts it. The standards do not say where either is measured from. From the floor the wall is ${fi(m.eave)}, and from the pad surface ${fi(h.eaveAbovePad)}. The roof peak is ${against(peakMarginIn)} ${B.peak} ft from the pad surface${peakMarginIn >= 0 ? ', so extra fill or slab thickness would use that margin up' : ''}, and ${against(peakGroundMarginIn)} ${B.peak} ft from the original ground, which is ${h.avgFill.toFixed(1)} ft lower under the east wall. Ask the county where it takes grade. The ${m.eave} ft wall is what the ${m.mainDoor.height} ft camper door and its track need under the loft floor.`];
   const row = (rule, where, says, here, cls, result) => `<tr><th scope="row">${rule}<span class="where">${where}</span></th><td>${says}</td><td>${here}</td><td class="${cls}">${result}</td></tr>`;
   return `<table class="detail county"><colgroup><col style="width:15%"><col style="width:31%"><col style="width:20%"><col style="width:34%"></colgroup>`
     + `<thead><tr><th>Rule</th><th>What the ordinance says</th><th>This building</th><th>Where it stands</th></tr></thead><tbody>`
@@ -139,10 +147,14 @@ function countyTable(m, grid) {
       `Exempt from the building code and its fees, but not from zoning: it needs zoning approval first and the county’s agricultural exemption, and the district’s setbacks and height still apply. It must stand on a farm (5 acres or more in agricultural use) and be used <strong>solely</strong> to store farm implements, hay, grain, poultry, livestock, or horticultural products; the definition excludes personal items and a shop not related to agriculture. The owner signs a notarized statement, recorded with the county, and the county may inspect within 12 months to confirm the use is still agricultural.`,
       'Drawn as an RV garage, a workshop, and a storage loft.',
       'stop', 'Does not fit as drawn: an RV and a general workshop are personal use. A barn for orchard equipment, a tractor, bins, and harvest storage would fit if the parcel counts as a farm, and then the plans and the signed statement must describe that use. A later change of use may be a violation.')
-    + row('A 14 ft wall and a 27 ft peak', 'not found',
-      'Not in the published ordinance (Title 7 chapters 1 and 2, Title 9, or the agricultural-building form).',
-      `Eave ${m.eave} ft and ridge ${m.peakZ} ft above the floor.`,
-      'look', 'Unverified. If the county confirms them, ask for the section in writing. A 14 ft wall would put the loft floor at 14 ft, so the 14 ft door and the 11′-10″ camper would not fit under it: that is a redesign, not an adjustment.')
+    + row('Snow load and the engineer', 'Pole Barn/Post and Beam Standards, pages 1 and 3; the county’s building permit page',
+      `The county’s guide, which lets a simple pole barn skip an engineer, is for the ${B.snow} psf snow zone and ${B.wind} mph wind only, and a 120 psf area always needs engineering. The permit page says the 120 psf zone must be designed by an Idaho engineer. The guide also allows no habitation, wants a loft kept open (no rooms), and sends any deviation from its standard method to a registered design professional.`,
+      `${snow} psf ground snow: the county’s map puts Prairie in that zone, and the county required a neighbor’s building to be designed for it (owner, October 2026). ${m.loads.wind} mph wind. A ${m.width} × ${m.length} ft gambrel (${ratio.toFixed(2)} to 1, where the guide asks for at least 5 to 3) with an open storage loft, a hoist, and a free-standing deck.`,
+      'look', `The guide does not apply: at ${snow} psf this is an engineered building. An Idaho engineer stamps the plans and the trusses, which are specified and priced for ${snow} psf. The next row gives the guide’s usual wall and peak limits, for reference.`)
+    + row('Wall and peak in the pole barn guide', 'Pole Barn/Post and Beam Standards (July 19, 2021), page 1 and sheet 1',
+      `A side wall over ${B.wall} ft needs engineering, and the peak may not exceed ${B.peak} ft in total height. An alternate design stamped by an Idaho design professional may be considered by the Building Official.`,
+      `Side wall (the eave): ${m.eave} ft above the floor, ${fi(h.eaveAbovePad)} above the pad surface. Roof peak: ${fi(h.roofPeakAbovePad)} above the pad surface, which is the top of the trusses (${m.peakZ} ft above the floor) plus about ${Math.round(m.roofBuild * 12)} in of purlins, deck, steel, and ridge cap.`,
+      guideHeight[0], guideHeight[1])
     + '</tbody></table>';
 }
 

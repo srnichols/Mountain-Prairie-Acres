@@ -50,7 +50,7 @@ function sitePlan(m, grid = root.SiteGrid) {
   const dy0 = ws.y0 + m.doorY0, dy1 = ws.y0 + m.doorY1;
   o.push(rect(X(ws.x1), Y(dy0), 20 * s, (dy1 - dy0) * s, 'c-conc', { opacity: 0.85 }));
   o.push(box(ws, 'c-wall'), line(X(ws.x0), Y(cy), X(ws.x1), Y(cy), 'c-ridge'));
-  o.push(rect(X(ws.x1), Y(dy0), m.deck.depth * s, (dy1 - dy0) * s, 'c-deck'), line(X(ws.x1), Y(dy0), X(ws.x1), Y(dy1), 'l-door'));
+  o.push(rect(X(ws.x1 + m.deck.gap), Y(dy0), m.deck.depth * s, (dy1 - dy0) * s, 'c-deck'), line(X(ws.x1), Y(dy0), X(ws.x1), Y(dy1), 'l-door'));
   o.push(text(X(ws.x0 + m.length / 2), Y(cy) - 5, `WORKSHOP ${m.width} × ${m.length}`, 't-m t-b t-white'), text(X(ws.x0 + m.length / 2), Y(cy) + 9, 'planned for 2028', 't-s t-m t-white'));
   o.push(lines(X(ws.x1 + 11), Y(cy) - 3, ['apron'], 't-s'));
   // the pad's fill: almost 2 ft at the north edge and 6 in to 1 ft at the south edge

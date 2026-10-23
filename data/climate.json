@@ -352,13 +352,13 @@
     {
       "id": "county-snow-load",
       "title": "Confirm the design snow load for a building at the lot",
-      "status": "open",
+      "status": "done",
       "what": "The county's snow load map puts Prairie in the 120 pound per square foot zone, but the county's permit application ties the engineered 120 pound design to buildings above about 5,000 ft, and the lot is at about 4,750 ft. The 30 pound zone covers the rest of the county.",
       "why": "A barn, greenhouse, or house designed for 30 pounds may not meet the county's rule, and one designed for 120 pounds when 30 would do costs far more.",
       "how": "Ask the Elmore County Land Use and Building Department (208-587-2130, extension 6500) which snow load applies to a building at 4,750 ft at the lot, and write the answer and the date here.",
       "timing": "Before any building is designed.",
-      "resolved_on": null,
-      "result": null
+      "resolved_on": "2026-10-23",
+      "result": "A neighbor told the owner that the county required his building to be designed for a ground snow load of 120 pounds per square foot, which is what the snow map and the permit page give for the zone Prairie lies in. So 120 is the design load for a building at the lot, and the workshop plans use it. The county itself has not been asked about the lot."
     },
     {
       "id": "county-frost-depth",

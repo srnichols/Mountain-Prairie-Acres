@@ -42,12 +42,13 @@ function sectionA(m) {
   o.push(line(X(-edge), Z(g), X(W + edge), Z(g), 'l-wall', { 'stroke-width': 1 }));
   o.push(slabStack(m, X, Z, 0, W));
   o.push(pier(m, X, Z, 0, true), pier(m, X, Z, W, true));
-  // posts, the wall layers outside them, and the splash board
+  // posts, the girts and wall layers outside them, and the splash board (layers are exaggerated)
   [0, W].forEach(y => {
     o.push(rect(X(y) - 3.3, Z(m.eave + 0.2), 6.6, (m.eave + 0.2 - (g + 0.3)) * s, 'c-post'));
-    const out = y === 0 ? -1 : 1;
-    o.push(rect(X(y) + out * 9, Z(m.eave), 3, (m.eave - SPLASH) * s, 'c-wall'), rect(X(y) + out * 6, Z(m.eave), 3, (m.eave - SPLASH) * s, 'c-osb'));
-    o.push(rect(X(y) + (out < 0 ? -9 : 3), Z(SPLASH), 6, (SPLASH - g) * s, 'c-ptwood'));
+    const out = y === 0 ? -1 : 1, at = (from, to) => Math.min(X(y) + out * from, X(y) + out * to);
+    m.girts.rows.forEach(row => o.push(rect(at(3.3, 6.3), Z(row.top), 3, m.girts.face / 12 * s, row.role === 'base' ? 'c-ptwood' : 'c-wood')));
+    o.push(rect(at(9.3, 12.3), Z(m.eave), 3, (m.eave - SPLASH) * s, 'c-wall'), rect(at(6.3, 9.3), Z(m.eave), 3, m.eave * s, 'c-osb'));
+    o.push(rect(at(3.3, 6.3), Z(SPLASH), 3, (SPLASH - g) * s, 'c-ptwood'));
   });
   // the truss: bottom chord with the loft floor, the top chords, and the roof on them
   const chord = m.chordInches / 12, deck = m.decking / 12;
@@ -59,12 +60,12 @@ function sectionA(m) {
   // behind the cut: the main door, the loft doors, and the hoist beam on the east gable
   const dh = m.mainDoor.height;
   o.push(rect(X(m.doorY0), Z(dh), m.mainDoor.width * s, dh * s, 'c-ghost-box'), rect(X(m.loftDoorY0), Z(m.eave + m.loftDoor.height), m.loftDoor.width * s, m.loftDoor.height * s, 'c-ghost-box'));
-  o.push(text(X(m.half), Z(dh) - 5, `${m.mainDoor.width}′ × ${dh}′ door, east gable`, 't-s t-m t-i'));
+  o.push(text(X(m.half), Z(dh) - 5, `${m.mainDoor.width}′ × ${dh}′ door`, 't-s t-m t-i'));
   o.push(rect(X(m.half) - 6, Z(m.hoistZ + 0.25), 12, 0.5 * s, 'c-steel'));
   // the camper in the door, with the clearances
   const rv = m.rv, rx0 = m.half - rv.width / 2, rx1 = m.half + rv.width / 2;
   o.push(rect(X(rx0), Z(rv.height), rv.width * s, rv.height * s, 'c-rv', { rx: 6 }), rect(X(rx0) + 6, Z(rv.height) + 6, rv.width * s - 12, 2.2 * s, 'c-glass'));
-  o.push(text(X(m.half), Z(5), `camper, ${rv.width}′ wide × ${feetInches(rv.height)} high`, 't-s t-m'), text(X(m.half), Z(5) + 11, '(measure yours)', 't-s t-m t-i'));
+  o.push(text(X(m.half), Z(5), `camper, ${rv.width}′ wide × ${feetInches(rv.height)} high`, 't-s t-m'), text(X(m.half), Z(5) + 11, '(Rockwood Mini Lite 2517S)', 't-s t-m t-i'));
   const side = (m.mainDoor.width - rv.width) / 2, under = m.eave - (m.chordInches + m.decking) / 12;
   o.push(dimH(X(m.doorY0), X(rx0), Z(1.6), feetInches(side)), dimH(X(rx1), X(m.doorY1), Z(1.6), feetInches(side)));
   o.push(dimV(X(rx1) + 9, Z(dh), Z(rv.height), '', {}), lines(X(m.doorY1) + 8, Z((dh + rv.height) / 2) - 2, [feetInches(m.rvClearDoor), 'at the door head'], 't-s', 11));
@@ -96,7 +97,7 @@ function sectionB(m) {
   m.postX.forEach(x => o.push(pier(m, X, Z, x, x === 0)));
   // the interior of the north wall and the loft room
   o.push(rect(X(0.3), Z(m.eave), (L - 0.6) * s, m.eave * s, 'c-room'), rect(X(0.3), Z(m.peakZ - 0.4), (L - 0.6) * s, (m.peakZ - 0.4 - m.eave) * s, 'c-room2'));
-  for (let z = 2; z < m.eave; z += 2) o.push(line(X(0.3), Z(z), X(L - 0.3), Z(z), 'l-girt'));
+  m.girts.rows.filter(row => row.bottom >= 0).forEach(row => o.push(line(X(0.3), Z(row.bottom + m.girts.face / 24), X(L - 0.3), Z(row.bottom + m.girts.face / 24), 'l-girt')));
   m.trussX.forEach(x => o.push(line(X(x), Z(m.eave), X(x), Z(m.peakZ - 0.4), 'l-truss')));
   m.postX.forEach(x => o.push(rect(X(x) - 3.3, Z(m.eave), 6.6, m.eave * s, 'c-post c-ghost')));
   // the windows in the north wall, between the posts
@@ -114,23 +115,25 @@ function sectionB(m) {
   o.push(ew(g, 0), ew(m.mainDoor.height + 1, m.eave), ew(m.eave + m.loftDoor.height + 0.8, m.peakZ));
   o.push(rect(X(L - 0.3), Z(m.mainDoor.height + 1), 0.6 * s, 1 * s, 'c-lvl'), rect(X(L - 0.3), Z(m.eave + m.loftDoor.height + 0.8), 0.6 * s, 0.8 * s, 'c-lvl'));
   o.push(rect(X(-0.3) + 0.6 * s - 3.3, Z(m.eave), 6.6, m.eave * s, 'c-post'));
-  // the hoist beam through the east wall, and the free-standing deck with its posts, braces, and rail
+  // the hoist beam through the east wall, one of its two braces, and the free-standing deck with its posts and rail
   const hx0 = L - m.hoist.inside, hx1 = L + m.hoist.out;
   o.push(rect(X(hx0), Z(m.hoistZ + 0.25), (hx1 - hx0) * s, 0.5 * s, 'c-steel'));
-  const hook = X(hx1 - 0.4);
+  const bs = m.hoistBraces[0], onBrace = t => [X(bs.foot[0] + t * (bs.tip[0] - bs.foot[0])), Z(bs.foot[2] + t * (bs.tip[2] - bs.foot[2]))];
+  o.push(line(...onBrace(0), ...onBrace(1), 'l-brace'));
+  const hook = X(m.hoistHookX);
   o.push(line(hook, Z(m.hoistZ - 0.25), hook, Z(m.hoistZ - 2.4), 'l-dim'), path(`M ${r2(hook - 3)} ${r2(Z(m.hoistZ - 2.4))} q 0 6 3 6 q 3 0 3 -6`, 'l-dim', { fill: 'none' }));
   const beam = 0.8;
-  o.push(rect(X(L + 0.3), Z(m.eave), m.deck.depth * s, beam * s, 'c-deck'));
+  o.push(rect(X(m.deckX0), Z(m.eave), m.deck.depth * s, beam * s, 'c-deck'));
   m.deckPosts.filter(p => p[1] === m.deckY0).forEach(([x]) => o.push(rect(X(x) - 2.5, Z(m.eave - beam), 5, (m.eave - beam - g) * s, 'c-ptwood')));
   const rail = m.eave + m.deck.rail;
-  o.push(line(X(L + 0.3), Z(rail), X(L + 0.3 + m.deck.depth), Z(rail), 'l-rail'), line(X(L + 0.3 + m.deck.depth), Z(m.eave), X(L + 0.3 + m.deck.depth), Z(rail), 'l-rail'));
-  for (let x = L + 0.8; x < L + 0.3 + m.deck.depth; x += 0.5) o.push(line(X(x), Z(m.eave), X(x), Z(rail), 'l-joist'));
+  o.push(line(X(m.deckX0), Z(rail), X(m.deckX1), Z(rail), 'l-rail'), line(X(m.deckX1), Z(m.eave), X(m.deckX1), Z(rail), 'l-rail'));
+  for (let x = m.deckX0 + 0.5; x < m.deckX1; x += 0.5) o.push(line(X(x), Z(m.eave), X(x), Z(rail), 'l-joist'));
   // the stair behind the cut, south of the center line
-  const tread = m.stair.tread / 12, n = m.stairTreads, ld = m.stair.landing;
-  o.push(polyline([[X(ld + n * tread), Z(0)], [X(ld), Z(m.stair.rise)], [X(0.3), Z(m.stair.rise)], [X(0.3), Z(m.eave)], [X(m.stair.width), Z(m.eave)], [X(m.stair.width), Z(m.stair.rise)]], 'l-hidden', { stroke: '#7a6b45' }));
+  const ld = m.stair.landing, [f1] = m.flights;
+  o.push(polyline([[X(ld + f1.run), Z(0)], [X(ld), Z(m.landingZ)], [X(0.3), Z(m.landingZ)], [X(0.3), Z(m.eave)], [X(m.stair.width), Z(m.eave)], [X(m.stair.width), Z(m.landingZ)]], 'l-hidden', { stroke: '#7a6b45' }));
   o.push(lines(X(8), Z(3.2), ['stair, south of the cut', '(first flight, landing, second flight)'], 't-s t-i', 10));
   o.push(text(X(11), Z(g - mid / 2) + 3, 'imported fill', 't-s t-m'), text(X(11), Z(g - mid - 1.4), 'native soil', 't-s t-m t-white t-i'));
-  o.push(text(X(L / 2), Z(m.eave + 5), 'trusses at 2′ OC, seen edge-on', 't-s t-m t-i'), text(X(L / 2), Z(9.8), 'north wall seen from inside: posts, 2×6 girts, and windows', 't-s t-m t-i'));
+  o.push(text(X(L / 2), Z(m.eave + 5), 'trusses at 2′ OC, seen edge-on', 't-s t-m t-i'), text(X(L / 2), Z(9.8), 'north wall seen from inside: the posts, the 2×6 girts behind them, and the windows', 't-s t-m t-i'));
   // dimensions and marks
   const markX = X(0) - 44;
   [[0, '0′ floor'], [m.eave, `${m.eave}′ eave`], [m.knuckleZ, `${m.knuckleZ}′ knuckle`], [m.peakZ, `${m.peakZ}′ peak`]].forEach(([z, label]) => {
@@ -140,7 +143,7 @@ function sectionB(m) {
   let at = 0;
   m.bays.forEach(bay => { o.push(dimH(X(at), X(at + bay), Z(g - 5.6) + 22, `${bay}′`)); at += bay; });
   o.push(dimH(X(0), X(L), Z(g - 5.6) + 42, `${feetInches(L)} gable to gable`, { bold: true }));
-  o.push(mk(X(m.postX[3]), Z(12), '1'), mk(X(L) + 14, Z(7), '2'), mk(X(L) + 14, Z(m.eave + 3), '9'), mk(X(L + 5), Z(m.eave) + 26, '10'), mk(X(hx1) + 14, Z(m.hoistZ), '11'));
+  o.push(mk(X(m.postX[3]), Z(12), '1'), mk(X(L) + 14, Z(7), '2'), mk(X(L) + 14, Z(m.eave + 3), '9'), mk(X((m.deckX0 + m.deckX1) / 2), Z(m.eave) + 26, '10'), mk(X(hx1) + 14, Z(m.hoistZ), '11'), mk(...onBrace(0.4), '17'));
   o.push(text(X(L - 2), Z(2.2), 'main door', 't-s t-e'), text(X(L - 2), Z(m.eave + 3) + 3, 'loft doors', 't-s t-e'));
   return svg(840, 500, o, 'Section B, along the length, looking north');
 }
@@ -210,24 +213,27 @@ function loftFramingPlan(m) {
   o.push(line(X(0), Y(lo.fromNorth), X(lo.width), Y(lo.fromNorth), 'l-lvl-line'), line(X(0), Y(lo.fromNorth + lo.length), X(lo.width), Y(lo.fromNorth + lo.length), 'l-lvl-line'), line(X(lo.width), Y(lo.fromNorth), X(lo.width), Y(lo.fromNorth + lo.length), 'l-lvl-line'));
   o.push(lines(X(lo.width / 2), Y(lo.fromNorth + 3), ['STAIR', 'OPENING', `${lo.width}′ × ${lo.length}′`], 't-s t-m t-red t-b', 11));
   o.push(text(X(lo.width) + 6, Y(lo.fromNorth + lo.length) + 14, '(2) 2×10 LVL header at each end of the opening', 't-s'));
-  // east wall: the loft doors and their header, then the hoist beam above
+  // east wall: the loft doors and their header
   o.push(rect(X(L) - 5, Y(m.loftDoorY0), 5, (m.loftDoorY1 - m.loftDoorY0) * s, 'c-lvl'));
   o.push(text(X(L) - 10, Y(m.loftDoorY0) - 6, `${m.loftDoor.width}′ × ${m.loftDoor.height}′ loft doors, (2) 2×10 LVL header`, 't-s t-e'));
+  // walls and the deck framing
+  o.push(rect(X(0), Y(0), L * s, W * s, 'l-wall', { fill: 'none' }));
+  const dk = m.deck, dx0 = m.deckX0, dx1 = m.deckX1;
+  o.push(rect(X(dx0), Y(m.deckY0), dk.depth * s, (m.deckY1 - m.deckY0) * s, 'c-deck'));
+  for (let j = 0.5; j < dk.depth; j += dk.joistSpacing) o.push(line(X(dx0 + j), Y(m.deckY0), X(dx0 + j), Y(m.deckY1), 'l-joist'));
+  o.push(line(X(dx0), Y(m.deckY0), X(dx1), Y(m.deckY0), 'l-beam'), line(X(dx0), Y(m.deckY1), X(dx1), Y(m.deckY1), 'l-beam'));
+  m.deckPosts.forEach(([x, y]) => o.push(rect(X(x) - 4, Y(y) - 4, 8, 8, 'c-ptwood')));
+  o.push(lines(X(dx0), Y(m.deckY1) + 18, [`DECK ${dk.width}′ × ${dk.depth}′`, 'free-standing: 2×10 beams east-west,', '2×10 joists 12″ OC north-south,', 'diagonal knee braces to the posts'], 't-s', 11));
+  // the hoist beam above, and the two braces that rise from the deck's outer corners to its tip
   const hx0 = L - m.hoist.inside, hx1 = L + m.hoist.out;
   o.push(rect(X(hx0), Y(m.half) - 3, (hx1 - hx0) * s, 6, 'c-steel c-above-line'));
   o.push(text(X(hx0) - 6, Y(m.half) - 7, 'W6 hoist beam (above)', 't-s t-e'));
-  // walls and the deck framing
-  o.push(rect(X(0), Y(0), L * s, W * s, 'l-wall', { fill: 'none' }));
-  const dk = m.deck;
-  o.push(rect(X(L), Y(m.deckY0), dk.depth * s, (m.deckY1 - m.deckY0) * s, 'c-deck'));
-  for (let j = 0.5; j < dk.depth; j += dk.joistSpacing) o.push(line(X(L + j), Y(m.deckY0), X(L + j), Y(m.deckY1), 'l-joist'));
-  o.push(line(X(L), Y(m.deckY0), X(L + dk.depth), Y(m.deckY0), 'l-beam'), line(X(L), Y(m.deckY1), X(L + dk.depth), Y(m.deckY1), 'l-beam'));
-  m.deckPosts.forEach(([x, y]) => o.push(rect(X(x) - 4, Y(y) - 4, 8, 8, 'c-ptwood')));
-  o.push(lines(X(L + 11), Y(m.deckY0) + 12, [`DECK ${dk.width}′ × ${dk.depth}′`, 'free-standing: 2×10 beams east-west,', '2×10 joists 12″ OC north-south,', 'diagonal knee braces to the posts'], 't-s', 11));
+  m.hoistBraces.forEach(b => o.push(line(X(b.foot[0]), Y(b.foot[1]), X(b.tip[0]), Y(b.tip[1]), 'l-brace')));
+  const bn = m.hoistBraces[0];
   // dimensions
   o.push(dimH(X(0), X(L), 44, `${feetInches(L)} · ${m.trussCount} attic trusses at ${m.trussSpacing}′-0″ OC`, { bold: true }));
   o.push(dimV(X(0) - 14, Y(0), Y(W), `${feetInches(W)} truss span`, { bold: true }));
-  o.push(mk(X(2) + 12, Y(lo.fromNorth) - 18, '5'), mk(X(L) - 14, Y(m.loftDoorY1) + 16, '9'), mk(X(L + 5), Y(m.deckY1) - 12, '10'), mk(X(hx1) + 14, Y(m.half), '11'));
+  o.push(mk(X(2) + 12, Y(lo.fromNorth) - 18, '5'), mk(X(L) - 14, Y(m.loftDoorY1) + 16, '9'), mk(X(dx0 + 5), Y(m.deckY1) - 12, '10'), mk(X(hx1) + 14, Y(m.half), '11'), mk(X((bn.foot[0] + bn.tip[0]) / 2), Y((bn.foot[1] + bn.tip[1]) / 2), '17'));
   // key
   const ky = Y(W) + 34;
   o.push(line(X(0), ky - 4, X(0) + 16, ky - 4, 'l-chord'), text(X(0) + 22, ky, 'truss bottom chord = loft joist, spanning the full width with no bearing between the walls', 't-s'));

@@ -9,15 +9,16 @@
 const DESIGN = Object.freeze({
   width: 32,                 // north-south, wall to wall: the truss span
   length: 48,                // east-west, gable to gable: six 8 ft bays
-  eave: 16,                  // top of the sidewalls, and the loft floor
+  eave: 14,                  // top of the sidewalls, and the loft floor: the most Elmore County allows a side wall without an engineer, and what a 12 ft door and its track need
   knuckleRun: 7,             // gambrel lower slope: 7 ft in from each sidewall...
   knuckleRise: 8,            // ...and 8 ft up
-  upperRise: 4,              // upper slope: 4 ft up over the remaining 9 ft to the ridge
+  upperRise: 2.5,            // upper slope: 2½ ft up over the remaining 9 ft to the ridge (3⅓ in 12), which keeps the roof under the county's 27 ft peak limit
+  roofBuild: 0.75,           // the purlins, deck, steel, and vented ridge cap stand about 9 in above the top of the trusses at the ridge
   bayMax: 8,                 // longest post spacing on the sidewalls
   trussSpacing: 2,
   eaveTail: 1,               // truss tail beyond the wall, measured along the slope
   rakeOverhang: 1,           // roof beyond each gable
-  mainDoor: Object.freeze({ width: 14, height: 14 }),
+  mainDoor: Object.freeze({ width: 14, height: 12 }),                // 12 ft clears the camper's roof by 13 in; 14 ft leaves 3 ft each side of its 8 ft width for backing a trailer in
   walkDoor: Object.freeze({ width: 3, height: 7, fromEast: 3 }),     // on the south wall; fromEast is its center's distance from the east wall
   loftDoor: Object.freeze({ width: 5, height: 6 }),                  // on the east gable, bottom at the loft floor
   // Windows: sliders in the sidewalls, centered in the listed bays (counted from the west end, 1 is the west end bay), and one single-hung in the
@@ -27,19 +28,28 @@ const DESIGN = Object.freeze({
     side: Object.freeze({ width: 4, height: 3, sill: 5, northBays: Object.freeze([2, 4, 6]), southBays: Object.freeze([3, 4, 5]) }),
     loft: Object.freeze({ width: 3, height: 4, sill: 3 })            // sill measured up from the loft floor
   }),
-  deck: Object.freeze({ width: 14, depth: 10, rail: 3.5, posts: 4, joistSpacing: 1, postInset: 0.5 }),   // posts stand on the door-jamb lines, 6 in in from the deck's ends
+  // The deck stands free of the wall: `gap` is how far its inner edge is out from the wall's center line (about an inch clear of the siding). Its posts stand on the
+  // door-jamb lines, `postInset` in from the deck's ends.
+  deck: Object.freeze({ width: 14, depth: 10, rail: 3.5, posts: 4, joistSpacing: 1, postInset: 0.5, gap: 0.5 }),
   apron: Object.freeze({ width: 14, depth: 15 }),                    // the estimate uses 15 ft; the plan shows 10 to 20
-  hoist: Object.freeze({ out: 3, inside: 9, above: 9 }),             // W6 beam: 3 ft out past the east wall, 9 ft in, centerline 9 ft above the loft floor
-  stair: Object.freeze({ width: 4, run: 12, rise: 8, landing: 4, tread: 11 }),
-  loftOpening: Object.freeze({ width: 4, length: 8, fromNorth: 16 }),
-  rv: Object.freeze({ width: 9, length: 25, height: 11 + 10 / 12 }), // the camper: footprint from data/site.json, roof height from the owner
+  // The hoist: a W6 beam through the east gable. It reaches beyondDeck past the deck's outer edge, so a load is lifted from the ground clear of the deck and carried in
+  // over the rail; it runs `inside` into the loft, and its centerline is `above` the loft floor. The hook hangs `hook` in from the tip, where the trolley stops.
+  // Two raking struts from the outer corners of the deck meet at the tip.
+  hoist: Object.freeze({ beyondDeck: 2, inside: 9, above: 9, hook: 0.75 }),
+  stair: Object.freeze({ width: 4, landing: 4, riser: 7, tread: 11, headroom: 80 }),   // feet, except the riser, tread, and headroom (inches); the flights and the loft opening follow from the loft floor height
+  rv: Object.freeze({ width: 8, length: 25 + 11 / 12, height: 10 + 11 / 12 }),         // the camper, a 2024 Forest River Rockwood Mini Lite 2517S: the manufacturer's listed exterior size
   pad: Object.freeze({ length: 56, width: 42 }),   // the graded pad that is already built (workshop_pad in data/site.json); the building is centered on it
   fill: Object.freeze({ north: 1.9, south: 0.75 }),   // imported fill on the pad, from the owner: almost 2 ft at the north edge, 6 in to 1 ft at the south edge
   slabInches: 5,
   pier: Object.freeze({ tubeInches: 18, padInches: 30, padThickInches: 12, depthInches: 60 }),
+  wall: Object.freeze({ furring: 0.75, sheathing: 0.5, post: 7.25 }),   // the wall layers, in inches, outside to inside: steel, furring, sheathing, girt (below), post
+  // The girts: 2×6s laid flat on the outside face of the posts and screwed to them, so each is 5½ in tall and 1½ in thick. Rows are 2 ft apart, 24 in OC, from the
+  // floor line up; the lowest is pressure-treated. The posts are 8 ft apart and a board is 16 ft, so every joint falls on a post; neighboring rows start with a board
+  // of a different length to keep their joints on different posts. Beside the east door, where the runs are 9 ft, 18 ft boards are cut in half.
+  girts: Object.freeze({ spacing: 2, face: 5.5, thick: 1.5, board: 16, endBoard: 18, firstRow: 0, splashInches: 9.25, screwsPerPost: 3, screwsPerEnd: 2 }),
   chordInches: 9.25,         // truss bottom chord depth used for the clearance under the loft (the truss designer sets the real one)
   decking: 0.75,             // loft floor, inches
-  loads: Object.freeze({ groundSnow: 120, wind: 115, exposure: 'C', loftLive: 40, frostZoneInches: 30, footingInches: 60, seismicZone: 'C' })
+  loads: Object.freeze({ groundSnow: 120, wind: 115, exposure: 'C', loftLive: 40, frostZoneInches: 30, footingInches: 60, seismicZone: 'C' })   // 120 psf: the county's snow zone for Prairie, and the load it required of a neighbor's building (owner, October 23, 2026)
 });
 
 // Elmore County's limits that bear on the size and height (Title 7, chapter 2, as published in October 2026; see the overview page).
@@ -48,12 +58,21 @@ const COUNTY = Object.freeze({
   zoneHeight: 35,            // Ag, Rec, and RR/MU districts (table 7-2-27 A); an agricultural structure in the Ag district may go to 80 ft
   agStructureHeight: 80,
   frontYardSqFt: 1500,       // an accessory structure in the front yard: this or half the house's footprint, whichever is less (7-2-42 C)
-  characterSqFt: 1500        // from this size up, a residential-district front-yard accessory structure must portray the house's character (7-2-42 E)
+  characterSqFt: 1500,       // from this size up, a residential-district front-yard accessory structure must portray the house's character (7-2-42 E)
+  // The Pole Barn/Post and Beam Standards (approved July 19, 2021): the county's guide that lets a simple pole barn skip an engineer. It is for the 30 psf snow
+  // zone only, so it does not apply at 120 psf, where a building is always engineered; its limits are the county's usual ones, kept here for reference.
+  // Past 14 ft of side wall a barn needs engineering, and the peak may not pass 27 ft unless the Building Official accepts a stamped alternate design.
+  poleBarn: Object.freeze({ wall: 14, peak: 27, maxWidth: 50, maxLength: 80, ratio: 5 / 3, poleSpacing: 10, doorWall: 8, snow: 30, wind: 115 })
 });
 
 const sum = list => list.reduce((total, value) => total + value, 0);
 const n = value => Number(value).toLocaleString('en-US', { maximumFractionDigits: 0 });
 const money = value => '$' + n(value);
+// Inches to the nearest quarter, as the drawings and the text write them: 9¼″.
+const inches = value => {
+  const quarters = Math.round(value * 4), whole = Math.floor(quarters / 4), part = ['', '¼', '½', '¾'][quarters % 4];
+  return `${whole}${part}″`;
+};
 const feetInches = feet => {
   const whole = Math.floor(feet + 1e-9), inches = Math.round((feet - whole) * 12);
   return inches === 12 ? `${whole + 1}′-0″` : `${whole}′-${inches}″`;
@@ -66,6 +85,100 @@ function bayLayout(length, bayMax) {
   return [end, ...new Array(bays - 2).fill(bayMax), end];
 }
 
+// ------------------------------------------------------------------ the girts
+
+// Boards along a run of posts, with every joint over a post. A row is either 'A', which starts with a board as long as the stock allows, or 'B', which starts
+// with a board one bay long, so the joints of neighboring rows fall on different posts.
+function girtBoards(posts, stagger, stock) {
+  const boards = [];
+  let i = 0, first = stagger === 'B';
+  while (i < posts.length - 1) {
+    let j = i + 1;
+    if (!first) while (j + 1 < posts.length && posts[j + 1] - posts[i] <= stock + 1e-9) j++;
+    boards.push({ a: posts[i], b: posts[j], length: posts[j] - posts[i] });
+    first = false;
+    i = j;
+  }
+  return boards;
+}
+// The runs of posts a row covers: it does not cross an opening that spans from one post to another (the east door).
+function girtRuns(posts, gaps) {
+  const runs = [];
+  let run = [posts[0]];
+  for (let i = 1; i < posts.length; i++) {
+    if (gaps.some(([a, b]) => posts[i - 1] >= a - 1e-9 && posts[i] <= b + 1e-9)) { if (run.length > 1) runs.push(run); run = [posts[i]]; }
+    else run.push(posts[i]);
+  }
+  if (run.length > 1) runs.push(run);
+  return runs;
+}
+// What is left of a board after the notches (windows and the walk door, which sit between posts) are cut out of it.
+function girtPieces(board, notches) {
+  let pieces = [{ a: board.a, b: board.b }];
+  notches.forEach(([na, nb]) => {
+    pieces = pieces.flatMap(p => (nb <= p.a + 1e-9 || na >= p.b - 1e-9) ? [p]
+      : [{ a: p.a, b: Math.min(p.b, na) }, { a: Math.max(p.a, nb), b: p.b }].filter(q => q.b - q.a > 1e-9));
+  });
+  return pieces;
+}
+// How many boards of one stock length the pieces are cut from, longest first.
+function boardsFor(lengths, stock) {
+  const bins = [];
+  [...lengths].sort((x, y) => y - x).forEach(length => {
+    if (length > stock + 1e-9) throw new Error(`A ${length} ft girt is longer than the ${stock} ft board`);
+    const bin = bins.find(left => left.room >= length - 1e-9);
+    if (bin) bin.room -= length; else bins.push({ room: stock - length });
+  });
+  return bins.length;
+}
+
+// The girt rows, the boards in each row on each wall, and what to buy. Rows are 2 ft apart from the floor line up: the lowest is the treated base girt, and the
+// highest is 2 ft or less below the eave. Positions run along the wall: x from the west on the north and south walls, y from the north on the west and east walls.
+// Heights are above the floor. `geo` carries the post positions, the openings, and the pad.
+function girtLayout(d, geo) {
+  const spec = d.girts, face = spec.face / 12, pad = -geo.padToFloor;
+  const rows = [];
+  for (let z = spec.firstRow; z <= d.eave - spec.spacing + 1e-9; z += spec.spacing) rows.push({ bottom: z, role: rows.length ? 'girt' : 'base' });
+  rows.forEach((row, index) => Object.assign(row, { index, top: row.bottom + face, stagger: index % 2 ? 'B' : 'A' }));
+
+  const sideWindows = wall => geo.windows.filter(w => w.wall === wall && !w.loft).map(w => ({ kind: 'window', a: w.at - w.width / 2, b: w.at + w.width / 2, z0: w.sill, z1: w.sill + w.height }));
+  const walls = {
+    N: { name: 'north', length: d.length, posts: geo.postX, openings: sideWindows('N') },
+    S: { name: 'south', length: d.length, posts: geo.postX, openings: [{ kind: 'walk door', a: geo.walkX - d.walkDoor.width / 2, b: geo.walkX + d.walkDoor.width / 2, z0: pad, z1: d.walkDoor.height }, ...sideWindows('S')] },
+    W: { name: 'west', length: d.width, posts: [0, ...geo.gableY, d.width], openings: [] },
+    // The main door and its header fill the opening from the pad to the loft floor, so no row crosses it.
+    E: { name: 'east', length: d.width, posts: [0, geo.doorY0, geo.doorY1, d.width], openings: [{ kind: 'main door', a: geo.doorY0, b: geo.doorY1, z0: pad, z1: d.eave }] }
+  };
+  const eastPiece = Math.max(geo.doorY0, d.width - geo.doorY1);
+  const eastBoard = 2 * eastPiece <= spec.endBoard + 1e-9 ? spec.endBoard : spec.board;   // two pieces from one 18 ft board, if they fit
+  let screws = 0;
+  Object.values(walls).forEach(wall => {
+    const onPost = at => wall.posts.some(p => Math.abs(p - at) < 1e-9);
+    wall.openings.forEach(o => { o.rows = rows.filter(row => o.z0 < row.top - 1e-9 && o.z1 > row.bottom + 1e-9).map(row => row.index); o.betweenPosts = onPost(o.a) && onPost(o.b); });
+    wall.rows = rows.map(row => {
+      const crossing = wall.openings.filter(o => o.rows.includes(row.index));
+      const gaps = crossing.filter(o => o.betweenPosts).map(o => [o.a, o.b]), notches = crossing.filter(o => !o.betweenPosts).map(o => [o.a, o.b]);
+      const boards = girtRuns(wall.posts, gaps).flatMap(run => girtBoards(run, row.stagger, spec.board));
+      boards.forEach(board => {
+        board.pieces = girtPieces(board, notches);
+        wall.posts.filter(p => p >= board.a - 1e-9 && p <= board.b + 1e-9).forEach(p => { screws += Math.abs(p - board.a) < 1e-9 || Math.abs(p - board.b) < 1e-9 ? spec.screwsPerEnd : spec.screwsPerPost; });
+      });
+      const joints = boards.slice(1).filter((board, i) => Math.abs(board.a - boards[i].b) < 1e-9).map(board => board.a);
+      return { row: row.index, boards, joints };
+    });
+  });
+  // What to buy: the sidewall and west boards, the east wall boards, and the treated base boards, each cut from stock of one length.
+  const lengthsOf = (keys, pick) => keys.flatMap(key => walls[key].rows.filter(r => pick(rows[r.row])).flatMap(r => r.boards.map(board => board.length)));
+  const above = row => row.role !== 'base', base = row => row.role === 'base';
+  const eastApart = eastBoard !== spec.board;
+  const buy = {
+    side: boardsFor([...lengthsOf(['N', 'S', 'W'], above), ...(eastApart ? [] : lengthsOf(['E'], above))], spec.board),
+    east: eastApart ? boardsFor(lengthsOf(['E'], above), eastBoard) : 0,
+    base: boardsFor(lengthsOf(['N', 'S', 'W', 'E'], base), spec.board)
+  };
+  return { ...spec, rows, walls, eastBoard, eastPiece, buy, screws };
+}
+
 function create(overrides = {}) {
   const d = { ...DESIGN, ...overrides };
   const W = d.width, L = d.length;
@@ -76,6 +189,8 @@ function create(overrides = {}) {
   const upperRun = half - d.knuckleRun;
   const knuckleZ = d.eave + d.knuckleRise;
   const peakZ = knuckleZ + d.upperRise;
+  const underLoft = d.eave - (d.chordInches + d.decking) / 12;   // clear height under the loft floor
+  if (d.mainDoor.height + 1 > underLoft) throw new Error(`A ${d.mainDoor.height} ft door and a 1 ft header do not fit under a loft floor whose underside is ${underLoft.toFixed(2)} ft up`);
   const lowerLen = Math.hypot(d.knuckleRun, d.knuckleRise);
   const upperLen = Math.hypot(upperRun, d.upperRise);
 
@@ -152,8 +267,18 @@ function create(overrides = {}) {
   };
   rebar.total = rebar.slab + rebar.piers + rebar.apron;
 
-  const stairRisers = Math.ceil(d.stair.rise * 12 / 7);
-  const loft7 = usableWidth(7) * L - d.loftOpening.width * d.loftOpening.length;
+  // The stair has two flights and a landing. The landing may stand only as high as still leaves the required headroom under the loft floor, which fixes how
+  // many risers the first flight has. The second flight climbs through an opening in the loft floor as long as the flight itself.
+  const stairRisers = Math.round(d.eave * 12 / d.stair.riser);
+  const riserIn = d.eave * 12 / stairRisers;
+  const firstRisers = Math.floor((underLoft * 12 - d.stair.headroom) / riserIn + 1e-9);
+  if (firstRisers < 1 || firstRisers >= stairRisers) throw new Error(`The stair cannot keep ${d.stair.headroom} in of headroom under a loft floor ${d.eave} ft up`);
+  const flights = [firstRisers, stairRisers - firstRisers].map(risers => ({ risers, treads: risers - 1, run: (risers - 1) * d.stair.tread / 12, rise: risers * riserIn / 12 }));
+  const loftOpening = { width: d.stair.width, length: flights[1].run, fromNorth: W - d.stair.landing - flights[1].run };
+  // The part of the opening that falls in the loft's 7 ft headroom zone comes out of that zone's floor area.
+  const zone = [distanceForHeadroom(7), W - distanceForHeadroom(7)];
+  const openingInZone = loftOpening.width * Math.max(0, Math.min(loftOpening.fromNorth + loftOpening.length, zone[1]) - Math.max(loftOpening.fromNorth, zone[0]));
+  const loft7 = usableWidth(7) * L - openingInZone;
 
   // How tall the building is by Elmore County's definition: from the average ground at the front (east) wall to the average height (mid-point) of the highest gable.
   // The floor stands one slab, foam, and gravel stack above the pad surface. The pad is fill over the original ground, and the front wall runs north to
@@ -164,7 +289,21 @@ function create(overrides = {}) {
   const gableMidAbovePad = (eaveAbovePad + ridgeAbovePad) / 2;
   const gableAvgAbovePad = eaveAbovePad + gableAboveEave / W;
   const avgFill = (d.fill.north + d.fill.south) / 2;
-  const heights = { padToFloor, eaveAbovePad, ridgeAbovePad, gableMidAbovePad, gableAvgAbovePad, avgFill, gableMidAboveOldGround: gableMidAbovePad + avgFill };
+  const heights = { padToFloor, eaveAbovePad, ridgeAbovePad, roofPeakAbovePad: ridgeAbovePad + d.roofBuild, gableMidAbovePad, gableAvgAbovePad, avgFill, gableMidAboveOldGround: gableMidAbovePad + avgFill };
+  // A laminated post stands on its bracket just above the pad surface and runs up to the truss carrier at the eave; it is sold in 2 ft lengths.
+  const postLength = 2 * Math.ceil((d.eave + padToFloor - 0.1) / 2);
+  const girts = girtLayout(d, { postX, gableY, doorY0, doorY1, walkX, windows, padToFloor });
+  const wallInches = d.wall.furring + d.wall.sheathing + d.girts.thick + d.wall.post;   // from the steel to the inside face of the posts
+  // The deck's inner and outer edges, measured east from the building's west end.
+  const deckX0 = L + d.deck.gap, deckX1 = deckX0 + d.deck.depth;
+  // The hoist beam passes the deck's outer edge, and two raking struts brace its tip: each runs from a steel shoe on the outer end of a deck beam, at the level just under
+  // the decking, up to the tip. They meet the beam only there, so the trolley stops short of the tip and never has to pass them.
+  const hoist = { ...d.hoist, out: deckX1 - L + d.hoist.beyondDeck };
+  const hoistZ = d.eave + d.hoist.above;
+  const braceTip = [L + hoist.out, half, hoistZ - 0.25];
+  const braceFootX = deckX1 + 0.25, braceFootZ = d.eave - 0.5;
+  const hoistBraces = [doorY0, doorY1].map(y => ({ foot: [braceFootX, y, braceFootZ], tip: braceTip, length: Math.hypot(braceTip[0] - braceFootX, braceTip[1] - y, braceTip[2] - braceFootZ) }));
+  const hoistLift = 5 * Math.ceil((hoistZ - 0.25 - 1 + padToFloor) / 5);   // the hook runs from the pad up to the trolley, less the trolley's own height; chain falls come in 5 ft steps
 
   return Object.freeze({
     ...d, overrides: Object.freeze({ ...overrides }), bays, half, upperRun, knuckleZ, peakZ, lowerLen, upperLen,
@@ -176,18 +315,20 @@ function create(overrides = {}) {
     windows, windowArea,
     padMarginX: (d.pad.length - L) / 2, padMarginY: (d.pad.width - W) / 2,
     padToFloor, heights,
+    girts, wallInches,
     loftDoorY0: (W - d.loftDoor.width) / 2, loftDoorY1: (W + d.loftDoor.width) / 2,
-    deckY0: doorY0, deckY1: doorY1,
-    deckPosts: [d.deck.postInset, d.deck.depth - d.deck.postInset].flatMap(x => [doorY0, doorY1].map(y => [L + x, y])),
-    hoistZ: d.eave + d.hoist.above, hoistLength: d.hoist.out + d.hoist.inside,
+    deckY0: doorY0, deckY1: doorY1, deckX0, deckX1,
+    deckPosts: [d.deck.postInset, d.deck.depth - d.deck.postInset].flatMap(x => [doorY0, doorY1].map(y => [deckX0 + x, y])),
+    hoist, hoistZ, hoistLength: hoist.out + hoist.inside, hoistHookX: L + hoist.out - hoist.hook, hoistBraces, hoistBraceLength: hoistBraces[0].length, hoistLift,
     perimeter, gableAboveEave, wallGross, openings, wallNet: wallGross - openings,
     rakeLength, roofSqFt, lowerSlopeSqFt, slabSqFt, slabCuYd, floorSqFt: slabSqFt, loftSqFt: slabSqFt,
     loft7SqFt: loft7, loft7Width: usableWidth(7), headroomAt, usableWidth,
     concrete, rebar, pierCuFt,
-    stairRisers, stairTreads: Math.floor(d.stair.run * 12 / d.stair.tread),
-    underLoft: d.eave - (d.chordInches + d.decking) / 12,
+    stairRisers, riserIn, flights, landingZ: flights[0].rise, loftOpening, stairTreads: flights[0].treads + flights[1].treads, postLength,
+    underLoft,
+    doorHeadroom: underLoft - d.mainDoor.height,
     rvClearDoor: d.mainDoor.height - d.rv.height,
-    rvClearLoft: d.eave - (d.chordInches + d.decking) / 12 - d.rv.height,
+    rvClearLoft: underLoft - d.rv.height,
     roofSnowPsf: 0.7 * d.loads.groundSnow
   });
 }
@@ -207,7 +348,11 @@ function phases(m) {
   const iwSqFt = m.lowerSlopeSqFt + 2 * 3 * m.rakeLength + 50;
   const snow = m.loads.groundSnow, wind = m.loads.wind;
   const sideWindows = m.windows.filter(w => !w.loft), loftWindows = m.windows.filter(w => w.loft);
-  const windowFeet = sum(m.windows.map(w => 3 * w.width));   // two header pieces and a sill, each as wide as the window
+  const windowFeet = sum(m.windows.map(w => 3 * w.width));   // a sill and two jack studs, about as much 2×6 as three times the window's width
+  const gi = m.girts, rowsAbove = gi.rows.length - 1;
+  const braceStock = 2 * c(m.hoistBraceLength / 2);                                // the struts come from the next even foot of 6×6 stock
+  const doorHeadroomIn = r(m.doorHeadroom * 12), rvDoorClearIn = r(m.rvClearDoor * 12);
+  const stringer = flight => 2 * c(Math.hypot(flight.rise, flight.run) / 2);       // stock length of a stringer: the diagonal, to the next even foot
   return [
     { num: 1, title: 'Site Work & Slab Sub-Base', items: [
       line('¾″ minus crushed gravel base, compacted 4″', c(m.slabSqFt * 4 / 12 / 27), 'cu yd', 28, 45, 'SP', 'Local gravel pit — much cheaper than HD bagged. It goes on the compacted pad fill.'),
@@ -233,12 +378,12 @@ function phases(m) {
       line('Galvanized anchor bolts / threaded rod stock', 1, 'lot', 50, 120, 'HD', 'Bracket hardware usually included; this is overage.')
     ] },
     { num: 4, title: 'Laminated Posts (3-ply 2×8)', items: [
-      line('3-ply 2×8 SPF laminated PT column, 20 ft', m.postCount, 'ea', 280, 450, 'Q', 'Pre-fab laminated from Perma-Column, Mid-States, or local truss supplier. Alternative: site-build with 3-ply 2×8 #2 SPF (bottom 4 ft PT for splash), full glue + nail per ICC ESR. Cost-cut: site-build saves ~$1,500 but takes 2 days labor.'),
+      line(`3-ply 2×8 SPF laminated PT column, ${m.postLength} ft`, m.postCount, 'ea', r(280 * m.postLength / 20), r(450 * m.postLength / 20), 'Q', `Pre-fab laminated from Perma-Column, Mid-States, or local truss supplier. Each post runs from its bracket, just above the pad surface, to the truss carrier at the ${m.eave} ft eave. Alternative: site-build with 3-ply 2×8 #2 SPF (bottom 4 ft PT for splash), full glue + nail per ICC ESR. Cost-cut: site-build saves ~${money(r(1500 * m.postLength / 20 / 100) * 100)} but takes 2 days labor.`),
       line('Construction adhesive (PL Premium, if site-laminating)', 12, 'tube', 8, 12, 'HD', 'Only if site-fabricating posts.')
     ] },
     { num: 5, title: 'Pre-Engineered Gambrel Attic Trusses', items: [
       line(`Common gambrel attic truss, ${m.width}′ span, ${m.trussSpacing}′ OC, PE stamped (${snow} psf ground snow, ${m.loads.loftLive} psf loft floor)`, m.commonTrusses, 'ea', 450, 700, 'Q',
-        `Quote 3 suppliers: Western Truss (Caldwell), BMC Truss (Boise), Builders FirstSource. State explicitly: ${snow} psf ground snow (county zone, confirm), ${wind} mph wind Exp ${m.loads.exposure}, ${m.loads.loftLive} psf loft LL, gambrel attic with finished room space. The unit price is a placeholder: a ${m.width} ft attic truss for a loft floor and this snow load will likely price above an ordinary roof truss.`),
+        `Quote 3 suppliers: Western Truss (Caldwell), BMC Truss (Boise), Builders FirstSource. State explicitly: ${snow} psf ground snow (the county's design load here), ${wind} mph wind Exp ${m.loads.exposure}, ${m.loads.loftLive} psf loft LL, gambrel attic with finished room space. The unit price is a placeholder: a ${m.width} ft attic truss for a loft floor and this snow load will likely price above an ordinary roof truss.`),
       line('Gable-end truss (drop-in)', 2, 'ea', 300, 500, 'Q', 'Solid-faced for siding nailers; outlooks for gable overhang.'),
       line('Truss delivery + crane / boom truck', 1, 'trip', 400, 1000, 'Q', 'Long-bed delivery + boom set is faster & safer than rolling in by hand.'),
       line('Truss-clip hurricane ties (Simpson H2.5A, box of 100)', c(m.trussCount * 4 / 100), 'box', 85, 110, 'HD', `2 per truss bearing × ${m.trussCount} trusses × 2 sides = ${m.trussCount * 4} ties needed.`),
@@ -246,13 +391,19 @@ function phases(m) {
       line('Permanent lateral bracing per truss design', 1, 'lot', 200, 400, 'HD', '2×4 SPF + framing nails per truss-design BCSI sheets.')
     ], notes: [['warn', '<strong>Critical:</strong> truss order needs <strong>4–8 week lead time</strong>. Get the quote &amp; place the deposit BEFORE you start the foundation so trusses arrive ready when walls are up.']] },
     { num: 6, title: 'Wall Framing (Girts & Blocking)', items: [
-      line('2×6×16 SPF #2 (girts, bookshelf orientation)', r(75 * perimeterRatio), 'stick', 13, 16, 'HD', `~1,200 lin ft net. 8 horizontal rows × ${m.perimeter} ft perimeter, minus door openings.`),
+      line(`2×6×${gi.board} SPF #2 (girts: north, south, and west walls)`, gi.buy.side, 'stick', 13, 16, 'HD',
+        `Laid flat on the outside face of the posts and screwed to each one: ${rowsAbove} rows above the base girt at 24″ OC. Every joint lands on a post, and neighboring rows start with boards of different lengths so their joints fall on different posts. The pieces cut out at the windows and the walk door make the sills and jack studs.`),
+      ...(gi.buy.east ? [line(`2×6×${gi.eastBoard} SPF #2 (east wall girts, each cut in half)`, gi.buy.east, 'stick', 17, 22, 'HD',
+        `The door jambs leave a ${gi.eastPiece} ft run on each side of the door in every row, so one ${gi.eastBoard} ft board makes both pieces with no waste. Not every yard stocks ${gi.eastBoard} footers: ask.`)] : []),
+      line(`2×6×${gi.board} PT (base girts, ground contact)`, gi.buy.base, 'stick', 20, 26, 'HD',
+        `The lowest row, its bottom edge at the floor line (${Math.round((m.padToFloor + gi.firstRow) * 12)}″ above the pad). It is pressure-treated because it is the row closest to the ground and the slab, and it backs the lower edge of the sheathing. It stops at the doors, so each of the east wall's two ${gi.eastPiece} ft pieces takes a board of its own. The splash board below it (phase 12) is screwed to the posts.`),
+      line('3½″ structural screws, girts to posts (100 ct)', c(gi.screws / 100), 'box', 55, 80, 'HD',
+        `${n(gi.screws)} screws: ${gi.screwsPerPost} at each post a board crosses and ${gi.screwsPerEnd} at each board end. The county's minimum is four 20d nails per girt at each post, so the engineer confirms the screw schedule.`),
       line('2×6×8 SPF #2 (blocking, headers)', r(30 * perimeterRatio), 'stick', 7, 9, 'HD', 'For door jacks, headers, blocking, gable infill.'),
-      ...(m.windows.length ? [line('2×6×8 SPF #2 (window headers and sills)', c(windowFeet / 8), 'stick', 7, 9, 'HD',
-        `${m.windows.length} windows: cut the girts at each opening, double the header, and add a sill, about ${n(windowFeet)} lin ft. Windows sit between posts, so the posts carry the wall.`)] : []),
-      line('(2) 2×10 LVL header, 18 ft (over 14×14 OH door)', 2, 'ea', 120, 200, 'HD', 'LP / GP LVL 1¾×9¼. Placeholder: the specs call for (3) 2×12 LVL or a steel beam sized by the engineer. Truss bearing above goes onto the LVL via post-jacks.'),
-      line('(2) 2×10 LVL header, 8 ft (loft doors + walk door)', 2, 'ea', 60, 95, 'HD', 'Loft door header + walk door header.'),
-      line('Simpson LUS26 or LUS28 girt hangers (box of 50)', 2, 'box', 60, 85, 'HD', 'Hang girts off posts where not notched.')
+      ...(m.windows.length ? [line('2×6×8 SPF #2 (window sills and jack studs)', c(windowFeet / 8), 'stick', 7, 9, 'HD',
+        `${m.windows.length} windows, about ${n(windowFeet)} lin ft. The girt above a sidewall window is its header, so each opening needs only a sill and two jack studs once the girt row across it is cut. Windows sit between posts, so the posts carry the wall.`)] : []),
+      line(`(2) 2×10 LVL header, 18 ft (over the ${m.mainDoor.width}×${m.mainDoor.height} OH door)`, 2, 'ea', 120, 200, 'HD', `LP / GP LVL 1¾×9¼. Placeholder: the specs call for (3) 2×12 LVL or a steel beam sized by the engineer, no deeper than 12 in, because it must fit in the ${doorHeadroomIn} in between the door head and the underside of the loft floor. Truss bearing above goes onto the LVL via post-jacks.`),
+      line('(2) 2×10 LVL header, 8 ft (loft doors + walk door)', 2, 'ea', 60, 95, 'HD', 'Loft door header + walk door header.')
     ] },
     { num: 7, title: 'Roof Framing (Purlins & Roof Blocking)', items: [
       line('2×6×16 SPF #2 (purlins on top of truss chords)', c(60 * lengthRatio), 'stick', 13, 16, 'HD', `~${n(c(950 * lengthRatio / 10) * 10)} lin ft purlins on 4 slopes at 24″ OC.`),
@@ -292,12 +443,12 @@ function phases(m) {
       line('HD hot-dipped galvanized 3″ deck screws (5 lb box)', 1, 'box', 45, 65, 'HD', 'Fasten splash board to posts/blocking. NEVER use bright/EG with PT.')
     ] },
     { num: 13, title: 'Doors & Windows', items: [
-      line('14′ × 14′ insulated sectional OH door, wind-rated (Wayne Dalton 9100 / Clopay 4053)', 1, 'ea', 3500, 6500, 'Q', `Wind rated to ≥${wind} mph + insulated. Get installed quote — install is tricky for 14×14 with high-lift track to clear OH obstruction.`),
-      line('LiftMaster 8500W jackshaft opener (wall-mount, side-mount)', 1, 'ea', 450, 650, 'SP', 'Wall-mount opener preserves ceiling space for high-lift track.'),
+      line(`${m.mainDoor.width}′ × ${m.mainDoor.height}′ insulated sectional OH door, wind-rated, low-headroom track (Wayne Dalton 9100 / Clopay 4053)`, 1, 'ea', 3500, 6500, 'Q', `Wind rated to ≥${wind} mph + insulated. Get an installed quote. The camper is ${feetInches(m.rv.height)} tall, so a ${m.mainDoor.height}′ door clears it by ${rvDoorClearIn} in. The loft floor leaves ${doorHeadroomIn} in above the door, so ask for a low-headroom track kit that needs 12 in or less.`),
+      line('LiftMaster 8500W jackshaft opener (wall-mount, side-mount)', 1, 'ea', 450, 650, 'SP', 'A wall-mount opener keeps the space under the loft floor free for the low-headroom track.'),
       line('3070 insulated steel walk door, pre-hung w/ frame', 1, 'ea', 400, 800, 'HD', '9-lite or solid. Heavy-duty lockset extra.'),
       line('5′ × 6′ double exterior insulated door (loft, hinged out OR sliding barn-door)', 1, 'set', 1200, 2200, 'Q', 'Spec: weather-sealed, locking from inside, opens fully clear for hoist. Custom shop door OR pair of 30″ exterior pre-hung.'),
       ...(sideWindows.length ? [line(`Insulated vinyl window, ${sideWindows[0].width}′ × ${sideWindows[0].height}′ slider, low-E, DP-30 or better, with jamb extensions`, sideWindows.length, 'ea', 260, 480, 'HD',
-        `Nail-fin windows in the north and south walls, sill ${sideWindows[0].sill}′ above the floor. Ask for the design-pressure (DP) rating the engineer gives for ${wind} mph, and order jamb extensions for the 5½″ girt wall (about 6¾″ with the sheathing and furring).`)] : []),
+        `Nail-fin windows in the north and south walls, sill ${sideWindows[0].sill}′ above the floor. Ask for the design-pressure (DP) rating the engineer gives for ${wind} mph, and order jamb extensions deep enough to reach the inside face of the posts, ${inches(m.wall.sheathing + gi.thick + m.wall.post)} behind the face of the sheathing.`)] : []),
       ...(loftWindows.length ? [line(`Insulated vinyl window, ${loftWindows[0].width}′ × ${loftWindows[0].height}′ single-hung, low-E, DP-30 or better (west loft wall)`, loftWindows.length, 'ea', 240, 440, 'HD',
         'Centered in the west gable, sill ' + (loftWindows[0].sill - m.eave) + '′ above the loft floor, so it lights the loft and the stair arrival.')] : []),
       ...(m.windows.length ? [
@@ -311,18 +462,19 @@ function phases(m) {
       line('2½″ deck screws for subfloor (5 lb box)', 2, 'box', 30, 45, 'HD', '—')
     ] },
     { num: 15, title: 'Interior Loft Stairs (L-shape)', items: [
-      line('2×12×12 SPF #1 (stringers)', 6, 'stick', 40, 55, 'HD', '3 stringers per flight × 2 flights.'),
-      line('2×10×12 SPF (treads or sub-treads)', 14, 'stick', 22, 30, 'HD', `2 treads per stick. ~${2 * m.stairTreads + 2} treads total.`),
+      line(`2×12×${stringer(m.flights[0])} SPF #1 (stringers, first flight)`, 3, 'stick', r(40 * stringer(m.flights[0]) / 12), r(55 * stringer(m.flights[0]) / 12), 'HD', `${m.flights[0].risers} risers, ${feetInches(m.flights[0].rise)} up over ${feetInches(m.flights[0].run)} of run, to the landing.`),
+      line(`2×12×${stringer(m.flights[1])} SPF #1 (stringers, second flight)`, 3, 'stick', r(40 * stringer(m.flights[1]) / 12), r(55 * stringer(m.flights[1]) / 12), 'HD', `${m.flights[1].risers} risers, ${feetInches(m.flights[1].rise)} up over ${feetInches(m.flights[1].run)} of run, to the loft floor.`),
+      line('2×10×12 SPF (treads or sub-treads)', c((m.stairTreads + 2) / 2), 'stick', 22, 30, 'HD', `2 treads per stick. ~${m.stairTreads + 2} treads total.`),
       line('2×4×8 SPF (handrail + landing frame)', 10, 'stick', 4, 6, 'HD', '—'),
       line('Pre-fab oak/poplar handrail + balusters (kit)', 1, 'kit', 200, 400, 'HD', 'Optional — code requires graspable handrail 34–38″ above nosing.'),
       line('LSC stringer connectors + joist hangers', 1, 'lot', 60, 100, 'HD', 'Simpson LSC adjustable stringer connector.')
     ] },
     { num: 16, title: `Landing Deck (${m.deck.width}′ × ${m.deck.depth}′, free-standing)`, items: [
-      line('6×6×16 PT posts (deck legs, full height to ground)', m.deck.posts, 'stick', 55, 75, 'HD', '6×6 for lateral stability: the deck is 16 ft tall, so it needs the bigger leg.'),
+      line('6×6×16 PT posts (deck legs, full height to ground)', m.deck.posts, 'stick', 55, 75, 'HD', `6×6 for lateral stability: the deck is ${m.eave} ft tall, so it needs the bigger leg. 16 ft is the stock length; each leg is cut to about ${r(m.eave - 1.3 + m.padToFloor)} ft.`),
       line('2×10×16 PT (beams & outer joists)', 4, 'stick', 30, 38, 'HD', 'Two doubled beams east-west on the post lines.'),
       line(`2×10×${m.deck.width} PT (joists @ 12″ OC)`, 10, 'stick', 25, 32, 'HD', 'Run north-south between the beams. Tighter spacing for snow load.'),
       line('5/4×6×12 PT decking', 26, 'stick', 10, 14, 'HD', `${m.deck.width * m.deck.depth} sq ft + waste. Alt: composite for ~3× cost.`),
-      line('2×6×8 PT (diagonal knee-braces, 4 needed)', 4, 'stick', 8, 11, 'HD', 'Critical for lateral stability — a 16 ft tall deck WILL sway without these.'),
+      line('2×6×8 PT (diagonal knee-braces, 4 needed)', 4, 'stick', 8, 11, 'HD', `Critical for lateral stability — a ${m.eave} ft tall deck WILL sway without these.`),
       line('2×4×8 PT (railing top + bottom + balusters)', 30, 'stick', 4, 6, 'HD', '42″ railing required for fall protection > 30″.'),
       line('Simpson joist hangers (LUS210, box of 25)', 1, 'box', 60, 85, 'HD', 'HDG for PT contact.'),
       line('Simpson hurricane ties for beam-to-post (H1)', 8, 'ea', 3, 5, 'HD', '—'),
@@ -330,15 +482,17 @@ function phases(m) {
       line('HDG #9 × 3″ deck screws (5 lb box)', 2, 'box', 35, 50, 'HD', 'Camo or face screws.'),
       line('Flashing and sealer at the wall', 1, 'lot', 60, 100, 'HD', 'The deck stands free of the wall (no ledger), so this is only for a brace tie-in if the engineer wants one.')
     ] },
-    { num: 17, title: 'Hoist Beam & Trolley', items: [
-      line('W6×9 or W6×12 steel I-beam, 12 ft (rated for 1,000 lb capacity)', 1, 'ea', 180, 280, 'SP', `Local steel yard (Idaho Steel Boise / Triumph Steel). About ${m.hoist.inside} ft inside + ${m.hoist.out} ft out past the wall.`),
+    { num: 17, title: 'Hoist Beam, Braces & Trolley', items: [
+      line(`W6×12 steel I-beam, ${feetInches(m.hoistLength)} (braced at the tip by two struts, rated for 1,000 lb at the hook)`, 1, 'ea', r(15 * m.hoistLength), r(23.3 * m.hoistLength), 'SP', `Local steel yard (Idaho Steel Boise / Triumph Steel), cut to length. ${m.hoist.inside} ft inside + ${feetInches(m.hoist.out)} out past the wall, which is ${m.hoist.beyondDeck} ft beyond the deck's outer edge. The engineer picks the size; a W6×15 is the likely next step up.`),
+      line(`6×6×${braceStock} PT (hoist braces: two raking struts)`, 2, 'ea', r(55 * braceStock / 16), r(75 * braceStock / 16), 'HD', `From a steel shoe on the outer end of each outer deck beam to the tip of the hoist beam, each about ${feetInches(m.hoistBraceLength)} long. Steel tube is the alternative if the engineer prefers it.`),
+      line('Beam-tip end plate and brace shoes (fabricated, galvanized)', 1, 'lot', 120, 260, 'SP', 'A plate on the end of the beam with ears for the two struts, which is also the trolley\'s outer stop, and a steel shoe on the end of each outer deck beam to seat a strut. A welder or the steel yard makes them.'),
       line('Beam trolley (1-ton capacity, fits W6 flange)', 1, 'ea', 60, 120, 'SP', 'Harbor Freight, Northern Tool, Grainger.'),
-      line('Chain fall hoist (1-ton, 10 ft lift)', 1, 'ea', 80, 200, 'SP', '—'),
-      line('Beam end-stop hardware (welded angles or bolt-on)', 1, 'lot', 30, 60, 'SP', 'Prevent trolley falling off the end.'),
+      line(`Chain fall hoist (1-ton, ${m.hoistLift} ft lift)`, 1, 'ea', r(80 + 4 * (m.hoistLift - 10)), r(200 + 8 * (m.hoistLift - 10)), 'SP', `The hook runs from the ground up to the beam, about ${m.hoistLift} ft. A hand chain fall that long is a special order; an electric hoist is the alternative.`),
+      line('Beam inner end-stop hardware (welded angles or bolt-on)', 1, 'lot', 30, 60, 'SP', 'Keeps the trolley from running off the inside end; the tip plate stops it at the outer end.'),
       line('EPDM weather boot / flashing for beam penetration', 1, 'ea', 40, 80, 'HD', 'Custom-made from flat EPDM + butyl tape. CRITICAL detail.'),
       line('Anchor plate / bolt-through hardware (beam to truss)', 1, 'lot', 50, 120, 'HD', 'Coordinate with truss engineer for attachment.'),
       line('Blocking (2×6 + 2×8 between trusses to spread beam load)', 1, 'lot', 40, 80, 'HD', '—')
-    ], notes: [['warn', '<strong>Engineering check:</strong> have the truss manufacturer review the hoist-beam attachment. A cantilevered beam with 1,000 lb at the tip creates a serious uplift load on the truss top chord. The truss may need an extra ply at that location or a reinforced web.']] },
+    ], notes: [['warn', `<strong>Engineering check:</strong> have the truss manufacturer review the hoist-beam attachment, and the engineer size the beam, the two braces, and the deck posts and piers that carry them. A beam that reaches ${feetInches(m.hoist.out)} past the wall with 1,000 lb at its tip makes a serious uplift load on the truss top chord inside; the truss may need an extra ply at that location or a reinforced web. The braces take much of the tip load down into the deck, so the deck is part of the hoist.`]] },
     { num: 18, title: 'Electrical', items: [
       line('200 A main-lug sub-panel (Square D HOM, 42 space)', 1, 'ea', 220, 380, 'HD', 'Square D Homeline or Eaton BR. Main-lug, fed from the pump house or the house (feed source to settle).'),
       line('Breakers — 15/20 A (10 ea), 30 A (3: RV, compressor, mini-split), 50 A (1: welder)', 14, 'ea', 8, 45, 'HD', '15/20 A standard, 30 A for the RV outlet, the compressor, and the mini-split (check its nameplate), 50 A for the welder.', [200, 400]),
@@ -370,12 +524,12 @@ function phases(m) {
       line('R-30 batts (loft floor between joists)', r(10 * m.loftSqFt / 1408), 'bag', 55, 75, 'HD', 'If loft floor is over unconditioned space — but ours is conditioned both sides, so OPTIONAL.'),
       line('R-49 blown-in cellulose for upper loft ceiling (above flat upper-truss tie)', 1, 'lot', 500, 900, 'SP', 'Trusses commonly have a flat tie above loft creating an attic; blow cellulose on top.'),
       line('6 mil poly vapor barrier (interior side of walls)', 2, 'roll', 80, 120, 'HD', 'Cold-climate zone 6B. Verify with builder — kraft-face on batts may suffice.'),
-      line('Interior finish — ½″ OSB or T1-11 (full shop interior)', r(60 * perimeterRatio), 'sheet', 18, 30, 'HD', 'Far more abuse-resistant than drywall in a shop. Alt: skip for now, install later.')
+      line('Interior finish — ½″ OSB or T1-11 (full shop interior)', r(60 * perimeterRatio), 'sheet', 18, 30, 'HD', 'Far more abuse-resistant than drywall in a shop. Alt: skip for now, install later. It is screwed to horizontal strapping across the posts, which this list does not price.')
     ], notes: [['tip', '<strong>Phasing tip:</strong> build the shell first, conditioned later. The rainscreen + ½″ OSB sheathing makes the shell fully weather-tight even with no insulation or interior finish. Move in equipment, work in it for a winter, decide which areas need heat — then phase in mini-split + insulation only where you actually use it.']] },
     { num: 21, title: 'Fasteners & Miscellaneous Hardware', items: [
       line('16d common nails (50 lb box)', 1, 'box', 65, 90, 'HD', 'For framing.'),
       line('Bag of 1¾″ × 0.131 framing-nailer ring-shank coils', 2, 'box', 80, 120, 'HD', 'If using gun.'),
-      line('3″ structural screws (Headlok, 100 ct)', 3, 'box', 50, 75, 'HD', 'Post-to-post, post-to-girt, etc.'),
+      line('3″ structural screws (Headlok, 100 ct)', 3, 'box', 50, 75, 'HD', 'Post-to-post and miscellaneous framing (the girt screws are in phase 6).'),
       line('Construction adhesive (PL Premium, 28 oz)', 12, 'tube', 7, 10, 'HD', 'Multi-use.'),
       line('Caulks & sealants (DAP DynaFlex 230, butyl, NP1)', 1, 'lot', 80, 150, 'HD', '—'),
       line('Hurricane / strap-tie variety pack', 1, 'lot', 80, 150, 'HD', 'Simpson assortment.'),
@@ -435,7 +589,10 @@ function facts(m) {
     width: String(m.width), length: String(m.length), footprint: `${m.width} × ${m.length} ft`, footprintPrime: `${m.width}′ × ${m.length}′`,
     footprintSqFt: n(m.slabSqFt),
     eave: String(m.eave), knuckle: String(m.knuckleZ), peak: String(m.peakZ),
-    eaveAbovePad: feetInches(m.heights.eaveAbovePad), ridgeAbovePad: feetInches(m.heights.ridgeAbovePad),
+    eaveAbovePad: feetInches(m.heights.eaveAbovePad), ridgeAbovePad: feetInches(m.heights.ridgeAbovePad), roofPeakAbovePad: feetInches(m.heights.roofPeakAbovePad),
+    peakMarginIn: String(Math.round((COUNTY.poleBarn.peak - m.heights.roofPeakAbovePad) * 12)),
+    peakOverGroundIn: String(Math.round((m.heights.roofPeakAbovePad + m.heights.avgFill - COUNTY.poleBarn.peak) * 12)),
+    roofBuildIn: String(Math.round(m.roofBuild * 12)), avgFill: m.heights.avgFill.toFixed(1),
     gableMid: feetInches(m.heights.gableMidAbovePad), gableMidOldGround: feetInches(m.heights.gableMidAboveOldGround), gableAverage: m.heights.gableAvgAbovePad.toFixed(1),
     accessoryHeight: String(COUNTY.accessoryHeight), zoneHeight: String(COUNTY.zoneHeight), yardCap: n(COUNTY.frontYardSqFt),
     accessoryMarginIn: String(Math.abs(marginIn)),
@@ -455,8 +612,20 @@ function facts(m) {
     wallSqFt: n(Math.round(m.wallNet / 10) * 10), roofSqFt: n(Math.round(m.roofSqFt / 10) * 10),
     snow: String(m.loads.groundSnow), roofSnow: String(Math.round(m.roofSnowPsf)), wind: String(m.loads.wind), loftLive: String(m.loads.loftLive),
     footing: String(m.loads.footingInches), frostZone: String(m.loads.frostZoneInches),
-    lowerAngle: String(Math.round(m.lowerAngle)), upperAngle: String(Math.round(m.upperAngle)),
+    lowerAngle: String(Math.round(m.lowerAngle)), upperAngle: String(Math.round(m.upperAngle)), upperPitch: (Math.round(m.upperRise / m.upperRun * 120) / 10).toFixed(1),
     rvClearLoft: feetInches(m.rvClearLoft), rvClearDoor: feetInches(m.rvClearDoor),
+    doorSize: `${m.mainDoor.width}′ × ${m.mainDoor.height}′`, doorHeight: String(m.mainDoor.height), doorWidth: String(m.mainDoor.width),
+    doorSide: feetInches((m.mainDoor.width - m.rv.width) / 2), doorHeadroom: `${Math.round(m.doorHeadroom * 12)}″`, underLoft: feetInches(m.underLoft),
+    rvSize: `${feetInches(m.rv.length)} × ${m.rv.width}′ × ${feetInches(m.rv.height)}`, rvHeight: feetInches(m.rv.height), rvWidth: `${m.rv.width}′`, rvLength: feetInches(m.rv.length),
+    landingHeight: feetInches(m.landingZ), flight1Risers: String(m.flights[0].risers), flight2Risers: String(m.flights[1].risers),
+    flight1Rise: feetInches(m.flights[0].rise), flight2Rise: feetInches(m.flights[1].rise), flight1Run: feetInches(m.flights[0].run), flight2Run: feetInches(m.flights[1].run),
+    stairRisers: String(m.stairRisers), openingSize: `${m.loftOpening.width}′ × ${m.loftOpening.length}′`,
+    postLength: String(m.postLength), siteBuildSaving: hundred(1500 * m.postLength / 20),
+    girtRows: String(m.girts.rows.length), girtBoard: String(m.girts.board), girtEndBoard: String(m.girts.eastBoard), girtEastPiece: String(m.girts.eastPiece),
+    girtBaseAbovePad: String(Math.round((m.padToFloor + m.girts.firstRow) * 12)), girtBuySide: String(m.girts.buy.side), girtBuyEast: String(m.girts.buy.east), girtBuyBase: String(m.girts.buy.base), strapFt: n(Math.round(m.girts.rows.length * m.perimeter / 10) * 10),
+    hoistOut: feetInches(m.hoist.out), hoistInside: String(m.hoist.inside), hoistBeyondDeck: String(m.hoist.beyondDeck), hoistLength: feetInches(m.hoistLength), hoistLift: String(m.hoistLift),
+    braceLength: feetInches(m.hoistBraceLength), braceStock: String(2 * Math.ceil(m.hoistBraceLength / 2)),
+    girtScrews: n(m.girts.screws), wallThickness: inches(m.wallInches), behindSheathing: inches(m.wall.sheathing + m.girts.thick + m.wall.post), girtTopRow: feetInches(m.girts.rows[m.girts.rows.length - 1].bottom),
     materialsLow: hundred(t.low), materialsHigh: hundred(t.high), budgetLow: hundred(b.budget.low.total), budgetMid: hundred(b.budget.likely.total), budgetHigh: hundred(b.budget.high.total)
   };
 }

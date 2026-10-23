@@ -107,6 +107,22 @@ table.detail td.mk-cell { width: 34px; text-align: center; white-space: nowrap; 
 .dwg .l-rail { stroke: #3a2a18; stroke-width: 1.5; fill: none; }
 .dwg .l-joist { stroke: #6f5636; stroke-width: 0.6; }
 .dwg .l-beam { stroke: #3a2a18; stroke-width: 2.2; }
+.dwg .l-brace { stroke: #5b7a4a; stroke-width: 3.4; stroke-linecap: butt; fill: none; }
+/* the perspective framing views: five tones of each material, from the face's angle to the light */
+.dwg .z3d polygon { stroke: #3b2a14; stroke-opacity: 0.55; stroke-width: 0.45; stroke-linejoin: round; }
+.dwg .z3-ground { fill: #efe9d8; }
+.dwg .z3-pad { fill: #e2d6b4; stroke: #bdae85; stroke-width: 0.8; }
+.dwg .zc0 { fill: #6f7374; } .dwg .zc1 { fill: #868b8c; } .dwg .zc2 { fill: #9ba0a2; } .dwg .zc3 { fill: #aeb4b6; } .dwg .zc4 { fill: #bfc6c8; }
+.dwg .zp0 { fill: #715733; } .dwg .zp1 { fill: #88693e; } .dwg .zp2 { fill: #9d7947; } .dwg .zp3 { fill: #b08850; } .dwg .zp4 { fill: #c29658; }
+.dwg .zg0 { fill: #8d7d5b; } .dwg .zg1 { fill: #a9966d; } .dwg .zg2 { fill: #c4ae7e; } .dwg .zg3 { fill: #dcc38e; } .dwg .zg4 { fill: #f2d79c; }
+.dwg .zt0 { fill: #475f3d; } .dwg .zt1 { fill: #55734a; } .dwg .zt2 { fill: #638555; } .dwg .zt3 { fill: #6f9560; } .dwg .zt4 { fill: #7aa46a; }
+.dwg .zl0 { fill: #948150; } .dwg .zl1 { fill: #b39b60; } .dwg .zl2 { fill: #ceb36f; } .dwg .zl3 { fill: #e8c97d; } .dwg .zl4 { fill: #ffdd8a; }
+.dwg .zw0, .dwg .zw1, .dwg .zw2, .dwg .zw3, .dwg .zw4 { fill-opacity: 0.55; }
+.dwg .zw0 { fill: #6c808f; } .dwg .zw1 { fill: #819aac; } .dwg .zw2 { fill: #96b2c7; } .dwg .zw3 { fill: #a8c8e0; } .dwg .zw4 { fill: #b9dcf6; }
+.dwg .zr0 { fill: #7d6640; } .dwg .zr1 { fill: #977b4d; } .dwg .zr2 { fill: #ae8e59; } .dwg .zr3 { fill: #c4a064; } .dwg .zr4 { fill: #d8b06e; }
+.dwg .zu0 { fill: #968a6c; } .dwg .zu1 { fill: #b4a681; } .dwg .zu2 { fill: #d0bf96; } .dwg .zu3 { fill: #ead7a8; } .dwg .zu4 { fill: #ffedb9; }
+.dwg .zd0 { fill: #6c5c48; } .dwg .zd1 { fill: #816f56; } .dwg .zd2 { fill: #968064; } .dwg .zd3 { fill: #a89070; } .dwg .zd4 { fill: #b99e7b; }
+.dwg .zs0 { fill: #474d52; } .dwg .zs1 { fill: #555c63; } .dwg .zs2 { fill: #636b72; } .dwg .zs3 { fill: #6f7880; } .dwg .zs4 { fill: #7a848d; }
 .dwg .l-leaf { stroke: #5a4030; stroke-width: 1.4; }
 .dwg .l-swing { stroke: #5a4030; stroke-width: 0.7; stroke-dasharray: 2 2; fill: none; }
 .dwg .l-seam { stroke: rgba(255, 255, 255, 0.2); stroke-width: 0.8; }
@@ -176,6 +192,8 @@ table.detail td.mk-cell { width: 34px; text-align: center; white-space: nowrap; 
 .dwg .c-pier { fill: #e2ded2; stroke: #75705f; stroke-width: 0.8; stroke-dasharray: 3 2; }
 .dwg .c-ghost { opacity: 0.45; }
 .dwg .c-ghost-box { fill: none; stroke: #3a2a18; stroke-width: 1.2; stroke-dasharray: 6 3; }
+.dwg .c-opening { fill: #fffdf8; stroke: #7a1f1f; stroke-width: 1.2; }
+.dwg .l-joint { stroke: #7a1f1f; stroke-width: 1.8; }
 .dwg .l-chord { stroke: #8a6d3b; stroke-width: 1.1; }
 .dwg .l-chord-h { stroke-width: 2.4; }
 .dwg .l-lvl-line { stroke: #8a6d3b; stroke-width: 3; }

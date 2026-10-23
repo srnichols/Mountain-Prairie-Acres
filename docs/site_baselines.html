@@ -420,7 +420,7 @@ function renderSpecs() {
     ['25-year, 24-hour storm', `${fmt(B.stormDepth('24-hr', 25), 2)} in`, `of rain; 90% interval ${fmt(B.stormDepth('24-hr', 25, 'lower_in'), 2)} to ${fmt(B.stormDepth('24-hr', 25, 'upper_in'), 2)} in`],
     ['Degree days, base 50 °F', fmt(GDD50.p50), `in a typical year by the hourly method; base 43 °F gives ${fmt(GDD43.p50)}`],
     ['Chill, 32 to 45 °F', `${fmt(CHILL_A.p50)} h`, `November to February; the winters ranged from ${fmt(CHILL_A.min)} to ${fmt(CHILL_A.max)}`],
-    ['County snow load', `${fmt(snowLoad.value)} lb/sq ft`, 'on the county map for Prairie; confirm for a building here']
+    ['County snow load', `${fmt(snowLoad.value)} lb/sq ft`, 'on the county map for Prairie; required of a neighbor’s building']
   ].forEach(([name, value, hint]) => {
     const card = element('div', null, 'spec');
     card.append(element('div', name, 'label'), element('div', value, 'value'), element('div', hint, 'hint'));
