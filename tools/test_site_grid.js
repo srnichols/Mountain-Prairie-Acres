@@ -77,7 +77,7 @@ test('The front gate is two 12 ft leaves across the driveway in cell G1', () => 
   const gate = grid.feature('front_gate'), [west, east] = gate.pts;
   assert.equal(gate.leaves * gate.leaf_ft, east[0] - west[0]);
   assert.equal(west[1], east[1]);
-  assert.ok(east[0] <= grid.data.lot.fence.width, 'the east post is not past the east fence');
+  assert.ok(Math.abs(grid.data.lot.fence.width - east[0] - 5) <= 1, 'the east post stands about 5 ft inside the east fence');
   assert.deepEqual(Array.from(grid.cellsOf('front_gate')), ['G1']);
-  assert.equal(grid.siteRef(...grid.center(gate)), 'G1-E19.3-S10');
+  assert.equal(grid.siteRef(...grid.center(gate)), 'G1-E14.3-S10');
 });

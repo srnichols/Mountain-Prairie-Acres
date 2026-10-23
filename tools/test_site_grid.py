@@ -276,7 +276,7 @@ class SiteGridTest(unittest.TestCase):
         self.assertEqual(wy, ey, "the gate runs east-west across the driveway")
         self.assertEqual(ex - wx, gate["leaves"] * gate["leaf_ft"], "two 12 ft leaves make a 24 ft opening")
         self.assertEqual(g.cells("front_gate"), ["G1"])
-        self.assertLessEqual(ex, fence["width"], "the east post is not past the east fence")
+        self.assertAlmostEqual(fence["width"] - ex, 5, delta=1, msg="the owner says the east post stands about 5 ft inside the east fence")
         (ax, ay), (bx, by) = drive["pts"][0], drive["pts"][1]
         mid = ax + (bx - ax) * (wy - ay) / (by - ay)
         self.assertLessEqual(wx, mid - drive["width"] / 2, "the opening clears the driveway's west edge")
