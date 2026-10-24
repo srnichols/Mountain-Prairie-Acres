@@ -22,6 +22,7 @@ window.SITE_NAV = /* BEGIN SITE_NAV JSON */
       {"href": "workshop_specs.html", "label": "Workshop specs"},
       {"href": "workshop_plans.html", "label": "Workshop plans and elevations"},
       {"href": "workshop_sections.html", "label": "Workshop sections and details"},
+      {"href": "workshop_trusses.html", "label": "Workshop truss package"},
       {"href": "workshop_materials.html", "label": "Workshop materials and cost"}
     ]},
     {"id": "land", "label": "Land & water", "items": [

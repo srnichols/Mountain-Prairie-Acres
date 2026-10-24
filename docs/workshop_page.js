@@ -1,5 +1,6 @@
 // Fills a workshop page from the model: the numbers quoted in the text (<span data-m="name">), the drawings (<div data-fig="name">), the bill of materials
-// (<div data-bom="summary|phases|budget">), and the site and county tables (<div data-site="table|county">). The view functions return HTML strings so
+// (<div data-bom="summary|phases|budget">), the site and county tables (<div data-site="table|county">), and the truss tables (<div data-truss="outline|room|stations">).
+// The view functions return HTML strings so
 // tests can run them without a browser.
 (function (root) {
 'use strict';
@@ -20,7 +21,7 @@ function bomSummary(b) {
   }).join('');
   const t = b.totals;
   return `<table class="detail"><thead><tr><th class="center">#</th><th>Phase / category</th><th class="num">Low</th><th class="num">Midpoint</th><th class="num">High</th></tr></thead><tbody>${rows}</tbody>`
-    + `<tfoot><tr><td colspan="2">MATERIALS TOTAL (excludes labor, permits, and utility hookups)</td><td class="num">${money(t.low)}</td><td class="num">${money(t.mid)}</td><td class="num">${money(t.high)}</td></tr></tfoot></table>`;
+    + `<tfoot><tr><td colspan="2">MATERIALS TOTAL (before sales tax, permits, and utility hookups)</td><td class="num">${money(t.low)}</td><td class="num">${money(t.mid)}</td><td class="num">${money(t.high)}</td></tr></tfoot></table>`;
 }
 
 function bomPhases(b) {
@@ -158,6 +159,34 @@ function countyTable(m, grid) {
     + '</tbody></table>';
 }
 
+// ------------------------------------------------------------------ the truss tables
+
+// The tables on the truss page, from the model's truss geometry: where the roof line runs, where the open room's outline runs, and the headroom at stations in from a wall.
+function trussTable(m, kind) {
+  const fi = M.feetInches, t = m.truss, above = z => fi(z - m.eave);
+  const tables = {
+    outline: {
+      head: ['Roof line point', 'In from the north wall line', 'Above the loft floor'],
+      rows: [['Tail end', `${M.inches(t.tailRun * 12)} outside the wall line`, `${M.inches(t.tailDrop * 12)} below`], ['Wall line', fi(0), fi(0)],
+        ['Pitch break', fi(m.knuckleRun), above(m.knuckleZ)], ['Ridge', fi(m.half), above(m.peakZ)]]
+    },
+    room: {
+      head: ['Open room point', 'In from the north wall line', 'Clear height'],
+      rows: [['Chord underside meets the floor', fi(t.clearFrom(0)), fi(0)], ['Room edge, on the pitch-break line', fi(m.knuckleRun), fi(t.clearAt(m.knuckleRun))],
+        ['Underside at the pitch break', fi(t.innerKnuckle[0]), above(t.innerKnuckle[1])], [`Collar tie underside, to ${fi(m.width - t.tie.from)}`, fi(t.tie.from), above(t.tie.z)],
+        ['Ridge', fi(m.half), fi(t.clearAt(m.half))]]
+    },
+    stations: {
+      head: ['In from a wall line', 'Roof line height', 'Clear height'],
+      rows: [1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16].map(y => [fi(y) + (y === m.knuckleRun ? ' (pitch break)' : y === m.half ? ' (ridge)' : ''), fi(m.headroomAt(y)), fi(t.clearAt(y))])
+    }
+  };
+  const table = tables[kind];
+  if (!table) throw new Error(`The page asks for the unknown truss table "${kind}"`);
+  return `<table class="detail"><thead><tr>${table.head.map((h, i) => `<th${i ? ' class="num"' : ''}>${h}</th>`).join('')}</tr></thead><tbody>`
+    + table.rows.map(cells => `<tr><th scope="row">${cells[0]}</th>${cells.slice(1).map(c => `<td class="num">${c}</td>`).join('')}</tr>`).join('') + '</tbody></table>';
+}
+
 // ------------------------------------------------------------------ the page
 
 function render(doc) {
@@ -179,6 +208,7 @@ function render(doc) {
       el.innerHTML = views[el.dataset.bom](M.bom(m));
     });
     doc.querySelectorAll('[data-site]').forEach(el => { el.innerHTML = el.dataset.site === 'county' ? countyTable(m, root.SiteGrid) : siteTable(m, root.SiteGrid); });
+    doc.querySelectorAll('[data-truss]').forEach(el => { el.innerHTML = trussTable(m, el.dataset.truss); });
   } catch (error) {
     problems.push(error);
     const box = doc.getElementById('render-error');
@@ -188,7 +218,7 @@ function render(doc) {
   return problems;
 }
 
-root.WorkshopPage = { render, bomSummary, bomPhases, bomBudget, siteFacts, siteTable, countyTable, lineToRect, rectGap };
+root.WorkshopPage = { render, bomSummary, bomPhases, bomBudget, siteFacts, siteTable, countyTable, trussTable, lineToRect, rectGap };
 if (typeof document !== 'undefined' && document.readyState !== 'loading') render(document);
 else if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded', () => render(document));
 })(typeof window !== 'undefined' ? window : globalThis);

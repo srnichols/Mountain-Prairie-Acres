@@ -13,16 +13,16 @@ const plain = value => JSON.parse(JSON.stringify(value));
 
 // One browser-like context with the model, the drawings, and the site grid loaded, as a workshop page loads them.
 const context = vm.createContext({ window: {} });
-for (const file of ['workshop_model.js', 'workshop_draw.js', 'workshop_elevations.js', 'workshop_3d.js', 'workshop_sections.js', 'workshop_details.js', 'workshop_site.js',
+for (const file of ['workshop_model.js', 'workshop_draw.js', 'workshop_elevations.js', 'workshop_3d.js', 'workshop_sections.js', 'workshop_details.js', 'workshop_trusses.js', 'workshop_site.js',
   'data/site_grid.js', 'data/site_terrain.js', 'workshop_page.js']) vm.runInContext(read(path.join(DOCS, file)), context, { filename: file });
 const { WorkshopModel: M, WorkshopDraw: D, WorkshopPage: P, SiteGrid } = context.window;
 const model = M.create();
 // A 44 ft building without windows: the length and layout of the owner's original estimate, used to check the bill-of-materials arithmetic.
 const reference = M.create({ length: 44, windowSpec: null });
 
-const PAGES = ['workshop_pole_barn.html', 'workshop_specs.html', 'workshop_plans.html', 'workshop_sections.html', 'workshop_materials.html'];
+const PAGES = ['workshop_pole_barn.html', 'workshop_specs.html', 'workshop_plans.html', 'workshop_sections.html', 'workshop_trusses.html', 'workshop_materials.html'];
 const FIGURES = ['floorPlan', 'loftPlan', 'eastElevation', 'westElevation', 'northElevation', 'southElevation', 'sidewallFraming', 'endwallFraming', 'framing3dSoutheast', 'framing3dNorthwest', 'sectionA', 'sectionB', 'foundationPlan', 'loftFramingPlan',
-  'detail1', 'detail2', 'detail3', 'detail4', 'detail5', 'detail6', 'detail7', 'sitePlan'];
+  'detail1', 'detail2', 'detail3', 'detail4', 'detail5', 'detail5Perspective', 'detail6', 'detail7', 'trussProfile', 'trussOptions', 'trussLayout', 'sitePlan'];
 
 test('The workshop is 32 x 48 ft with six 8 ft sidewall bays and 19 piers', () => {
   assert.equal(model.width, 32);
@@ -357,6 +357,7 @@ test('The 3D framing views build every member from the model and sort them back 
     assert.equal(c.girt, pieces, `${name}: every girt piece of the layout`);
     assert.equal(c['truss-top'], 4 * model.trussCount);
     assert.equal(c['truss-bottom'], model.trussCount + 1, 'the loft joist at 2 ft is cut in two around the stair opening');
+    assert.equal(c['truss-tie'], model.specialTrusses.tied.length, 'a collar tie on every truss but the hoist trusses');
     assert.equal(c.purlin, 20, 'five rows on each of four slopes');
     assert.equal(c.carrier, 6, 'three 16 ft LVL carriers on each sidewall');
     assert.deepEqual([c['deck-post'], c['deck-beam'], c['deck-joist'], c['hoist-beam'], c['hoist-brace']], [4, 2, 11, 1, 2]);
@@ -373,10 +374,86 @@ test('The 3D framing views build every member from the model and sort them back 
   // every color class the views use is defined in the style sheet
   const css = read(path.join(DOCS, 'workshop.css'));
   for (const cls of new Set(Array.from((svg + D.framing3dNorthwest(model)).matchAll(/class="(z[a-z]?[\w-]*)"/g), match => match[1]))) assert.ok(css.includes(`.dwg .${cls}`), `workshop.css does not define ${cls}`);
-  // the frame follows the length: a 46 ft building has one truss fewer
+  // the frame follows the length: a 46 ft building has one truss fewer, and one tie fewer
   const short = D.framing3dCheck(M.create({ length: 46 }), 'southeast');
   assert.equal(short.counts['truss-top'], 4 * 24);
+  assert.equal(short.counts['truss-tie'], model.specialTrusses.tied.length - 1);
   assert.equal(short.forced, 0);
+  // each tie spans the underside of the upper chords at its height, and the west gable's studs stop at it instead of passing through
+  const parts = D.framing3dParts(model), tie = model.truss.tie, ys = p => p.corners.map(c => -c[1]), zs = p => p.corners.map(c => c[2]);
+  const near = (value, expected) => assert.ok(Math.abs(value - expected) < 1e-6, `${value} is not near ${expected}`);
+  for (const p of parts.filter(part => part.tag === 'truss-tie')) {
+    near(Math.min(...ys(p)), tie.from); near(Math.max(...ys(p)), model.width - tie.from); near(Math.min(...zs(p)), tie.z); near(Math.max(...zs(p)), tie.z + tie.deep);
+  }
+  const westStuds = parts.filter(p => p.tag === 'stud' && Math.max(...p.corners.map(c => c[0])) < 0.2);
+  assert.ok(westStuds.length > 10);
+  for (const stud of westStuds.filter(p => Math.max(...ys(p)) > tie.from && Math.min(...ys(p)) < model.width - tie.from))
+    assert.ok(Math.max(...zs(stud)) <= tie.z + 1e-6 || Math.min(...zs(stud)) >= tie.z + tie.deep - 1e-6, 'a stud of the west gable passes through the collar tie');
+});
+
+test('The eave in perspective cuts the wall and the roof edge from the eave section, and the air has a way out through the vented strip', () => {
+  const view = D.eave3dCheck(model), c = view.counts, es = model.eaveSection, parts = D.eave3dParts(model);
+  assert.deepEqual(plain([c.post, c.girt, c.carrier, c.bolt, c.nut, c['vent strip'], c['vent slot'], c['truss-top'], c['truss-bottom'], c['sub-fascia'], c['eave trim'], c.purlin, c['heel block']]),
+    [1, 1, 1, 3, 3, 1, 8, 2, 2, 1, 2, 1, 2], 'one post, the LVL carrier with its three bolts, the vented strip with its slots, two trusses with a heel block under each, the sub-fascia, and the trim');
+  assert.equal(view.members, parts.length);
+  assert.equal(view.forced, 0, 'members hide each other in a ring');
+  assert.ok(view.polygons > 60 && view.polygons < 400 && view.bytes < 60 * 1024, `${view.polygons} polygons, ${view.bytes} bytes`);
+  // the wall from the post outward, with the model's thicknesses; the strip is 3 in tall
+  assert.ok(0 > -es.girt && -es.girt > es.sheathingOut && es.sheathingOut > es.wrapOut && es.wrapOut > es.furringOut && es.furringOut > es.steelOut);
+  assert.equal(es.girt, model.girts.thick);
+  assert.ok(Math.abs(es.sheathingOut + es.girt + model.wall.sheathing) < 1e-9 && Math.abs(es.furringOut - es.wrapOut + model.wall.furring) < 1e-9);
+  assert.equal(es.ventTop - es.ventBottom, 3);
+  // the air path is never over solid steel: the steel and the furring stop where the strip begins, and the strip is in line with the steel
+  const part = tag => parts.find(p => p.tag === tag), zOf = p => p.corners.map(q => q[2]), top = p => Math.max(...zOf(p)), bottom = p => Math.min(...zOf(p)), out = p => Math.max(...p.corners.map(q => q[1]));
+  const strip = part('vent strip');
+  assert.ok(Math.abs(top(part('steel')) - bottom(strip)) < 1e-9 && Math.abs(top(part('furring')) - bottom(strip)) < 1e-9, 'the steel and the furring end at the bottom of the strip');
+  assert.ok(Math.abs(out(strip) - out(part('steel'))) < 1e-9, 'the strip is in line with the steel');
+  assert.ok(top(part('sheathing')) >= top(strip) - 1e-9, 'the sheathing runs up behind the strip');
+  // and what is out in front of the strip leaves it open: the sub-fascia, the trim, and the level cut under the tail all end above the strip's top
+  assert.ok(bottom(part('sub-fascia')) > top(strip), 'the sub-fascia clears the strip');
+  assert.ok(parts.filter(p => p.tag === 'eave trim').every(p => bottom(p) > top(strip)), 'the trim clears the strip');
+  assert.ok(es.levelZ > es.ventTop && es.fascia.x0 < es.steelOut, 'the tail is cut level above the strip and reaches out past the steel');
+  // the heel: a block on the bottom chord under the top chord at the bearing, with the floor butting to it, and plates that lie on wood
+  const heel = es.heel, blocks = parts.filter(p => p.tag === 'heel block'), postHalf = model.wall.post / 24, chordTopZ = model.eave - model.decking / 12;
+  const undersideAt = x => es.lineZ(x, -es.depth);
+  assert.ok(blocks.every(p => Math.abs(bottom(p) - chordTopZ) < 1e-9), 'the blocks stand on the bottom chord');
+  assert.ok(Math.abs(heel.block[3][1] - undersideAt(heel.post)) < 1e-9 && Math.abs(heel.block[2][1] - undersideAt(heel.post + heel.wide)) < 1e-9, 'the top of the block follows the underside of the top chord');
+  assert.ok(heel.block[0][1] < heel.block[3][1], 'and the top chord stands clear of the bottom chord at the bearing, which is the gap the block fills');
+  assert.ok(heel.height >= 12, `the heel stands ${heel.height} in high, which is at least 12 in`);
+  assert.ok(Math.abs(Math.max(...part('floor').corners.map(q => q[1])) + (postHalf + heel.wide / 12)) < 1e-9, 'the floor butts to the inside face of the block');
+  assert.ok(heel.plate.every(([x, z]) => x >= heel.post && x <= heel.post + heel.wide && z >= -model.chordInches - model.decking && z <= es.lineZ(x, 0)), 'each plate corner is on wood: within the width of the block, from inside the bottom chord to inside the top chord');
+  // the picture
+  const svg = D.detail5Perspective(model);
+  for (const letter of 'ABCDEFGHIJKL') assert.match(svg, new RegExp(`class="mk-t">${letter}<`), `the cutaway needs marker ${letter}`);
+  assert.match(svg, /class="c-plate-behind"/, 'the plates are drawn dashed, behind the cut');
+  assert.ok((svg.match(/class="[^"]*zcut/g) || []).length >= 10, 'the cut faces are marked');
+  assert.match(svg, /class="l-air"/);
+  for (const name of ['detail1', 'detail4', 'detail5']) assert.match(D[name](model), /class="l-air"/, `${name} draws the air as the same blue path`);
+  assert.doesNotMatch(D.detail7(model), /class="l-air"/, 'Detail 7 is the bearing, so it draws no air');
+  assert.match(svg, /THE WHOLE WALL/);
+  assert.ok(svg.includes('Detail 4') && svg.includes('Detail 5'), 'the diagram ties the air inlet at the base (Detail 4) to the outlet at the eave (Detail 5)');
+  const css = read(path.join(DOCS, 'workshop.css'));
+  for (const cls of new Set(Array.from(svg.matchAll(/class="(z[a-z]?[\w-]*)"/g), match => match[1]))) assert.ok(css.includes(`.dwg .${cls}`), `workshop.css does not define ${cls}`);
+  // the sections page carries it, with a legend for every marker, and no page still describes a soffit
+  const sections = read(path.join(DOCS, 'workshop_sections.html')), block = sections.slice(sections.indexOf('id="detail-5-perspective"'), sections.indexOf('id="detail-6"'));
+  assert.match(sections, /<script src="workshop_3d\.js"><\/script>/);
+  assert.match(block, /data-fig="detail5Perspective"/);
+  for (const letter of 'ABCDEFGHIJKL') assert.match(block, new RegExp(`<span class="nums">${letter}</span>`), `the legend needs a row for ${letter}`);
+  assert.match(sections, /href="#detail-5-perspective"/);
+  // Details 5 and 7 draw the heel block and name it, and the truss page's copy of Detail 7 does too
+  for (const name of ['detail5', 'detail7']) assert.match(D[name](model), /class="c-plate-behind"/, `${name} draws the heel plates`);
+  const detail5Legend = sections.slice(sections.indexOf('id="detail-5"'), sections.indexOf('id="detail-5-perspective"'));
+  for (const letter of 'ABCDEFGH') assert.match(detail5Legend, new RegExp(`<span class="nums">${letter}</span>`), `Detail 5 needs a row for ${letter}`);
+  assert.match(D.detail5(model), />H</);
+  for (const file of ['workshop_sections.html', 'workshop_trusses.html']) {
+    const page = read(path.join(DOCS, file)), detail7Legend = page.slice(page.indexOf('data-fig="detail7"'));
+    assert.match(detail7Legend, /<span class="nums">10<\/span><\/td><td>Heel block/, `${file} lists the heel block in the Detail 7 legend`);
+  }
+  assert.match(D.detail7(model), />10</);
+  for (const page of PAGES) assert.doesNotMatch(read(path.join(DOCS, page)), /soffit/i, `${page} still mentions a soffit`);
+  assert.doesNotMatch(JSON.stringify(M.bom(model)), /soffit/i);
+  // the eave follows the building, not the length
+  assert.deepEqual(plain(D.eave3dCheck(M.create({ length: 46 })).counts), plain(c));
 });
 
 test('At 44 ft the model reproduces the original estimate\'s phase subtotals wherever that estimate was consistent', () => {
@@ -625,7 +702,8 @@ test('Each workshop page loads the menu first, links home, and asks only for num
     for (const match of html.matchAll(/data-fig="(\w+)"/g)) assert.equal(typeof D[match[1]], 'function', `${page} asks for the unknown drawing ${match[1]}`);
     for (const match of html.matchAll(/data-bom="(\w+)"/g)) assert.ok(['summary', 'phases', 'budget'].includes(match[1]), `${page}: ${match[1]}`);
     for (const match of html.matchAll(/data-site="(\w+)"/g)) assert.ok(['table', 'county'].includes(match[1]), `${page}: ${match[1]}`);
-    const hooks = Array.from(html.matchAll(/data-(?:bom|fig|site)="\w+"/g), match => match[0]);
+    for (const match of html.matchAll(/data-truss="(\w+)"/g)) assert.doesNotThrow(() => P.trussTable(model, match[1]), `${page}: the unknown truss table ${match[1]}`);
+    const hooks = Array.from(html.matchAll(/data-(?:bom|fig|site|truss)="\w+"/g), match => match[0]);
     assert.deepEqual(hooks.filter((hook, i) => hooks.indexOf(hook) !== i), [], `${page} draws the same table or drawing twice`);
     for (const match of html.matchAll(/<script src="([^"]+)">/g)) assert.ok(fs.existsSync(path.join(DOCS, match[1])), `${page} loads a missing script ${match[1]}`);
     assert.ok(html.includes('data-m=') || page === 'workshop_plans.html' || page === 'workshop_sections.html', page);
@@ -681,6 +759,24 @@ test('The materials page tables build from the model without leftovers', () => {
   assert.equal((html.match(/<h2 id="phase-/g) || []).length, 21);
 });
 
+test('The cost pages price no labor and assume no hired contractor: the family builds it', () => {
+  const bom = M.bom(model), strip = html => html.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<style[\s\S]*?<\/style>/g, '');
+  const pages = { materials: strip(read(path.join(DOCS, 'workshop_materials.html'))), overview: strip(read(path.join(DOCS, 'workshop_pole_barn.html'))), trusses: strip(read(path.join(DOCS, 'workshop_trusses.html'))) };
+  const hired = /\blabor\b|\bhire[ds]?\b|contractor|installed quote|\(installed\)/i;
+  const texts = new Map([['the materials page', pages.materials], ['the overview', pages.overview], ['the truss page', pages.trusses], ['the materials tables', P.bomSummary(bom) + P.bomPhases(bom) + P.bomBudget(bom)]]);
+  for (const [where, text] of texts) {
+    const hit = hired.exec(text);
+    assert.equal(hit, null, `${where} talks about paid work: "${hit && text.slice(Math.max(0, hit.index - 50), hit.index + 70).replace(/\s+/g, ' ')}"`);
+  }
+  // every line of the budget is tax, an extra that is a fee, a rental, or a utility charge, or the contingency: none is a wage
+  for (const extra of M.BUDGET_EXTRAS) assert.doesNotMatch(extra.join(' '), hired, `${extra[0]} reads as paid labor`);
+  assert.match(pages.overview, /built with family/);
+  assert.match(pages.overview, /Built by the owner with family/);
+  const door = bom.phases.flatMap(p => p.items).find(i => /insulated sectional OH door/.test(i.item));
+  assert.match(door.notes, /delivered; the family installs it/);
+  assert.match(pages.materials, /track kit, delivered/);
+});
+
 test('Windows are drawn in the plans, the elevations, and Section B, and nowhere else', () => {
   const count = (text, pattern) => (text.match(pattern) || []).length;
   assert.equal(count(D.floorPlan(model), /class="c-winplan"/g), 6);
@@ -703,4 +799,199 @@ test('Each workshop page has a PDF, links on the home page, and a menu entry', (
     assert.ok(home.includes(`href="downloads/${pdf}"`), `the home page needs a download link for ${pdf}`);
     assert.ok(menu.includes(`"href": "${page}"`), `${page} needs an entry in docs/site_nav.js`);
   }
+});
+
+// ------------------------------------------------------------------ the truss package
+
+test('The truss geometry: the roof line, the clear room under 7¼″ chords, and its width at 7 ft and 5 ft', () => {
+  const t = model.truss, near = (value, expected, tolerance = 0.01) => assert.ok(Math.abs(value - expected) < tolerance, `${value} is not near ${expected}`);
+  assert.deepEqual(plain(t.outline.slice(1, 4)), [[0, 14], [7, 22], [16, 24.5]], 'the roof line passes through the wall line, the pitch break, and the ridge');
+  assert.deepEqual(plain(t.outline[4]), [25, 22]);
+  near(t.tailRun, 0.659); near(t.tailDrop, 0.753);
+  near(t.clearAt(7), 7.083); near(t.clearAt(16), 9.873);
+  near(t.clearWidth(7), 18.144); near(t.clearWidth(5), 21.644); near(t.clearFrom(0), 0.803);
+  near(t.innerKnuckle[0], 7.336); near(t.innerKnuckle[1], 21.466);
+  for (let y = 0; y <= 32; y += 0.5) {
+    near(t.clearAt(y), t.clearAt(32 - y), 1e-9);
+    if (y > 0 && y < 32) assert.ok(t.clearAt(y) < model.headroomAt(y), `the underside of the chords is below the roof line at ${y} ft`);
+  }
+  // the chord drops the headroom by its depth square to the slope: 7½″ at the ridge, 11″ at the pitch break
+  near(model.headroomAt(16) - t.clearAt(16), 0.604 / Math.cos(model.upperAngle * Math.PI / 180));
+  near(model.headroomAt(7) - t.clearAt(7), 11 / 12);
+  // a deeper chord costs about an inch of headroom per inch of depth at the ridge
+  const deeper = M.create({ topChordInches: 9.25 });
+  near(t.clearAt(16) - deeper.truss.clearAt(16), 2 * 1.038 / 12);
+  assert.ok(t.clearAt(7) - deeper.truss.clearAt(7) > 2 / 12, 'and more at the pitch break');
+  // the four chords tile the roof line, and the hoist beam fits under the ridge with room for blocking
+  assert.equal(t.chords.length, 4);
+  assert.ok(t.innerRidge[1] - (model.hoistZ + 0.25) > 0.5, 'the hoist beam clears the underside of the ridge');
+});
+
+test('The bracing stays out of the open room: webs and kickers in the knee zones, plates on the chord faces, and a price for each step that comes into the room', () => {
+  const t = model.truss, b = model.bracing, near = (value, expected, tolerance = 0.002) => assert.ok(Math.abs(value - expected) < tolerance, `${value} is not near ${expected}`);
+  const count = (text, pattern) => (text.match(pattern) || []).length;
+  // a vertical web and a kicker from its foot, both standing on the loft floor and ending on the underside of the lower chord
+  const [v0, v1] = t.webs.vertical, [k0, k1] = t.webs.kicker;
+  assert.deepEqual(plain([v0, k0]), [[b.webAt, model.eave], [b.webAt, model.eave]], 'both stand on the loft floor at the web line');
+  near(v1[1], model.eave + t.clearAt(v1[0]), 1e-9);
+  near(k1[1], model.eave + t.clearAt(k1[0]), 1e-9);
+  assert.ok(k1[0] > b.webAt && k1[0] < model.knuckleRun, 'the kicker leans from the web line toward the pitch break');
+  // each member's body, with its width, stays outside the pitch-break line (on the south side too), so none of it comes into the room
+  const corners = ([a, c]) => {
+    const dy = c[0] - a[0], dz = c[1] - a[1], len = Math.hypot(dy, dz), w = t.webs.wide / 2, nx = -dz / len * w, nz = dy / len * w;
+    return [[a[0] + nx, a[1] + nz], [a[0] - nx, a[1] - nz], [c[0] + nx, c[1] + nz], [c[0] - nx, c[1] - nz]];
+  };
+  near(t.webs.wide, 3.5 / 12, 1e-9);
+  for (const seg of [t.webs.vertical, t.webs.kicker]) for (const [y] of corners(seg)) {
+    assert.ok(y <= model.knuckleRun + 1e-9, `a web corner at ${y} ft is inside the pitch-break line`);
+    assert.ok(model.width - y >= model.width - model.knuckleRun - 1e-9, 'the south half mirrors it');
+  }
+  // the plates lie flat on the chords at the knee and the ridge, so every corner is within the outline of the chords
+  const inside = ([y, z], polygon) => {
+    let on = false;
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      const [yi, zi] = polygon[i], [yj, zj] = polygon[j];
+      if ((zi > z) !== (zj > z) && y < (yj - yi) * (z - zi) / (zj - zi) + yi) on = !on;
+    }
+    return on;
+  };
+  for (const key of ['knee', 'ridge']) t.plates[key].forEach(p => assert.ok(t.chords.some(chord => inside(p, chord)), `a ${key} plate corner at ${p} is off the chords`));
+  // no kicker costs nothing; the kicker we accept costs about 6 in at the room's edge and 1′-6″ of the 7 ft width, and a longer one costs more
+  const kicker = t.haunch(b.kickerLeg), longer = t.haunch(b.kickerLeg + 1);
+  near(t.haunch(0).edgeClear, t.clearAt(model.knuckleRun), 1e-9);
+  near(t.haunch(0).width7, t.clearWidth(7), 1e-9);
+  near(kicker.edgeClear, 6.578); near(kicker.width7, 16.659);
+  assert.ok(kicker.edgeClear < t.clearAt(model.knuckleRun) && kicker.width7 < t.clearWidth(7));
+  assert.ok(longer.edgeClear < kicker.edgeClear && longer.width7 < kicker.width7, 'a longer kicker costs more');
+  // the collar tie: 13′-6″ long at 8 ft (a lower one would be longer), its ends cut to the slope of the upper chords, and a plate across each end joint on the tie and the chord
+  const tie = t.tie;
+  near(t.clearWidth(b.tieAt), 13.485);
+  assert.ok(t.clearWidth(b.tieAt - 1) > t.clearWidth(b.tieAt) && t.clearAt(model.half) > b.tieAt, 'the tie sits under the ridge');
+  near(tie.z, model.eave + b.tieAt, 1e-9); near(tie.length, t.clearWidth(b.tieAt), 1e-9); near(tie.from, t.clearFrom(b.tieAt), 1e-9); near(tie.deep, b.tieDeep / 12, 1e-9);
+  const [bl, br, tr, tl] = tie.body;
+  near(bl[1], tie.z, 1e-9); near(br[1], tie.z, 1e-9); near(tr[1], tie.z + tie.deep, 1e-9); near(tl[1], tie.z + tie.deep, 1e-9);
+  near(br[0], model.width - bl[0], 1e-9); near(tr[0], model.width - tl[0], 1e-9);
+  for (const [y] of [bl, br]) near(model.eave + t.clearAt(y), tie.z, 1e-6);
+  for (const [y] of [tl, tr]) near(model.eave + t.clearAt(y), tie.z + tie.deep, 1e-6);
+  assert.equal(tie.plates.length, 2);
+  tie.plates.forEach(plate => plate.forEach(p => assert.ok(inside(p, tie.body) || t.chords.some(chord => inside(p, chord)), `a tie plate corner at ${p} is off the wood`)));
+  assert.deepEqual(plain(model.specialTrusses.tied.map(x => x.number)), Array.from({ length: 20 }, (_, i) => i + 1), 'a tie on T1 to T20, none on the hoist trusses');
+  assert.deepEqual(['kickerLeg', 'kickerEdgeClear', 'kickerWidth7', 'tieAt', 'tieLength', 'tieFrom', 'tieTo', 'tieDeep', 'tieTrusses', 'tieCount', 'webAt', 'heelHeight', 'heelBlockWide'].map(key => M.facts(model)[key]),
+    ['2′-0″', '6′-7″', '16′-8″', '8′-0″', '13′-6″', '9′-3″', '22′-9″', '5½″', 'T1 to T20', '20', '3′-6″', '13″', '5½″']);
+  // the profile draws a web and a kicker in each knee zone, the plates, and the tie, and the page explains the tie and the six steps
+  const profile = D.trussProfile(model);
+  assert.equal(count(profile, /class="c-web"/g), 4);
+  assert.equal(count(profile, /class="c-plate"/g), 5, 'a plate at each knee and at the ridge, and one at each end of the tie');
+  for (const letter of 'JKL') assert.equal(count(profile, new RegExp(`>${letter}<`, 'g')), 1, `the profile needs marker ${letter}`);
+  // the last step comes into the room and is drawn to scale: a kicker at each knee, under the tie, with the number of the table and the letter of the profile
+  const options = D.trussOptions(model), f = M.facts(model);
+  assert.equal(count(options, /class="c-opt"/g), 2, 'a kicker at each knee');
+  assert.equal(count(options, /class="c-plate"/g), 2, 'a plate at each end of the tie');
+  for (const mark of ['6', 'J']) assert.equal(count(options, new RegExp(`class="mk-t">${mark}<`, 'g')), 1, `${mark} is marked once`);
+  for (const text of [`${f.kickerEdgeClear} clear`, `${f.tieLength} long, its underside ${f.tieAt} up`, `7′ clear for ${f.kickerWidth7}, not ${f.clear7Width}`, `${f.tieAt} clear under it, ${f.clearRidge} to the ridge`])
+    assert.ok(options.includes(text), `the options drawing should say "${text}"`);
+  const page = read(path.join(DOCS, 'workshop_trusses.html'));
+  assert.match(page, /id="bracing"/);
+  assert.match(page, /data-fig="trussOptions"/);
+  for (let step = 1; step <= 6; step++) assert.match(page, new RegExp(`<td class="center">${step}</td>`), `step ${step} is in the bracing table`);
+  assert.doesNotMatch(page, /<td class="center">7<\/td>/, 'the tie is in the design, so the steps stop at 6');
+  for (const letter of 'JKL') assert.match(page, new RegExp(`<span class="nums">${letter}</span>`), `the bracing table needs the marker ${letter}`);
+  // the collar tie is the first row, and the hoist trusses take none
+  const steps = page.slice(page.indexOf('id="bracing"'), page.indexOf('id="bearing"'));
+  assert.match(steps, /None on <span data-m="hoistTrusses">T21 to T25<\/span>/);
+  assert.ok(steps.indexOf('Collar tie</strong>, in the design') < steps.indexOf('Webs and kickers') && steps.indexOf('Deeper chords') < steps.indexOf('A short kicker across each knee'));
+});
+
+test('The special trusses are numbered from the west end: the stair trusses are T1 to T3 with T2 cut, and the hoist trusses are the last five', () => {
+  const numbers = list => plain(list.map(entry => entry.number)), facts = M.facts(model);
+  assert.deepEqual(numbers(model.specialTrusses.stairEdge), [1, 2, 3]);
+  assert.deepEqual(numbers(model.specialTrusses.stairCut), [2]);
+  assert.deepEqual(numbers(model.specialTrusses.hoist), [21, 22, 23, 24, 25]);
+  assert.deepEqual([facts.stairTrusses, facts.stairCutTruss, facts.hoistTrusses, facts.lastTruss, facts.hoistTrussCount, facts.hoistStart], ['T1 to T3', 'T2', 'T21 to T25', 'T25', '5', '39′-0″']);
+  assert.ok(model.trussX[19] < model.length - model.hoist.inside && model.trussX[20] > model.length - model.hoist.inside, 'the beam starts between T20 and T21');
+  const short = M.create({ length: 46 });
+  assert.deepEqual(numbers(short.specialTrusses.hoist), [20, 21, 22, 23, 24], 'a 46 ft building has 24 trusses, and the hoist reaches the last five');
+});
+
+test('The truss figures draw the open room, every truss, and the five special cases', () => {
+  const count = (text, pattern) => (text.match(pattern) || []).length, facts = M.facts(model);
+  const profile = D.trussProfile(model);
+  assert.equal(count(profile, /class="c-clear"/g), 1);
+  assert.equal(count(profile, /class="c-knee"/g), 2);
+  for (const letter of 'ABCDEFGHIJKL') assert.equal(count(profile, new RegExp(`>${letter}<`, 'g')), 1, `the profile needs marker ${letter}`);
+  for (const text of [`${facts.clearKnuckle} clear`, `${facts.tieAt} clear under the tie`, `7′ clear for ${facts.clear7Width}`, `5′ clear for ${facts.clear5Width}`, `${facts.trussChord} bottom chord`, `${facts.roomWidth} open room`])
+    assert.ok(profile.includes(text), `the profile should say "${text}"`);
+  const layout = D.trussLayout(model);
+  assert.ok(layout.includes(`Collar tie ${facts.tieAt} up on ${facts.tieTrusses};`) && layout.includes('none on the hoist trusses'), 'the key says which trusses carry a tie');
+  for (let number = 1; number <= model.trussCount; number++) assert.equal(count(layout, new RegExp(`>T${number}<`, 'g')), 1, `T${number} is labeled once`);
+  assert.equal(count(layout, />T26</g), 0);
+  for (const mark of ['S1', 'S2', 'S3', 'S4']) assert.equal(count(layout, new RegExp(`>${mark}<`, 'g')), 1, `${mark} is marked once`);
+  assert.equal(count(layout, />S5</g), 2, 'S5 marks both gable trusses');
+  // the key in the corner has one swatch for each kind of line
+  assert.equal(count(layout, /class="l-tr[ "]/g), model.trussCount + 1 + 4, 'every truss is a line, and the cut truss is two');
+  assert.equal(count(layout, /class="l-tr l-tr-gable/g), 2 + 1);
+  assert.equal(count(layout, /class="l-tr (l-tr-gable )?l-tr-stair"/g), 4 + 1, 'T1, the two pieces of T2, and T3');
+  assert.equal(count(layout, /l-tr-hoist/g), 5 + 1);
+  const short = D.trussLayout(M.create({ length: 46 }));
+  assert.equal(count(short, />T24</g), 1);
+  assert.equal(count(short, />T25</g), 0, 'a 46 ft building draws 24 trusses');
+});
+
+test('The truss tables are the model\'s numbers: the room outline, the roof line, and the headroom in from a wall', () => {
+  const rows = html => Array.from(html.matchAll(/<tr><th scope="row">([^<]*)<\/th>((?:<td class="num">[^<]*<\/td>)+)<\/tr>/g), m => [m[1], ...Array.from(m[2].matchAll(/<td class="num">([^<]*)<\/td>/g), c => c[1])]);
+  const stations = rows(P.trussTable(model, 'stations'));
+  assert.deepEqual(stations.map(r => r[0]), ['1′-0″', '2′-0″', '3′-0″', '4′-0″', '5′-0″', '6′-0″', '7′-0″ (pitch break)', '8′-0″', '10′-0″', '12′-0″', '14′-0″', '16′-0″ (ridge)']);
+  assert.deepEqual(stations.find(r => r[0].startsWith('7′')), ['7′-0″ (pitch break)', '8′-0″', '7′-1″'], 'the roof line is 8′-0″ at the pitch break and the clear height 7′-1″');
+  assert.deepEqual(stations.find(r => r[0].startsWith('16′')), ['16′-0″ (ridge)', '10′-6″', '9′-10″']);
+  assert.deepEqual(rows(P.trussTable(model, 'room')).map(r => r.slice(1)), [['0′-10″', '0′-0″'], ['7′-0″', '7′-1″'], ['7′-4″', '7′-6″'], ['9′-3″', '8′-0″'], ['16′-0″', '9′-10″']]);
+  assert.equal(rows(P.trussTable(model, 'room'))[3][0], 'Collar tie underside, to 22′-9″', 'the tie is a point of the room, with the far end of its length');
+  assert.deepEqual(rows(P.trussTable(model, 'outline')).map(r => r.slice(1)), [['8″ outside the wall line', '9″ below'], ['0′-0″', '0′-0″'], ['7′-0″', '8′-0″'], ['16′-0″', '10′-6″']]);
+  assert.throws(() => P.trussTable(model, 'nothing'), /unknown truss table/);
+  assert.equal(M.feetInchesQuarter(31.396), '31′-4¾″');
+  assert.equal(M.feetInchesQuarter(32), '32′-0″');
+  assert.equal(M.feetInchesQuarter(30.521), '30′-6¼″');
+  assert.equal(M.inches(9.25), '9¼″');
+});
+
+test('The truss page is a brief for the plant: loads, geometry, and what to send back, with no prices and no paid work', () => {
+  const html = read(path.join(DOCS, 'workshop_trusses.html')), text = html.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<style[\s\S]*?<\/style>/g, '');
+  assert.doesNotMatch(text, /\$|\bbudget\b|\bmidpoint\b/i, 'the truss page goes to a vendor, so it carries no prices or budget');
+  for (const pattern of [/120<\/span> psf ground snow/, /115<\/span> mph/, /Exposure <span data-m="exposure">C<\/span>/, /Risk Category II/, /<span data-m="loftLive">40<\/span> psf/, /\(3\) 1¾″ × 9¼″ LVL/, /boom truck, as its own line/, /Idaho-licensed engineer/,
+    /no webs or posts/, /crossed only by a <strong>collar tie<\/strong> on <span data-m="tieTrusses">T1 to T20<\/span>/, /data-fig="trussProfile"/, /data-fig="trussLayout"/, /data-fig="detail7"/, /data-truss="stations"/])
+    assert.match(text, pattern);
+  // every special case in the layout has a row in the page's table, and every anchor the page links to exists
+  for (const mark of ['S1', 'S2', 'S3', 'S4', 'S5']) assert.match(text, new RegExp(`<span class="nums">${mark}</span>`), `${mark} needs a row`);
+  for (const id of ['request', 'glance', 'loads', 'profile', 'headroom', 'bearing', 'special', 'send-back']) assert.ok(text.includes(`id="${id}"`), `the page needs the anchor ${id}`);
+  // the loads on this page are the loads on the specs page
+  const specs = read(path.join(DOCS, 'workshop_specs.html'));
+  for (const key of ['snow', 'roofSnow', 'wind', 'loftLive']) assert.ok(text.includes(`data-m="${key}"`) && specs.includes(`data-m="${key}"`), `${key} appears on both pages`);
+});
+
+test('Every workshop page lists all six pages in its pager, and its own name is not a link', () => {
+  const names = { 'workshop_pole_barn.html': 'Overview', 'workshop_specs.html': 'Specs', 'workshop_plans.html': 'Plans and elevations', 'workshop_sections.html': 'Sections and details', 'workshop_trusses.html': 'Trusses', 'workshop_materials.html': 'Materials and cost' };
+  for (const page of PAGES) {
+    const pager = /<p class="pager screen-only">([^]*?)<\/p>/.exec(read(path.join(DOCS, page)));
+    assert.ok(pager, `${page} needs a pager`);
+    for (const [other, name] of Object.entries(names)) {
+      if (other === page) assert.ok(pager[1].includes(`<strong>${name}</strong>`) && !pager[1].includes(`href="${other}"`), `${page} shows its own name in bold, not as a link`);
+      else assert.ok(pager[1].includes(`<a href="${other}">${name}</a>`), `${page} links to ${other}`);
+    }
+  }
+});
+
+test('The cost sheet keeps the boom-truck delivery and the same totals, and points the truss lines at the truss package', () => {
+  const bom = M.bom(model), phase = num => bom.phases.find(p => p.num === num), item = (p, pattern) => phase(p).items.find(i => pattern.test(i.item));
+  const boom = item(5, /boom truck/);
+  assert.deepEqual([boom.qty, boom.low, boom.high, boom.src], [1, 400, 1000, 'Q']);
+  assert.match(boom.notes, /own line on the quote/);
+  assert.match(item(5, /Common gambrel attic truss/).notes, /truss package/);
+  const insulation = item(20, /R-49/);
+  assert.deepEqual([insulation.low, insulation.high], [500, 900], 'the roof insulation keeps its price until the method is chosen');
+  assert.match(insulation.notes, /collar tie gives a flat ceiling only across the middle 13′-6″/);
+  const facts = M.facts(model);
+  assert.deepEqual([facts.budgetLow, facts.budgetMid, facts.budgetHigh], ['$103,600', '$137,600', '$176,700']);
+  const materials = read(path.join(DOCS, 'workshop_materials.html')), overview = read(path.join(DOCS, 'workshop_pole_barn.html'));
+  assert.match(materials, /href="workshop_trusses\.html">truss package<\/a>/);
+  assert.match(overview, /How will the roof be insulated\?/);
+  assert.match(overview, /href="workshop_trusses\.html">truss package<\/a>/);
 });

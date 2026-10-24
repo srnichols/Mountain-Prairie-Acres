@@ -46,6 +46,13 @@ function arrow(x1, y1, x2, y2, cls = 'l-arrow') {
   const p2 = [x2 - h * Math.cos(a) - w * Math.sin(a), y2 - h * Math.sin(a) + w * Math.cos(a)];
   return group([line(x1, y1, x2 - h * 0.6 * Math.cos(a), y2 - h * 0.6 * Math.sin(a), cls), poly([[x2, y2], p1, p2], 'c-arrow')]);
 }
+// The rainscreen's air: a blue path with a white halo and a head on its last point, drawn the same way in every view. `size` scales the stroke and the head to the drawing.
+function airPath(list, size = 1) {
+  const [[x1, y1], [x2, y2]] = list.slice(-2), a = Math.atan2(y2 - y1, x2 - x1), c = Math.cos(a), s = Math.sin(a), h = 12 * size, w = 6.5 * size;
+  const body = [...list.slice(0, -1), [x2 - h * 0.6 * c, y2 - h * 0.6 * s]];
+  return polyline(body, 'l-air-halo', { style: `stroke-width:${r2(8 * size)}` }) + polyline(body, 'l-air', { style: `stroke-width:${r2(4 * size)}` })
+    + poly([[x2, y2], [x2 - h * c + w * s, y2 - h * s - w * c], [x2 - h * c - w * s, y2 - h * s + w * c]], 'c-air');
+}
 function compass(x, y) {
   return group([circle(x, y, 20, 'c-compass'), poly([[x, y - 15], [x + 4, y], [x, y + 15], [x - 4, y]], 'c-needle'),
     text(x, y - 25, 'N', 't-s t-m t-b'), text(x, y + 35, 'S', 't-s t-m'), text(x + 29, y + 3, 'E', 't-s t-m'), text(x - 29, y + 3, 'W', 't-s t-m')]);
@@ -203,7 +210,7 @@ function loftPlan(m) {
 }
 
 root.WorkshopDraw = Object.assign(root.WorkshopDraw || {}, {
-  kit: { r2, esc, el, rect, line, poly, polyline, circle, path, text, lines, turned, group, svg, dimH, dimV, tick, mk, arrow, compass, scaleBar, feetInches, windowView },
+  kit: { r2, esc, el, rect, line, poly, polyline, circle, path, text, lines, turned, group, svg, dimH, dimV, tick, mk, arrow, airPath, compass, scaleBar, feetInches, windowView },
   floorPlan, loftPlan
 });
 })(typeof window !== 'undefined' ? window : globalThis);

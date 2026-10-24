@@ -50,13 +50,17 @@ function sectionA(m) {
     o.push(rect(at(9.3, 12.3), Z(m.eave), 3, (m.eave - SPLASH) * s, 'c-wall'), rect(at(6.3, 9.3), Z(m.eave), 3, m.eave * s, 'c-osb'));
     o.push(rect(at(3.3, 6.3), Z(SPLASH), 3, (SPLASH - g) * s, 'c-ptwood'));
   });
-  // the truss: bottom chord with the loft floor, the top chords, and the roof on them
-  const chord = m.chordInches / 12, deck = m.decking / 12;
+  // the truss: bottom chord with the loft floor, the top chords, the collar tie, and the roof on them
+  const chord = m.chordInches / 12, deck = m.decking / 12, tie = m.truss.tie;
   o.push(rect(X(0), Z(m.eave - deck), W * s, chord * s + 0.5, 'c-wood'), rect(X(0), Z(m.eave), W * s, deck * s + 1, 'c-osb'));
+  const px = list => list.map(([y, z]) => [X(y), Z(z)]);
+  m.truss.chords.forEach(quad => o.push(poly(px(quad), 'c-wood')));
+  o.push(poly(px(tie.body), 'c-wood'));
   const top = [[X(-tx), Z(m.eave - tz)], [X(0), Z(m.eave)], [X(m.knuckleRun), Z(m.knuckleZ)], [X(m.half), Z(m.peakZ)], [X(W - m.knuckleRun), Z(m.knuckleZ)], [X(W), Z(m.eave)], [X(W + tx), Z(m.eave - tz)]];
   o.push(polyline(top, 'c-chord'), polyline(top.map(p => [p[0], p[1] - 4]), 'c-roofline'));
   [m.knuckleRun, W - m.knuckleRun].forEach(y => o.push(line(X(y), Z(m.eave), X(y), Z(m.knuckleZ), 'l-post')));
   o.push(lines(X(7.4) + 4, Z(21), ['truss', '(schematic)'], 't-s t-i', 11));
+  o.push(text(X(W / 2), Z(tie.z) + 14, `collar tie, ${feetInches(m.bracing.tieAt)} up`, 't-s t-m'));
   // behind the cut: the main door, the loft doors, and the hoist beam on the east gable
   const dh = m.mainDoor.height;
   o.push(rect(X(m.doorY0), Z(dh), m.mainDoor.width * s, dh * s, 'c-ghost-box'), rect(X(m.loftDoorY0), Z(m.eave + m.loftDoor.height), m.loftDoor.width * s, m.loftDoor.height * s, 'c-ghost-box'));
@@ -107,6 +111,10 @@ function sectionB(m) {
   // the loft floor, cut: chords end-on under the plywood
   m.trussX.forEach(x => o.push(rect(X(x) - 0.8, Z(m.eave - m.decking / 12), 1.6, m.chordInches / 12 * s, 'c-wood')));
   o.push(rect(X(0.3), Z(m.eave), (L - 0.6) * s, m.decking / 12 * s + 1, 'c-osb'));
+  // the collar ties, cut at the center line, one on each truss but the hoist trusses
+  const tie = m.truss.tie, tied = m.specialTrusses.tied;
+  tied.forEach(({ x }) => o.push(rect(X(x) - 0.8, Z(tie.z + tie.deep), 1.6, tie.deep * s, 'c-wood')));
+  o.push(text(X(tied[tied.length - 1].x / 2), Z(tie.z) + 14, `collar ties, T${tied[0].number} to T${tied[tied.length - 1].number}, ${feetInches(m.bracing.tieAt)} above the loft floor`, 't-s t-m t-i'));
   // the roof at the ridge, cut
   o.push(rect(X(-m.rakeOverhang), Z(m.peakZ + 0.3), (L + 2 * m.rakeOverhang) * s, 0.7 * s, 'c-roof'));
   // the end walls at the center line: the west gable is solid; the east gable has the door, the header, and the loft doors

@@ -208,6 +208,30 @@ table.detail td.mk-cell { width: 34px; text-align: center; white-space: nowrap; 
 .dwg .l-flash { stroke: #8c939a; stroke-width: 1.8; fill: none; }
 .dwg .l-bolt { stroke: #333; stroke-width: 1.4; }
 .dwg .l-vent { stroke: #555; stroke-width: 1; stroke-dasharray: 2 2; }
+/* the truss package: the open room and the knee zones, and the truss lines of the layout */
+.dwg .c-clear { fill: rgba(86, 140, 72, 0.16); stroke: #4f7f43; stroke-width: 1.3; stroke-dasharray: 6 3; }
+.dwg .c-knee { fill: rgba(196, 150, 60, 0.24); stroke: #a8802f; stroke-width: 0.9; stroke-dasharray: 3 2; }
+.dwg .l-tr { stroke: #8a6d3b; stroke-width: 1.5; }
+.dwg .l-tr-gable { stroke-width: 3.6; }
+.dwg .l-tr-stair { stroke: #7a1f1f; }
+.dwg .l-tr-hoist { stroke: #1B4F9C; }
+/* the eave in perspective: tones for the layers the framing views do not have (sheathing and plywood, wall steel, roof steel and trim, housewrap, membranes, the vent strip and its slots), the cut face, and the air path */
+.dwg .zo0 { fill: #86703f; } .dwg .zo1 { fill: #a58a52; } .dwg .zo2 { fill: #c9a96b; } .dwg .zo3 { fill: #dcbb7a; } .dwg .zo4 { fill: #ecce8d; }
+.dwg .zb0 { fill: #4a1212; } .dwg .zb1 { fill: #5f1818; } .dwg .zb2 { fill: #7a1f1f; } .dwg .zb3 { fill: #962727; } .dwg .zb4 { fill: #ad3030; }
+.dwg .ze0 { fill: #8f8468; } .dwg .ze1 { fill: #aea184; } .dwg .ze2 { fill: #c7b790; } .dwg .ze3 { fill: #d9c9a3; } .dwg .ze4 { fill: #ece0bd; }
+.dwg .zm0 { fill: #98a894; } .dwg .zm1 { fill: #b3c4ae; } .dwg .zm2 { fill: #d0e0cb; } .dwg .zm3 { fill: #e2eede; } .dwg .zm4 { fill: #f0f7ee; }
+.dwg .zi0 { fill: #1f1f1f; } .dwg .zi1 { fill: #2b2b2b; } .dwg .zi2 { fill: #3b3b3b; } .dwg .zi3 { fill: #4d4d4d; } .dwg .zi4 { fill: #606060; }
+.dwg .zv0 { fill: #6f7a85; } .dwg .zv1 { fill: #8993a0; } .dwg .zv2 { fill: #a3adb8; } .dwg .zv3 { fill: #bcc5cf; } .dwg .zv4 { fill: #d3dae1; }
+.dwg .zk0, .dwg .zk1, .dwg .zk2, .dwg .zk3, .dwg .zk4 { fill: #151515; }
+.dwg .z3d polygon.zcut { stroke: #1d1208; stroke-opacity: 1; stroke-width: 1.3; }
+.dwg .l-air-halo { stroke: #fff; stroke-width: 8; stroke-opacity: 0.9; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+.dwg .l-air { stroke: #1B4F9C; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+.dwg .c-air { fill: #1B4F9C; stroke: #fff; stroke-width: 1; }
+/* the truss bracing: steel plates behind a cut (dashed) and on the face of the truss (solid), and the webs and kickers the plant may add */
+.dwg .c-plate-behind { fill: rgba(120, 134, 148, 0.1); stroke: #3f4c59; stroke-width: 1.3; stroke-dasharray: 4 2.5; }
+.dwg .c-plate { fill: rgba(120, 134, 148, 0.62); stroke: #3f4c59; stroke-width: 1; }
+.dwg .c-web { fill: rgba(176, 138, 78, 0.5); stroke: #6f5226; stroke-width: 1; stroke-dasharray: 4 2.5; }
+.dwg .c-opt { fill: rgba(170, 70, 45, 0.34); stroke: #8a3a24; stroke-width: 1.2; stroke-dasharray: 4 2.5; }
 
 @media screen and (max-width: 860px) {
   .cards { grid-template-columns: 1fr; }

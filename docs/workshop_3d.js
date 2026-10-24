@@ -5,7 +5,7 @@
 'use strict';
 const D = root.WorkshopDraw;
 if (!D || !D.kit) throw new Error('Load workshop_draw.js before workshop_3d.js');
-const { r2, text, line, svg, mk, arrow } = D.kit;
+const { r2, text, line, svg, mk, arrow, airPath, rect, poly, circle, lines } = D.kit;
 
 // ------------------------------------------------------------------ vectors and solids
 
@@ -20,11 +20,11 @@ const world = (x, y, z) => [x, -y, z];   // model (x east, y south, z up) to eas
 
 // Every member is a convex solid of eight corners: four around one end, then the same four around the other. Its six faces get outward normals.
 const FACES = [[0, 1, 2, 3], [7, 6, 5, 4], [0, 1, 5, 4], [1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7]];
-function solid(corners, tag, kind) {
-  const c = corners.reduce((sum, p) => add(sum, p), [0, 0, 0]).map(v => v / 8);
-  const faces = FACES.map(idx => {
+function solid(corners, tag, kind, faceList = FACES) {
+  const c = corners.reduce((sum, p) => add(sum, p), [0, 0, 0]).map(v => v / corners.length);
+  const faces = faceList.map(idx => {
     const p = idx.map(i => corners[i]);
-    let n = cross(sub(p[1], p[0]), sub(p[3], p[0]));
+    let n = idx.length === 4 ? cross(sub(p[1], p[0]), sub(p[3], p[0])) : cross(sub(p[1], p[0]), sub(p[2], p[1]));
     if (Math.hypot(...n) < 1e-9) return null;
     n = unit(n);
     let d = dot(n, p[0]);
@@ -39,6 +39,12 @@ const box = (x0, x1, y0, y1, z0, z1, tag, kind) => {
 };
 // A member whose end faces are the four [y, z] corners in `section`, running from x0 to x1.
 const extrude = (section, x0, x1, tag, kind) => solid([...section.map(([y, z]) => world(x0, y, z)), ...section.map(([y, z]) => world(x1, y, z))], tag, kind);
+// The same for a section of any number of corners (convex): two end faces and a side face for each edge.
+function prism(section, x0, x1, tag, kind) {
+  const n = section.length, ring = Array.from({ length: n }, (_, i) => i);
+  const faces = [ring, ring.map(i => n + i).reverse(), ...ring.map(i => [i, (i + 1) % n, n + (i + 1) % n, n + i])];
+  return solid([...section.map(([y, z]) => world(x0, y, z)), ...section.map(([y, z]) => world(x1, y, z))], tag, kind, faces);
+}
 // A straight square member from model point a to model point b.
 function strut(a, b, size, tag, kind) {
   const A = world(...a), B = world(...b), d = unit(sub(B, A));
@@ -57,7 +63,7 @@ const meet = (p, d, q, e) => {   // where the line from p along d crosses the li
 // The truss outline: the top edge of the top chords, raised a quarter foot over the eave line so the tails clear the post tops (as in Detail 5), and the line under
 // the chords. Both are [y, z] points from the north eave to the south eave.
 function trussShape(m) {
-  const lift = 0.25, t = m.wall.post / 12, W = m.width;
+  const lift = 0.25, t = m.topChordInches / 12, W = m.width;
   const t1 = [0, m.eave + lift], t2 = [m.knuckleRun, m.knuckleZ], t3 = [m.half, m.peakZ], t4 = [W - m.knuckleRun, m.knuckleZ], t5 = [W, m.eave + lift];
   const dir = (a, b) => { const h = Math.hypot(b[0] - a[0], b[1] - a[1]); return [(b[0] - a[0]) / h, (b[1] - a[1]) / h]; };
   const tail = dir(t1, t2), t0 = [t1[0] - tail[0] * m.eaveTail, t1[1] - tail[1] * m.eaveTail], t6 = [t5[0] + tail[0] * m.eaveTail, t5[1] - tail[1] * m.eaveTail];
@@ -137,18 +143,19 @@ function framingParts(m) {
     bx(x + 0.02, x1 - 0.02, half, half + 5.25 / 12, carrierZ0, m.underLoft, 'carrier', 'l');
     bx(x + 0.02, x1 - 0.02, W - half - 5.25 / 12, W - half, carrierZ0, m.underLoft, 'carrier', 'l');
   }
-  // the trusses: the bottom chord is the loft joist (cut around the stair opening), and four top chords with mitered ends
-  const tw = 1.5 / 24;
+  // the trusses: the bottom chord is the loft joist (cut around the stair opening), four top chords with mitered ends, and the collar tie on all but the hoist trusses
+  const tw = 1.5 / 24, tied = new Set(m.specialTrusses.tied.map(t => t.x)), tie = m.truss.tie;
   m.trussX.forEach(x => {
     const cut = x > 0.1 && x < lo.width - 0.1;
     if (cut) { bx(x - tw, x + tw, half, lo.fromNorth, m.underLoft, chordTop, 'truss-bottom', 'r'); bx(x - tw, x + tw, lo.fromNorth + lo.length, W - half, m.underLoft, chordTop, 'truss-bottom', 'r'); }
     else bx(x - tw, x + tw, half, W - half, m.underLoft, chordTop, 'truss-bottom', 'r');
     shape.quads.forEach(q => parts.push(extrude(q, x - tw, x + tw, 'truss-top', 'r')));
+    if (tied.has(x)) parts.push(extrude(tie.body, x - tw, x + tw, 'truss-tie', 'r'));
   });
-  // the solid-faced gable trusses carry studs at 2 ft, cut around the loft doors and the beam on the east, and the loft window on the west
+  // the solid-faced gable trusses carry studs at 2 ft, cut around the collar tie on the west, the loft doors and the beam on the east, and the loft window on the west
   const loftWindow = m.windows.find(w => w.wall === 'W');
   const gables = [
-    [0, loftWindow ? [[loftWindow.at - loftWindow.width / 2 - 0.15, loftWindow.at + loftWindow.width / 2 + 0.15, loftWindow.sill, loftWindow.sill + loftWindow.height]] : []],
+    [0, [...(loftWindow ? [[loftWindow.at - loftWindow.width / 2 - 0.15, loftWindow.at + loftWindow.width / 2 + 0.15, loftWindow.sill, loftWindow.sill + loftWindow.height]] : []), [tie.from - 0.1, W - tie.from + 0.1, tie.z - 0.05, tie.z + tie.deep + 0.05]]],
     [L, [[m.loftDoorY0 - 0.3, m.loftDoorY1 + 0.3, m.eave, headTop], [m.half - 0.6, m.half + 0.6, m.hoistZ - 0.7, m.hoistZ + 0.7]]]
   ];
   gables.forEach(([gx, openings]) => {
@@ -342,10 +349,133 @@ function framingCheck(m, name) {
   return { counts, members: out.members, polygons: out.polygons, forced: out.forced, bytes: out.svg.length };
 }
 
+// ------------------------------------------------------------------ the eave in perspective
+
+// A cutaway of the north wall at the eave, sliced through a post and the truss over it, to show how the wall's layers, the rainscreen's air path, and the roof's edge tie
+// together. Each layer stops short of the one inside it so that every layer shows. The numbers come from the model's eave section, the same ones Details 5 and 7 draw.
+function eaveParts(m) {
+  const es = m.eaveSection, f = es.fascia, half = m.wall.post / 24, parts = [], bx = (...args) => parts.push(box(...args));
+  const Y = x => -half + x / 12, H = z => m.eave + z / 12;                           // inches from the post's outside face and from the loft floor line, as model feet
+  const toYH = ([x, z]) => [Y(x), H(z)];
+  const x0 = m.postX[1], xe = x0 + 2.6, low = H(-30), tw = 1.5 / 24, pw = 4.5 / 12, top = m.girts.rows[m.girts.rows.length - 1];
+  const trusses = [[x0, x0 + tw], [x0 + 2 - tw, x0 + 2 + tw]];                       // the truss over the post, cut in half, and the next truss, whole
+  // the wall, each layer stopping short of the one inside it: the post, the top girt, the sheathing, the housewrap, one furring strip, the steel, and the vented closure strip
+  bx(x0, x0 + pw / 2, -half, half, low, H(-m.postTopBelowEave), 'post', 'p');
+  bx(x0, xe, Y(-es.girt), Y(0), top.bottom, top.top, 'girt', 'g');
+  bx(x0, x0 + 2, Y(es.sheathingOut), Y(-es.girt), low, H(es.ventTop), 'sheathing', 'o');
+  bx(x0, x0 + 2, Y(es.wrapOut), Y(es.sheathingOut), low, H(es.ventBottom), 'housewrap', 'm');
+  bx(x0 + 0.85, x0 + 1.15, Y(es.furringOut), Y(es.wrapOut), low, H(es.ventBottom), 'furring', 't');
+  bx(x0, x0 + 0.75, Y(es.steelOut), Y(es.furringOut), low, H(es.ventBottom), 'steel', 'b');
+  bx(x0, xe, Y(es.steelOut), Y(es.sheathingOut), H(es.ventBottom), H(es.ventTop), 'vent strip', 'v');
+  for (let x = x0 + 0.3; x < xe - 0.15; x += 0.28) bx(x - 0.03, x + 0.03, Y(es.steelOut) - 0.006, Y(es.steelOut), H(es.ventBottom + 0.7), H(es.ventTop - 0.7), 'vent slot', 'k');
+  // the carrier on the post's inside face, and its three through-bolts, drawn on the cut face
+  const cw = m.carrier.wide / 12, cz = m.underLoft - m.carrier.tall / 12;
+  bx(x0, xe, half, half + cw, cz, m.underLoft, 'carrier', 'l');
+  [-12.5, -14.8, -17].forEach(z => {
+    bx(x0 - 0.012, x0, Y(-0.5), half + cw + 0.05, H(z) - 0.021, H(z) + 0.021, 'bolt', 's');
+    bx(x0 - 0.012, x0, half + cw, half + cw + 0.05, H(z) - 0.07, H(z) + 0.07, 'nut', 's');
+  });
+  // the loft floor on the bottom chords, which stops at the heel block, and the top chords: the lower chord with the plumb cut at its tail and the level cut under it
+  const chordTop = m.eave - m.decking / 12, floorIn = half + 2.2;
+  bx(x0, xe, half + es.heel.wide / 12, floorIn, chordTop, m.eave, 'floor', 'o');
+  trusses.forEach(([a, b]) => bx(a, b, half, floorIn, m.underLoft, chordTop, 'truss-bottom', 'r'));
+  const chord = [es.tail, es.along(20), es.along(20, -es.depth), [es.levelX, es.levelZ], [es.tail[0], es.levelZ]].map(toYH);
+  trusses.forEach(([a, b]) => parts.push(prism(chord, a, b, 'truss-top', 'r')));
+  // the heel block on the bottom chord, under the top chord at the bearing
+  trusses.forEach(([a, b]) => parts.push(prism(es.heel.block.map(toYH), a, b, 'heel block', 'u')));
+  // the sub-fascia, cut to the slope of the deck on top, and the eave trim that wraps it, both cut back along the wall to show the vented strip behind them
+  const deckAt = x => es.lineZ(x, es.roof.purlin), tt = 0.25;
+  parts.push(prism([[f.x0, f.z0], [f.x1, f.z0], [f.x1, deckAt(f.x1)], [f.x0, deckAt(f.x0)]].map(toYH), x0, x0 + 1.5, 'sub-fascia', 'r'));
+  bx(x0, x0 + 0.8, Y(f.x0 - tt), Y(f.x0), H(f.z0 - tt), H(deckAt(f.x0)), 'eave trim', 'e');
+  bx(x0, x0 + 0.8, Y(f.x0 - tt), Y(f.x1 + 0.4), H(f.z0 - tt), H(f.z0), 'eave trim', 'e');
+  // the roof layers on the chord: the purlin runs the length of the cut, and the deck, the membranes, and the steel stop in steps
+  const layer = (xs, o0, o1, xEnd, tag, kind) => parts.push(prism([[xs, es.lineZ(xs, o0)], es.along(15.5, o0), es.along(15.5, o1), [xs, es.lineZ(xs, o1)]].map(toYH), x0, xEnd, tag, kind));
+  const r = es.roof, deckTop = r.purlin + r.deck, membraneTop = deckTop + r.membrane + r.underlayment;
+  parts.push(prism([es.along(12.05), es.along(17.55), es.along(17.55, r.purlin), es.along(12.05, r.purlin)].map(toYH), x0, xe, 'purlin', 'u'));
+  layer(f.x0, r.purlin, deckTop, x0 + 1.5, 'deck', 'o');
+  layer(f.x0, deckTop, membraneTop, x0 + 1.2, 'membranes', 'i');
+  layer(f.x0 - 0.8, membraneTop, 3, x0 + 0.9, 'roof steel', 'e');
+  return parts;
+}
+
+const EAVE_VIEW = { az: 236, el: -7, distance: 40 };
+
+// The picture: the cutaway at the left, the air path drawn through it, and a small diagram of the whole wall at the right that shows where the air comes in (Detail 4).
+function eaveFigure(m) {
+  const parts = eaveParts(m), es = m.eaveSection, f = es.fascia, half = m.wall.post / 24, x0 = m.postX[1];
+  const Y = x => -half + x / 12, H = z => m.eave + z / 12;
+  const cam = camera({ ...EAVE_VIEW, target: [x0 + 1.3, -0.5, m.eave - 0.4] }), { order, screen, forced } = layout(parts, cam), light = lighting(cam);
+  const w = 960, h = 560, areaX = 22, areaY = 74, areaW = 626, areaH = 470;
+  const xs = screen.flatMap(pts => pts.map(p => p[0])), ys = screen.flatMap(pts => pts.map(p => p[1]));
+  const xa = Math.min(...xs), xb = Math.max(...xs), ya = Math.min(...ys), yb = Math.max(...ys);
+  const k = Math.min(areaW / (xb - xa), areaH / (yb - ya)), left = areaX + (areaW - (xb - xa) * k) / 2, upper = areaY + (areaH - (yb - ya) * k) / 2;
+  const sx = px => left + (px - xa) * k, sy = py => upper + (py - ya) * k;
+  const at = (x, y, z) => { const q = cam.project(world(x, y, z)); return [sx(q[0]), sy(q[1])]; };
+  const faces = [];
+  order.forEach(i => {
+    const s = parts[i];
+    s.faces.forEach(face => {
+      if (dot(face.n, cam.eye) <= face.d + 1e-9) return;
+      const shade = 0.28 + 0.72 * Math.max(0, dot(face.n, light)), cut = face.n[0] < -0.999 && Math.abs(face.d + x0) < 0.02;
+      faces.push(`<polygon class="z${s.kind}${toneOf(shade)}${cut ? ' zcut' : ''}" points="${face.idx.map(j => screen[i][j]).map(([px, py]) => `${r2(sx(px))},${r2(sy(py))}`).join(' ')}"/>`);
+    });
+  });
+  const o = [text(w / 2, 24, 'DETAIL 5 IN PERSPECTIVE — THE WALL AND THE EAVE, CUT THROUGH A POST AND ITS TRUSS', 't-title t-m'),
+    text(areaX + areaW / 2, 44, 'seen from outside, a little below the eave, from the northwest: each layer is cut back so that the one behind it shows', 't-s t-m t-i'), `<g class="z3d">${faces.join('')}</g>`];
+  // the air path: up the open channel beside the furring, through the vented strip, and out under the overhang
+  const air = x0 + 1.7, channel = Y((es.wrapOut + es.furringOut) / 2);
+  const path = [[air, channel, H(-27)], [air, channel, H(-11.8)], [air, Y(es.steelOut) - 0.4, H(-11.8)]].map(p => at(...p)), pb = path[2];
+  o.push(airPath(path));
+  o.push(lines(path[0][0] - 8, path[0][1] + 14, ['air rises in the', 'open channel'], 't-s t-b t-blue t-e', 11), lines(pb[0] - 6, pb[1] + 26, ['air leaves under', 'the overhang'], 't-s t-b t-blue t-e', 11));
+  // markers: a dot on the part, a leader, and the letter that the legend and Detail 5 use
+  const call = (p, dx, dy, label) => { const [px, py] = at(...p); return line(px, py, px + dx, py + dy, 'l-ext') + circle(px, py, 1.8, 'c-bolt') + mk(px + dx, py + dy, label); };
+  const along = (t, o2) => es.along(t, o2), onYH = ([x, z], xx) => [xx, Y(x), H(z)], girt = m.girts.rows[m.girts.rows.length - 1];
+  o.push(call([x0 + 0.4, Y(es.steelOut), H(-27)], 52, 34, 'A'), call([x0 + 0.85, Y((es.wrapOut + es.furringOut) / 2), H(-21)], -50, 62, 'B'), call([x0 + 2.1, Y(es.steelOut), H(-11.5)], -92, -2, 'C'),
+    call([x0 + 0.3, Y(f.x0 - 0.25), H(f.z0 + 1.5)], -58, -34, 'D'), call(onYH(along(7, 3), x0 + 0.5), -30, -52, 'E'), call([x0, half + 1.5, m.eave - 0.4], 52, 54, 'F'),
+    call([x0 + 2.3, Y(-es.girt), (girt.top + girt.bottom) / 2], -44, 44, 'G'), call(onYH([(es.heel.post + es.heel.block[1][0]) / 2, 1.2], x0), 96, -40, 'H'),
+    call([x0 + 1.9, Y(es.wrapOut) - 0.002, H(-18)], -80, 40, 'I'), call([x0, 0, H(-22)], 70, 34, 'J'), call([x0 + 1.2, Y(f.x0), H(f.z0 + 2)], -64, -6, 'K'), call(onYH(along(15, -3.6), x0), 64, -26, 'L'));
+  // the plates on both faces of the heel, behind the cut, dashed
+  o.push(poly(es.heel.plate.map(([x, z]) => at(x0 - 0.01, Y(x), H(z))), 'c-plate-behind'));
+  o.push(lines(areaX + areaW - 8, 470, ['the cut face shows the post, the', 'carrier and its bolts, the bottom', 'chord, the heel block, and the top', 'chord; dashed, the heel plates'], 't-s t-e t-i', 11));
+  o.push(wallInset(m, 676, 66, 428));
+  return { svg: svg(w, h, o, 'The wall and the eave in perspective, cut through a post and its truss'), members: parts.length, polygons: faces.length, forced };
+}
+
+// The whole wall, small and not to scale across: the air comes in at the base (Detail 4), rises through the cavity, and leaves at the eave (Detail 5).
+function wallInset(m, ox, oy, h) {
+  const o = [], zTop = m.eave + 3.2, zBottom = -m.padToFloor - 0.3, s = h / (zTop - zBottom), Z = z => oy + 22 + (zTop - z) * s, col = 106;
+  o.push(rect(ox, oy, 268, h + 54, 'c-gap', { rx: 6, stroke: '#cfc6b0', 'stroke-width': 1 }), text(ox + 134, oy + 17, 'THE WHOLE WALL', 't-s t-b t-m'));
+  const splash = m.girts.splashInches / 12, pad = -m.padToFloor, slot = pad + splash + 0.2, ventZ = m.eave - 0.96;
+  // from the outside in: the splash board and steel, the open cavity between them and the sheathing, the sheathing, and the post
+  o.push(rect(ox + col, Z(pad + splash), 6, splash * s, 'c-ptwood'), rect(ox + col, Z(m.eave - 1.1), 4, (m.eave - 1.1 - slot) * s, 'c-wall'), rect(ox + col + 4, Z(m.eave - 0.8), 8, (m.eave - 0.8 - slot) * s, 'c-cavity'));
+  o.push(rect(ox + col - 1, Z(m.eave - 0.8), 14, 0.3 * s, 'c-screen'), rect(ox + col + 12, Z(m.eave - 0.8), 5, (m.eave - 0.8 - pad) * s, 'c-osb'), rect(ox + col + 17, Z(m.eave - 0.62), 26, (m.eave - 0.62 - pad) * s, 'c-post'));
+  o.push(rect(ox + col + 43, Z(0), 100, 0.42 * s, 'c-slab'), rect(ox + col + 43, Z(m.eave), 100, (m.chordInches + m.decking) / 12 * s, 'c-wood'));
+  o.push(poly([[ox + col - 6, Z(m.eave + 0.2)], [ox + col + 96, Z(m.eave + 3.2)], [ox + col + 108, Z(m.eave + 2.6)], [ox + col + 8, Z(m.eave - 0.45)]], 'c-roof'));
+  o.push(line(ox + 8, Z(pad), ox + 262, Z(pad), 'l-dash'), text(ox + 258, Z(pad) + 11, 'pad surface', 't-s t-e'));
+  // the air: in above the splash board, up the cavity, and out under the overhang
+  const ax = ox + col + 8;
+  o.push(airPath([[ox + 8, Z(slot)], [ax, Z(slot)], [ax, Z(ventZ)], [ox + col - 30, Z(ventZ)]], 0.9));
+  o.push(lines(ox + 6, Z(slot) - 38, ['air in at the base,', 'above the splash', 'board (Detail 4)'], 't-s t-b t-blue', 11), lines(ox + 6, Z(ventZ) + 20, ['air out at the', 'eave, through the', 'vented strip', '(Detail 5)'], 't-s t-b t-blue', 11));
+  o.push(rect(ox + col - 20, Z(m.eave + 1.3), 138, 4.7 * s, 'c-ghost-box'), text(ox + col + 122, Z(m.eave - 1.4), 'the view', 't-s t-i'), text(ox + col + 122, Z(m.eave - 1.4) + 11, 'at the left', 't-s t-i'));
+  o.push(lines(ox + 134, oy + h + 34, ['outside on the left; layers drawn', 'wider than they are'], 't-s t-m t-i', 10));
+  return o.join('');
+}
+
+// Counts for the tests: the members by tag, the polygons, and how many times the sort had to break a ring.
+function eaveCheck(m) {
+  const parts = eaveParts(m), counts = {};
+  parts.forEach(s => { counts[s.tag] = (counts[s.tag] || 0) + 1; });
+  const out = eaveFigure(m);
+  return { counts, members: out.members, polygons: out.polygons, forced: out.forced, bytes: out.svg.length };
+}
+
 root.WorkshopDraw = Object.assign(root.WorkshopDraw, {
   framing3dSoutheast: m => figure(m, 'southeast').svg,
   framing3dNorthwest: m => figure(m, 'northwest').svg,
   framing3dCheck: framingCheck,
-  framing3dParts: framingParts
+  framing3dParts: framingParts,
+  detail5Perspective: m => eaveFigure(m).svg,
+  eave3dCheck: eaveCheck,
+  eave3dParts: eaveParts
 });
 })(typeof window !== 'undefined' ? window : globalThis);

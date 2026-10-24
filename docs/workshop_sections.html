@@ -13,11 +13,18 @@
     @bottom-right { content: "Page " counter(page) " of " counter(pages); font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
   }
   @media print {
-    .dwg { max-height: 4.9in; } figure.plot > div { text-align: center; } .dwg { width: auto; margin: 0 auto; } figure.tight .dwg { max-height: 4.5in; }
+    .dwg { max-height: 4.9in; } figure.plot > div { text-align: center; } .dwg { width: auto; margin: 0 auto; } figure.tight .dwg { max-height: 4.5in; } figure.perspective .dwg { max-height: 4.05in; }
     .pair { display: grid; grid-template-columns: 6.5in minmax(0, 1fr); gap: 5mm; align-items: start; }
     .pair figure.plot { margin: 0; }
     .pair .dwg { max-height: 6.1in; }
     .pair table.detail { margin: 2mm 0 0; }
+    .cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5mm; align-items: start; }
+    .cols table.detail { margin: 1mm 0 2mm; }
+  }
+  @media screen {
+    .cols table.detail { margin-bottom: 0; }
+    .cols table.detail + table.detail { margin-top: -1px; }
+    .cols table.detail + table.detail thead { visibility: collapse; }
   }
   .letter-key td:first-child { width: 34px; text-align: center; }
 </style>
@@ -33,22 +40,23 @@
 <section aria-labelledby="page-title">
 <h1 id="page-title">Workshop Pole Barn: Sections and Construction Details</h1>
 <p class="subtitle">Cross-sections through the building, the two framing plans, and seven layer-by-layer details · <span data-m="footprint">32 × 48 ft</span> · <span data-m="eave">14</span> ft eave · gambrel</p>
-<p class="pager screen-only"><strong>The package:</strong> <a href="workshop_pole_barn.html">Overview</a> · <a href="workshop_specs.html">Specs</a> · <a href="workshop_plans.html">Plans and elevations</a> · <strong>Sections and details</strong> · <a href="workshop_materials.html">Materials and cost</a></p>
+<p class="pager screen-only"><strong>The package:</strong> <a href="workshop_pole_barn.html">Overview</a> · <a href="workshop_specs.html">Specs</a> · <a href="workshop_plans.html">Plans and elevations</a> · <strong>Sections and details</strong> · <a href="workshop_trusses.html">Trusses</a> · <a href="workshop_materials.html">Materials and cost</a></p>
 <p class="source-note">These are design-intent drawings for the engineer, the truss plant, and the builder. Truss members and connections are placeholders until the truss designer and the engineer size them. Layers in the details are exaggerated where they say so. The markers match the tables under each drawing.</p>
 
 <h2>What Is in This Section</h2>
 <ol class="points">
-  <li><a href="#section-a"><strong>Section A, across the width</strong></a>, looking east: the gambrel truss, the loft floor, the camper in the door, and the pad's fill under the slab.</li>
-  <li><a href="#section-b"><strong>Section B, along the length</strong></a>, looking north: the loft floor, the stairs, the main door, the hoist beam and one of its braces, and the deck.</li>
+  <li><a href="#section-a"><strong>Section A, across the width</strong></a>, looking east: the gambrel truss with its collar tie, the loft floor, the camper in the door, and the pad's fill under the slab.</li>
+  <li><a href="#section-b"><strong>Section B, along the length</strong></a>, looking north: the loft floor, the collar ties, the stairs, the main door, the hoist beam and one of its braces, and the deck.</li>
   <li><a href="#plan-f1"><strong>Plan F1, foundation and base framing</strong></a>: piers, posts, the splash board, and the slab joints, on the pad.</li>
   <li><a href="#plan-f2"><strong>Plan F2, loft floor framing</strong></a>: the <span data-m="trusses">25</span> truss bottom chords at 2′ OC, the stair opening, the loft door header, the hoist beam and its braces, and the deck.</li>
   <li><a href="#detail-1"><strong>Detail 1</strong></a> wall assembly · <a href="#detail-2"><strong>2</strong></a> roof assembly · <a href="#detail-3"><strong>3</strong></a> pier and post base · <a href="#detail-4"><strong>4</strong></a> rainscreen base · <a href="#detail-5"><strong>5</strong></a> eave vent-out · <a href="#detail-6"><strong>6</strong></a> loft door, hoist beam, and deck · <a href="#detail-7"><strong>7</strong></a> truss bearing.</li>
+  <li><a href="#detail-5-perspective"><strong>Detail 5 in perspective</strong></a>: the wall and the eave cut through a post and its truss, with the rainscreen's air path from the base to the eave and the heel block that joins the two chords.</li>
 </ol>
 
 <h2 class="page-break" id="section-a">Section A: Across the Width (looking east)</h2>
 <figure class="plot">
   <div data-fig="sectionA"></div>
-  <figcaption>Section A cuts across the <span data-m="width">32</span> ft width and looks east at the gable wall. The <span data-m="doorSize">14′ × 12′</span> door and the loft doors on the east gable are drawn dashed behind the cut. The camper (<span data-m="rvHeight">10′-11″</span> tall as listed) has <span data-m="rvClearDoor">1′-1″</span> under the door head and <span data-m="rvClearLoft">2′-3″</span> under the loft floor. The truss is a schematic envelope.</figcaption>
+  <figcaption>Section A cuts across the <span data-m="width">32</span> ft width and looks east at the gable wall. The <span data-m="doorSize">14′ × 12′</span> door and the loft doors on the east gable are drawn dashed behind the cut. The camper (<span data-m="rvHeight">10′-11″</span> tall as listed) has <span data-m="rvClearDoor">1′-1″</span> under the door head and <span data-m="rvClearLoft">2′-3″</span> under the loft floor. The truss is a schematic envelope: its chords and the collar tie across the upper chords, <span data-m="tieAt">8′-0″</span> above the loft floor, without the webs, the plates, or the heel block (the <a href="workshop_trusses.html">truss package</a> draws those).</figcaption>
 </figure>
 <table class="detail legend letter-key"><thead><tr><th>Marker</th><th>What it shows</th></tr></thead><tbody>
 <tr><td class="mk-cell"><span class="nums">1</span></td><td>3-ply 2×8 laminated post on its pier, with the girts and the wall layers outside it (sheathing, rainscreen, steel) and the splash board at the base</td></tr>
@@ -61,7 +69,7 @@
 <h2 class="page-break" id="section-b">Section B: Along the Length (looking north)</h2>
 <figure class="plot tight">
   <div data-fig="sectionB"></div>
-  <figcaption>Section B cuts along the <span data-m="length">48</span> ft length at the center line and looks north. Sidewall posts are at <span data-m="bays">8-8-8-8-8-8</span> ft; the trusses (2′ OC) are seen edge-on; the loft floor and the ridge are cut. The east gable shows the main door, the loft doors, the hoist beam, one of its two braces, and the deck. The stair is south of the cut, so it is drawn dashed.</figcaption>
+  <figcaption>Section B cuts along the <span data-m="length">48</span> ft length at the center line and looks north. Sidewall posts are at <span data-m="bays">8-8-8-8-8-8</span> ft; the trusses (2′ OC) are seen edge-on, and the collar ties on <span data-m="tieTrusses">T1 to T20</span> are cut at the center line; the loft floor and the ridge are cut. The east gable shows the main door, the loft doors, the hoist beam, one of its two braces, and the deck. The stair is south of the cut, so it is drawn dashed.</figcaption>
 </figure>
 <table class="detail legend letter-key"><thead><tr><th>Marker</th><th>What it shows</th></tr></thead><tbody>
 <tr><td class="mk-cell"><span class="nums">1</span></td><td>Sidewall post (the north wall seen from inside, with its 2×6 girts behind the posts)</td></tr>
@@ -158,16 +166,41 @@
 <div class="pair">
 <figure class="plot">
   <div data-fig="detail5"></div>
-  <figcaption>Detail 5, a vertical section where the rainscreen vents out at the eave. Air that entered at the splash board (Detail 4) rises through the furring cavity and leaves at the vented soffit closure. Without that top vent the cavity becomes a dead-air pocket that traps moisture.</figcaption>
+  <figcaption>Detail 5, a vertical section where the rainscreen vents out at the eave. Air that entered at the splash board (Detail 4) rises through the furring cavity, passes through the vented closure strip across the top of the cavity, and leaves under the overhang. Without that top vent the cavity becomes a dead-air pocket that traps moisture. The heel block (H) joins the top chord to the bottom chord. The next section shows the same joint in perspective.</figcaption>
 </figure>
 <table class="detail legend letter-key"><thead><tr><th>Marker</th><th>What it is</th></tr></thead><tbody>
-<tr><td class="mk-cell"><span class="nums">A</span></td><td>26 ga steel siding, up to the eave trim</td></tr>
-<tr><td class="mk-cell"><span class="nums">B</span></td><td>1×4 PT furring, continuous to the soffit</td></tr>
-<tr><td class="mk-cell"><span class="nums">C</span></td><td>Vented soffit closure: the rainscreen's air outlet</td></tr>
-<tr><td class="mk-cell"><span class="nums">D</span></td><td>Eave trim: laps under the roof and over the wall, and wraps onto the sub-fascia</td></tr>
+<tr><td class="mk-cell"><span class="nums">A</span></td><td>26 ga steel siding, stopping under the vented closure strip</td></tr>
+<tr><td class="mk-cell"><span class="nums">B</span></td><td>1×4 PT furring, vertical and continuous up to the closure strip. The section is cut between two strips, so the cavity shows as an open channel</td></tr>
+<tr><td class="mk-cell"><span class="nums">C</span></td><td>Vented closure strip: a 3″ perforated strip with an insect screen across the top of the cavity, in line with the steel and under the overhang. It is the rainscreen's air outlet</td></tr>
+<tr><td class="mk-cell"><span class="nums">D</span></td><td>Eave trim: wraps the sub-fascia and laps under the roof steel's edge</td></tr>
 <tr><td class="mk-cell"><span class="nums">E</span></td><td>Roof assembly on the truss top chord: steel, underlayment, ice and water shield, OSB, and purlin</td></tr>
 <tr><td class="mk-cell"><span class="nums">F</span></td><td>Truss bottom chord and ¾″ T&amp;G loft floor</td></tr>
 <tr><td class="mk-cell"><span class="nums">G</span></td><td>2×6 girt, the highest row of the wall (its bottom edge <span data-m="girtTopRow">12′-0″</span> above the floor), laid flat on the post under the sheathing</td></tr>
+<tr><td class="mk-cell"><span class="nums">H</span></td><td>Heel block: a 2×6 on end between the top chord and the bottom chord at the bearing, with the truss plant's steel plates over it on both faces (dashed: behind the cut). The loft floor butts to the block</td></tr>
+</tbody></table>
+</div>
+
+<h2 class="page-break" id="detail-5-perspective">Detail 5 in Perspective: How the Wall and the Eave Tie Together</h2>
+<figure class="plot tight perspective">
+  <div data-fig="detail5Perspective"></div>
+  <figcaption>The north wall at the eave, cut through a post and the truss over it, seen from outside and a little below the eave. Each layer is cut back so that the one behind it shows. The blue path is the rainscreen's air: it enters at the base above the splash board (Detail 4), rises through the open channels beside the furring, passes through the vented closure strip, and leaves under the overhang. The dashed outline is the steel plates on both faces of the heel, behind the cut, and the diagram at the right shows the whole wall. The letters A to H match Detail 5, and I to L show only here.</figcaption>
+</figure>
+<div class="cols">
+<table class="detail legend letter-key"><thead><tr><th>Marker</th><th>What it shows</th></tr></thead><tbody>
+<tr><td class="mk-cell"><span class="nums">A</span></td><td>26 ga steel siding, stopping under the vented closure strip. It is cut back here to show the furring</td></tr>
+<tr><td class="mk-cell"><span class="nums">B</span></td><td>1×4 PT furring, vertical at 24″ OC (one strip shows). It holds the steel off the wall, and the air rises beside it</td></tr>
+<tr><td class="mk-cell"><span class="nums">C</span></td><td>Vented closure strip: 3″ tall, perforated, with an insect screen, in line with the steel. The air leaves through its slots under the overhang</td></tr>
+<tr><td class="mk-cell"><span class="nums">D</span></td><td>Eave trim: bent metal that wraps the sub-fascia and laps under the roof steel's edge</td></tr>
+<tr><td class="mk-cell"><span class="nums">E</span></td><td>Roof on the truss top chord: 2×6 purlin, ⅝″ OSB deck, ice and water shield with underlayment, and 26 ga steel, each cut back farther than the one above it</td></tr>
+<tr><td class="mk-cell"><span class="nums">F</span></td><td>Truss bottom chord (the loft joist) with the ¾″ T&amp;G loft floor on it, which butts to the heel block</td></tr>
+</tbody></table>
+<table class="detail legend letter-key"><thead><tr><th>Marker</th><th>What it shows</th></tr></thead><tbody>
+<tr><td class="mk-cell"><span class="nums">G</span></td><td>2×6 top girt, laid flat on the post's outside face under the sheathing</td></tr>
+<tr><td class="mk-cell"><span class="nums">H</span></td><td>Heel block: a 2×6 on end between the top chord (L) and the bottom chord (F) at the bearing. The truss plant's steel plates are pressed over it, and onto both chords, on both faces (dashed)</td></tr>
+<tr><td class="mk-cell"><span class="nums">I</span></td><td>½″ OSB sheathing with the housewrap over it: the wall behind the cavity, and the air barrier</td></tr>
+<tr><td class="mk-cell"><span class="nums">J</span></td><td>3-ply 2×8 post, cut through, with the LVL truss carrier on its inside face and (3) ½″ through-bolts. The bottom chord lands on the carrier</td></tr>
+<tr><td class="mk-cell"><span class="nums">K</span></td><td>2×6 sub-fascia closing the plumb-cut end of the truss tail</td></tr>
+<tr><td class="mk-cell"><span class="nums">L</span></td><td>2×8 truss top chord, cut through. Its tail has a plumb cut for the sub-fascia and a level cut under it, so the air leaves into the open. At the bearing it rests on the heel block</td></tr>
 </tbody></table>
 </div>
 
@@ -196,7 +229,7 @@
 <div class="pair">
 <figure class="plot">
   <div data-fig="detail7"></div>
-  <figcaption>Detail 7, a transverse section through one sidewall post at the eave. The gambrel attic truss's bottom chord <strong>is</strong> the loft joist: it spans the full <span data-m="width">32</span> ft with no bearing between the walls and lands on a <strong>(3) 1¾″ × 9¼″ LVL truss carrier</strong> side-bolted to the inside face of every post. The member sizes are placeholders.</figcaption>
+  <figcaption>Detail 7, a transverse section through one sidewall post at the eave. The gambrel attic truss's bottom chord <strong>is</strong> the loft joist: it spans the full <span data-m="width">32</span> ft with no bearing between the walls and lands on a <strong>(3) 1¾″ × 9¼″ LVL truss carrier</strong> side-bolted to the inside face of every post. A heel block joins the top chord to the bottom chord at the bearing. The member sizes are placeholders.</figcaption>
 </figure>
 <table class="detail legend letter-key"><thead><tr><th>Marker</th><th>What it is</th></tr></thead><tbody>
 <tr><td class="mk-cell"><span class="nums">1</span></td><td>3-ply 2×8 laminated post (4½″ × 7¼″) on a wet-set bracket below</td></tr>
@@ -205,9 +238,10 @@
 <tr><td class="mk-cell"><span class="nums">4</span></td><td>¾″ T&amp;G plywood loft floor, long edge across the chords</td></tr>
 <tr><td class="mk-cell"><span class="nums">5</span></td><td>Truss top chord (2×8, a placeholder size), the lower gambrel slope rising to the knuckle</td></tr>
 <tr><td class="mk-cell"><span class="nums">6</span></td><td>H2.5A hurricane ties, 2 per chord bearing, one on each side</td></tr>
-<tr><td class="mk-cell"><span class="nums">7</span></td><td>2×6 sub-fascia closing the end of the truss tail (about 12″ of overhang) over the vented soffit</td></tr>
-<tr><td class="mk-cell"><span class="nums">8</span></td><td>Wall steel stops at the eave; the metal trim wraps onto the sub-fascia</td></tr>
+<tr><td class="mk-cell"><span class="nums">7</span></td><td>2×6 sub-fascia closing the plumb-cut end of the truss tail (about 12″ of overhang), with the eave trim wrapped around it</td></tr>
+<tr><td class="mk-cell"><span class="nums">8</span></td><td>Wall steel stops under the vented closure strip that crosses the top of the rainscreen cavity</td></tr>
 <tr><td class="mk-cell"><span class="nums">9</span></td><td>Wall assembly outside the post: 2×6 girt, OSB, wrap, rainscreen, and steel (Detail 1)</td></tr>
+<tr><td class="mk-cell"><span class="nums">10</span></td><td>Heel block (a 2×6 on end) between the top chord and the bottom chord at the bearing, with the plant's steel plates on both faces (dashed: behind the cut). The loft floor butts to the block. The heel stands <span data-m="heelHeight">13″</span> above the floor at the bearing's outer edge, and at least 12″</td></tr>
 </tbody></table>
 </div>
 
@@ -217,6 +251,7 @@
 <script src="workshop_model.js"></script>
 <script src="workshop_draw.js"></script>
 <script src="workshop_elevations.js"></script>
+<script src="workshop_3d.js"></script>
 <script src="workshop_sections.js"></script>
 <script src="workshop_details.js"></script>
 <script src="workshop_page.js"></script>

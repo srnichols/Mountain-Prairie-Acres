@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workshop Pole Barn: Truss Package — Mountain Prairie Acres</title>
+<link rel="stylesheet" href="workshop.css">
+<style>
+  @page {
+    size: 11in 8.5in;
+    margin: 10mm 10mm 12mm;
+    @bottom-left { content: "Mountain Prairie Acres - Workshop pole barn: truss package"; font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+  }
+  @media print {
+    .dwg { max-height: 4.9in; width: auto; margin: 0 auto; } figure.plot > div { text-align: center; } figure.tight .dwg { max-height: 3.8in; } figure.options .dwg { max-height: 3.1in; }
+    .pair { display: grid; grid-template-columns: 6.5in minmax(0, 1fr); gap: 5mm; align-items: start; }
+    .pair figure.plot { margin: 0; }
+    .pair .dwg { max-height: 5.2in; }
+    .pair table.detail { margin: 2mm 0 0; }
+    .cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8mm; align-items: start; }
+    .cols table.detail { margin: 1mm 0 2mm; }
+    .cols h3 { margin-top: 0; }
+    .cols p.source-note { margin: 0 0 1mm; }
+  }
+  .letter-key td:first-child { width: 34px; text-align: center; }
+</style>
+</head>
+<body>
+<script src="site_nav.js"></script>
+<nav class="home-link" aria-label="Back to the home page"><a href="index.html">← Mountain Prairie Acres — Orchard and Ranch Projects</a></nav>
+
+<div class="notice print-help" role="note"><strong>Print setup:</strong> Letter (8.5 × 11 in), landscape, 100% scale. Turn on background graphics and turn off the browser's headers and footers.</div>
+<noscript><div class="notice error">JavaScript is required to draw the truss drawings and to fill in the dimensions and tables.</div></noscript>
+<div class="notice error" id="render-error" hidden></div>
+
+<section aria-labelledby="page-title">
+<h1 id="page-title">Workshop Pole Barn: Truss Package</h1>
+<p class="subtitle">The brief for the truss plant · <span data-m="footprint">32 × 48 ft</span> gambrel attic trusses with a connected loft floor · Prairie, Elmore County, Idaho · planned for 2028</p>
+<p class="pager screen-only"><strong>The package:</strong> <a href="workshop_pole_barn.html">Overview</a> · <a href="workshop_specs.html">Specs</a> · <a href="workshop_plans.html">Plans and elevations</a> · <a href="workshop_sections.html">Sections and details</a> · <strong>Trusses</strong> · <a href="workshop_materials.html">Materials and cost</a></p>
+<p class="source-note">Every number here comes from the same design model as the rest of the package. Nothing is ordered or permitted yet; an Idaho-licensed engineer confirms every load and dimension.</p>
+
+<h2 id="request">What We Are Asking the Truss Plant For</h2>
+<ol class="points">
+  <li><strong>Design and seal <span data-m="trusses">25</span> gambrel attic trusses with a connected loft floor</strong> at <span data-m="trussSpacing">2′-0″</span> OC, numbered T1 at the west gable to <span data-m="lastTruss">T25</span> at the east: each bottom chord is a loft joist spanning the full <span data-m="span">32′-0″</span> from wall line to wall line. <span data-m="commonTrusses">23</span> are common and 2 are gable-end (T1 and <span data-m="lastTruss">T25</span>).</li>
+  <li><strong>Keep the loft room open and as tall as the shape allows:</strong> no webs or posts in the <span data-m="roomWidth">18′-0″</span> between the two pitch-break lines, with <span data-m="clearKnuckle">7′-1″</span> clear at its edges, crossed only by a <strong>collar tie</strong> on <span data-m="tieTrusses">T1 to T20</span> with its underside <span data-m="tieAt">8′-0″</span> above the loft floor (<a href="#headroom">headroom</a>). Brace the rest of the truss in the knee zones and with plates (<a href="#bracing">bracing and blocking</a>).</li>
+  <li><strong>Keep the roof shape:</strong> the pitch break and the ridge stay put (the county's 27 ft peak limit leaves <span data-m="peakMarginIn">8</span>″ to spare), and the underside of the floor stays at <span data-m="underLoft">13′-2″</span> for the door below (<a href="#profile">profile</a>).</li>
+  <li><strong>Design for <span data-m="snow">120</span> psf ground snow</strong>, <span data-m="wind">115</span> mph wind, and a <span data-m="loftLive">40</span> psf loft floor (<a href="#loads">loads</a>).</li>
+  <li><strong>Land on the carriers:</strong> (3) 1¾″ × 9¼″ LVL bolted to the inside face of every post, the wall plate (<a href="#bearing">bearing</a>).</li>
+  <li><strong>Build in the five special cases:</strong> the stair opening, the hoist beam, the loft doors, the loft window, and the gable-end trusses (<a href="#special">special trusses</a>).</li>
+  <li><strong>Send back</strong> sealed drawings, the reactions, the clear headroom your design gives, and a quote with the boom-truck delivery as its own line (<a href="#send-back">what to send back</a>).</li>
+</ol>
+
+<h2 id="glance">The Truss at a Glance</h2>
+<table class="detail">
+<colgroup><col style="width:20%"><col style="width:80%"></colgroup>
+<thead><tr><th>Item</th><th>What we need</th></tr></thead>
+<tbody>
+<tr><td>Building</td><td><span data-m="footprint">32 × 48 ft</span> gambrel in Prairie, Elmore County, Idaho (about 4,750 ft): an RV garage and workshop below and a storage loft above. Sidewall posts stand at 8 ft.</td></tr>
+<tr><td>Span</td><td><span data-m="span">32′-0″</span> from wall line to wall line, the centers of the posts. The bottom chord is <span data-m="trussChord">31′-4¾″</span> long between the post faces and bears <span data-m="carrierWide">5¼″</span> on each carrier; the clear span between the carriers is <span data-m="clearSpan">30′-6¼″</span>.</td></tr>
+<tr><td>Bottom chord and floor</td><td>The chord is <span data-m="bottomChord">9¼″</span> deep and carries ¾″ T&amp;G plywood (laid by the builder), so the floor is <span data-m="floorDepth">10″</span> thick. Its top is <span data-m="floorTop">14′-0″</span> above the main floor and its underside is fixed at <span data-m="underLoft">13′-2″</span>: the <span data-m="doorSize">14′ × 12′</span> overhead door needs 12″ above it for its track, and this leaves <span data-m="doorHeadroom">14″</span>.</td></tr>
+<tr><td>Top chords</td><td>2×8 (<span data-m="topChord">7¼″</span> deep) assumed; you set the real size. Lower slope <span data-m="knuckleRise">8′-0″</span> up in <span data-m="knuckleRun">7′-0″</span> (<span data-m="lowerPitch">13.7</span>:12); upper slope <span data-m="upperRise">2′-6″</span> up in <span data-m="upperRun">9′-0″</span> (<span data-m="upperPitch">3.3</span>:12). Tail <span data-m="eaveTail">1′-0″</span> along the slope past the wall line (<span data-m="tailRun">8″</span> out). The heel is a 2×6 block between the chords with plates on both faces, <strong>at least 12″</strong> high at the bearing, for insulation depth (<a href="#bearing">bearing</a>).</td></tr>
+<tr><td>Collar tie</td><td>One on each of <span data-m="tieTrusses">T1 to T20</span>, joining the two upper top chords with its underside <span data-m="tieAt">8′-0″</span> above the loft floor: <span data-m="tieLength">13′-6″</span> long between the chords, with a plate on both faces at each end. A 2×6 on edge is assumed; you size it and its connections. None on <span data-m="hoistTrusses">T21 to T25</span>, where the hoist beam passes (<a href="#bracing">bracing</a>).</td></tr>
+<tr><td>Roof on the trusses</td><td>2×6 purlins laid flat on the top chords at 16 to 24″ OC carry a ⅝″ OSB deck, underlayment, and 26 ga steel; the roof stands about <span data-m="roofBuildIn">9</span>″ above the trusses at the ridge.</td></tr>
+</tbody></table>
+
+<h2 id="loads">Design Loads</h2>
+<table class="detail">
+<colgroup><col style="width:20%"><col style="width:25%"><col style="width:55%"></colgroup>
+<thead><tr><th>Parameter</th><th>Value</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Ground snow load (Pg)</td><td><strong><span data-m="snow">120</span> psf</strong></td><td>The design load. Elmore County's snow-load map puts Prairie in its 120 psf zone, where an Idaho engineer must design the building, and the county required a neighbor's building to be designed for it.</td></tr>
+<tr><td>Flat-roof snow (approx.)</td><td>≈ <span data-m="roofSnow">84</span> psf</td><td>0.7 × Pg for a heated, insulated building. You calculate the real figure: slope reductions, unbalanced snow, and the drift at the pitch break.</td></tr>
+<tr><td>Wind and seismic</td><td><strong><span data-m="wind">115</span> mph</strong>, Exposure <span data-m="exposure">C</span>; county seismic zone C</td><td>ASCE 7, Risk Category II, an enclosed building on open ranch land; 115 mph is the county's residential figure. The engineer sets the seismic design category.</td></tr>
+<tr><td>Loft floor</td><td><span data-m="loftLive">40</span> psf live load minimum, L/360 or stiffer</td><td>Quote <strong>60 psf</strong> as an alternate: the loft holds tools and stock. Tell us what deflection your design gives.</td></tr>
+<tr><td>Dead loads (estimates)</td><td>Top chord 7 psf; bottom chord 10 psf</td><td>Steel, underlayment, OSB, purlins, and insulation on the top chord; plywood and floor covering on the bottom chord. Add the truss's own weight, and use your standard values where they are higher.</td></tr>
+<tr><td>Concentrated load</td><td>Hoist beam, <span data-m="hoistTrusses">T21 to T25</span></td><td>A 500–1,000 lb working load at the beam's tip (<a href="#special">S2</a>); the engineer sends the reactions.</td></tr>
+</tbody></table>
+
+<h2 class="page-break" id="profile">The Truss in Profile</h2>
+<figure class="plot tight">
+  <div data-fig="trussProfile"></div>
+  <figcaption>One truss across the <span data-m="span">32′-0″</span> width, looking east, drawn to scale with 7¼″ top chords. The green zone is the open room; the amber zones are the knee zones, where the roof is too low to stand. The collar tie (J) joins the two upper top chords. The dashed members in the knee zones (K) are webs and kickers the plant may add, and the gray patches (L) are plates; all three are explained under Bracing and Blocking, next. The pitch break and the ridge are fixed; the plant sets the webs, the plates, the heel, and the tail.</figcaption>
+</figure>
+<table class="detail legend letter-key"><thead><tr><th>Marker</th><th>What it shows</th></tr></thead><tbody>
+<tr><td class="mk-cell"><span class="nums">A</span></td><td><strong>Bottom chord and loft floor.</strong> <span data-m="bottomChord">9¼″</span> deep and <span data-m="trussChord">31′-4¾″</span> long between the post faces, with ¾″ T&amp;G plywood on top. The underside is fixed at <span data-m="underLoft">13′-2″</span> above the main floor, and the top is the loft floor at <span data-m="floorTop">14′-0″</span>. If the span needs a deeper floor, tell us the depth: the extra can only come out of the loft's headroom.</td></tr>
+<tr><td class="mk-cell"><span class="nums">B</span></td><td><strong>Carrier (the wall plate).</strong> (3) 1¾″ × 9¼″ LVL bolted to the inside face of each post; the bottom chord bears <span data-m="carrierWide">5¼″</span> on it. The posts are 3-ply 2×8, 4½″ along the wall and 7¼″ across it, centered on the wall lines.</td></tr>
+<tr><td class="mk-cell"><span class="nums">C</span></td><td><strong>Lower top chord.</strong> <span data-m="lowerPitch">13.7</span>:12, from the wall line up to the pitch break.</td></tr>
+<tr><td class="mk-cell"><span class="nums">D</span></td><td><strong>Pitch break.</strong> <span data-m="knuckleRun">7′-0″</span> in from the wall line and <span data-m="knuckleRise">8′-0″</span> above the loft floor. Fixed.</td></tr>
+<tr><td class="mk-cell"><span class="nums">E</span></td><td><strong>Upper top chord.</strong> <span data-m="upperPitch">3.3</span>:12, from the pitch break to the ridge.</td></tr>
+<tr><td class="mk-cell"><span class="nums">F</span></td><td><strong>Ridge.</strong> <span data-m="halfSpan">16′-0″</span> in from each wall line and <span data-m="ridgeRise">10′-6″</span> above the loft floor. Fixed: the roof stands about <span data-m="roofBuildIn">9</span>″ above it, and the county's 27 ft peak limit leaves <span data-m="peakMarginIn">8</span>″.</td></tr>
+<tr><td class="mk-cell"><span class="nums">G</span></td><td><strong>The open room.</strong> The <span data-m="roomWidth">18′-0″</span> between the two pitch-break lines, from the loft floor up to the underside of the top chords. No webs or posts. Clear height <span data-m="clearKnuckle">7′-1″</span> at its edges and <span data-m="clearRidge">9′-10″</span> at the ridge; the collar tie (J) caps the headroom at <span data-m="tieAt">8′-0″</span> across its <span data-m="tieLength">13′-6″</span>.</td></tr>
+<tr><td class="mk-cell"><span class="nums">H</span></td><td><strong>Knee zones.</strong> The <span data-m="knuckleRun">7′-0″</span> outside each pitch-break line. Webs, kickers, plates, and blocking go here (K and L), and a web may stand in the plane of the pitch-break line itself.</td></tr>
+<tr><td class="mk-cell"><span class="nums">I</span></td><td><strong>Heel and tail.</strong> The roof line passes through the wall line at the loft floor level, and the tail runs <span data-m="eaveTail">1′-0″</span> along the slope past it. The heel is a block between the chords with plates on both faces (see <a href="#bearing">bearing</a>), at least 12″ high at the outer edge of the bearing, so the roof line may rise near the wall for it. The pitch break and the ridge may not move.</td></tr>
+</tbody></table>
+
+<h2 id="bracing">Bracing and Blocking</h2>
+<p>The owner wants a <strong>collar tie</strong> across the upper slopes to help the roof carry the <span data-m="snow">120</span> psf snow, and it is in the design (<span class="nums">J</span>): it is the one member that crosses the open room. Besides it, the pitch break (the knee) is the joint that works hardest, so we expect bracing there. Webs, kickers, blocking, and plates cost the open room nothing when they stay in the knee zones or lie flat on the faces of the chords, so please use them first; the profile shows one way, marked <span class="nums">K</span> and <span class="nums">L</span>. Steps 1 to 6 are in the order we prefer them: send the first design that works, say which steps it uses, and price the later ones as alternates.</p>
+<table class="detail">
+<colgroup><col style="width:5%"><col style="width:22%"><col style="width:36%"><col style="width:37%"></colgroup>
+<thead><tr><th>Step</th><th>What</th><th>Where</th><th>What it costs the open room</th></tr></thead>
+<tbody>
+<tr><td class="center"><span class="nums">J</span></td><td><strong>Collar tie</strong>, in the design</td><td>Between the two upper top chords on <span data-m="tieTrusses">T1 to T20</span>, its underside <span data-m="tieAt">8′-0″</span> above the loft floor, <span data-m="tieLength">13′-6″</span> long. A 2×6 on edge with a plate on both faces at each end is assumed: you size it and its connections. None on <span data-m="hoistTrusses">T21 to T25</span>, where the hoist beam and its trolley pass: say which of steps 1 to 6 carry those five trusses.</td><td>Walking space is unchanged. The tallest headroom is <span data-m="tieAt">8′-0″</span>, under the tie; above it the underside of the chords still rises to <span data-m="clearRidge">9′-10″</span> at the ridge. If your design needs the tie lower or deeper, say what the headroom becomes.</td></tr>
+<tr><td class="center">1</td><td><strong>Webs and kickers</strong>, with solid blocking between the trusses at the web lines and the pitch break</td><td><span class="nums">K</span> The knee zones only. The profile's dashed members are a vertical web <span data-m="webAt">3′-6″</span> in from each wall line and a kicker from its foot up to the pitch break: you place and size them, and may use your own layout.</td><td>Nothing in the room, blocking included. The floor plywood is cut around each web foot, so show where they land.</td></tr>
+<tr><td class="center">2</td><td><strong>Plates</strong> at every joint, and a <strong>gusseted knee</strong></td><td><span class="nums">L</span> Flat steel plates on both faces of the chords at the pitch break and the ridge, large at the knee, with extra plies or LVL there if it needs them.</td><td>Nothing, while the underside of the chord stays where the profile puts it.</td></tr>
+<tr><td class="center">3</td><td><strong>Heavier chords</strong></td><td>More plies, or LVL, in the same depth.</td><td>Nothing in the room.</td></tr>
+<tr><td class="center">4</td><td><strong>Closer trusses</strong></td><td><span data-m="trussSpacingIn">24</span>″ OC becomes 16″ OC, or the trusses are doubled.</td><td>Nothing in the room. The layout, the purlins, and the carriers change.</td></tr>
+<tr><td class="center">5</td><td><strong>Deeper chords</strong></td><td>Top chords deeper than <span data-m="topChord">7¼″</span>.</td><td>About an inch of headroom for each inch of depth, and more at the pitch break.</td></tr>
+<tr><td class="center">6</td><td><strong>A short kicker across each knee</strong></td><td>Inside the room's top corners, with legs of up to <span data-m="kickerLeg">2′-0″</span> along each chord from the inside of the pitch break.</td><td>The clear height at the room's edge falls from <span data-m="clearKnuckle">7′-1″</span> to <span data-m="kickerEdgeClear">6′-7″</span>, and the width with 7′ of clear height from <span data-m="clear7Width">18′-2″</span> to <span data-m="kickerWidth7">16′-8″</span>.</td></tr>
+</tbody></table>
+<figure class="plot tight options">
+  <div data-fig="trussOptions"></div>
+  <figcaption>The last step, to scale: the short kicker across each knee (6), which cuts the room's top corners along a straight line between the ends of its legs, drawn under the collar tie (J) that is in the design. The numbers are in the table above. List the permanent lateral bracing and bridging you need on the placement plan.</figcaption>
+</figure>
+
+<h2 class="page-break" id="headroom">Headroom and Walking Space</h2>
+<p>The loft is a room people walk and work in, and the profile gives the headroom this roof shape allows under the owner's collar tie. We ask the plant to protect it.</p>
+<ul class="points">
+  <li><strong>Clear height</strong> is measured from the top of the loft floor up to the <strong>underside</strong> of the top chords, and under the collar tie to the underside of the tie. The plans page measures headroom to the top of the chords (the roof line), which is <span data-m="chordDropRidge">7½″</span> higher at the ridge and <span data-m="chordDropKnuckle">11″</span> higher at the pitch break.</li>
+  <li><strong>The roof line is fixed.</strong> Do not raise the ridge or the pitch break. The roof line may rise near the wall for the heel.</li>
+  <li><strong>The clear heights below are the least we accept</strong>, measured under <span data-m="topChord">7¼″</span> top chords. If your loads need deeper chords, tell us how many inches deeper and what the clear heights become: each extra inch of chord costs about an inch of headroom, and more at the pitch break.</li>
+  <li><strong>The room stays open</strong> between the pitch-break lines: no webs or posts. The collar tie on <span data-m="tieTrusses">T1 to T20</span> and the hoist beam at the east end (<a href="#special">S2</a>) are the only things in it, so the tallest headroom is <span data-m="tieAt">8′-0″</span>, under the tie. The rest of the bracing goes in the knee zones and on the faces of the chords; only the last step in <a href="#bracing">bracing and blocking</a> comes into the room.</li>
+  <li><strong>If the open room cannot be built</strong> at <span data-m="trussSpacingIn">24</span>″ OC for these loads, send the closest design that can, and say what it gives up. The steps in <a href="#bracing">bracing and blocking</a> are in the order we prefer them. Price each one.</li>
+</ul>
+<div class="cols">
+  <div><h3>Headroom in from a wall line</h3><p class="source-note">Both heights are above the loft floor: the roof line height is to the top of the chords, the clear height to their underside. On <span data-m="tieTrusses">T1 to T20</span> the collar tie caps the clear height at <span data-m="tieAt">8′-0″</span> from <span data-m="tieFrom">9′-3″</span> to <span data-m="tieTo">22′-9″</span> in.</p><div data-truss="stations"></div></div>
+  <div>
+    <h3>Open room outline (under the chords)</h3><div data-truss="room"></div>
+    <h3>Roof line (top of the chords)</h3><div data-truss="outline"></div>
+    <p class="source-note">The south half mirrors the north. The open room's outline is the roof line moved down <span data-m="topChord">7¼″</span>, measured square to the slope. The roof line may rise near the wall for the heel.</p>
+  </div>
+</div>
+<p class="source-note"><span data-m="clear7Width">18′-2″</span> of the loft width has <strong>7′ or more</strong> of clear height, and <span data-m="clear5Width">21′-8″</span> has <strong>5′ or more</strong>.</p>
+
+<h2 class="page-break" id="bearing">Bearing and Heel</h2>
+<div class="pair">
+<figure class="plot">
+  <div data-fig="detail7"></div>
+  <figcaption>A transverse section through one sidewall post at the eave. The truss's bottom chord is the loft joist: it spans the full width with no bearing between the walls and lands on a (3) 1¾″ × 9¼″ LVL carrier side-bolted to the inside face of every post. The heel is a 2×6 block between the top chord and the bottom chord at the bearing, with steel plates on both faces (dashed: behind the cut); the plant sizes the block and the plates. The tail's shape is a placeholder, within the limits in the profile.</figcaption>
+</figure>
+<table class="detail legend letter-key"><thead><tr><th>Marker</th><th>What it is</th></tr></thead><tbody>
+<tr><td class="mk-cell"><span class="nums">1</span></td><td>3-ply 2×8 laminated post (4½″ × 7¼″) on a wet-set bracket below</td></tr>
+<tr><td class="mk-cell"><span class="nums">2</span></td><td>(3) 1¾″ × 9¼″ LVL truss carrier, side-bolted to the post with (3) ½″ galvanized through-bolts per post</td></tr>
+<tr><td class="mk-cell"><span class="nums">3</span></td><td>Truss bottom chord (2×10, a placeholder size), bearing on the carrier and acting as the loft joist across the span</td></tr>
+<tr><td class="mk-cell"><span class="nums">4</span></td><td>¾″ T&amp;G plywood loft floor, long edge across the chords</td></tr>
+<tr><td class="mk-cell"><span class="nums">5</span></td><td>Truss top chord (2×8, a placeholder size), the lower gambrel slope rising to the pitch break</td></tr>
+<tr><td class="mk-cell"><span class="nums">6</span></td><td>H2.5A hurricane ties, 2 per chord bearing, one on each side</td></tr>
+<tr><td class="mk-cell"><span class="nums">7</span></td><td>2×6 sub-fascia closing the plumb-cut end of the truss tail (about 12″ of overhang), with the eave trim wrapped around it</td></tr>
+<tr><td class="mk-cell"><span class="nums">8</span></td><td>Wall steel stops under the vented closure strip that crosses the top of the rainscreen cavity</td></tr>
+<tr><td class="mk-cell"><span class="nums">9</span></td><td>Wall assembly outside the post: 2×6 girt, OSB, wrap, rainscreen, and steel</td></tr>
+<tr><td class="mk-cell"><span class="nums">10</span></td><td>Heel block (a 2×6 on end) between the top chord and the bottom chord at the bearing, with the plant's steel plates on both faces (dashed: behind the cut). The loft floor butts to the block. The heel stands <span data-m="heelHeight">13″</span> above the floor at the bearing's outer edge, and at least 12″</td></tr>
+</tbody></table>
+</div>
+
+<h2 class="page-break" id="special">Special Trusses and Conditions</h2>
+<figure class="plot">
+  <div data-fig="trussLayout"></div>
+  <figcaption>The loft floor from above, north at the top. T1 is the west gable truss and <span data-m="lastTruss">T25</span> the east gable truss, <span data-m="trussSpacing">2′-0″</span> apart. <strong>S1</strong> stair opening, <strong>S2</strong> hoist beam, <strong>S3</strong> loft doors, <strong>S4</strong> loft window, <strong>S5</strong> gable-end trusses: the next section explains each. Red trusses are the stair trusses and blue ones carry the hoist beam; <span data-m="tieTrusses">T1 to T20</span> each carry a collar tie. The green zone is the open room and the amber strips are the knee zones.</figcaption>
+</figure>
+<h3 class="page-break">What Each Mark Asks For</h3>
+<table class="detail legend letter-key"><colgroup><col style="width:5%"><col style="width:16%"><col style="width:79%"></colgroup><thead><tr><th>Mark</th><th>Where</th><th>What the truss plant must allow for</th></tr></thead><tbody>
+<tr><td class="mk-cell"><span class="nums">S1</span></td><td><strong>Stair opening.</strong> <span data-m="stairTrusses">T1 to T3</span>, the first <span data-m="openingWide">4′-0″</span> from the west end</td><td>A <span data-m="openingSize">4′ × 11′</span> opening in the loft floor, from <span data-m="openingNorth">17′-0″</span> to <span data-m="openingSouth">28′-0″</span> south of the north wall line, over the second flight of the stair. Our drawings cut the bottom chord of <span data-m="stairCutTruss">T2</span> between two (2) 2×10 LVL headers, with T1 and T3 as the edges. The cut truss must still carry its roof and tie its heels: show how, or propose another arrangement (a girder truss at T3 with T2 left out, say) and what it does to the purlin span. Size T1 and T3 for the header reactions.</td></tr>
+<tr><td class="mk-cell"><span class="nums">S2</span></td><td><strong>Hoist beam.</strong> <span data-m="hoistTrusses">T21 to T25</span>, from <span data-m="hoistStart">39′-0″</span> east of the west end to the east gable</td><td>A W6×12 steel beam, <span data-m="hoistLength">21′-6″</span> long, on the ridge line: <span data-m="hoistInside">9</span> ft inside the loft and <span data-m="hoistOut">12′-6″</span> out through the east gable, <span data-m="hoistBeyondDeck">2</span> ft past the deck's edge. Its centerline is <span data-m="hoistAbove">9</span> ft above the loft floor, so its top stops <span data-m="hoistGap">7½″</span> below the underside of the top chords at the ridge; blocking fills that gap and bolts to the top chords. A 500–1,000 lb working load acts at its tip, shared with two braces to the deck. The engineer sends the reactions. Tell us what the ridge joints and chords of <span data-m="hoistTrusses">T21 to T25</span> can take, and any plates or blocking you need. These five trusses take no collar tie, because the trolley and chain pass under the beam at that height: say how you carry their upper chords without one (steps 1 to 6 of <a href="#bracing">bracing and blocking</a>).</td></tr>
+<tr><td class="mk-cell"><span class="nums">S3</span></td><td><strong>Loft doors.</strong> <span data-m="lastTruss">T25</span>, the east gable truss</td><td>5′ × 6′ double doors, rough opening <span data-m="loftDoorRough">5′-6″ × 6′-6″</span>, centered on the gable (<span data-m="loftDoorFrom">13′-3″</span> to <span data-m="loftDoorTo">18′-9″</span> from the north wall line), with the bottom at the loft floor and a (2) 2×10 LVL header above. Keep the webs, studs, and bracing of the gable truss out of the opening up to <span data-m="loftDoorOpenTo">7′-3″</span> above the loft floor.</td></tr>
+<tr><td class="mk-cell"><span class="nums">S4</span></td><td><strong>Loft window.</strong> T1, the west gable truss</td><td>A <span data-m="loftWindowSize">3′ × 4′</span> single-hung window, centered on the gable (<span data-m="loftWindowFrom">14′-6″</span> to <span data-m="loftWindowTo">17′-6″</span> from the north wall line), with its sill <span data-m="loftWindowSill">3′</span> above the loft floor. Keep the webs and studs of T1 out of it.</td></tr>
+<tr><td class="mk-cell"><span class="nums">S5</span></td><td><strong>Gable-end trusses.</strong> T1 and <span data-m="lastTruss">T25</span></td><td>Solid-faced, with vertical studs at 24″ OC for the siding, and outlookers or an equal for the <span data-m="rakeOverhang">1′-0″</span> roof overhang at each gable. They sit on the end walls as well as on the carriers: for the quote, assume bearing along the wall, except across the <span data-m="doorWidth">14</span> ft door at the east end, where a header carries it. The engineer sends the bearing conditions.</td></tr>
+</tbody></table>
+
+<h2 id="send-back">What to Send Back</h2>
+<ol class="points">
+  <li><strong>Sealed truss drawings</strong> by an Idaho-licensed engineer, for each truss type: common, gable-end, the stair truss (<span data-m="stairCutTruss">T2</span>), and the hoist trusses (<span data-m="hoistTrusses">T21 to T25</span>), with member sizes, lumber grades, plate sizes, and the loads you used.</li>
+  <li><strong>A placement plan</strong> with the web layout, the permanent lateral bracing and bridging you require (including the solid blocking between trusses and any bracing the collar ties need), and the purlin spacing your top chords assume.</li>
+  <li><strong>Reactions</strong>, vertical and uplift, at every bearing, for each truss type, so the engineer can size the carriers, their bolts, the posts, and the hoist anchors, plus the hurricane ties you specify (we assume H2.5A, 2 per bearing).</li>
+  <li><strong>The clear headroom your design gives</strong>: at the room's edge, under the collar tie, at the ridge, and the room width at 7′ and 5′ clear. If your top chords are deeper than <span data-m="topChord">7¼″</span>, say how much. Say which steps of <a href="#bracing">bracing and blocking</a> your design uses.</li>
+  <li><strong>The collar tie you design</strong> for <span data-m="tieTrusses">T1 to T20</span>: its size and grade, the end plates and connections, the pull it carries under the snow, and how you carry the upper chords of <span data-m="hoistTrusses">T21 to T25</span>, which take none.</li>
+  <li><strong>The heel block and plates you propose</strong> (we draw a 2×6 block), the tail, and the post-top cut they need.</li>
+  <li><strong>The snow cases you used</strong>: drift and unbalanced snow at the pitch break.</li>
+  <li><strong>A quote by line</strong>: common trusses with their collar ties, gable-end trusses, the special trusses (<span data-m="stairCutTruss">T2</span> and <span data-m="hoistTrusses">T21 to T25</span>), any connectors you supply, and the alternates: a 60 psf loft floor, 16″ OC, and any step of bracing and blocking beyond the knee zones (the kicker across the knee).</li>
+  <li><strong>Delivery by boom truck, as its own line</strong>: the delivery fee, the boom-truck time and the hours included on site, and whether the driver can set the bundles on the walls (the walls stand <span data-m="floorTop">14′-0″</span> above the main floor). We will confirm the route onto the pad before the delivery date.</li>
+  <li><strong>Lead time</strong> from signed drawings to delivery, and how long the quote holds.</li>
+  <li><strong>Anything you cannot meet</strong>: name the requirement and propose the closest design.</li>
+</ol>
+
+<div class="footer">Mountain Prairie Acres · Workshop pole barn truss package · updated October 23, 2026 · drawn from <code>docs/workshop_model.js</code>.</div>
+</section>
+
+<script src="workshop_model.js"></script>
+<script src="workshop_draw.js"></script>
+<script src="workshop_elevations.js"></script>
+<script src="workshop_details.js"></script>
+<script src="workshop_trusses.js"></script>
+<script src="workshop_page.js"></script>
+</body>
+</html>

@@ -5,7 +5,7 @@
 'use strict';
 const D = root.WorkshopDraw;
 if (!D || !D.kit || !D.gradeOf) throw new Error('Load workshop_draw.js and workshop_elevations.js before workshop_details.js');
-const { r2, rect, line, poly, polyline, circle, path, text, lines, turned, svg, dimH, dimV, tick, mk, arrow, feetInches } = D.kit;
+const { r2, rect, line, poly, polyline, circle, path, text, lines, turned, svg, dimH, dimV, tick, mk, airPath, feetInches } = D.kit;
 
 // A callout: a leader from the object to a marker.
 const call = (ox, oy, mx, my, label) => line(ox, oy, mx, my, 'l-ext') + mk(mx, my, label);
@@ -24,10 +24,10 @@ function detail1(m) {
   o.push(rect(xp, postY, 7.25 * k, postH, 'c-post'));
   [1, 2].forEach(i => o.push(line(xp, postY + i * 1.5 * k, xp + 7.25 * k, postY + i * 1.5 * k, 'l-ply')));
   [-1, 1].forEach(side => { const y = joint + side * postH / 4; o.push(line(xg + 4, y, xp + 2 * k, y, 'l-bolt'), rect(xg - 2, y - 3.5, 3, 7, 'c-bolt')); });
-  o.push(arrow(xc + 5, 250, xc + 5, 190, 'l-arrow'));
+  o.push(airPath([[xc + 5, 250], [xc + 5, 190]], 0.65));
   o.push(call(xs + 2, 102, 300, 102, 'A'), call(xc + 5, 134, 300, 140, 'B'), call(xw, 176, 300, 178, 'C'), call(xw + 3, 186, 300, 216, 'D'), call(xp + 70, postY + 30, 300, 254, 'E'), call(xg + 8, 300, 300, 300, 'F'));
   o.push(dimH(xs, xp + 7.25 * k, bot + 28, `≈ ${Math.round(m.wallInches * 4) / 4}″`, {}));
-  o.push(lines(xs, bot + 54, ['The furring stands off the sheathing to make a ¾″ air space that drains and dries (arrow: air moving up).', 'The girt is a 2×6 laid flat on the post. Its joints fall on post center lines, and screws go through it into the post.'], 't-s', 13));
+  o.push(lines(xs, bot + 54, ['The furring stands off the sheathing to make a ¾″ air space that drains and dries (blue arrow: air moving up).', 'The girt is a 2×6 laid flat on the post. Its joints fall on post center lines, and screws go through it into the post.'], 't-s', 13));
   return svg(560, 440, o, 'Detail 1, wall assembly');
 }
 
@@ -91,7 +91,7 @@ function detail4(m) {
   o.push(rect(X(-1.25 + shift), Z(11.5), 0.75 * k, 2.2 * k, 'c-screen'));
   o.push(polyline([[X(-0.55 + shift), Z(32)], [X(-0.55 + shift), Z(floor + face / 2)], [X(-girt - 0.1), Z(splash + 0.7)], [X(-girt - 0.1), Z(splash - 0.9)]], 'l-wrb'));
   o.push(polyline([[X(-1.4 + shift), Z(10.6)], [X(-1.4 + shift), Z(9.9)], [X(-2.2 + shift), Z(9.4)]], 'l-flash'));
-  o.push(arrow(X(-10.5), Z(10.4), X(-1.7 + shift), Z(10.4), 'l-arrow'), arrow(X(-0.9 + shift), Z(14), X(-0.9 + shift), Z(24), 'l-arrow'), text(X(-7), Z(10.4) - 6, 'air in', 't-s t-m t-blue'));
+  o.push(airPath([[X(-10.5), Z(10.4)], [X(-0.9 + shift), Z(10.4)], [X(-0.9 + shift), Z(24)]], 0.65), text(X(-7), Z(10.4) - 8, 'air in', 't-s t-m t-blue'));
   const sx = 7.75;
   o.push(rect(X(sx), Z(4), 36 * k, 4 * k, 'c-gravel'), rect(X(sx), Z(8), 36 * k, 4 * k, 'c-foam'), rect(X(sx), Z(13), 36 * k, 5 * k, 'c-slab'), rect(X(7.25), Z(13), 0.5 * k, 10 * k, 'c-foam'));
   o.push(text(X(-3 + shift), Z(0) + 14, 'pad surface (grade)', 't-s t-e'));
@@ -103,47 +103,50 @@ function detail4(m) {
 
 // The eave, in inches: z = 0 is the top of the loft floor, which is the eave line; x = 0 is the outside face of the post (outside is negative).
 function eave(m, mode) {
-  const k = 6, ox = 130, oy = 190, o = [];
+  const k = 6, ox = 130, oy = 190, o = [], es = m.eaveSection;
   const X = i => ox + i * k, Z = i => oy - i * k;
-  const dx = m.knuckleRun / m.lowerLen, dz = m.knuckleRise / m.lowerLen;          // direction of the lower slope
-  const nx = -dz, nz = dx;                                                        // its upward normal
-  const roofAt = t => [-1.4 + t * dx, t * dz + 3];                                // the roof's upper surface, 3 in above the eave line at the wall, so the tail clears the post top
+  const roofAt = t => es.along(t);                                                // the chord's upper surface, 3 in above the eave line at the wall, so the tail clears the post top
   const slab = pts => poly(pts.map(([a, b]) => [X(a), Z(b)]), 'c-wood');
   const bearing = mode === 'bearing';
   const g = m.girts.thick, topRow = m.girts.rows[m.girts.rows.length - 1], rowTop = (topRow.top - m.eave) * 12;   // the girt layer stands outside the post; the top row's top edge in inches below the eave line
   o.push(text(330, 22, bearing ? 'DETAIL 7 — TRUSS BEARING AT THE TOP OF A POST (transverse section)' : 'DETAIL 5 — EAVE: THE RAINSCREEN VENTS OUT (vertical section)', 't-title t-m'));
   o.push(text(X(-12), 52, 'OUTSIDE ←', 't-s t-b'), text(X(62), 52, '→ INSIDE (LOFT)', 't-s t-b t-e'));
   o.push(line(X(-14), Z(0), X(62), Z(0), 'l-dash'), text(X(62), Z(0) - 5, `+${m.eave}′-0″ eave line, top of the loft floor`, 't-s t-e'));
-  // wall: steel, furring, sheathing, the top girt, and the post (the wall continues below the frame)
-  o.push(rect(X(0), Z(-7.5), 7.25 * k, 36.5 * k, 'c-post'), rect(X(-g), Z(rowTop), g * k, m.girts.face * k, 'c-wood'));
-  o.push(rect(X(-0.5 - g), Z(-12), 0.5 * k, 32 * k, 'c-osb'), rect(X(-1.25 - g), Z(-12), 0.75 * k, 32 * k, 'c-cavity'), rect(X(-1.25 - g), Z(-12), 0.75 * k, 32 * k, 'c-ptwood', { opacity: 0.55 }), rect(X(-1.4 - g), Z(-9), 2.2, 35 * k, 'c-wall'));
-  // carrier, the bottom chord, and the loft floor
-  o.push(rect(X(7.25), Z(-10), 5.25 * k, 9.25 * k, 'c-lvl'));
+  // wall: the post, the top girt, the sheathing and housewrap, the cavity, the steel, and the vented closure strip across the top of the cavity (the wall continues below the frame)
+  const low = -44, tall = top => (top - low) * k;
+  o.push(rect(X(0), Z(-m.postTopBelowEave), 7.25 * k, tall(-m.postTopBelowEave), 'c-post'), rect(X(-g), Z(rowTop), g * k, m.girts.face * k, 'c-wood'));
+  o.push(rect(X(es.sheathingOut), Z(es.ventTop), (-g - es.sheathingOut) * k, tall(es.ventTop), 'c-osb'), line(X(es.sheathingOut) - 0.6, Z(es.ventTop), X(es.sheathingOut) - 0.6, Z(low), 'l-wrb'));
+  o.push(rect(X(es.furringOut), Z(es.ventBottom), (es.wrapOut - es.furringOut) * k, tall(es.ventBottom), 'c-cavity'), rect(X(es.steelOut), Z(es.ventBottom), (es.furringOut - es.steelOut) * k, tall(es.ventBottom), 'c-wall'));
+  o.push(rect(X(es.steelOut), Z(es.ventTop), (es.sheathingOut - es.steelOut) * k, (es.ventTop - es.ventBottom) * k, 'c-screen'), line(X(es.steelOut) + 1.5, Z(-12.3), X(es.steelOut) + 1.5, Z(-10.7), 'l-vent'));
+  // carrier, the bottom chord, and the loft floor, which stops at the heel block
+  const heel = es.heel, floorFrom = heel.block[1][0];
+  o.push(rect(X(7.25), Z(-10), m.carrier.wide * k, m.carrier.tall * k, 'c-lvl'));
   o.push(rect(X(7.25), Z(-0.75), 56 * k, 9.25 * k, 'c-wood'));
-  o.push(rect(X(7.25), Z(0), 56 * k, 0.75 * k, 'c-osb'));
+  o.push(rect(X(floorFrom), Z(0), (63.25 - floorFrom) * k, 0.75 * k, 'c-osb'));
   [-12.5, -14.8, -17].forEach(z => o.push(line(X(-0.5), Z(z), X(12.5), Z(z), 'l-bolt'), circle(X(-0.5), Z(z), 2.4, 'c-bolt'), circle(X(12.5), Z(z), 2.4, 'c-bolt')));
-  // the top chord and its tail, the roof layers, the sub-fascia, and the soffit
-  const t0 = -12.4, t1 = 24, c0 = roofAt(t0), c1 = roofAt(t1);
-  const down = (p, d) => [p[0] - nx * d, p[1] - nz * d];
-  o.push(slab([c0, c1, down(c1, 7.25), down(c0, 7.25)]));
-  o.push(poly([[X(c0[0]), Z(c0[1])], [X(c1[0]), Z(c1[1])], [X(c1[0] + nx * 3), Z(c1[1] + nz * 3)], [X(c0[0] + nx * 3), Z(c0[1] + nz * 3)]], 'c-roof'));
-  o.push(rect(X(c0[0] - 1.5), Z(c0[1] + 1), 1.5 * k, 5.5 * k, 'c-wood'));
-  o.push(rect(X(-9.4), Z(-15.2), (8.4 - g) * k, 0.75 * k, 'c-roof'), line(X(-5), Z(-15.2) + 4, X(-1.5 - g), Z(-15.2) + 4, 'l-vent'));
-  o.push(polyline([[X(-1.4 - g), Z(-9)], [X(-1.4 - g), Z(-12.5)], [X(-9.5), Z(-15.4)]], 'l-flash'));
-  o.push(arrow(X(-0.9 - g), Z(-30), X(-0.9 - g), Z(-12), 'l-arrow'), arrow(X(-0.9 - g), Z(-12), X(-4.4), Z(-15.4), 'l-arrow'), text(X(-6), Z(-20), 'air out', 't-s t-e t-blue'));
+  // the top chord with its plumb and level cuts at the tail, the roof layers on it, the sub-fascia, and the eave trim around it
+  const { tail, fascia } = es, c1 = roofAt(24), xs = fascia.x0 - 0.5;
+  o.push(slab([tail, c1, es.along(24, -es.depth), [es.levelX, es.levelZ], [tail[0], es.levelZ]]));
+  o.push(poly([[X(xs), Z(es.lineZ(xs, es.roof.purlin))], [X(es.along(24, es.roof.purlin)[0]), Z(es.along(24, es.roof.purlin)[1])], [X(es.along(24, 3)[0]), Z(es.along(24, 3)[1])], [X(xs), Z(es.lineZ(xs, 3))]], 'c-roof'));
+  o.push(poly([es.along(12.05), es.along(17.55), es.along(17.55, es.roof.purlin), es.along(12.05, es.roof.purlin)].map(([a, b]) => [X(a), Z(b)]), 'c-wood'));
+  o.push(rect(X(fascia.x0), Z(fascia.z1), 1.5 * k, (fascia.z1 - fascia.z0) * k, 'c-wood'));
+  o.push(polyline([[tail[0] + 1.2, fascia.z1 + 0.15], [fascia.x0 - 0.25, fascia.z1 + 0.15], [fascia.x0 - 0.25, fascia.z0 - 0.25], [tail[0] + 0.6, fascia.z0 - 0.25]], 'l-flash'));
+  // the heel: the block between the top chord and the bottom chord at the bearing, and the steel plates on both faces, behind the cut (dashed)
+  o.push(poly(heel.block.map(([a, b]) => [X(a), Z(b)]), 'c-wood'), poly(heel.plate.map(([a, b]) => [X(a), Z(b)]), 'c-plate-behind'));
+  if (!bearing) o.push(airPath([[X(-2.45), Z(-30)], [X(-2.45), Z(-11.8)], [X(-8.4), Z(-11.8)]], 0.65), text(X(-8.8), Z(-14.6), 'air out', 't-s t-e t-blue'));
   // hurricane ties, both sides of the chord's bearing
   if (bearing) o.push(polyline([[X(8.2), Z(-0.5)], [X(8.2), Z(-10)], [X(11.5), Z(-10)]], 'l-flash', { 'stroke-width': 2 }), polyline([[X(9.7), Z(-0.5)], [X(9.7), Z(-9)], [X(12.5), Z(-9)]], 'l-flash', { 'stroke-width': 2 }));
   // callouts
   const mid = roofAt(14);
   if (bearing) {
     o.push(call(X(3.6), Z(-30), X(48), Z(-38), '1'), call(X(10), Z(-15.5), X(48), Z(-26), '2'), call(X(30), Z(-5), X(48), Z(-14), '3'), call(X(34), Z(0.4), X(36), Z(10), '4'),
-      call(X(mid[0]), Z(mid[1]), X(48), Z(22), '5'), call(X(8.4), Z(-4), X(48), Z(-2), '6'), call(X(c0[0] - 1), Z(c0[1] - 2), X(-12), Z(-16), '7'), call(X(-1.2 - g), Z(-9), X(-12), Z(-2), '8'),
-      call(X(-0.8 - g), Z(-34), X(-12), Z(-34), '9'));
+      call(X(mid[0]), Z(mid[1]), X(48), Z(22), '5'), call(X(8.4), Z(-4), X(48), Z(-2), '6'), call(X((fascia.x0 + fascia.x1) / 2), Z((fascia.z0 + fascia.z1) / 2), X(-12), Z(-14), '7'), call(X(es.steelOut), Z(-20), X(-12), Z(-22), '8'),
+      call(X(-0.8 - g), Z(-34), X(-12), Z(-34), '9'), call(X(10), Z(2.5), X(26), Z(12), '10'));
   } else {
-    o.push(call(X(-1.3 - g), Z(-34), X(-12), Z(-38), 'A'), call(X(-1 - g), Z(-24), X(-12), Z(-28), 'B'), call(X(-5), Z(-15.2), X(-12), Z(-18), 'C'), call(X(-5), Z(-12.5), X(-12), Z(-6), 'D'),
-      call(X(mid[0]), Z(mid[1]), X(48), Z(22), 'E'), call(X(30), Z(-5), X(48), Z(-8), 'F'), call(X(-g / 2), Z(rowTop - m.girts.face / 2), X(-12), Z(-22), 'G'));
+    o.push(call(X(es.steelOut), Z(-34), X(-12), Z(-38), 'A'), call(X(-2.45), Z(-24), X(-12), Z(-28), 'B'), call(X(es.steelOut + 0.3), Z(-11.5), X(-12), Z(-19), 'C'), call(X(fascia.x0 - 0.25), Z(fascia.z0 + 1), X(-17), Z(-4), 'D'),
+      call(X(mid[0]), Z(mid[1]), X(48), Z(22), 'E'), call(X(30), Z(-5), X(48), Z(-8), 'F'), call(X(-g / 2), Z(rowTop - m.girts.face / 2), X(-12), Z(-24), 'G'), call(X(10), Z(2.5), X(26), Z(12), 'H'));
   }
-  o.push(lines(X(-12), Z(-49), bearing ? ['The truss bottom chord is the loft joist: it spans the full width on the carrier.', 'Member sizes here are placeholders; the truss designer and engineer set the real ones.'] : ['Air that entered at the splash board (Detail 4) rises through the rainscreen cavity', 'and leaves at the vented soffit closure. Without that vent the cavity traps moisture.'], 't-s', 11));
+  o.push(lines(X(-12), Z(-49), bearing ? ['The truss bottom chord is the loft joist: it spans the full width on the carrier.', 'Member sizes here are placeholders; the truss designer and engineer set the real ones.'] : ['Air that entered at the splash board (Detail 4) rises through the rainscreen cavity', 'and leaves through the vented closure strip under the overhang. Without that vent the cavity traps moisture.'], 't-s', 11));
   return svg(660, 520, o, bearing ? 'Detail 7, truss bearing' : 'Detail 5, eave');
 }
 const detail5 = m => eave(m, 'vent');

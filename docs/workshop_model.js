@@ -48,7 +48,17 @@ const DESIGN = Object.freeze({
   // of a different length to keep their joints on different posts. Beside the east door, where the runs are 9 ft, 18 ft boards are cut in half.
   girts: Object.freeze({ spacing: 2, face: 5.5, thick: 1.5, board: 16, endBoard: 18, firstRow: 0, splashInches: 9.25, screwsPerPost: 3, screwsPerEnd: 2 }),
   chordInches: 9.25,         // truss bottom chord depth used for the clearance under the loft (the truss designer sets the real one)
+  topChordInches: 7.25,      // truss top chord depth used for the clear room under the roof: a 2×8 (the truss designer sets the real one)
+  carrier: Object.freeze({ wide: 5.25, tall: 9.25 }),   // the truss carrier on the inside face of each post: (3) 1¾″ × 9¼″ LVL, in inches; the bottom chord bears on its top
+  postTopBelowEave: 7.5,     // the post top stands this many inches under the loft floor line, below the truss heel
+  heelBlock: 5.5,            // the heel block between the top and bottom chords at the bearing: a 2×6 on end, in inches
   decking: 0.75,             // loft floor, inches
+  // The bracing the truss plant may add, in feet. `webAt` is where the vertical web in each knee zone stands, in from the wall line, with a kicker from its foot up to the pitch
+  // break; `webWide` is the width of a web in inches (a 2×4 on its wide face); `plateKnee` and `plateRidge` are how far the plates reach along each chord from the knee and the
+  // ridge; `kickerLeg` is the longest kicker we accept across the knee, measured along each chord from the inside of the pitch break. The collar tie is part of the design (the
+  // owner's choice, to help the roof carry the snow): `tieAt` is the height of its underside above the loft floor, and `tieDeep` its depth in inches (a 2×6 is assumed: the truss
+  // plant sizes it).
+  bracing: Object.freeze({ webAt: 3.5, webWide: 3.5, plateKnee: 1.5, plateRidge: 1.25, kickerLeg: 2, tieAt: 8, tieDeep: 5.5 }),
   loads: Object.freeze({ groundSnow: 120, wind: 115, exposure: 'C', loftLive: 40, frostZoneInches: 30, footingInches: 60, seismicZone: 'C' })   // 120 psf: the county's snow zone for Prairie, and the load it required of a neighbor's building (owner, October 23, 2026)
 });
 
@@ -76,6 +86,11 @@ const inches = value => {
 const feetInches = feet => {
   const whole = Math.floor(feet + 1e-9), inches = Math.round((feet - whole) * 12);
   return inches === 12 ? `${whole + 1}′-0″` : `${whole}′-${inches}″`;
+};
+// Feet and inches to the nearest quarter inch: 31′-4¾″.
+const feetInchesQuarter = feet => {
+  const quarters = Math.round(feet * 48), whole = Math.floor(quarters / 48);
+  return `${whole}′-${inches((quarters - whole * 48) / 4)}`;
 };
 
 // Interior sidewall bays at the longest spacing, and whatever is left over split between the two end bays (46 ft is 7-8-8-8-8-7; 48 ft is all 8s).
@@ -179,6 +194,101 @@ function girtLayout(d, geo) {
   return { ...spec, rows, walls, eastBoard, eastPiece, buy, screws };
 }
 
+// ------------------------------------------------------------------ the truss
+
+// The gambrel truss as it stands across the building: y runs south from the north wall line and z is the height above the main floor. `outline` is the top
+// of the top chords from the north tail to the south tail. The `room` line is the underside of top chords `topChordInches` deep, the highest the underside of
+// the roof framing can be, and the headroom the loft keeps is measured from the loft floor up to it. The truss plant sets the real chord size; each extra inch of
+// depth costs about an inch of headroom, and more at the pitch break.
+function trussGeometry(d, g) {
+  const { W, half, knuckleZ, peakZ } = g;
+  const depth = d.topChordInches / 12;
+  const dir = (a, b) => { const h = Math.hypot(b[0] - a[0], b[1] - a[1]); return [(b[0] - a[0]) / h, (b[1] - a[1]) / h]; };
+  const wall = [0, d.eave], knuckle = [d.knuckleRun, knuckleZ], ridge = [half, peakZ];
+  const lowerDir = dir(wall, knuckle), upperDir = dir(knuckle, ridge);
+  const tail = [-d.eaveTail * lowerDir[0], d.eave - d.eaveTail * lowerDir[1]];
+  // a chord's underside is its top line moved down, square to the slope, by the chord depth
+  const under = (p, v) => [p[0] + v[1] * depth, p[1] - v[0] * depth];
+  const tailIn = under(tail, lowerDir), lowerIn = under(wall, lowerDir), upperIn = under(knuckle, upperDir);
+  const lowerSlope = lowerDir[1] / lowerDir[0], upperSlope = upperDir[1] / upperDir[0];
+  const lowerAt = y => lowerIn[1] + (y - lowerIn[0]) * lowerSlope, upperAt = y => upperIn[1] + (y - upperIn[0]) * upperSlope;
+  // the two undersides cross at the room line's pitch break, a little in from the roof line's
+  const kY = (upperIn[1] - lowerIn[1] + lowerIn[0] * lowerSlope - upperIn[0] * upperSlope) / (lowerSlope - upperSlope);
+  const innerKnuckle = [kY, lowerAt(kY)], innerRidge = [half, upperAt(half)];
+  const roomZ = y => { const toWall = Math.min(y, W - y); return toWall <= kY ? lowerAt(toWall) : upperAt(toWall); };
+  const clearAt = y => Math.max(0, roomZ(y) - d.eave);
+  // how far in from a wall the clear height reaches h, and how wide the loft is where it is at least h
+  const clearFrom = h => (h <= innerKnuckle[1] - d.eave ? lowerIn[0] + (d.eave + h - lowerIn[1]) / lowerSlope : upperIn[0] + (d.eave + h - upperIn[1]) / upperSlope);
+  const clearWidth = h => Math.max(0, W - 2 * clearFrom(h));
+  const mirror = ([y, z]) => [W - y, z];
+  // The bracing the plant may add (DESIGN.bracing). The knee zones take webs: a vertical web `webAt` in from the wall line, and a kicker from its foot up to the underside of the
+  // lower chord, landing far enough short of the pitch-break line that its body stays outside the open room. Both end on the lower chord. The plates lie flat on the faces of the
+  // chords at the knee and the ridge, so they take no headroom. The north half is given; the south half mirrors it.
+  const br = d.bracing, floor = d.eave, webHalf = br.webWide / 24;
+  const toward = (p, v, s) => [p[0] + v[0] * s, p[1] + v[1] * s];
+  const shrunk = (pts, k) => { const c = [sum(pts.map(p => p[0])) / pts.length, sum(pts.map(p => p[1])) / pts.length]; return pts.map(p => [c[0] + (p[0] - c[0]) * k, c[1] + (p[1] - c[1]) * k]); };
+  const kickerTilt = Math.atan2(lowerAt(d.knuckleRun) - floor, d.knuckleRun - br.webAt), kickerTop = d.knuckleRun - 1.1 * webHalf / Math.sin(kickerTilt);
+  const webs = { wide: br.webWide / 12, vertical: [[br.webAt, floor], [br.webAt, lowerAt(br.webAt)]], kicker: [[br.webAt, floor], [kickerTop, lowerAt(kickerTop)]] };
+  const plates = {
+    knee: shrunk([toward(knuckle, lowerDir, -br.plateKnee), knuckle, toward(knuckle, upperDir, br.plateKnee), toward(innerKnuckle, upperDir, br.plateKnee), innerKnuckle, toward(innerKnuckle, lowerDir, -br.plateKnee)], 0.86),
+    ridge: shrunk([toward(ridge, upperDir, -br.plateRidge), ridge, mirror(toward(ridge, upperDir, -br.plateRidge)), mirror(toward(innerRidge, upperDir, -br.plateRidge)), innerRidge, toward(innerRidge, upperDir, -br.plateRidge)], 0.86)
+  };
+  // The collar tie joins the two upper top chords, its underside `tieAt` above the loft floor. Its ends are cut to the slope of the chords, so its body is a little wider at the
+  // bottom than at the top, and a plate lies across each end joint, on the tie and the chord. Under the tie the clear height is `tieAt`, over its `length`: the loft's tallest headroom.
+  const tieZ = floor + br.tieAt, tieDeep = br.tieDeep / 12, tieFrom = clearFrom(br.tieAt), tieTopFrom = clearFrom(br.tieAt + tieDeep);
+  const tieEnd = [[tieFrom + 0.25, tieZ + 0.04], [tieTopFrom, tieZ + 0.04], [tieTopFrom, tieZ + tieDeep + 0.12], [tieFrom + 0.25, tieZ + tieDeep + 0.12]];
+  const tie = { z: tieZ, deep: tieDeep, from: tieFrom, length: clearWidth(br.tieAt), body: [[tieFrom, tieZ], [W - tieFrom, tieZ], [W - tieTopFrom, tieZ + tieDeep], [tieTopFrom, tieZ + tieDeep]], plates: [tieEnd, tieEnd.map(mirror)] };
+  // What a kicker across the knee costs the open room: legs `leg` and `up` long along the undersides of the lower and upper chords, from the inside of the pitch break. The ceiling
+  // there becomes the straight line between the leg ends. This gives its height above the loft floor at the pitch-break line and the width of the loft that keeps 7 ft of clear height.
+  const haunch = (leg, up = leg) => {
+    if (!(leg > 0 && up > 0)) return { a: innerKnuckle, b: innerKnuckle, edgeClear: clearAt(d.knuckleRun), clearFrom7: clearFrom(7), width7: clearWidth(7) };
+    const a = toward(innerKnuckle, lowerDir, -leg), b = toward(innerKnuckle, upperDir, up), slope = (b[1] - a[1]) / (b[0] - a[0]);
+    const reaches7 = floor + 7 >= a[1] && floor + 7 <= b[1], from7 = reaches7 ? a[0] + (floor + 7 - a[1]) / slope : clearFrom(7);
+    return { a, b, edgeClear: a[1] + (d.knuckleRun - a[0]) * slope - floor, clearFrom7: from7, width7: W - 2 * from7 };
+  };
+  return {
+    depth: d.topChordInches,
+    outline: [tail, wall, knuckle, ridge, mirror(knuckle), mirror(wall), mirror(tail)],
+    room: [[clearFrom(0), d.eave], innerKnuckle, innerRidge, mirror(innerKnuckle), [W - clearFrom(0), d.eave]],
+    chords: [[tail, knuckle, innerKnuckle, tailIn], [knuckle, ridge, innerRidge, innerKnuckle], [ridge, mirror(knuckle), mirror(innerKnuckle), innerRidge],
+      [mirror(knuckle), mirror(tail), mirror(tailIn), mirror(innerKnuckle)]],
+    tailRun: -tail[0], tailDrop: d.eave - tail[1], innerKnuckle, innerRidge, lowerSlope, upperSlope,
+    clearAt, clearWidth, clearFrom, webs, plates, tie, haunch
+  };
+}
+
+// ------------------------------------------------------------------ the eave
+
+// Where the wall meets the roof, in inches: x runs inward from the post's outside face, so the outside is negative, and z runs up from the loft floor line. Details 5 and 7 and
+// the eave in perspective all draw from it. From the post outward the wall is the girt, the sheathing, the housewrap, the furring that makes the rainscreen cavity, and the steel.
+// The steel stops under a vented closure strip that crosses the top of the cavity. The truss tail passes over the strip with a plumb cut at its end, for the sub-fascia, and
+// a level cut under it, so the air leaves into the open under the overhang.
+function eaveSection(d, g) {
+  const girt = d.girts.thick, sheathing = d.wall.sheathing, wrap = 0.1, furring = d.wall.furring, steel = 0.25;   // the housewrap and the steel are drawn thicker than they are
+  const sheathingOut = -(girt + sheathing), wrapOut = sheathingOut - wrap, furringOut = wrapOut - furring, steelOut = furringOut - steel;
+  const ventBottom = -13, ventTop = -10;                                          // the closure strip is 3 in tall
+  const dx = d.knuckleRun / g.lowerLen, dz = d.knuckleRise / g.lowerLen;           // direction of the lower slope
+  const origin = [-1.4, 3];                                                       // the chord's top surface passes 3 in over the loft floor line, 1.4 in out from the post
+  const depth = d.topChordInches, roof = { purlin: 1.5, deck: 0.625, membrane: 0.125, underlayment: 0.125, steel: 0.625 };   // the layers on the chord, 3 in in all
+  const along = (t, o = 0) => [origin[0] + t * dx - o * dz, origin[1] + t * dz + o * dx];   // the point t in along the chord's top surface, moved o in square to the slope
+  const lineZ = (x, o = 0) => origin[1] + (x - origin[0]) * dz / dx + o / dx;     // the height at x of the chord's top surface moved o in square to the slope
+  const tail = along(-12.4);                                                      // the top corner at the tail's end
+  const fasciaTop = lineZ(tail[0], roof.purlin), fascia = { x0: tail[0] - 1.5, x1: tail[0], z0: fasciaTop - 5.5, z1: fasciaTop };   // a 2×6 on edge, up to the roof deck
+  const under = along(0, -depth);                                                 // a point on the chord's underside
+  const levelX = under[0] + (fascia.z0 - under[1]) * dx / dz;                     // where the level cut under the tail meets the underside
+  // The heel: the bottom chord ends at the post's inside face, and there the top chord's underside stands above the top of the chord. A block fills the gap, on the chord under the top
+  // chord, with steel plates pressed over it on both faces (the section is cut through the middle of the truss, so the plates are behind the cut). The heel's height is the top of the
+  // top chord above the loft floor at the bearing's outer edge.
+  const post = d.wall.post, blockEnd = post + d.heelBlock, chordTop = -d.decking, underAt = x => lineZ(x, -depth);
+  const plateIn = post + 0.4, plateOut = blockEnd - 0.4;                          // a plate must lie on wood, so it stays within the block's width where it spans the gap
+  const heel = {
+    block: [[post, chordTop], [blockEnd, chordTop], [blockEnd, underAt(blockEnd)], [post, underAt(post)]],
+    plate: [[plateIn, -5.5], [plateOut, -5.5], [plateOut, underAt(plateOut) + 4], [plateIn, underAt(plateIn) + 4]],
+    height: lineZ(post, 0), wide: d.heelBlock, post
+  };
+  return Object.freeze({ girt, sheathingOut, wrapOut, furringOut, steelOut, ventBottom, ventTop, dx, dz, heel, depth, roof, along, lineZ, tail, fascia, levelZ: fascia.z0, levelX });
+}
+
 function create(overrides = {}) {
   const d = { ...DESIGN, ...overrides };
   const W = d.width, L = d.length;
@@ -193,6 +303,7 @@ function create(overrides = {}) {
   if (d.mainDoor.height + 1 > underLoft) throw new Error(`A ${d.mainDoor.height} ft door and a 1 ft header do not fit under a loft floor whose underside is ${underLoft.toFixed(2)} ft up`);
   const lowerLen = Math.hypot(d.knuckleRun, d.knuckleRise);
   const upperLen = Math.hypot(upperRun, d.upperRise);
+  const truss = trussGeometry(d, { W, half, knuckleZ, peakZ });
 
   const postX = bays.reduce((list, bay) => [...list, list[list.length - 1] + bay], [0]);
   const gableY = [];
@@ -304,13 +415,21 @@ function create(overrides = {}) {
   const braceFootX = deckX1 + 0.25, braceFootZ = d.eave - 0.5;
   const hoistBraces = [doorY0, doorY1].map(y => ({ foot: [braceFootX, y, braceFootZ], tip: braceTip, length: Math.hypot(braceTip[0] - braceFootX, braceTip[1] - y, braceTip[2] - braceFootZ) }));
   const hoistLift = 5 * Math.ceil((hoistZ - 0.25 - 1 + padToFloor) / 5);   // the hook runs from the pad up to the trolley, less the trolley's own height; chain falls come in 5 ft steps
+  // The trusses, numbered from the west end (T1 is the west gable truss), that the stair opening and the hoist beam reach.
+  const trussesIn = (from, to) => trussX.map((x, i) => ({ x, number: i + 1 })).filter(t => t.x >= from - 1e-9 && t.x <= to + 1e-9);
+  const specialTrusses = Object.freeze({
+    stairEdge: trussesIn(0, loftOpening.width),                                                  // the gable truss, the cut truss, and the trimmer
+    stairCut: trussesIn(0, loftOpening.width).filter(t => t.x > 0.1 && t.x < loftOpening.width - 0.1),
+    hoist: trussesIn(L - hoist.inside, L),                                                       // the trusses over the beam, ending at the east gable truss
+    tied: trussesIn(0, L - hoist.inside - 1e-6)                                                  // the trusses with a collar tie: all but those over the beam, whose trolley runs under it
+  });
 
   return Object.freeze({
     ...d, overrides: Object.freeze({ ...overrides }), bays, half, upperRun, knuckleZ, peakZ, lowerLen, upperLen,
     lowerAngle: Math.atan2(d.knuckleRise, d.knuckleRun) * 180 / Math.PI,
     upperAngle: Math.atan2(d.upperRise, upperRun) * 180 / Math.PI,
     postX, gableY, doorY0, doorY1, pierCount, postCount: pierCount,
-    trussX, trussCount, commonTrusses: trussCount - 2,
+    trussX, trussCount, commonTrusses: trussCount - 2, truss, specialTrusses, eaveSection: eaveSection(d, { lowerLen }),
     walkX,
     windows, windowArea,
     padMarginX: (d.pad.length - L) / 2, padMarginY: (d.pad.width - W) / 2,
@@ -347,6 +466,7 @@ function phases(m) {
   const foam = c(m.slabSqFt / 32);
   const iwSqFt = m.lowerSlopeSqFt + 2 * 3 * m.rakeLength + 50;
   const snow = m.loads.groundSnow, wind = m.loads.wind;
+  const tiedTrusses = `T${m.specialTrusses.tied[0].number} to T${m.specialTrusses.tied[m.specialTrusses.tied.length - 1].number}`, tieHeight = feetInches(m.bracing.tieAt), tieLength = feetInches(m.truss.tie.length);
   const sideWindows = m.windows.filter(w => !w.loft), loftWindows = m.windows.filter(w => w.loft);
   const windowFeet = sum(m.windows.map(w => 3 * w.width));   // a sill and two jack studs, about as much 2×6 as three times the window's width
   const gi = m.girts, rowsAbove = gi.rows.length - 1;
@@ -378,14 +498,14 @@ function phases(m) {
       line('Galvanized anchor bolts / threaded rod stock', 1, 'lot', 50, 120, 'HD', 'Bracket hardware usually included; this is overage.')
     ] },
     { num: 4, title: 'Laminated Posts (3-ply 2×8)', items: [
-      line(`3-ply 2×8 SPF laminated PT column, ${m.postLength} ft`, m.postCount, 'ea', r(280 * m.postLength / 20), r(450 * m.postLength / 20), 'Q', `Pre-fab laminated from Perma-Column, Mid-States, or local truss supplier. Each post runs from its bracket, just above the pad surface, to the truss carrier at the ${m.eave} ft eave. Alternative: site-build with 3-ply 2×8 #2 SPF (bottom 4 ft PT for splash), full glue + nail per ICC ESR. Cost-cut: site-build saves ~${money(r(1500 * m.postLength / 20 / 100) * 100)} but takes 2 days labor.`),
+      line(`3-ply 2×8 SPF laminated PT column, ${m.postLength} ft`, m.postCount, 'ea', r(280 * m.postLength / 20), r(450 * m.postLength / 20), 'Q', `Pre-fab laminated from Perma-Column, Mid-States, or local truss supplier. Each post runs from its bracket, just above the pad surface, to the truss carrier at the ${m.eave} ft eave. Alternative: site-build with 3-ply 2×8 #2 SPF (bottom 4 ft PT for splash), full glue + nail per ICC ESR. Cost-cut: site-build saves ~${money(r(1500 * m.postLength / 20 / 100) * 100)} but takes about 2 more days of work.`),
       line('Construction adhesive (PL Premium, if site-laminating)', 12, 'tube', 8, 12, 'HD', 'Only if site-fabricating posts.')
     ] },
     { num: 5, title: 'Pre-Engineered Gambrel Attic Trusses', items: [
       line(`Common gambrel attic truss, ${m.width}′ span, ${m.trussSpacing}′ OC, PE stamped (${snow} psf ground snow, ${m.loads.loftLive} psf loft floor)`, m.commonTrusses, 'ea', 450, 700, 'Q',
-        `Quote 3 suppliers: Western Truss (Caldwell), BMC Truss (Boise), Builders FirstSource. State explicitly: ${snow} psf ground snow (the county's design load here), ${wind} mph wind Exp ${m.loads.exposure}, ${m.loads.loftLive} psf loft LL, gambrel attic with finished room space. The unit price is a placeholder: a ${m.width} ft attic truss for a loft floor and this snow load will likely price above an ordinary roof truss.`),
+        `Quote 3 suppliers: Western Truss (Caldwell), BMC Truss (Boise), Builders FirstSource.         State explicitly: ${snow} psf ground snow (the county's design load here), ${wind} mph wind Exp ${m.loads.exposure}, ${m.loads.loftLive} psf loft LL, gambrel attic with the room between the pitch-break lines left open under a collar tie ${tieHeight} above the loft floor (${tiedTrusses}; none on the hoist trusses). Send the truss package page (or its PDF): it has the shape, the open room and its tie, the bracing, the loads, and the special trusses. The unit price is a placeholder: a ${m.width} ft attic truss for a loft floor and this snow load will likely price above an ordinary roof truss.`),
       line('Gable-end truss (drop-in)', 2, 'ea', 300, 500, 'Q', 'Solid-faced for siding nailers; outlooks for gable overhang.'),
-      line('Truss delivery + crane / boom truck', 1, 'trip', 400, 1000, 'Q', 'Long-bed delivery + boom set is faster & safer than rolling in by hand.'),
+              line('Truss delivery + crane / boom truck', 1, 'trip', 400, 1000, 'Q', "The plant's boom truck delivers the trusses and can set them on the walls: ask for delivery and boom time as their own line on the quote (the truss package lists what to include). Faster and safer than rolling them in by hand."),
       line('Truss-clip hurricane ties (Simpson H2.5A, box of 100)', c(m.trussCount * 4 / 100), 'box', 85, 110, 'HD', `2 per truss bearing × ${m.trussCount} trusses × 2 sides = ${m.trussCount * 4} ties needed.`),
       line('Truss-set blocking (2×6 SPF, 8 ft)', r(25 * (m.trussCount - 1) / 22), 'stick', 7, 9, 'HD', 'Between trusses at heel + ridge for stability.'),
       line('Permanent lateral bracing per truss design', 1, 'lot', 200, 400, 'HD', '2×4 SPF + framing nails per truss-design BCSI sheets.')
@@ -443,7 +563,7 @@ function phases(m) {
       line('HD hot-dipped galvanized 3″ deck screws (5 lb box)', 1, 'box', 45, 65, 'HD', 'Fasten splash board to posts/blocking. NEVER use bright/EG with PT.')
     ] },
     { num: 13, title: 'Doors & Windows', items: [
-      line(`${m.mainDoor.width}′ × ${m.mainDoor.height}′ insulated sectional OH door, wind-rated, low-headroom track (Wayne Dalton 9100 / Clopay 4053)`, 1, 'ea', 3500, 6500, 'Q', `Wind rated to ≥${wind} mph + insulated. Get an installed quote. The camper is ${feetInches(m.rv.height)} tall, so a ${m.mainDoor.height}′ door clears it by ${rvDoorClearIn} in. The loft floor leaves ${doorHeadroomIn} in above the door, so ask for a low-headroom track kit that needs 12 in or less.`),
+      line(`${m.mainDoor.width}′ × ${m.mainDoor.height}′ insulated sectional OH door, wind-rated, low-headroom track (Wayne Dalton 9100 / Clopay 4053)`, 1, 'ea', 3500, 6500, 'Q', `Wind rated to ≥${wind} mph + insulated. Priced as the door and its track kit, delivered; the family installs it, and the torsion springs are wound as the maker directs. The camper is ${feetInches(m.rv.height)} tall, so a ${m.mainDoor.height}′ door clears it by ${rvDoorClearIn} in. The loft floor leaves ${doorHeadroomIn} in above the door, so ask for a low-headroom track kit that needs 12 in or less.`),
       line('LiftMaster 8500W jackshaft opener (wall-mount, side-mount)', 1, 'ea', 450, 650, 'SP', 'A wall-mount opener keeps the space under the loft floor free for the low-headroom track.'),
       line('3070 insulated steel walk door, pre-hung w/ frame', 1, 'ea', 400, 800, 'HD', '9-lite or solid. Heavy-duty lockset extra.'),
       line('5′ × 6′ double exterior insulated door (loft, hinged out OR sliding barn-door)', 1, 'set', 1200, 2200, 'Q', 'Spec: weather-sealed, locking from inside, opens fully clear for hoist. Custom shop door OR pair of 30″ exterior pre-hung.'),
@@ -522,7 +642,7 @@ function phases(m) {
     { num: 20, title: 'Insulation (Phase 2 — when conditioning)', items: [
       line('R-23 fiberglass batts 5½″ × 16 OC (kraft-faced)', r(25 * perimeterRatio), 'bag', 45, 60, 'HD', `Walls — install behind drywall/OSB interior finish. ~${n(r(2000 * perimeterRatio / 10) * 10)} sq ft of wall area to insulate.`),
       line('R-30 batts (loft floor between joists)', r(10 * m.loftSqFt / 1408), 'bag', 55, 75, 'HD', 'If loft floor is over unconditioned space — but ours is conditioned both sides, so OPTIONAL.'),
-      line('R-49 blown-in cellulose for upper loft ceiling (above flat upper-truss tie)', 1, 'lot', 500, 900, 'SP', 'Trusses commonly have a flat tie above loft creating an attic; blow cellulose on top.'),
+      line('R-49 blown-in cellulose for the upper loft ceiling (placeholder)', 1, 'lot', 500, 900, 'SP', `The collar tie gives a flat ceiling only across the middle ${tieLength} of the loft, and the rest of the roof has none to blow this onto, so the roof needs another insulation method (see the overview's open questions). The price stands until it is chosen.`),
       line('6 mil poly vapor barrier (interior side of walls)', 2, 'roll', 80, 120, 'HD', 'Cold-climate zone 6B. Verify with builder — kraft-face on batts may suffice.'),
       line('Interior finish — ½″ OSB or T1-11 (full shop interior)', r(60 * perimeterRatio), 'sheet', 18, 30, 'HD', 'Far more abuse-resistant than drywall in a shop. Alt: skip for now, install later. It is screwed to horizontal strapping across the posts, which this list does not price.')
     ], notes: [['tip', '<strong>Phasing tip:</strong> build the shell first, conditioned later. The rainscreen + ½″ OSB sheathing makes the shell fully weather-tight even with no insulation or interior finish. Move in equipment, work in it for a winter, decide which areas need heat — then phase in mini-split + insulation only where you actually use it.']] },
@@ -585,6 +705,7 @@ function facts(m) {
   const bare = withoutWindows(m.length), shorter = withoutWindows(m.length - 2);
   const perFoot = (bare.totals.mid - shorter.totals.mid) / 2, perFootAllIn = (bare.budget.likely.total - shorter.budget.likely.total) / 2;
   const marginIn = Math.round((COUNTY.accessoryHeight - m.heights.gableMidAbovePad) * 12);
+  const kicker = m.truss.haunch(m.bracing.kickerLeg);
   return {
     width: String(m.width), length: String(m.length), footprint: `${m.width} × ${m.length} ft`, footprintPrime: `${m.width}′ × ${m.length}′`,
     footprintSqFt: n(m.slabSqFt),
@@ -623,12 +744,36 @@ function facts(m) {
     postLength: String(m.postLength), siteBuildSaving: hundred(1500 * m.postLength / 20),
     girtRows: String(m.girts.rows.length), girtBoard: String(m.girts.board), girtEndBoard: String(m.girts.eastBoard), girtEastPiece: String(m.girts.eastPiece),
     girtBaseAbovePad: String(Math.round((m.padToFloor + m.girts.firstRow) * 12)), girtBuySide: String(m.girts.buy.side), girtBuyEast: String(m.girts.buy.east), girtBuyBase: String(m.girts.buy.base), strapFt: n(Math.round(m.girts.rows.length * m.perimeter / 10) * 10),
-    hoistOut: feetInches(m.hoist.out), hoistInside: String(m.hoist.inside), hoistBeyondDeck: String(m.hoist.beyondDeck), hoistLength: feetInches(m.hoistLength), hoistLift: String(m.hoistLift),
+    hoistOut: feetInches(m.hoist.out), hoistInside: String(m.hoist.inside), hoistBeyondDeck: String(m.hoist.beyondDeck), hoistAbove: String(m.hoist.above), hoistLength: feetInches(m.hoistLength), hoistLift: String(m.hoistLift),
     braceLength: feetInches(m.hoistBraceLength), braceStock: String(2 * Math.ceil(m.hoistBraceLength / 2)),
+    // the truss package
+    trussSpacing: feetInches(m.trussSpacing), trussSpacingIn: String(m.trussSpacing * 12), trussChord: feetInchesQuarter(m.width - m.wall.post / 12), lastTruss: `T${m.trussCount}`,
+    span: feetInches(m.width), halfSpan: feetInches(m.half), openingWide: feetInches(m.loftOpening.width),
+    bottomChord: inches(m.chordInches), topChord: inches(m.topChordInches), floorDepth: inches(m.chordInches + m.decking), floorTop: feetInches(m.eave),
+    knuckleRun: feetInches(m.knuckleRun), knuckleRise: feetInches(m.knuckleRise), upperRun: feetInches(m.upperRun), upperRise: feetInches(m.upperRise),
+    ridgeRise: feetInches(m.peakZ - m.eave), lowerPitch: (Math.round(m.knuckleRise / m.knuckleRun * 120) / 10).toFixed(1),
+    carrierWide: inches(m.carrier.wide), carrierTall: inches(m.carrier.tall), clearSpan: feetInchesQuarter(m.width - 2 * (m.wall.post / 24 + m.carrier.wide / 12)),
+    eaveTail: feetInches(m.eaveTail), tailRun: inches(m.truss.tailRun * 12), exposure: m.loads.exposure,
+    roomWidth: feetInches(m.width - 2 * m.knuckleRun), clearKnuckle: feetInches(m.truss.clearAt(m.knuckleRun)), clearRidge: feetInches(m.truss.clearAt(m.half)),
+    chordDropKnuckle: inches((m.headroomAt(m.knuckleRun) - m.truss.clearAt(m.knuckleRun)) * 12), chordDropRidge: inches((m.headroomAt(m.half) - m.truss.clearAt(m.half)) * 12), rakeOverhang: feetInches(m.rakeOverhang),
+    clear7Width: feetInches(m.truss.clearWidth(7)), clear5Width: feetInches(m.truss.clearWidth(5)),
+    heelHeight: inches(m.eaveSection.heel.height), heelBlockWide: inches(m.heelBlock),
+    webAt: feetInches(m.bracing.webAt), kickerLeg: feetInches(m.bracing.kickerLeg), kickerEdgeClear: feetInches(kicker.edgeClear), kickerWidth7: feetInches(kicker.width7),
+    tieAt: feetInches(m.bracing.tieAt), tieLength: feetInches(m.truss.tie.length), tieFrom: feetInches(m.truss.tie.from), tieTo: feetInches(m.width - m.truss.tie.from), tieDeep: inches(m.bracing.tieDeep),
+    tieTrusses: `T${m.specialTrusses.tied[0].number} to T${m.specialTrusses.tied[m.specialTrusses.tied.length - 1].number}`, tieCount: String(m.specialTrusses.tied.length),
+    openingNorth: feetInches(m.loftOpening.fromNorth), openingSouth: feetInches(m.loftOpening.fromNorth + m.loftOpening.length),
+    stairTrusses: `T${m.specialTrusses.stairEdge[0].number} to T${m.specialTrusses.stairEdge[m.specialTrusses.stairEdge.length - 1].number}`,
+    stairCutTruss: m.specialTrusses.stairCut.map(t => `T${t.number}`).join(', '), stairCutX: m.specialTrusses.stairCut.map(t => feetInches(t.x)).join(', '),
+    hoistTrusses: `T${m.specialTrusses.hoist[0].number} to T${m.specialTrusses.hoist[m.specialTrusses.hoist.length - 1].number}`, hoistTrussCount: String(m.specialTrusses.hoist.length),
+    hoistStart: feetInches(m.length - m.hoist.inside), hoistHeight: feetInches(m.hoistZ), hoistGap: inches((m.truss.innerRidge[1] - (m.hoistZ + 0.25)) * 12),
+    loftDoorRough: `${feetInches(m.loftDoor.width + 0.5)} × ${feetInches(m.loftDoor.height + 0.5)}`, loftDoorFrom: feetInches(m.loftDoorY0 - 0.25), loftDoorTo: feetInches(m.loftDoorY1 + 0.25),
+    loftDoorOpenTo: feetInches(m.loftDoor.height + 0.5 + 9.25 / 12),
+    loftWindowFrom: loftWindow ? feetInches(loftWindow.at - loftWindow.width / 2) : '', loftWindowTo: loftWindow ? feetInches(loftWindow.at + loftWindow.width / 2) : '',
+    loftWindowSill: loftWindow ? `${loftWindow.sill - m.eave}′` : '',
     girtScrews: n(m.girts.screws), wallThickness: inches(m.wallInches), behindSheathing: inches(m.wall.sheathing + m.girts.thick + m.wall.post), girtTopRow: feetInches(m.girts.rows[m.girts.rows.length - 1].bottom),
     materialsLow: hundred(t.low), materialsHigh: hundred(t.high), budgetLow: hundred(b.budget.low.total), budgetMid: hundred(b.budget.likely.total), budgetHigh: hundred(b.budget.high.total)
   };
 }
 
-root.WorkshopModel = { DESIGN, COUNTY, SOURCES, BUDGET_EXTRAS, SALES_TAX, CONTINGENCY, create, bayLayout, bom, facts, n, money, feetInches };
+root.WorkshopModel = { DESIGN, COUNTY, SOURCES, BUDGET_EXTRAS, SALES_TAX, CONTINGENCY, create, bayLayout, bom, facts, n, money, inches, feetInches, feetInchesQuarter };
 })(typeof window !== 'undefined' ? window : globalThis);
