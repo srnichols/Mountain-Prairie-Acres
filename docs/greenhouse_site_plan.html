@@ -114,7 +114,7 @@
 <p>Shadows run north, so the tunnel can shade the orchard and the pit's tall north end can shade the tunnel. Both effects are smallest where it matters most, in the growing season, and largest in midwinter when the trees are bare.</p>
 <table class="detail" id="shade-dec">
   <caption>Dec 21, the shortest day, by solar time (the sun is due south at noon; before noon the shadows slide west as they lengthen, and after noon they slide east)</caption>
-  <thead><tr><th>Solar time</th><th class="num">Sun height</th><th class="num">Sun bearing</th><th>Tunnel's shadow ends at</th><th>R1 trunks (y 585)</th><th>Berm's shadow ends at</th><th>Tunnel's south wall (y 647)</th></tr></thead>
+  <thead><tr><th>Solar time</th><th class="num">Sun height</th><th class="num">Sun bearing</th><th>Tunnel's shadow ends at</th><th>R1 trunks</th><th>Berm's shadow ends at</th><th>Tunnel's south wall (y 647)</th></tr></thead>
   <tbody></tbody>
 </table>
 <table class="detail" id="shade-noon">
@@ -356,12 +356,12 @@
     const shedN = [88, SG.feature('shed').y0], hyd = SG.feature('hydrant_fence_north'), wb = SG.feature('windbreak');
     const wsX = 38 + 6 * 18, wsY = 640;
     fill('nearby', [
-      ['Orchard R1 trunks and the planned edge', 'y 585 and y 600', { t: `The tunnel's north wall is ${GOTHIC.y0 - G.R1_Y} ft from R1 and ${GOTHIC.y0 - G.ORCHARD_EDGE_Y} ft from the planned edge: room for the spreader basins, snow sliding off the roof, and a path.` }],
+      ['Orchard R1 trunks and the planned edge', G.R1_Y === G.ORCHARD_EDGE_Y ? `y ${G.R1_Y} (trunks on the planned edge)` : `y ${G.R1_Y} and y ${G.ORCHARD_EDGE_Y}`, { t: G.R1_Y === G.ORCHARD_EDGE_Y ? `The October 24 tape puts the R1 trunks on the planned edge. The tunnel's north wall is ${GOTHIC.y0 - G.R1_Y} ft south of both: that gap is the room left for the spreader basins, snow sliding off the roof, and a path.` : `The tunnel's north wall is ${GOTHIC.y0 - G.R1_Y} ft from R1 and ${GOTHIC.y0 - G.ORCHARD_EDGE_Y} ft from the planned edge: room for the spreader basins, snow sliding off the roof, and a path.` }],
       ['Spreader above R1 (water plan, zone 2)', 'along the orchard\'s south edge', 'Catches sheet flow from upslope and spills into the R1 and R2 basins. The tunnel now stands upslope of it, so its roof water and the toe and diversion swales can feed it.'],
       ['WS90 wind and rain pole site (weather plan)', `x ${wsX}, y ${wsY}`, { h: `<strong>Still close.</strong> ${wsX - GOTHIC.x1} ft east of the tunnel's east end, only ${fmt((wsX - GOTHIC.x1) / GOTHIC.peak, 1)} times its ${GOTHIC.peak} ft height, and in the tunnel's lee in a west wind: a 76 ft wall upwind would still disturb its wind and rain readings. The <a href="weather_station_plan.html">weather plan</a> can move it farther east or south while it is still a plan.` }],
       ['Frost-free hydrant at the west fence', `x ${hyd.x}, y ${hyd.y}`, `${fmt(dist([hyd.x, hyd.y], [GOTHIC.x0, GOTHIC.ridgeY]), 0)} ft to the tunnel's west door and ${fmt(dist([hyd.x, hyd.y], [PIT.x0, PIT.y1 - 8]), 0)} ft to the pit's west wall: the water source. The buried 1.5 in line starts at the hydrant and runs south along x ${fmt(hyd.x, 0)}, ${fmt(cut.x0 - hyd.x, 0)} ft west of the open cut (x ${cut.x0}); the berm's retaining wall (x ${fmt(BERM.endX0)} at its west end) is ${fmt(BERM.endX0 - hyd.x, 0)} ft east of the hydrant.`],
       ['Red shed (power; the weather gateway)', `north wall at y ${shedN[1]}`, `${fmt(dist(shedN, [PIT.centerX, PIT.y1]), 0)} ft to the pit's south wall and ${fmt(dist(shedN, [GOTHIC.centerX, GOTHIC.y1]), 0)} ft to the tunnel's: the nearest power. Check its radio range to a sensor inside each building (the metal frame may cost range).`],
-      ['West windbreak and its tractor alley', `windbreak x 0 to 35, y 299 to ${wb.y1}; alley x ${G.ALLEY.x0} to ${G.ALLEY.x1}`, `The windbreak ends ${GOTHIC.y0 - wb.y1} ft north of the tunnel's northwest corner, and the alley runs down to the tunnel's west end, ${GOTHIC.x0 - G.ALLEY.x1} ft east of the alley's edge. See the alley section above.`],
+      ['West windbreak and its tractor alley', `windbreak x 0 to 35, y ${wb.y0} to ${wb.y1}; alley x ${G.ALLEY.x0} to ${G.ALLEY.x1}`, `The windbreak ends ${GOTHIC.y0 - wb.y1} ft north of the tunnel's northwest corner, and the alley runs down to the tunnel's west end, ${GOTHIC.x0 - G.ALLEY.x1} ft east of the alley's edge. See the alley section above.`],
       ['Planned house, garage, and workshop', 'south of y 840', 'No conflict.']
     ]);
 

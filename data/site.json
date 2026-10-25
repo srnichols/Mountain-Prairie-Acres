@@ -1,6 +1,6 @@
 {
   "name": "Mountain Prairie Acres",
-  "updated": "2026-10-23",
+  "updated": "2026-10-24",
   "units": "ft",
   "frame": {
     "origin": "NW fence corner",
@@ -61,7 +61,7 @@
     "source": "orchard_pollination_grid.html (the owner's planting plan)",
     "rows": 15,
     "columns": 13,
-    "r1_y": 585,
+    "r1_y": 600,
     "row_spacing": 20,
     "c1_x": 38,
     "tree_spacing": 18,
@@ -97,7 +97,7 @@
     },
     {
       "id": "lot_midline",
-      "name": "Middle of the lot (east-west midline)",
+      "name": "Middle line (owner's tape)",
       "group": "boundary",
       "status": "existing",
       "kind": "midline",
@@ -105,14 +105,14 @@
       "pts": [
         [
           0,
-          645.95
+          667
         ],
         [
           331.3,
-          645.95
+          667
         ]
       ],
-      "notes": "Halfway down the fenced lot: 645.95 ft south of the north fence, half of the 1,291.9 ft fence length, marked by a red tick on each fence on the site master grid. The owner's red lines on the October 2026 drone photo read about 660 ft, which is half of the likely 1,320 ft parcel counted from the road; the north fence stands about 18 to 20 ft inside the road line, so the lot's own middle is nearer 646. Tape from the northwest fence corner to check."
+      "notes": "Owner's tape, October 24, 2026, marked by a red tick on each fence. The A14 hydrant sits on this line, and the red shed's north building corner (not the north awning) is 79 ft south of it. The shed stays where the imagery and the GPS pin put it (north wall at y 746), so the line is 667 ft south of the north fence. Half the 1,291.9 ft fence is still 645.95 ft, 21 ft north of here. The drone-photo red lines (about 660 to 680 ft) match this tape better than 646. Good to about 5 ft, the shed's imagery accuracy. A tape from the northwest fence corner would confirm the 667."
     },
     {
       "id": "road_north",
@@ -637,7 +637,7 @@
       "pts": [
         [
           22.4,
-          697.0
+          667
         ],
         [
           19.5,
@@ -656,7 +656,7 @@
           998
         ]
       ],
-      "notes": "Buried line about 20 ft inside the west fence with a frost-free hydrant at each end, fed by the 1.5 in west line where it crosses at y 890 (size taken to match that line). Its covered trench shows in the drone photo; the owner confirmed it runs south to the hydrant at y 998. Keep digging, posts, and tree holes off this line.",
+      "notes": "Buried line about 20 ft inside the west fence with a frost-free hydrant at each end, fed by the 1.5 in west line where it crosses at y 890 (size taken to match that line). Its covered trench shows in the drone photo; the owner confirmed it runs south to the hydrant at y 998. The north end was 30 ft short of the middle line (it stopped at y 697); the October 24, 2026 tape puts the hydrant on that line, at y 667. Keep digging, posts, and tree holes off this line.",
       "accuracy_ft": 6
     },
     {
@@ -985,8 +985,8 @@
       "kind": "hydrant",
       "shape": "point",
       "x": 22.4,
-      "y": 697.0,
-      "notes": "Frost-free yard hydrant at the north end of the line along the west fence.",
+      "y": 667,
+      "notes": "Frost-free yard hydrant at the north end of the line along the west fence, on the middle line. The October 24, 2026 tape put it there; the mapped run had stopped 30 ft short, at y 697. East-west position is still the photo's, about 5 ft.",
       "accuracy_ft": 5
     },
     {
@@ -1183,10 +1183,10 @@
       "kind": "valve_box",
       "shape": "point",
       "x": 22.3,
-      "y": 701.0,
+      "y": 671,
       "hydrant": "hydrant_fence_north",
       "setback_ft": 4,
-      "notes": "Valve box 4 ft back on the line from the north hydrant on the west fence line.",
+      "notes": "Valve box 4 ft back on the line from the north hydrant on the west fence line, so 4 ft south of the middle line. The October 24, 2026 tape puts the hydrant itself on that line.",
       "accuracy_ft": 5
     },
     {
@@ -1258,6 +1258,102 @@
       "setback_ft": 4,
       "notes": "Valve box 4 ft back on the line from the hydrant at the north end.",
       "accuracy_ft": 10
+    },
+    {
+      "id": "well",
+      "name": "Well head",
+      "group": "utility",
+      "status": "existing",
+      "kind": "well",
+      "shape": "point",
+      "x": 97,
+      "y": 913.25,
+      "depth_ft": 350,
+      "pump": "240 V, 3 hp, 18 to 22 gpm",
+      "notes": "18 ft east of the pump house's east wall, on the pump house's midline (moved 10 ft east of the first east-side mark). The well is 350 ft deep, with a 240 V, 3 hp pump that pushes 18 to 22 gpm. Owner, October 24, 2026.",
+      "accuracy_ft": 2
+    },
+    {
+      "id": "well_line",
+      "name": "Well line to the pump house",
+      "group": "utility",
+      "status": "existing",
+      "kind": "well_pipe",
+      "shape": "line",
+      "depth_ft": 5,
+      "pts": [
+        [
+          97,
+          913.25
+        ],
+        [
+          96,
+          913.25
+        ],
+        [
+          79,
+          913.25
+        ]
+      ],
+      "notes": "Buried 5 ft down from the well head to the east wall of the pump house. The hydrant is 1 ft west of the head, on this line. Pipe size not stated. Owner, October 24, 2026.",
+      "accuracy_ft": 2
+    },
+    {
+      "id": "well_line_shed",
+      "name": "Well line to the shed hydrant",
+      "group": "utility",
+      "status": "existing",
+      "kind": "well_pipe",
+      "shape": "line",
+      "pts": [
+        [
+          97,
+          913.25
+        ],
+        [
+          97,
+          888
+        ],
+        [
+          97,
+          838
+        ],
+        [
+          105.5,
+          838
+        ],
+        [
+          105.5,
+          746
+        ]
+      ],
+      "notes": "Branch off the well head to the hydrant on the east side of the red shed. From the head it runs north, in front of the workshop pad and east of it, then up the east side of the shed. Depth and pipe size not stated. Owner, October 24, 2026.",
+      "accuracy_ft": 4
+    },
+    {
+      "id": "hydrant_well",
+      "name": "Hydrant at the well head",
+      "group": "utility",
+      "status": "existing",
+      "kind": "hydrant",
+      "shape": "point",
+      "x": 96,
+      "y": 913.25,
+      "depth_ft": 5,
+      "notes": "1 ft west of the well head. The connection is 5 ft down, on the well line. No valve box reported. Owner, October 24, 2026.",
+      "accuracy_ft": 2
+    },
+    {
+      "id": "hydrant_shed_awning",
+      "name": "Hydrant at the red shed awning",
+      "group": "utility",
+      "status": "existing",
+      "kind": "hydrant",
+      "shape": "point",
+      "x": 105.5,
+      "y": 746,
+      "notes": "Blue hydrant head on the east side of the red shed, not the west. Placed 4 ft east of the mapped northeast corner, on the north wall line. The north awning is not a separate outline, so the north offset is still an estimate. No valve box reported. Owner, October 24, 2026.",
+      "accuracy_ft": 4
     },
     {
       "id": "shed",
@@ -1403,7 +1499,7 @@
       "y0": 907.5,
       "x1": 79,
       "y1": 919,
-      "notes": "Well, irrigation pumps, solar inverters, and batteries; about 11 x 11 ft.",
+      "notes": "Irrigation pumps, solar inverters, and batteries; about 11 x 11 ft. The well head is 18 ft east of the east wall, on this building's midline, not inside it.",
       "accuracy_ft": 3
     },
     {
@@ -1495,7 +1591,7 @@
       "y0": 0,
       "x1": 272,
       "y1": 600,
-      "notes": "North 600 ft set aside for the orchard (dashed on the site maps)."
+      "notes": "North 600 ft set aside for the orchard (dashed on the site maps). The October 24, 2026 tape puts the R1 trunks on this south line; the tree block still runs 10 ft past it."
     },
     {
       "id": "orchard_block",
@@ -1504,10 +1600,10 @@
       "status": "planned",
       "shape": "rect",
       "x0": 35,
-      "y0": 295,
+      "y0": 310,
       "x1": 272,
-      "y1": 595,
-      "notes": "Tree rows R15 (y 305) to R1 (y 585), 20 ft apart, per the pollination grid."
+      "y1": 610,
+      "notes": "Tree rows R15 (y 320) to R1 (y 600), 20 ft apart. October 24, 2026 tape: R1 trunks are 67 ft north of the middle line. The top of R1, 5 ft north of the trunks (y 595), is 151 ft north of the red shed's north building corner, not the north awning."
     },
     {
       "id": "windbreak",
@@ -1516,9 +1612,9 @@
       "status": "planned",
       "shape": "rect",
       "x0": 0,
-      "y0": 299,
+      "y0": 314,
       "x1": 35,
-      "y1": 591,
+      "y1": 606,
       "notes": "Mulberry line at x 5 and hazelnut line at x 20, beside the orchard block."
     },
     {

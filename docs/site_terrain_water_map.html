@@ -139,7 +139,7 @@
       <ul class="source-list">
         <li>Elevations: USGS 3D Elevation Program (3DEP) 1 m lidar, fitted to the fence lines on USGS NAIP aerial imagery (331 × 1,292 ft fence to fence) and smoothed to about 5 ft. 1 m and 1 ft contours, slope, flow arrows, profiles, and spot heights come from that surface (data/site_terrain.js). The lidar was flown before the homestead pads were graded.</li>
         <li>Flow paths, the main divide, the split line, and the drainage areas come from routing water downhill across that surface (each 5 ft cell to its steepest neighbor).</li>
-        <li>Homestead, driveway, and yard from the owner's drone photos (October 2026), fitted to the same imagery and lidar; planned buildings where the owner described them (data/site_grid.js). Orchard layout from the pollination grid (October 4, 2026), with R1 about 15 ft inside the south end of the 600 ft strip.</li>
+        <li>Homestead, driveway, and yard from the owner's drone photos (October 2026), fitted to the same imagery and lidar; planned buildings where the owner described them (data/site_grid.js). Orchard rows from the October 24, 2026 tape: R1 trunks on the south end of the 600 ft strip, 67 ft north of the middle line.</li>
         <li>An earlier version of these maps traced the owner's USGS 1 m map screenshots; the screenshots were tilted, which shifted features by 10–30 ft, so the maps now use the lidar directly.</li>
         <li>Soil: USDA NRCS Web Soil Survey report for the property, map unit 149, Simonton loam, 2 to 12 percent slopes.</li>
       </ul>
@@ -163,7 +163,8 @@ if (!window.SiteGrid || !window.SITE_TERRAIN) {
 // yN south of the north fence. Terrain is USGS 3DEP lidar; the homestead comes from the site grid features.
 const SG = window.SiteGrid, F = id => SG.feature(id);
 const LOT = { width: SG.data.lot.fence.width, depth: SG.data.lot.fence.depth };
-const ORCHARD = { stripDepth: 600, plotWest: 35, plotEast: 272, windbreak: 35, r1: 585, r15: 305, hedgeX: 327 };
+const area = F('orchard_area'), block = F('orchard_block'), wb = F('windbreak'), orchard = SG.data.orchard;
+const ORCHARD = { stripDepth: area.y1, plotWest: block.x0, plotEast: block.x1, windbreak: wb.x1, r1: orchard.r1_y, r15: orchard.r1_y - (orchard.rows - 1) * orchard.row_spacing, hedgeX: 327 };
 const HOMESTEAD = ['shed', 'outhouse', 'container_solar', 'container_storage', 'pump_house', 'rv'].map(F);
 const PADS = ['house_pad', 'workshop_pad', 'rv_pad'].map(F);
 const PLANNED = ['house', 'garage', 'workshop'].map(F);
@@ -325,7 +326,7 @@ function renderLegend() {
   host.append(slopes);
   row(line({ stroke: '#6B5A45', 'stroke-width': 2.4 }), 'Fence (lot line)');
   row(line({ stroke: '#CFCAC0', 'stroke-width': 5 }), 'Driveway and road-mix yard');
-  row(s => s.append(svgNode('rect', { x: 2, y: 1, width: 26, height: 10, fill: 'none', stroke: '#B07A3E', 'stroke-width': 1.4 })), 'Orchard block R1–R15 (inside the dashed 600 ft strip)');
+  row(s => s.append(svgNode('rect', { x: 2, y: 1, width: 26, height: 10, fill: 'none', stroke: '#B07A3E', 'stroke-width': 1.4 })), 'Orchard block R1–R15 (R1 on the south line of the 600 ft strip)');
   row(s => s.append(svgNode('rect', { x: 6, y: 1, width: 18, height: 10, fill: '#4A4A48' })), 'Shed, containers, pump house, tank');
   row(s => s.append(svgNode('rect', { x: 2, y: 1, width: 26, height: 10, fill: '#EFE6D2', stroke: '#9C8462', 'stroke-width': 0.8 })), 'Graded pad (house, workshop, RV)');
   row(s => s.append(svgNode('rect', { x: 4, y: 2, width: 22, height: 8, fill: 'none', stroke: '#7A5CA5', 'stroke-width': 1.2, 'stroke-dasharray': '3 2' })), 'Planned house, garage, and workshop');

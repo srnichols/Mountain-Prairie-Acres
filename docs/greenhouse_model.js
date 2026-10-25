@@ -10,8 +10,8 @@ const M_TO_FT = 3.28084;
 const SYM = { times: '\u00d7', deg: '\u00b0', minus: '\u2212', ndash: '\u2013', arrow: '\u2192', half: '\u00bd' };
 
 const SWELL = 1.25;            // loose soil takes about 25 percent more room than soil in the ground
-const ORCHARD_EDGE_Y = 600;    // planned south edge of the orchard area (lot feet)
-const R1_Y = 585;              // the R1 trunks
+const ORCHARD_EDGE_Y = root.SiteGrid.feature('orchard_area').y1; // planned south edge of the orchard strip (lot feet)
+const R1_Y = root.SiteGrid.data.orchard.r1_y;                    // the R1 trunks, from the same site data the maps use
 // Ground that drains toward the pit's uphill sides: lidar flow paths (D8, depressions filled) on the 5 ft cells that enter the open cut
 // or a 10 ft margin around it, where the diversion swale runs, from the south or east. Rough: it moves by a few thousand sq ft with the margin.
 const UPSLOPE_SQFT = 14600;
@@ -217,7 +217,7 @@ function bermClearWindow() {
   while (b < hours.length - 1 && clear[b + 1]) b++;
   return { from: hours[a], to: hours[b] };
 }
-// On Dec 21, the solar hours up to which, and from which, the tunnel's shadow reaches the R1 trunks (y 585).
+// On Dec 21, the solar hours up to which, and from which, the tunnel's shadow reaches the R1 trunks.
 function r1ShadeHours() {
   let before = null, after = null;
   for (let k = 8 * 12; k <= 16 * 12; k++) {
@@ -441,7 +441,7 @@ function siteMap(host) {
   line([[0, V.y0], [0, V.y1]], { stroke: C.fence, 'stroke-width': 2.6 }, g);
 
   // Orchard, west windbreak with its tractor alley, and the first three rows
-  rect(35, V.y0, V.x1, 595, { fill: C.orchardFill, stroke: C.orchardEdge, 'stroke-width': 1, 'stroke-dasharray': '5 3' }, g);
+  rect(35, V.y0, V.x1, R1_Y + 10, { fill: C.orchardFill, stroke: C.orchardEdge, 'stroke-width': 1, 'stroke-dasharray': '5 3' }, g);
   rect(0, V.y0, 35, F('windbreak').y1, { fill: '#CFE3C0', opacity: 0.8 }, g);
   rect(ALLEY.x0, V.y0, ALLEY.x1, F('windbreak').y1, { fill: C.road, opacity: 0.95 }, g);
   vlabel(13, 573, 'west windbreak', 't-note', 9.5);
@@ -451,7 +451,9 @@ function siteMap(host) {
     label(190.5, SG.treeXY(r, 1)[1] + 3, `R${r}`, 't-note', 10, { 'text-anchor': 'end' });
   }
   line([[35, ORCHARD_EDGE_Y], [V.x1, ORCHARD_EDGE_Y]], { stroke: '#77766F', 'stroke-width': 1.3, 'stroke-dasharray': '2 3' }, g);
-  label(122, 597.8, 'planned orchard edge, y 600', 't-note', 10, { 'text-anchor': 'middle' });
+  label(122, ORCHARD_EDGE_Y + (Math.abs(R1_Y - ORCHARD_EDGE_Y) < 0.5 ? 8 : -2.2),
+    Math.abs(R1_Y - ORCHARD_EDGE_Y) < 0.5 ? `R1 trunks on the planned orchard edge, y ${ORCHARD_EDGE_Y}` : `planned orchard edge, y ${ORCHARD_EDGE_Y}`,
+    't-note', 10, { 'text-anchor': 'middle' });
 
   // Yard, water line, hydrant, and the red shed (the nearest power)
   poly(F('yard').pts, { fill: C.road, stroke: C.roadEdge, 'stroke-width': 1.2 }, g);
@@ -582,10 +584,11 @@ function siteSection(host) {
   line([[GOTHIC.y0 - 1, zT], [GOTHIC.y1 + 1, zT]], { stroke: '#444', 'stroke-width': 1.6 });
 
   // Orchard markers
-  line([[R1_Y, ground(R1_Y)], [R1_Y, ground(R1_Y) + 9]], { stroke: '#5B8A3A', 'stroke-width': 2.6 });
-  line([[ORCHARD_EDGE_Y, ground(ORCHARD_EDGE_Y)], [ORCHARD_EDGE_Y, ground(ORCHARD_EDGE_Y) + 16]], { stroke: '#77766F', 'stroke-width': 1.3, 'stroke-dasharray': '2 3' });
-  label(R1_Y - 1.5, ground(R1_Y) + 10.6, 'R1 trunks', 't-note', 10.5, { 'text-anchor': 'middle' });
-  label(ORCHARD_EDGE_Y + 1, ground(ORCHARD_EDGE_Y) + 17.4, 'planned orchard edge', 't-note', 10.5, { 'text-anchor': 'start' });
+  const trunksOnEdge = Math.abs(R1_Y - ORCHARD_EDGE_Y) < 0.5;
+  line([[R1_Y, ground(R1_Y)], [R1_Y, ground(R1_Y) + (trunksOnEdge ? 16 : 9)]], { stroke: '#5B8A3A', 'stroke-width': 2.6 });
+  if (!trunksOnEdge) line([[ORCHARD_EDGE_Y, ground(ORCHARD_EDGE_Y)], [ORCHARD_EDGE_Y, ground(ORCHARD_EDGE_Y) + 16]], { stroke: '#77766F', 'stroke-width': 1.3, 'stroke-dasharray': '2 3' });
+  label(trunksOnEdge ? R1_Y + 1 : R1_Y - 1.5, ground(R1_Y) + (trunksOnEdge ? 17.4 : 10.6), trunksOnEdge ? 'R1 trunks, on the planned orchard edge' : 'R1 trunks', 't-note', 10.5, trunksOnEdge ? { 'text-anchor': 'start' } : { 'text-anchor': 'middle' });
+  if (!trunksOnEdge) label(ORCHARD_EDGE_Y + 1, ground(ORCHARD_EDGE_Y) + 17.4, 'planned orchard edge', 't-note', 10.5, { 'text-anchor': 'start' });
 
   // Winter-solstice noon rays that just clear the tunnel's arch and the berm crest, and where their shadows end
   const noon = shadowRow('dec21', 12), t = tanNorthSouth(noon.sun);

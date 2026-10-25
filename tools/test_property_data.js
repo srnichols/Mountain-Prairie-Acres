@@ -67,7 +67,7 @@ test('Generated orchard model preserves current assignments and vacancies', () =
   assert.deepEqual(Array.from(new Set(fruit.map(tree => tree.plantedOn))), ['2026-10']);
   assert.equal(active.find(tree => tree.rootstockOnly).plantedOn, null);
   assert.equal(model.plantedWhen(fruit), 'October 2026');
-  assert.equal(grid.siteRef(...grid.treeXY(6, 3)), 'B10-E33-S35');
+  assert.equal(grid.siteRef(...grid.treeXY(6, 3)), 'B11-E33-S0');
   active.forEach(tree => {
     assert.ok(model.nearestPartners(tree, records).every(partner => !partner.donor.orchardUpdate && !partner.donor.rootstockOnly));
   });

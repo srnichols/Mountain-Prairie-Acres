@@ -47,7 +47,7 @@ Before publishing, run `build`, tests, and `check`, refresh the PDFs affected by
 ## Plant identity is not location
 
 - A metal tag can identify several otherwise identical trees. `i56-1` is one individual in inventory group 56, not all 12 M-111 rootstocks.
-- `orchard-r6-c3` is the spot. Its location is x 83, y 485, giving **B10-E33-S35**.
+- `orchard-r6-c3` is the spot. Its location is x 83, y 500, giving **B11-E33-S0**.
 - SiteRef, cell offsets, and latitude/longitude are calculated, not independently edited fields. Coordinates in `locations.json` are feet east/south from the northwest fence corner.
 - To enter a SiteRef, decode it using `python tools\site_grid.py site-ref C17-E12-S18`, then store x 112, y 818. GPS input can be converted with the same grid helper; allow for roughly 10 ft map accuracy plus device error.
 - An unlocated plant has no active assignment and displays **PENDING**. Do not use its former orchard slot as its current outside location.

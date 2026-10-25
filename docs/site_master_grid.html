@@ -35,6 +35,8 @@
   .diagram .t-water { fill: #0B5F7C; font-weight: 600; }
   .diagram .t-valve { fill: #0E6B5C; font-weight: 700; }
   .diagram .t-mid { fill: #B3261E; font-weight: 600; }
+  .diagram .t-row { fill: #2F7D32; font-weight: 600; }
+  .diagram .t-well { fill: #C62828; font-weight: 600; }
   .diagram .t-planned { fill: #4E3A68; font-weight: 600; }
   .diagram .halo { paint-order: stroke; stroke: #fff; stroke-width: 2.4px; stroke-linejoin: round; }
 
@@ -82,6 +84,7 @@
     table.detail code { font-size: 6.1pt; color: #6F6D66; }
     table.detail .site-ref { white-space: nowrap; }
     table.detail tr { break-inside: avoid; }
+    table.detail tr.well-detail { display: none; }
     code, pre { font-size: 7pt; } pre { padding: 1mm 1.5mm; margin: 0.8mm 0 1.5mm; break-inside: avoid; }
     #water-title { break-before: page; margin-top: 0; }
     .source-note { font-size: 7.2pt; }
@@ -122,7 +125,7 @@
       <table class="detail" id="water-detail"></table>
       <h3 id="code-title">SiteRef Location Codes and Shared Helpers</h3>
       <p><strong>Format:</strong> <code>CELL-Eoffset-Soffset</code> fits a precise location in one printed column. <code>C17-E12-S18</code> means 12 ft east and 18 ft south of <strong>C17's northwest corner</strong>: x 112, y 818. Decimals are feet, not inches; <code>C17-E12.5-S18</code> is valid.</p>
-      <p><strong>Planted example:</strong> the M-111 rootstock at orchard R6-C3 is <code>B10-E33-S35</code> (x 83, y 485) in the current layout. SiteRef locates the spot, not the plant: keep the metal tag and individual Plant ID separately. A replacement plant can reuse the spot's code.</p>
+      <p><strong>Planted example:</strong> the M-111 rootstock at orchard R6-C3 is <code>B11-E33-S0</code> (x 83, y 500) in the current layout. SiteRef locates the spot, not the plant: keep the metal tag and individual Plant ID separately. A replacement plant can reuse the spot's code.</p>
       <p><strong>Unknown locations:</strong> record <code>PENDING</code>, never guessed offsets. The three Urban apples' outside-orchard locations are pending. Keep cell and offsets as underlying values and generate SiteRef for printing; do not maintain a second editable copy.</p>
       <p><strong>GPS input:</strong> the shared metadata stores one latitude/longitude tie for the lot. Each cell's northwest-corner GPS coordinates are calculated from its x0, y0 values, not stored as a second table. Convert a GPS point with <code>SiteGrid.fromLatLon(latitude, longitude)</code>, then generate its SiteRef. Latitude comes first; Idaho longitudes are negative. Near cell boundaries, phone GPS error plus the roughly 10 ft map accuracy can put a point in the neighboring cell; verify measured offsets.</p>
       <p>Web pages load generated <code>data/site_grid.js</code> and <code>data/site_terrain.js</code>, then call <code>SiteGrid</code>. Edit canonical JSON in the repository's <code>data/</code> directory; see the <a href="property_data.html">property data and SQLite guide</a>.</p>
@@ -159,15 +162,17 @@ function element(tag, text, className) {
 const fmt = (value, digits = 0) => Number(value).toLocaleString('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits });
 const SG = window.SiteGrid, F = id => SG.feature(id);
 const COLOR = { road: '#DDD0B8', roadEdge: '#B6A385', pad: '#EEE4CF', padEdge: '#A8906A', fence: '#6B5A45', planned: '#7A5CA5',
-  orchard: '#B07A3E', windbreak: '#5E8F3E', ditch: '#2B8FD6', waterLine: '#1B4F9C', valveBox: '#1F9E89', midline: '#D62828', contour: '#B4A48F' };
+  orchard: '#B07A3E', windbreak: '#5E8F3E', row: '#2F7D32', ditch: '#2B8FD6', waterLine: '#1B4F9C', valveBox: '#1F9E89', well: '#C62828', midline: '#D62828', contour: '#B4A48F' };
 const MIDLINE = F('lot_midline'), GATE = F('front_gate');
-const PIPES = SG.features({ kind: 'water_pipe' }), HYDRANTS = SG.features({ kind: 'hydrant' });
+const PIPES = SG.features({ kind: 'water_pipe' }), WELL_PIPES = SG.features({ kind: 'well_pipe' }), HYDRANTS = SG.features({ kind: 'hydrant' });
+const wellStyle = { stroke: COLOR.well, 'stroke-width': 1, 'stroke-dasharray': '0.4 2.2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' };
 // Valve boxes: one at the end of each row lateral (the head stations, numbered south to north) and one 4 ft back from each hydrant that has one
 const VALVE_BOXES = SG.features({ kind: 'valve_box' });
 const HEAD_STATIONS = VALVE_BOXES.filter(f => f.lateral), HYDRANT_BOXES = VALVE_BOXES.filter(f => f.hydrant);
 const NO_BOX = HYDRANTS.filter(h => !HYDRANT_BOXES.some(b => b.hydrant === h.id));
 // The laterals and valve boxes have their own table, so the feature table keeps one row for them
 const isRowDetail = f => f.kind === 'valve_box' || Boolean(f.head_station);
+const isWellDetail = f => f.kind === 'well' || f.kind === 'well_pipe' || f.id === 'hydrant_well' || f.id === 'hydrant_shed_awning';
 const pathLength = pts => pts.slice(1).reduce((sum, p, i) => sum + Math.hypot(p[0] - pts[i][0], p[1] - pts[i][1]), 0);
 
 function makeMap() {
@@ -175,7 +180,7 @@ function makeMap() {
   const V = { west: -34, east: lot.width + 40, top: -46, bottom: 1340 }, S = 0.62;
   const X = x => +((x - V.west) * S).toFixed(2), Y = y => +((y - V.top) * S).toFixed(2);
   const svg = svgNode('svg', { viewBox: `0 0 ${(V.east - V.west) * S} ${(V.bottom - V.top) * S}`, class: 'diagram', role: 'img', 'aria-labelledby': 'grid-title' });
-  svg.append(svgNode('title', { id: 'grid-title' }, `The whole lot, ${fmt(lot.width)} by ${fmt(lot.depth)} ft, divided into 50 ft cells A–G west to east and 1–26 north to south, with the roads, driveway, the front gate, orchard block, homestead, the planned gothic tunnel and pit greenhouse south of the orchard, buried water lines and hydrants, the ${HEAD_STATIONS.length} row laterals with their valve boxes along the main, the middle of the lot marked on each fence, and high and low points.`));
+  svg.append(svgNode('title', { id: 'grid-title' }, `The whole lot, ${fmt(lot.width)} by ${fmt(lot.depth)} ft, divided into 50 ft cells A–G west to east and 1–26 north to south, with the roads, driveway, the front gate, orchard block and green dotted lines for rows R1 to R15, homestead, the planned gothic tunnel and pit greenhouse south of the orchard, buried water lines and hydrants, the ${HEAD_STATIONS.length} row laterals with their valve boxes along the main, the middle line marked on each fence, and high and low points.`));
   const defs = svgNode('defs'), clip = svgNode('clipPath', { id: 'mg-lot' });
   clip.append(svgNode('rect', { x: X(0), y: Y(0), width: lot.width * S, height: lot.depth * S }));
   defs.append(clip); svg.append(defs);
@@ -207,13 +212,21 @@ function makeMap() {
   // Buried water lines: 2 in PVC solid, 1.5 in PVC dashed (the row laterals are 1.5 in, so they show dashed too)
   PIPES.forEach(f => line(f.pts, { stroke: COLOR.waterLine, 'stroke-width': f.size_in >= 2 ? 1.5 : 1, 'stroke-linejoin': 'round',
     ...(f.size_in >= 2 ? {} : { 'stroke-dasharray': '3.5 1.6' }) }, inLot));
+  WELL_PIPES.forEach(f => line(f.pts, wellStyle, inLot));
   ['house', 'garage', 'workshop', 'greenhouse_gothic', 'greenhouse_pit'].forEach(id => box(F(id), { fill: 'none', stroke: COLOR.planned, 'stroke-width': 0.8, 'stroke-dasharray': '2.5 1.5' }, inLot));
   [['shed', '#A9372B'], ['outhouse', '#2F6EB5'], ['container_solar', '#2F4A6E'], ['container_storage', '#BDBDB5'], ['pump_house', '#5D6D7E'], ['rv', '#FFFFFF']]
     .forEach(([id, fill]) => box(F(id), { fill, stroke: '#3D3D3A', 'stroke-width': 0.4 }, inLot));
   const tank = F('irrigation_tank');
   add(svgNode('circle', { cx: X(tank.cx), cy: Y(tank.cy), r: tank.r * S, fill: '#1E1E1E' }), inLot);
   // Frost-free yard hydrants
-  HYDRANTS.forEach(h => add(svgNode('circle', { cx: X(h.x), cy: Y(h.y), r: 2.3, fill: COLOR.waterLine, stroke: '#fff', 'stroke-width': 0.7 }), inLot));
+  const wellHydrant = h => h.id === 'hydrant_well' || h.id === 'hydrant_shed_awning';
+  const hydrantDot = (h, parent) => add(svgNode('circle', { cx: X(h.x), cy: Y(h.y), r: 2.3, fill: wellHydrant(h) ? COLOR.well : COLOR.waterLine, stroke: '#fff', 'stroke-width': 0.7 }), parent);
+  HYDRANTS.filter(h => !wellHydrant(h)).forEach(h => hydrantDot(h, inLot));
+  SG.features({ kind: 'well' }).forEach(w => {
+    add(svgNode('circle', { cx: X(w.x), cy: Y(w.y), r: 3.4, fill: '#fff', stroke: COLOR.well, 'stroke-width': 0.9 }), inLot);
+    add(svgNode('circle', { cx: X(w.x), cy: Y(w.y), r: 1.15, fill: COLOR.well }), inLot);
+  });
+  HYDRANTS.filter(wellHydrant).forEach(h => hydrantDot(h, inLot));
   // Row head stations: a valve box at the end of each row lateral. Each hydrant's valve box is 4 ft back on its line, so it
   // is drawn small, over the edge of the hydrant dot (the homestead plot map shows them apart).
   HEAD_STATIONS.forEach(f => add(svgNode('rect', { x: +(X(f.x) - 1.9).toFixed(2), y: +(Y(f.y) - 1.9).toFixed(2), width: 3.8, height: 3.8,
@@ -229,11 +242,11 @@ function makeMap() {
     text(c * 50 + 2, r * 50 + 8.5, `${cols[c]}${r + 1}`, { 'font-size': 5.6, style: 'fill:#8B897F' }, inLot);
   }
   add(svgNode('rect', { x: X(0), y: Y(0), width: lot.width * S, height: lot.depth * S, fill: 'none', stroke: COLOR.fence, 'stroke-width': 1.6 }));
-  // Red ticks where the middle of the lot meets each fence, named in the margin beside each one (the letters sit just west of x)
+  // Red ticks where the owner's taped middle line meets each fence, named in the margin beside each one (the letters sit just west of x)
   MIDLINE.pts.forEach(([x, y], i) => {
     line([[x - 12, y], [x + 12, y]], { stroke: COLOR.midline, 'stroke-width': 1.6 });
     const lx = i ? x + 33 : x - 21;
-    add(svgNode('text', { x: X(lx), y: Y(y), 'font-size': 5.2, 'text-anchor': 'middle', class: 't-mid', transform: `rotate(-90 ${X(lx)} ${Y(y)})` }, `middle of the lot, ${fmt(y)} ft`));
+    add(svgNode('text', { x: X(lx), y: Y(y), 'font-size': 5.2, 'text-anchor': 'middle', class: 't-mid', transform: `rotate(-90 ${X(lx)} ${Y(y)})` }, `middle line, ${fmt(y)} ft`));
   });
   // The front gate across the driveway: the two 12 ft leaves between their posts, drawn closed
   line(GATE.pts, { stroke: '#2C2C2A', 'stroke-width': 1.5 });
@@ -243,10 +256,18 @@ function makeMap() {
   const label = (x, y, str, cls = 't-title', size = 6.6, anchor = 'middle') => text(x, y, str, { class: `${cls} halo`, 'font-size': size, 'text-anchor': anchor }, inLot);
   // Reads bottom to top; the letters sit just west of (x, y)
   const vlabel = (x, y, str, cls, size) => text(x, y, str, { class: `${cls} halo`, 'font-size': size, 'text-anchor': 'middle', transform: `rotate(-90 ${X(x)} ${Y(y)})` }, inLot);
-  label((F('orchard_block').x0 + F('orchard_block').x1) / 2, 442, 'orchard block R1–R15', 't-title', 6.8);
+  // Trunk lines for R1 (south) through R15 (north). Even rows are staggered east, but each row is still one east-west line.
+  const block = F('orchard_block');
+  for (let r = 1; r <= SG.data.orchard.rows; r++) {
+    const y = SG.treeXY(r, 1)[1];
+    line([[block.x0, y], [block.x1, y]], { stroke: COLOR.row, 'stroke-width': 1.15, 'stroke-dasharray': '0.15 2.5', 'stroke-linecap': 'round' }, inLot);
+    label(block.x0 - 1.4, y + 1.5, `R${r}`, 't-row', 4.4, 'end');
+  }
+  label((block.x0 + block.x1) / 2, (SG.treeXY(8, 1)[1] + SG.treeXY(9, 1)[1]) / 2 + 1.6, 'orchard block R1–R15', 't-title', 6.8);
   label(17.5, 612, 'windbreak', 't-note', 5.8);
-  label(150, 596, '600 ft line', 't-note', 5.6, 'start');
+  label(150, 608, '600 ft line', 't-note', 5.6, 'start');
   label(72, 763, 'shed', 't-title', 6.2, 'end');
+  SG.features({ kind: 'well' }).forEach(w => label(w.x + 2, w.y - 4, 'well', 't-well', 5.2, 'start'));
   label(168, 980, 'house pad', 't-title', 6.2);
   label(61, 836, 'workshop pad', 't-note', 5.6);
   // The planned greenhouses (footprints from the greenhouse pages), each named just east of its outline
@@ -273,12 +294,14 @@ function makeMap() {
 
   // Key to the water symbols, in the open ground north of the orchard
   const kx = 100, ky = 61;
-  add(svgNode('rect', { x: X(kx), y: Y(ky), width: 156 * S, height: 37 * S, rx: 1.5, fill: '#fff', 'fill-opacity': 0.9, stroke: '#B6B3A8', 'stroke-width': 0.5 }), inLot);
+  add(svgNode('rect', { x: X(kx), y: Y(ky), width: 156 * S, height: 59 * S, rx: 1.5, fill: '#fff', 'fill-opacity': 0.9, stroke: '#B6B3A8', 'stroke-width': 0.5 }), inLot);
   line([[kx + 5, ky + 9], [kx + 21, ky + 9]], { stroke: COLOR.waterLine, 'stroke-width': 1, 'stroke-dasharray': '3.5 1.6' }, inLot);
   add(svgNode('rect', { x: +(X(kx + 13) - 1.9).toFixed(2), y: +(Y(ky + 20) - 1.9).toFixed(2), width: 3.8, height: 3.8, fill: COLOR.valveBox, stroke: '#fff', 'stroke-width': 0.6 }), inLot);
   add(svgNode('circle', { cx: X(kx + 13), cy: Y(ky + 31), r: 2.3, fill: COLOR.waterLine, stroke: '#fff', 'stroke-width': 0.7 }), inLot);
   add(svgNode('rect', { x: +(X(kx + 17) - 1.3).toFixed(2), y: +(Y(ky + 31) - 1.3).toFixed(2), width: 2.6, height: 2.6, fill: COLOR.valveBox, stroke: '#fff', 'stroke-width': 0.5 }), inLot);
-  [[11, '1.5 in row lateral (10 ft)'], [22, `valve box (head stations 1–${HEAD_STATIONS.length})`], [33, 'hydrant (valve box 4 ft back)']]
+  add(svgNode('circle', { cx: X(kx + 13), cy: Y(ky + 42), r: 2.3, fill: COLOR.well, stroke: '#fff', 'stroke-width': 0.7 }), inLot);
+  line([[kx + 5, ky + 53], [kx + 21, ky + 53]], wellStyle, inLot);
+  [[11, '1.5 in row lateral (10 ft)'], [22, `valve box (head stations 1–${HEAD_STATIONS.length})`], [33, 'hydrant (valve box 4 ft back)'], [44, 'well hydrant'], [55, 'well line, 5 ft down']]
     .forEach(([dy, str]) => text(kx + 26, ky + dy, str, { class: 't-note', 'font-size': 5.2 }, inLot));
 
   // Margins: column letters, row numbers, foot marks, north arrow, scale bar
@@ -372,10 +395,14 @@ function groupRow(title) {
 function featureRow(f) {
   const [cx, cy] = SG.center(f), tr = element('tr'), name = element('td');
   if (f.status === 'planned') tr.className = 'planned';
+  if (isWellDetail(f)) tr.classList.add('well-detail');
   name.append(document.createTextNode(`${f.key ? `${f.key} · ` : ''}${f.name} `), element('code', f.id));
   const [w, h] = SG.size(f);
   const area = pts => Math.abs(pts.reduce((sum, [x, y], i) => { const [x2, y2] = pts[(i + 1) % pts.length]; return sum + x * y2 - x2 * y; }, 0)) / 2;
   const size = f.kind === 'water_pipe' ? `${f.size_in} in pipe, ${fmt(Math.round(pathLength(f.pts) / 5) * 5)} long`
+    : f.kind === 'well_pipe' ? `${f.depth_ft ? `${f.depth_ft} ft down, ` : ''}${fmt(Math.round(pathLength(f.pts)))} ft long`
+    : f.kind === 'well' ? `${f.depth_ft} ft deep`
+    : f.kind === 'hydrant' && f.depth_ft ? `${f.depth_ft} ft down`
     : f.kind === 'valve_box' ? (f.lateral ? `${f.riser_in} in riser, ${fmt(Math.round(pathLength(F(f.lateral).pts)))} ft lateral` : `${f.setback_ft} ft back on the line`)
     : f.kind === 'midline' ? `${fmt(pathLength(f.pts), 1)} long`
     : f.kind === 'gate' ? `${fmt(pathLength(f.pts))} (${f.leaves} × ${f.leaf_ft})`
@@ -448,7 +475,7 @@ function renderCode() {
     'python tools/site_grid.py site-ref PENDING        # location not yet known',
     'python tools/site_grid.py fromlatlon 43.473383 -115.594507',
     'from site_grid import SiteGrid; grid = SiteGrid()',
-    'grid.site_ref(83, 485)                            # B10-E33-S35 (R6-C3 M-111)',
+    'grid.site_ref(83, 500)                            # B11-E33-S0 (R6-C3 M-111)',
     'grid.from_site_ref("C17-E12-S18")                  # (112, 818)',
     'grid.from_site_ref("PENDING")                     # None',
     'grid.site_ref(*grid.from_latlon(43.473208398831, -115.594410245142))  # C17-E12-S18'
@@ -461,10 +488,10 @@ function renderConventions() {
     'SiteRef uses the master cell, then east and south offsets from that cell\'s northwest corner. Offsets are nonnegative, less than 50 ft, and must stay inside the fence, including the partial edge cells. Generated codes use up to two decimal places. E and S are compass directions, even on the orchard map drawn south up.',
     'Planting records should identify each individual plant, not assign one coordinate to a quantity group. SiteRef is calculated from its location; it is not a metal tag or a permanent Plant ID. Keep unlocated plants PENDING and vacant spots separate from dead or moved plants.',
     'Status is existing or planned; planned buildings (the house, garage, workshop, and the two greenhouses) move once staked. The greenhouse outlines are the footprints from the greenhouse pages; the pit greenhouse\'s berm, retaining wall, and swales are on the greenhouse site plan, not here. Edit canonical data/site.json (rect x0/y0/x1/y1, circle cx/cy/r, polygon/line pts, point x/y), then run python tools/property_data.py build and the tests. Browser files in docs/data/ are generated, not independently editable.',
-    `The red ticks on the east and west fences mark the middle of the fenced lot (lot_midline): ${fmt(MIDLINE.pts[0][1])} ft south of the north fence, half of ${fmt(SG.data.lot.fence.depth, 1)} ft. The owner's drone-photo lines read about 660 ft, half the likely 1,320 ft parcel counted from the road. Tape it to confirm.`,
+    `The red ticks on the east and west fences mark the owner's taped middle line (lot_midline): ${fmt(MIDLINE.pts[0][1])} ft south of the north fence, on the A14 hydrant and 79 ft north of the red shed's north building corner. Half the ${fmt(SG.data.lot.fence.depth, 1)} ft fence is still ${fmt(SG.data.lot.fence.depth / 2, 2)} ft, ${fmt(MIDLINE.pts[0][1] - SG.data.lot.fence.depth / 2)} ft north of these ticks. A tape from the northwest fence corner would confirm the 667.`,
     `The front gate (front_gate, cell ${SG.cellOf(...SG.center(GATE))}): ${GATE.leaves} × ${GATE.leaf_ft} ft metal leaves that swing both ways on treated junior railroad ties (about 8 × 12 in) set in concrete, drawn closed. Placed from the October 2026 drone photos and the owner: the east post is about ${fmt(SG.data.lot.fence.width - GATE.pts[1][0])} ft inside the east fence, the gate about ${fmt(GATE.pts[0][1])} ft inside the mapped north fence, good to about 8 ft.`,
     'Latitude and longitude come from the fitted lot frame, good to about 10 ft: fine for maps and directions, not for boundary questions. For precise layout, measure from the fences.',
-    `Buried water lines (2 in PVC solid, 1.5 in dashed) and the ${HYDRANTS.length} frost-free hydrants (blue dots) are traced from the owner's hand-drawn map (October 2026): good to about 5 ft around the homestead and 10 ft at the north end, so dig by hand near them.`,
+    `Buried water lines (2 in PVC solid, 1.5 in dashed) and the frost-free hydrants (blue dots) are traced from the owner's hand-drawn map (October 2026): good to about 5 ft around the homestead and 10 ft at the north end, so dig by hand near them. The two well hydrants use that same dot in red, on the red dotted well line.`,
     `The ${HEAD_STATIONS.length} row laterals (10 ft, 1.5 in, west off the 2 in main) end in a 1 in riser and a valve box (teal squares numbered 1–${HEAD_STATIONS.length}, south to north). Their spacing is read from the owner's drone photo (October 2026), so the positions along the main are good to about 8 ft. ${HYDRANT_BOXES.length} of the ${HYDRANTS.length} hydrants also have a valve box 4 ft back on their line${NO_BOX.length ? ` (none at ${NO_BOX.map(h => SG.cellOf(h.x, h.y)).join(', ')})` : ''}: a small teal chip on the hydrant dot here, drawn apart on the homestead plot map, and listed under Row laterals and valve boxes.`
   ].forEach(t => document.getElementById('conventions').append(element('li', t)));
 }

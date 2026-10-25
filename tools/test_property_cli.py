@@ -29,7 +29,7 @@ class PropertyCliTest(unittest.TestCase):
         result = self.run_cli("query", "SELECT site_ref FROM current_plantings WHERE plant_id = ?",
                               "--params", '["i56-1"]', "--format", "json")
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(json.loads(result.stdout), [{"site_ref": "B10-E33-S35"}])
+        self.assertEqual(json.loads(result.stdout), [{"site_ref": "B11-E33-S0"}])
         checked = self.run_cli("check")
         self.assertEqual(checked.returncode, 0, checked.stderr)
 
@@ -61,7 +61,7 @@ class PropertyCliTest(unittest.TestCase):
         failed = self.run_cli("query", "SELECT COUNT(*) FROM plants")
         self.assertNotEqual(failed.returncode, 0)
         self.assertIn("outside", failed.stderr)
-        locations["records"][0]["y_ft"] = 585
+        locations["records"][0]["y_ft"] = 600
         path.write_text(json.dumps(locations), encoding="utf-8")
         restored = self.run_cli("query", "SELECT COUNT(*) AS n FROM plants", "--format", "json")
         self.assertEqual(restored.returncode, 0, restored.stderr)

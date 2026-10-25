@@ -60,7 +60,7 @@ class SiteGridTest(unittest.TestCase):
         cases = [
             ((112, 818), "C17-E12-S18"),
             ((112.5, 818.25), "C17-E12.5-S18.25"),
-            (self.grid.tree_xy(6, 3), "B10-E33-S35"),
+            (self.grid.tree_xy(6, 3), "B11-E33-S0"),
             ((0, 0), "A1-E0-S0"),
             ((50, 800), "B17-E0-S0"),
             ((49.999, 799.999), "B17-E0-S0"),
@@ -75,7 +75,7 @@ class SiteGridTest(unittest.TestCase):
             ("C17-E12-S18", (112, 818)),
             ("C17-E12.5-S18.25", (112.5, 818.25)),
             (" b19-e03.5-s07 ", (53.5, 907)),
-            ("B10-E33-S35", self.grid.tree_xy(6, 3)),
+            ("B11-E33-S0", self.grid.tree_xy(6, 3)),
             ("G26-E31.3-S41.9", (331.3, 1291.9)),
             ("PENDING", None),
             (" pending ", None),
@@ -129,7 +129,7 @@ class SiteGridTest(unittest.TestCase):
         g = self.grid
         pipes = {f["id"]: f for f in g.features("utility") if f.get("kind") == "water_pipe"}
         hydrants = [f for f in g.features("utility") if f.get("kind") == "hydrant"]
-        self.assertEqual(len(hydrants), 8)
+        self.assertEqual(len(hydrants), 10)
         self.assertTrue(all(f["shape"] == "line" and f["size_in"] in (1.5, 2) for f in pipes.values()))
         self.assertEqual({k for k, f in pipes.items() if f["size_in"] == 1.5},
                          {"water_tee_west", "water_line_west", "water_lateral_north"} | {f"water_lateral_row_{n}" for n in range(1, 9)},
@@ -144,8 +144,15 @@ class SiteGridTest(unittest.TestCase):
         self.assertTrue(_lines_cross(pipes["water_line_west"]["pts"], pipes["water_tee_west"]["pts"]), "the 1.5 in line feeds the west fence line")
         self.assertAlmostEqual(math.dist(*pipes["water_lateral_north"]["pts"]), 10, places=6)
         ends = [tuple(f["pts"][k]) for f in pipes.values() for k in (0, -1)]
+        well_ends = [tuple(p) for f in g.features("utility") if f.get("kind") == "well_pipe" for p in (f["pts"][0], f["pts"][-1])]
         for h in hydrants:
-            self.assertLess(min(math.dist((h["x"], h["y"]), e) for e in ends), 0.5, f"{h['id']} sits at the end of a water line")
+            on_irrigation = min(math.dist((h["x"], h["y"]), e) for e in ends) < 0.5
+            on_well_end = min(math.dist((h["x"], h["y"]), e) for e in well_ends) < 0.5
+            on_well = any(_dist_to_line((h["x"], h["y"]), f["pts"]) < 0.5
+                          for f in g.features("utility") if f.get("kind") == "well_pipe")
+            self.assertTrue(on_irrigation or on_well_end or on_well, f"{h['id']} sits on a water line")
+            if h["id"] in ("hydrant_well", "hydrant_shed_awning"):
+                self.assertTrue(on_well and not on_irrigation, f"{h['id']} is on the well line, not the irrigation lines")
 
         # Every line ends at a hydrant, at a valve box, runs into another line, or starts at the pump house
         valve_boxes = [f for f in g.features("utility") if f.get("kind") == "valve_box"]
@@ -164,6 +171,34 @@ class SiteGridTest(unittest.TestCase):
         west = g.feature("hydrant_west")
         self.assertEqual(g.cell_of(west["x"], west["y"]), "A18")
         self.assertLess(west["x"], 10, "the A18 hydrant stands right at the west fence, west of the buried line")
+
+    def test_well_head_line_and_hydrants(self):
+        g = self.grid
+        pump = g.bbox("pump_house")
+        well = g.feature("well")
+        near = g.feature("hydrant_well")
+        shed = g.feature("hydrant_shed_awning")
+        line = g.feature("well_line")
+        branch = g.feature("well_line_shed")
+        mid_y = (pump[1] + pump[3]) / 2
+        self.assertEqual((well["x"], well["y"]), (pump[2] + 18, mid_y), "the well head is 18 ft east of the pump house, on its midline")
+        self.assertEqual(well["depth_ft"], 350)
+        self.assertEqual((near["x"], near["y"]), (well["x"] - 1, well["y"]), "the well hydrant is 1 ft west of the head")
+        self.assertEqual(near["depth_ft"], 5)
+        self.assertEqual(line["depth_ft"], 5)
+        self.assertEqual([tuple(p) for p in line["pts"]], [(well["x"], well["y"]), (near["x"], near["y"]), (pump[2], mid_y)])
+        shed_box = g.bbox("shed")
+        pad = g.bbox("workshop_pad")
+        self.assertEqual((shed["x"], shed["y"]), (shed_box[2] + 4, shed_box[1]), "the shed hydrant is 4 ft east of the mapped northeast corner")
+        self.assertEqual(branch["pts"][0], [well["x"], well["y"]])
+        self.assertEqual(branch["pts"][-1], [shed["x"], shed["y"]])
+        self.assertTrue(all(p[0] > pad[2] for p in branch["pts"]), "the branch stays east of the workshop pad")
+        self.assertGreater(branch["pts"][0][1], pad[3], "the branch starts in front of the workshop pad")
+        self.assertTrue(any(a[0] == b[0] > pad[2] and min(a[1], b[1]) <= pad[1] and max(a[1], b[1]) >= pad[3]
+                        for a, b in zip(branch["pts"], branch["pts"][1:])),
+                        "the branch runs up the east side of the workshop pad")
+        self.assertEqual(g.cell_of(well["x"], well["y"]), "B19")
+        self.assertEqual(g.cell_of(shed["x"], shed["y"]), "C15")
 
     def test_row_laterals_head_stations_and_hydrant_valve_boxes(self):
         g = self.grid
@@ -197,7 +232,8 @@ class SiteGridTest(unittest.TestCase):
 
         # Seven of the eight hydrants have a valve box 4 ft back on the line that ends at it; the south end of the west fence line has none
         by_hydrant = {b["hydrant"]: b for b in boxes.values() if "hydrant" in b}
-        self.assertEqual(set(by_hydrant), set(hydrants) - {"hydrant_fence_south"}, "every hydrant but the A20 one has exactly one valve box")
+        self.assertEqual(set(by_hydrant), set(hydrants) - {"hydrant_fence_south", "hydrant_well", "hydrant_shed_awning"},
+                         "every irrigation hydrant but the A20 one has exactly one valve box; the well hydrants have none")
         self.assertEqual(len(boxes), 15, "eight head stations and seven hydrant valve boxes")
         for hid, box in by_hydrant.items():
             h = hydrants[hid]
@@ -253,19 +289,27 @@ class SiteGridTest(unittest.TestCase):
             for stand in stands:
                 self.assertFalse(x0 <= stand["x"] <= x1 and y0 <= stand["y"] <= y1, f"{stand['id']} stands inside {f['id']}")
 
-    def test_lot_midline_runs_fence_to_fence_at_half_the_fence_depth(self):
+    def test_lot_midline_is_the_owners_october_24_tape(self):
         g = self.grid
         fence = g.data["lot"]["fence"]
         mid = g.feature("lot_midline")
+        shed = g.feature("shed")
+        hydrant = g.feature("hydrant_fence_north")
+        box = g.feature("valve_box_hydrant_fence_north")
         self.assertEqual((mid["group"], mid["kind"], mid["shape"]), ("boundary", "midline", "line"))
         (wx, wy), (ex, ey) = mid["pts"]
         self.assertEqual((wx, ex), (0, fence["width"]), "the midline runs from the west fence to the east fence")
         self.assertEqual(wy, ey, "the midline is east-west")
-        self.assertAlmostEqual(wy, fence["depth"] / 2, places=6)
-        self.assertEqual((g.site_ref(wx, wy), g.site_ref(ex, ey)), ("A13-E0-S45.95", "G13-E31.3-S45.95"))
-        self.assertEqual(g.cells("lot_midline"), ["A13", "B13", "C13", "D13", "E13", "F13", "G13"])
-        parcel = g.data["lot"]["parcel_likely"]
-        self.assertLess(abs((parcel["y0"] + parcel["y1"]) / 2 - wy), 5, "the parcel's middle is within a few feet of the fence's")
+        self.assertEqual(wy, 667, "the taped line is 79 ft north of the shed's north wall, not half the fence")
+        self.assertAlmostEqual(wy - fence["depth"] / 2, 21.05, places=2)
+        self.assertEqual((g.site_ref(wx, wy), g.site_ref(ex, ey)), ("A14-E0-S17", "G14-E31.3-S17"))
+        self.assertEqual(g.cells("lot_midline"), ["A14", "B14", "C14", "D14", "E14", "F14", "G14"])
+        self.assertEqual(shed["y0"] - wy, 79, "the shed's north building corner is 79 ft south of the middle line")
+        self.assertEqual(hydrant["y"], wy, "the A14 hydrant sits on the middle line")
+        self.assertEqual(g.cell_of(hydrant["x"], hydrant["y"]), "A14")
+        self.assertAlmostEqual(box["y"] - hydrant["y"], 4, places=6, msg="the valve box stays 4 ft south on the pipe")
+        self.assertEqual(g.data["orchard"]["r1_y"], wy - 67, "R1 trunks are 67 ft north of the middle line")
+        self.assertEqual(shed["y0"] - (g.data["orchard"]["r1_y"] - 5), 151, "the top of R1, 5 ft north of the trunks, is 151 ft north of the shed")
 
     def test_front_gate_spans_the_driveway_at_the_northeast_corner(self):
         g = self.grid
@@ -335,10 +379,10 @@ class SiteGridTest(unittest.TestCase):
 
     def test_orchard_tree_positions(self):
         g = self.grid
-        self.assertEqual(g.tree_xy(1, 1), (38, 585))
-        self.assertEqual(g.tree_xy(2, 1), (47, 565), "even rows sit half a spacing east")
-        self.assertEqual(g.tree_xy(15, 13), (254, 305))
-        self.assertEqual(g.cell_of(*g.tree_xy(1, 1)), "A12")
+        self.assertEqual(g.tree_xy(1, 1), (38, 600))
+        self.assertEqual(g.tree_xy(2, 1), (47, 580), "even rows sit half a spacing east")
+        self.assertEqual(g.tree_xy(15, 13), (254, 320))
+        self.assertEqual(g.cell_of(*g.tree_xy(1, 1)), "A13")
         x0, y0, x1, y1 = g.bbox("orchard_block")
         for r in range(1, 16):
             for c in range(1, 14):

@@ -12,7 +12,7 @@ test('SiteRef formats cell offsets in feet', () => {
   const cases = [
     [[112, 818], 'C17-E12-S18'],
     [[112.5, 818.25], 'C17-E12.5-S18.25'],
-    [grid.treeXY(6, 3), 'B10-E33-S35'],
+    [grid.treeXY(6, 3), 'B11-E33-S0'],
     [[0, 0], 'A1-E0-S0'],
     [[50, 800], 'B17-E0-S0'],
     [[49.999, 799.999], 'B17-E0-S0'],
@@ -62,15 +62,20 @@ test('SiteRef round trips every orchard spot within half a hundredth of a foot',
   });
 });
 
-test('The lot midline runs fence to fence at half the fence depth', () => {
+test('The lot midline is the October 24 tape, not half the fence depth', () => {
   const fence = grid.data.lot.fence, [west, east] = grid.feature('lot_midline').pts;
+  const shed = grid.feature('shed'), hydrant = grid.feature('hydrant_fence_north');
   assert.equal(west[0], 0);
   assert.equal(east[0], fence.width);
   assert.equal(west[1], east[1]);
-  assert.ok(Math.abs(west[1] - fence.depth / 2) < 1e-6, 'the middle is half of the fence depth');
-  assert.equal(grid.siteRef(...west), 'A13-E0-S45.95');
-  assert.equal(grid.siteRef(...east), 'G13-E31.3-S45.95');
-  assert.deepEqual(Array.from(grid.cellsOf('lot_midline')), ['A13', 'B13', 'C13', 'D13', 'E13', 'F13', 'G13']);
+  assert.equal(west[1], 667);
+  assert.ok(Math.abs(west[1] - fence.depth / 2 - 21.05) < 0.01, 'the taped line is 21 ft south of the fence half');
+  assert.equal(grid.siteRef(...west), 'A14-E0-S17');
+  assert.equal(grid.siteRef(...east), 'G14-E31.3-S17');
+  assert.deepEqual(Array.from(grid.cellsOf('lot_midline')), ['A14', 'B14', 'C14', 'D14', 'E14', 'F14', 'G14']);
+  assert.equal(shed.y0 - west[1], 79);
+  assert.equal(hydrant.y, west[1]);
+  assert.equal(grid.data.orchard.r1_y, west[1] - 67);
 });
 
 test('The front gate is two 12 ft leaves across the driveway in cell G1', () => {

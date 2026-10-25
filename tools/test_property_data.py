@@ -116,11 +116,11 @@ class PropertyDataTest(unittest.TestCase):
         counts = {r["state"]: r["n"] for r in rows}
         self.assertEqual(counts, {"open": 75, "planted": 107, "reserved": 13})
         root = query("SELECT * FROM current_plantings WHERE plant_id = 'i56-1'", self.root)[0]
-        self.assertEqual(root["site_ref"], "B10-E33-S35")
+        self.assertEqual(root["site_ref"], "B11-E33-S0")
         self.assertEqual(root["status"], "planted")
         self.assertIsNone(root["planted_on"], "The rootstock was reported planted with no date")
         pear = query("SELECT * FROM current_plantings WHERE plant_id = 'i94-1'", self.root)[0]
-        self.assertEqual((pear["status"], pear["location_name"], pear["site_ref"]), ("planted", "R8-C3", "B9-E33-S45"))
+        self.assertEqual((pear["status"], pear["location_name"], pear["site_ref"]), ("planted", "R8-C3", "B10-E33-S10"))
         self.assertEqual(pear["planted_on"], "2026-10", "The owner gave the month, so no day is invented")
         self.assertEqual(query("SELECT state FROM orchard_spots WHERE name = 'R8-C1'", self.root)[0]["state"], "open")
         outside = query("SELECT * FROM current_plantings WHERE plant_group = 'outside-orchard'", self.root)
@@ -211,7 +211,7 @@ class PropertyDataTest(unittest.TestCase):
         validate_data(self.data)
 
     def test_features_terrain_water_and_gps_are_queryable(self):
-        self.assertEqual(query("SELECT COUNT(*) AS n FROM site_features", self.root)[0]["n"], 71)
+        self.assertEqual(query("SELECT COUNT(*) AS n FROM site_features", self.root)[0]["n"], 76)
         self.assertEqual(query("SELECT COUNT(*) AS n FROM site_features WHERE kind = 'valve_box'", self.root)[0]["n"], 15)
         self.assertEqual(query("SELECT COUNT(*) AS n FROM terrain_samples", self.root)[0]["n"], 18009)
         self.assertEqual(query("SELECT COUNT(*) AS n FROM climate_months", self.root)[0]["n"], 12)
