@@ -35,6 +35,8 @@ Status key: **In progress** (work under way), **Planned** (designed, not started
 
 ## Project log
 
+- **2026-10-25**: The pit greenhouse roof is the same 6 mm four-layer polycarbonate as the tunnels. Because it is sunk and bermed, it is the start house and the late house: hardy starts about March 17, tender starts about April 1, greens through about November 21, and the last fruit through about October 31. December through February is still not a crop season.
+- **2026-10-25**: Set usable dates for the unheated gothic tunnels. The 6 mm four-layer panels (vendor R-2.2) are planned for cold crops from about April 28 to October 24, and for tomatoes, cucumbers, and basil from a late-May planting through about October 10. November through March is not a crop season. The dates are allowances against the Prairie SNOTEL medians, not measured nights in the tunnel.
 - **2026-10-25**: Moved the planned pit greenhouse so it is centered on the east gothic tunnel (x 216 to 252, cells E14 and F14), the same 20 ft inset and the same 33 ft gap it had under the west tunnel. `PIT` in [`docs/greenhouse_model.js`](docs/greenhouse_model.js) moved with it.
 - **2026-10-25**: Added a second planned gothic tunnel on the site master grid, the same 27 × 76 ft footprint as the west one, 20 ft south of R1, its east end on the orchard block's east edge (x 272). Each tunnel is labeled inside its outline, with its size on a second line.
 - **2026-10-25**: Identified the AT-Unk apricot at R11-C2 as Patterson. Its metal tag is now AT-Patterson, and the Patterson profile links inventory row 71 to purchase row 50. It is off the unidentified-stone-fruit list. Two trees are still tagged Moorpark although only one was bought.

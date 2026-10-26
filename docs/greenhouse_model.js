@@ -1051,11 +1051,47 @@ function gothicPosts(host) {
   host.replaceChildren(cv.svg);
 }
 
+// Planning season for both unheated CatchSunlight tunnels: 6 mm four-layer polycarbonate, vendor R-2.2, a tight base, and a row cover on cold nights.
+// Offsets are allowances against the Prairie SNOTEL medians, not measured temperatures inside the tunnel.
+// Cold crops open 4 weeks before the typical last 28°F night and run 2 weeks past the typical first 24°F night.
+// Tender crops are set 3 weeks before the typical last 32°F night. A night near 24°F outside still ends them.
+function addDays(monthDay, days) {
+  const lengths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  let n = root.SiteClimate.dayNumber(monthDay) + days, month = 1;
+  while (n > lengths[month - 1]) { n -= lengths[month - 1]; month += 1; }
+  return `${String(month).padStart(2, '0')}-${String(n).padStart(2, '0')}`;
+}
+function tunnelSeason() {
+  const C = root.SiteClimate;
+  const f32 = C.planningDates(32), f28 = C.planningDates(28), f24 = C.planningDates(24);
+  return {
+    glazing: '6 mm four-layer polycarbonate, vendor R-2.2',
+    outdoor: { spring32: f32.springMedian, fall32: f32.fallMedian, free32: f32.freeDays.p50, spring28: f28.springMedian, fall24: f24.fallMedian },
+    cold: { start: addDays(f28.springMedian, -28), end: addDays(f24.fallMedian, 14) },
+    tender: { set: addDays(f32.springMedian, -21), end: f24.fallMedian }
+  };
+}
+// The pit uses the same roof panels, and the berm, the sunk floor, and the water drums hold night heat the tunnels cannot.
+// It opens 6 weeks before the tunnels' cold crops, raises tender starts 8 weeks before they are set in a tunnel, and runs 4 weeks past the tunnels' cold-crop close.
+// A night in the teens can still freeze a flat, so starts get a cover. December through February is still not a production season: the 27° roof is a weak winter collector.
+function pitSeason() {
+  const tunnel = tunnelSeason();
+  return {
+    glazing: tunnel.glazing,
+    mass: '6 ft sunk floor, earth berm to the roof line, water drums on the north wall',
+    hardyStarts: addDays(tunnel.cold.start, -42),
+    tenderStarts: addDays(tunnel.tender.set, -56),
+    cold: { start: addDays(tunnel.cold.start, -42), end: addDays(tunnel.cold.end, 28) },
+    tenderEnd: addDays(tunnel.tender.end, 21),
+    tunnel
+  };
+}
+
 root.Greenhouse = {
   SYM, GOTHIC, ENDWALL, BEDS, PIT, BERM, SOIL, CUT, ARCH, SWELL, ORCHARD_EDGE_Y, R1_Y, SECTION_X, UPSLOPE_SQFT, ALLEY, SWALE, C,
   fmt, num, feet, clock, setText, svgNode, element, canvas, groundFt, site, latitude, declinationOf, sunPosition, shadowRow, bermOption, bermClearWindow, r1ShadeHours, beamShare,
   fitPlane, padCutFill, pitExcavation, bermVolume, bermOutline, openCut, wallToCut, swaleClearance, runoffInches, gallons, annualRainIn, endwallOpenings, endDoorSpan, bedLayout, bedOptions, archReach, roofRange,
   siteMap, siteSection, pitPlan, pitSection, gothicSection, gothicEndwalls, gothicBeds, gothicBedSections, gothicPosts,
-  SUN_DATES
+  tunnelSeason, pitSeason, SUN_DATES
 };
 })(typeof window !== 'undefined' ? window : globalThis);

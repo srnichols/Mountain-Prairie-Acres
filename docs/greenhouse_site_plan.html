@@ -34,6 +34,7 @@
   <li><strong>Why the pit sits at the south end of row 14:</strong> the berm reaches <span id="b-reach"></span> ft north from its crest (2 ft flat top plus <span id="b-slope-run"></span> ft of slope above the wall). A crest at y <span id="b-y680"></span> leaves <span id="b-clear680"></span> ft of clear strip to the tunnel for a swale and snow slide, and keeps the berm's Dec 21 noon shadow (it ends at y <span id="b-tip680"></span>) off the tunnel's south wall (y <span id="b-wall-y"></span>); a crest at y <span id="b-y672"></span> would leave <span id="b-clear672"></span> ft of strip but put the noon shadow at y <span id="b-tip672"></span>, onto the wall. The pit's stair, cut slopes, and uphill swale reach into row 15.</li>
   <li><strong>The ground</strong> rises <span id="b-slope"></span>, so water arrives from the pit's uphill south and east sides: the diversion mound in Oehler's drawings belongs there, not on the north.</li>
   <li><strong>Timing:</strong> 2027 is paperwork and data; then dirt work first (test hole, pit, berm, swales) and the tunnel after it, in 2028 or 2029.</li>
+  <li><strong>Usable season:</strong> both gothic tunnels, the same unheated four-layer kit, are planned for cold crops from <span id="u-cold-start"></span> to <span id="u-cold-end"></span>, and for tomatoes, cucumbers, and basil from a planting about <span id="u-tender-set"></span> through about <span id="u-tender-end"></span>. The pit uses that same roof and, because it is sunk and bermed, opens earlier and closes later: hardy starts about <span id="p-hardy"></span>, tender starts about <span id="p-tender-start"></span>, and greens through about <span id="p-cold-end"></span>. December through February is still not a crop season. The reasoning is on the <a href="gothic_greenhouse_plan.html#season-heading">tunnel page</a> and the <a href="pit_greenhouse_plan.html#season-heading">pit page</a>.</li>
 </ul>
 </section>
 
@@ -261,6 +262,9 @@
     const o672 = G.bermOption(672), o680 = G.bermOption(680);
     T({
       'b-tunnel-size': `${GOTHIC.span} ${times} ${GOTHIC.length} ft`, 'b-pit-size': `${PIT.width} ${times} ${PIT.length} ft`, 'b-gap': `${GOTHIC.y0 - G.ORCHARD_EDGE_Y} ft`, 'b-west': `${GOTHIC.x0} ft`,
+      'u-cold-start': window.SiteClimate.monthDay(G.tunnelSeason().cold.start), 'u-cold-end': window.SiteClimate.monthDay(G.tunnelSeason().cold.end),
+      'u-tender-set': window.SiteClimate.monthDay(G.tunnelSeason().tender.set), 'u-tender-end': window.SiteClimate.monthDay(G.tunnelSeason().tender.end),
+      'p-hardy': window.SiteClimate.monthDay(G.pitSeason().hardyStarts), 'p-tender-start': window.SiteClimate.monthDay(G.pitSeason().tenderStarts), 'p-cold-end': window.SiteClimate.monthDay(G.pitSeason().cold.end),
       'b-tunnel-where': `x ${GOTHIC.x0} to ${GOTHIC.x1}, y ${GOTHIC.y0} to ${GOTHIC.y1}`, 'b-tunnel-area': fmt(GOTHIC.footprint),
       'b-pit-where': `x ${PIT.x0} to ${PIT.x1}, y ${PIT.y0} to ${PIT.y1}`, 'b-floor': String(PIT.depth.sink), 'b-walk': String(PIT.depth.walk), 'b-bed': String(PIT.depth.bed),
       'b-crest': fmt(BERM.crest, 1), 'b-toe': fmt(BERM.toeY),

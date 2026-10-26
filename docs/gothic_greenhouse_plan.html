@@ -30,7 +30,19 @@
   <li><strong>What it is:</strong> a pointed-arch ("gothic") high tunnel on 48 mm galvanized steel hoops with a tube-truss roof support, covered in 6 mm four-layer polycarbonate (the vendor gives it an insulating value of R-2.2). The vendor is an Arco, Idaho company, and its site says the frames are designed by its founder, a licensed professional engineer.</li>
   <li><strong>Standard size:</strong> 27 ft wide by 38 ft long (about 1,000 sq ft), sold as a do-it-yourself materials kit at $10,500 as published. The page says there is "no limit on length," that hoop spacing can open up from 45 to 80 in to stretch the length, and to call for custom sizes and prices.</li>
   <li><strong>Here:</strong> two standard bays end to end make <span id="g-size"></span> (<span id="g-area"></span> sq ft), long axis east to west at <span id="g-where"></span>, with a wide door and a peak vent in each end wall (see <a href="#endwalls-heading">End Walls</a>). Two standard kits would cost about <span id="g-price"></span> in materials at the published price: a quote for the real length is still needed.</li>
-  <li><strong>Unheated:</strong> the tunnel extends the season; it is not a winter-production greenhouse with a heater. That keeps it inside the kind of structure NRCS's high-tunnel program covers (to be confirmed; see the site plan).</li>
+  <li><strong>Unheated:</strong> the 6 mm four-layer panels hold heat better than a single-layer film tunnel, so the shoulders are longer than outdoors. It is still not a winter-production greenhouse, and it stays unheated so it can remain the kind of structure NRCS's high-tunnel program covers (to be confirmed; see the site plan). The usable dates are below.</li>
+</ul>
+<h2 id="season-heading">Usable season</h2>
+<p>Both gothic tunnels are this same kit. The vendor rates the glazing at R-2.2, which is why these dates are longer than the outdoor frost-free season and a bit longer than a cheap film hoop house. They assume a tight base, so wind cannot blow under the wall, and a cover over the beds on cold nights. They are planning allowances against the Prairie SNOTEL medians on the <a href="site_climate.html">site climate</a> page, not measured nights inside the tunnel. A heater would change them, and would also change the grant question above.</p>
+<table class="detail" id="season-table">
+  <caption>Usable dates for both unheated gothic tunnels</caption>
+  <thead><tr><th>Season</th><th class="num">Dates</th><th>What it covers</th></tr></thead>
+  <tbody></tbody>
+</table>
+<ul class="points">
+  <li><strong>Cold crops</strong> (lettuce, spinach, kale), in the edge beds: about <span id="u-cold-start"></span> through <span id="u-cold-end"></span>. That is 4 weeks before the typical last 28°F night (<span id="u-28"></span>) and 2 weeks past the typical first 24°F night (<span id="u-24"></span>).</li>
+  <li><strong>Tender crops</strong> (tomatoes, cucumbers, basil): set plants about <span id="u-tender-set"></span>, 3 weeks before the typical last 32°F night (<span id="u-32s"></span>), and only if a harder night is not in the forecast. A real harvest runs from July until about <span id="u-tender-end"></span>. The first outdoor 32°F night, typically <span id="u-32f"></span>, does not end them inside this tunnel. A night in the teens outside still does.</li>
+  <li><strong>Winter:</strong> November through March is not a production season in these tunnels. Average January lows are in the teens, and the panels cannot hold that above freezing. Starts and the last of the fall crop belong in the <a href="pit_greenhouse_plan.html#season-heading">pit greenhouse</a>, which holds night heat longer.</li>
 </ul>
 </section>
 
@@ -198,7 +210,7 @@
   try { main(); } catch (error) { fail(error.message); }
 
   function main() {
-    const G = window.Greenhouse, SG = window.SiteGrid, SB = window.SiteBaselines;
+    const G = window.Greenhouse, SG = window.SiteGrid, SB = window.SiteBaselines, C = window.SiteClimate;
     const { GOTHIC, SYM, fmt, ARCH } = G, T = G.setText, times = SYM.times;
     const cell = spec => {
       const td = document.createElement('td');
@@ -210,6 +222,16 @@
       const body = document.querySelector('#' + id + ' tbody');
       rows.forEach(row => { const tr = document.createElement('tr'); row.forEach(spec => tr.append(cell(spec))); body.append(tr); });
     };
+    const season = G.tunnelSeason(), md = C.monthDay;
+    fill('season-table', [
+      ['Outdoor, 32°F', `${md(season.outdoor.spring32)} to ${md(season.outdoor.fall32)}`, `Typical frost-free season, about ${season.outdoor.free32} days. The tunnel dates are set from this record, not from a thermometer in the tunnel.`],
+      ['Cold crops in the tunnel', `${md(season.cold.start)} to ${md(season.cold.end)}`, 'Lettuce, spinach, and kale in the edge beds. Not a winter crop.'],
+      ['Tender crops in the tunnel', `Set ${md(season.tender.set)}; harvest July to ${md(season.tender.end)}`, 'Tomatoes, cucumbers, and basil. Fruit through the first light frosts; done when a night outside falls near 24°F.']
+    ].map(([a, b, c]) => [a, { t: b, c: 'num' }, c]));
+    T({
+      'u-cold-start': md(season.cold.start), 'u-cold-end': md(season.cold.end), 'u-28': md(season.outdoor.spring28), 'u-24': md(season.outdoor.fall24),
+      'u-tender-set': md(season.tender.set), 'u-tender-end': md(season.tender.end), 'u-32s': md(season.outdoor.spring32), 'u-32f': md(season.outdoor.fall32)
+    });
     const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
     G.gothicSection(document.getElementById('gothic-section'));
     G.gothicPosts(document.getElementById('gothic-posts'));
