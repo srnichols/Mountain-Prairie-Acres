@@ -122,6 +122,11 @@ class SiteGridTest(unittest.TestCase):
     def test_homestead_inside_the_fence(self):
         for f in self.grid.features("homestead") + self.grid.features("planned") + self.grid.features("utility"):
             x0, y0, x1, y1 = self.grid.bbox(f)
+            if f["id"] == "water_pasture":
+                # The centerline meets both fences. Its 3 ft width pads the box past the west fence.
+                (cx0, cy0), (cx1, cy1) = f["pts"][0], f["pts"][-1]
+                self.assertTrue(self.grid.in_lot(cx0, cy0) and self.grid.in_lot(cx1, cy1), f["id"])
+                continue
             self.assertTrue(self.grid.in_lot(x0, y0) and self.grid.in_lot(x1, y1), f["id"])
         self.assertEqual(self.grid.feature("water_line_west")["group"], "utility", "the west trench is a water line, not a path")
 
@@ -138,8 +143,9 @@ class SiteGridTest(unittest.TestCase):
         x0, y0, x1, y1 = g.bbox("pump_house")
         self.assertTrue(x0 - 2 <= main_pts[0][0] <= x1 + 2 and y0 - 2 <= main_pts[0][1] <= y1 + 2, "the 2 in main starts at the pump house")
         self.assertLess(main_pts[-1][1], 50, "the main runs to the north end of the lot")
+        independent = {"water_pasture"}
         for fid, f in pipes.items():
-            if fid not in ("water_main", "water_line_west"):
+            if fid not in ("water_main", "water_line_west") and fid not in independent:
                 self.assertLess(_dist_to_line(f["pts"][0], main_pts), 0.5, f"{fid} comes off the main")
         self.assertTrue(_lines_cross(pipes["water_line_west"]["pts"], pipes["water_tee_west"]["pts"]), "the 1.5 in line feeds the west fence line")
         self.assertAlmostEqual(math.dist(*pipes["water_lateral_north"]["pts"]), 10, places=6)
@@ -163,6 +169,8 @@ class SiteGridTest(unittest.TestCase):
                     or any(_dist_to_line(p, q["pts"]) < 0.5 for k, q in pipes.items() if k != fid)
                     or (x0 - 2 <= p[0] <= x1 + 2 and y0 - 2 <= p[1] <= y1 + 2))
         for fid, f in pipes.items():
+            if fid == "water_pasture":
+                continue
             for end in (f["pts"][0], f["pts"][-1]):
                 self.assertTrue(closed(end, fid), f"{fid} has an open end at {end}")
         wl = pipes["water_line_west"]["pts"]
@@ -171,6 +179,15 @@ class SiteGridTest(unittest.TestCase):
         west = g.feature("hydrant_west")
         self.assertEqual(g.cell_of(west["x"], west["y"]), "A18")
         self.assertLess(west["x"], 10, "the A18 hydrant stands right at the west fence, west of the buried line")
+
+    def test_old_ditch_is_one_gentle_bend_on_the_slope_berm(self):
+        g = self.grid
+        ditch = g.feature("old_ditch")
+        pipe = g.feature("water_pasture")
+        self.assertEqual(ditch["pts"], pipe["pts"], "the 2 in pasture line lies in the old ditch")
+        self.assertEqual(pipe["size_in"], 2)
+        self.assertEqual(ditch["pts"], [[0, 926], [80, 921], [331, 846]],
+                         "one gentle bend on the slope-chart berm, including under later buildings")
 
     def test_well_head_line_and_hydrants(self):
         g = self.grid

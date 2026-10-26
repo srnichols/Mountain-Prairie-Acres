@@ -312,7 +312,7 @@ function renderLegend() {
   row(line({ stroke: '#2B8FD6', 'stroke-width': 1.8 }), 'Flow path: runoff from a quarter acre or more gathers');
   row(line({ stroke: '#2DB82D', 'stroke-width': 1.6, 'stroke-dasharray': '4 2' }), 'Split line: south of it, runoff leaves across the south line');
   row(line({ stroke: '#6C5BA7', 'stroke-width': 2.4, 'stroke-dasharray': '6 3' }), 'Main divide: north vs. south drainage');
-  row(line({ stroke: '#2B8FD6', 'stroke-width': 1.4, 'stroke-dasharray': '4 2.5' }), 'Old ditch (lidar, before the homestead pads)');
+  row(line({ stroke: '#2B8FD6', 'stroke-width': 1.4, 'stroke-dasharray': '4 2.5' }), 'Old ditch: berm on the slope chart; 2 in PVC about 2.5 ft down');
   row(s => { s.append(svgNode('line', { x1: 4, y1: 6, x2: 22, y2: 6, stroke: '#46647A', 'stroke-width': 1.2 })); s.append(svgNode('path', { d: 'M26,6 l-5,-3 l0,6 z', fill: '#46647A' })); }, 'Downhill direction');
   row(s => s.append(svgNode('rect', { x: 2, y: 1, width: 26, height: 10, fill: '#DCEAF7' })), 'North drainage area');
   row(s => s.append(svgNode('rect', { x: 2, y: 1, width: 26, height: 10, fill: '#E5F1DA' })), 'South drainage area');
@@ -337,7 +337,7 @@ function renderNotes() {
   [
     `High ground: the homestead and the east fence beside it (about ${fmt(STATS.high, 1)} m) top both drainages. The 3,000 gal tank by the pump house stands on ground about ${fmt(dropFt)} ft above the low NW corner: roughly ${fmt(dropFt * PSI_PER_FT)} psi by gravity there, less closer in.`,
     `North drainage (${fmt(STATS.north, 1)} acres): everything north of the main divide runs northwest and leaves across the west fence (${fmt(drain.north_side_to_west_fence, 1)} acres; only a sliver crosses the north fence). The main runoff line runs from the middle of the orchard block to the west fence about 75 ft south of the NW corner. That corner is the lowest, wettest, and coldest spot: a place for a pond, sponge basin, or wet-tolerant plants, not frost-tender ones.`,
-    `South drainage (${fmt(STATS.south, 1)} acres): ${fmt(drain.leaves_south_fence, 1)} acres leave across the south line; the strip just south of the divide (${fmt(drain.south_side_to_west_fence, 1)} acre) runs west along the old ditch past the house pad and containers. Basins or swales keep that water on your ground.`,
+    `South drainage (${fmt(STATS.south, 1)} acres): ${fmt(drain.leaves_south_fence, 1)} acres leave across the south line; the strip just south of the divide (${fmt(drain.south_side_to_west_fence, 1)} acre) runs west along the old ditch. That line follows the berm on the slope chart, drawn with one gentle bend, and holds a 2 in PVC about 2.5 ft down: do not cut it. Basins or swales keep that water on your ground.`,
     'Blue flow paths mark where runoff gathers. Keep buildings, driveways, and tanks out of them; use them for swales, basins, or a pond.',
     `Slope: most of the lot is gentle (typical ${pct(STATS.grade[1])}). Flatter ground suits buildings, gardens, and level basins; on the steeper bands, use smaller, closer-spaced earthworks and keep the ground covered.`,
     'Cold air drains like water, so frost settles first in the NW corner and along the low west side.',
@@ -443,8 +443,8 @@ function makeMap(kind) {
     text(LOT.width / 2, 1176, 'runs south, off across the south line', { 'text-anchor': 'middle', class: 't-note halo', 'font-size': 7 });
     text(160, ridgeAt(160) - 9, 'main divide', { class: 'halo', 'font-size': 7, 'text-anchor': 'middle', style: 'fill:#6C5BA7;font-weight:600' });
     text(236, 1000, 'old ditch', { class: 't-water halo', 'font-size': 6.6, 'text-anchor': 'middle' });
-    text(236, 1013, 'runs west', { class: 't-note halo', 'font-size': 6.2, 'text-anchor': 'middle' });
-    line([[236, 990], [240, 896]], { stroke: '#5F5E5A', 'stroke-width': 0.5 });
+    text(236, 1013, '2 in pipe, runs west', { class: 't-note halo', 'font-size': 6.2, 'text-anchor': 'middle' });
+    line([[236, 990], [240, 873]], { stroke: '#5F5E5A', 'stroke-width': 0.5 });
     text(46, 40, 'lowest: frost pocket', { class: 't-note halo', 'font-size': 6.8 });
   }
 

@@ -261,7 +261,7 @@ function makeMap() {
   poly(F('house_pad').pts, { fill: COLOR.pad, stroke: COLOR.padEdge, 'stroke-width': 1.2 });
   ['workshop_pad', 'rv_pad'].forEach(id => box(F(id), { fill: COLOR.pad, stroke: COLOR.padEdge, 'stroke-width': 1.2, 'stroke-dasharray': '5 2.5' }));
 
-  // Old ditch from the lidar, and the buried water lines (owner's map, October 2026)
+  // Old ditch on the slope-chart berm, and the buried water lines (owner's map, October 2026)
   line(F('old_ditch').pts, { stroke: COLOR.ditch, 'stroke-width': 2, 'stroke-dasharray': '7 4', opacity: 0.75 });
   PIPES.forEach(f => line(f.pts, pipeStyle(f.size_in)));
   WELL_PIPES.forEach(f => line(f.pts, wellStyle));
@@ -325,12 +325,12 @@ function makeMap() {
   add(svgNode('text', { x: wfx, y: wfy, transform: `rotate(-90 ${wfx} ${wfy})`, 'text-anchor': 'middle', 'font-size': 7.4, class: 't-title halo' }, 'west fence'), content);
   const efx = X(SG.data.lot.fence.width + 3.4), efy = Y(990);
   add(svgNode('text', { x: efx, y: efy, transform: `rotate(-90 ${efx} ${efy})`, 'text-anchor': 'middle', 'font-size': 7.4, class: 't-title halo' }, 'east fence'), content);
-  label(262, 884.5, 'old ditch line (lidar, before the pads)', 't-water', { 'text-anchor': 'middle', 'font-size': 7.4 });
+  label(286, 872, 'old ditch, 2 in pipe', 't-water', { 'text-anchor': 'middle', 'font-size': 7.4 });
 
   // Contour labels: one per contour piece, on a stretch clear of features and other labels
   const busy = ['shed', 'outhouse', 'container_solar', 'container_storage', 'pump_house', 'irrigation_tank', 'rv_pad', 'workshop_pad', 'house_pad', 'yard']
     .map(id => SG.bbox(id)).concat(HYDRANTS.map(h => SG.bbox(h)));
-  const taken = [[103.5, 758, 30], [61, 862, 35], [153, 940, 45], [262, 884, 60], [203, 790, 40], [301, 680, 30], [126, 809, 25], [209, 829, 30], [31, 896, 15]];
+  const taken = [[103.5, 758, 30], [61, 862, 35], [153, 940, 45], [286, 872, 55], [203, 790, 40], [301, 680, 30], [126, 809, 25], [209, 829, 30], [31, 896, 15]];
   contourSets.forEach(({ ft, lines }) => lines.filter(pts => pathLength(pts) >= 45).forEach(pts => {
     const free = pts.map((p, i) => [p, i]).filter(([[x, y]]) => x > BOX.x0 + 10 && x < BOX.x1 - 12 && y > BOX.y0 + 8 && y < BOX.y1 - 8
       && busy.every(b => x < b.x0 - 6 || x > b.x1 + 6 || y < b.y0 - 5 || y > b.y1 + 5)
@@ -399,8 +399,8 @@ function renderLegend() {
   row(rect({ fill: COLOR.pad, stroke: COLOR.padEdge }), 'Graded pad');
   row(rect({ fill: COLOR.road, stroke: COLOR.roadEdge }), 'Road mix: drives and paths');
   row(s => s.append(svgNode('line', { x1: 2, y1: 7, x2: 28, y2: 7, stroke: COLOR.fence, 'stroke-width': 2.4 })), 'Fence (lot line)');
-  row(s => s.append(svgNode('line', { x1: 2, y1: 7, x2: 28, y2: 7, stroke: COLOR.ditch, 'stroke-width': 2, 'stroke-dasharray': '5 3' })), 'Old ditch line (lidar)');
-  row(s => s.append(svgNode('line', { x1: 2, y1: 7, x2: 28, y2: 7, ...pipeStyle(2) })), 'Water main and branches, 2 in PVC');
+  row(s => s.append(svgNode('line', { x1: 2, y1: 7, x2: 28, y2: 7, stroke: COLOR.ditch, 'stroke-width': 2, 'stroke-dasharray': '5 3' })), 'Old ditch: berm on the slope chart');
+  row(s => s.append(svgNode('line', { x1: 2, y1: 7, x2: 28, y2: 7, ...pipeStyle(2) })), '2 in PVC: irrigation main, and the pasture line in the old ditch');
   row(s => s.append(svgNode('line', { x1: 2, y1: 7, x2: 28, y2: 7, ...pipeStyle(1.5) })), 'Water line, 1.5 in PVC');
   row(s => s.append(svgNode('line', { x1: 2, y1: 7, x2: 28, y2: 7, ...wellStyle })), 'Well line, red dots, 5 ft down');
   row(s => wellMark(s, 15, 7), 'Well head, 18 ft east of the pump house');
@@ -434,7 +434,7 @@ function renderInventory() {
   };
   const rows = [['1', 'shed'], ['2', 'outhouse'], ['3', 'container_solar'], ['3', 'container_storage'], ['4', 'house_pad'], ['4', 'house'], ['4', 'garage'],
     ['5', 'irrigation_tank'], ['6', 'pump_house'], ['7', 'workshop_pad'], ['7', 'workshop'], ['8', 'rv_pad'], ['8', 'rv'], ['9', 'driveway'], ['9', 'yard'], ['9', 'loop_path'],
-    ['', 'water_main'], ['', 'well'], ['', 'well_line'], ['', 'well_line_shed']];
+    ['', 'water_main'], ['', 'water_pasture'], ['', 'well'], ['', 'well_line'], ['', 'well_line_shed']];
   const addRow = (cells, planned) => {
     const tr = element('tr');
     if (planned) tr.className = 'planned';
@@ -479,7 +479,7 @@ function renderNotes() {
   [
     'Placed from the owner\'s drone photos (October 2026), fitted to USGS aerial imagery and lidar: buildings, containers, tank, and pump house to about 3 ft; pad edges and paths to 5–10 ft.',
     'Planned house (40 × 66), garage (east end, flush with the house\'s south wall, about 30 × 26 placeholder), and workshop (32 × 48, long side east–west) are drawn where the owner described them; move them in data/site_grid.js once their final spots are staked.',
-    'Old ditch: the lidar, flown before the pads were graded, shows a shallow ditch with a berm on its north side running west along the north edge of the house pad and past the containers. If any of it remains, grade so runoff passes around the house, containers, and pump house, not against them.',
+    'Old ditch: the high spot on the slope chart is the berm. The 2 in PVC in it is drawn with one gentle bend, on that berm, including under the solar container, pump house, and RV. Those buildings were placed after the lidar flight. The berm is on the north side of a shallow channel. The pipe is about 2.5 ft down and continues to a cow pasture watering hole. Do not cut it. Grade so runoff passes around the house, containers, and pump house, not against them.',
     `Water lines and hydrants are traced from the owner's hand-drawn map (October 2026), to about 5 ft; the 1.5 in line along the west fence is the covered trench in the drone photo. Valve boxes sit ${HYDRANT_BOXES[0].setback_ft} ft back on a hydrant's line. Keep posts, tree holes, and other digging off them. The well head is 18 ft east of the pump house, on that building's midline. A line 5 ft down runs from the head into the east wall; the well hydrant is 1 ft west of the head. The red dotted branch runs north from the head, in front of the workshop pad and east of it, to the red hydrant 4 ft east of the shed's northeast corner.`,
     'The homestead sits near the top of the lot: the house pad is about 1–2 ft below the highest ground (east fence) and roughly 20 ft above the NW corner, so water lines to the orchard run downhill.'
   ].forEach(t => document.getElementById('notes').append(element('li', t)));

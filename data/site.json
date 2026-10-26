@@ -1,6 +1,6 @@
 {
   "name": "Mountain Prairie Acres",
-  "updated": "2026-10-24",
+  "updated": "2026-10-25",
   "units": "ft",
   "frame": {
     "origin": "NW fence corner",
@@ -658,6 +658,23 @@
       ],
       "notes": "Buried line about 20 ft inside the west fence with a frost-free hydrant at each end, fed by the 1.5 in west line where it crosses at y 890 (size taken to match that line). Its covered trench shows in the drone photo; the owner confirmed it runs south to the hydrant at y 998. The north end was 30 ft short of the middle line (it stopped at y 697); the October 24, 2026 tape puts the hydrant on that line, at y 667. Keep digging, posts, and tree holes off this line.",
       "accuracy_ft": 6
+    },
+    {
+      "id": "water_pasture",
+      "name": "Pasture water line in the old ditch, 2 in PVC",
+      "group": "utility",
+      "status": "existing",
+      "kind": "water_pipe",
+      "size_in": 2,
+      "shape": "line",
+      "width": 3,
+      "pts": [
+        [0, 926],
+        [80, 921],
+        [331, 846]
+      ],
+      "notes": "Active 2 in PVC in the old ditch, about 2.5 ft down, with one gentle bend. Same path as old_ditch: the berm on the slope chart, including where that berm now lies under the solar container, pump house, and RV. It runs the width of the lot and continues to a cow pasture watering hole. Not part of the irrigation main. Owner, October 2026. Do not cut it: keep digging, posts, and tree holes off this line.",
+      "accuracy_ft": 8
     },
     {
       "id": "water_branch_island",
@@ -1657,48 +1674,12 @@
       "shape": "line",
       "width": 8,
       "pts": [
-        [
-          0,
-          950.3
-        ],
-        [
-          30,
-          942.3
-        ],
-        [
-          110,
-          931.2
-        ],
-        [
-          130,
-          925.4
-        ],
-        [
-          150,
-          915.6
-        ],
-        [
-          170,
-          910.5
-        ],
-        [
-          210,
-          892.9
-        ],
-        [
-          260,
-          890.2
-        ],
-        [
-          300,
-          886.4
-        ],
-        [
-          330,
-          893.6
-        ]
+        [0, 926],
+        [80, 921],
+        [331, 846]
       ],
-      "notes": "Shallow ditch, berm on its north side, in the lidar (before the pads were graded). It carries water west past the containers; check it on the ground."
+      "accuracy_ft": 8,
+      "notes": "Berm on the slope chart (October 2026), drawn as the buried 2 in PVC would lie: one gentle bend, not the zigzags of the earlier trace. The lidar was flown before the pads were graded, so the line is shown under the solar container, pump house, and RV where the berm plots. The berm is on the north side of a shallow channel. An active 2 in PVC (water_pasture) lies in this ditch about 2.5 ft down and continues to a cow pasture watering hole. Do not cut it. The ditch still carries water west."
     }
   ]
 }
