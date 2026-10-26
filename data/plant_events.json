@@ -338,6 +338,30 @@
       "notes": "Owner identified the AT-Unk apricot at R11-C2 as Patterson, the purchased tree (catalog row 50) that had no other tagged tree. Metal tag updated from AT-Unk to AT-Patterson."
     },
     {
+      "id": "owner-2026-10-26-i63-1-planted",
+      "plant_id": "i63-1",
+      "event_type": "planting_reported",
+      "recorded_on": "2026-10-26",
+      "occurred_on": null,
+      "notes": "Owner report. Planted 20 ft south of R1 and 4 ft west of AL-UrbR (x 142, y 620). Exact day not supplied."
+    },
+    {
+      "id": "owner-2026-10-26-i64-1-planted",
+      "plant_id": "i64-1",
+      "event_type": "planting_reported",
+      "recorded_on": "2026-10-26",
+      "occurred_on": null,
+      "notes": "Owner report. Planted 20 ft south of R1 and 4 ft east of AL-UrbR (x 150, y 620). The owner wrote AL-Urb Gran; the tag is AL-UrbGrn. Exact day not supplied."
+    },
+    {
+      "id": "owner-2026-10-26-i65-1-planted",
+      "plant_id": "i65-1",
+      "event_type": "planting_reported",
+      "recorded_on": "2026-10-26",
+      "occurred_on": null,
+      "notes": "Owner report. Planted 20 ft south of R1 on the orchard center line (x 146, y 620). Exact day not supplied."
+    },
+    {
       "id": "owner-2026-10-18-i108-1-lost-before-planting",
       "plant_id": "i108-1",
       "event_type": "lost_before_planting",

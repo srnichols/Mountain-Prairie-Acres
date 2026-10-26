@@ -59,7 +59,7 @@
       <div class="row"><svg viewBox="0 0 30 16"><circle cx="15" cy="8" r="5" fill="#1B4F9C"/><text x="15" y="10.4" text-anchor="middle" font-size="7" font-weight="700" fill="#fff">H</text></svg>Frost-free hydrant (1.5 in line, dashed)</div>
       <div class="row"><svg viewBox="0 0 30 16"><circle cx="15" cy="8" r="5" fill="#CFE3C0" stroke="#7BA15A" stroke-width="1.2"/></svg>Orchard trees (R1 is the south row)</div>
       <div class="row"><svg viewBox="0 0 30 16"><rect x="2" y="2" width="26" height="12" fill="#CFE3C0"/><rect x="11" y="2" width="9" height="12" fill="#DDD0B8"/></svg>West windbreak (green) and its tractor alley (tan)</div>
-      <div class="row"><svg viewBox="0 0 30 16"><path d="M15,2 L21,8 L15,14 L9,8Z" fill="#185FA5" stroke="#C2412F" stroke-width="2"/></svg>WS90 pole site in the weather plan</div>
+      <div class="row"><svg viewBox="0 0 30 16"><path d="M15,2 L21,8 L15,14 L9,8Z" fill="#185FA5" stroke="#0E3A66" stroke-width="1.4"/></svg>WS90 pole, concreted</div>
       <div class="row"><svg viewBox="0 0 30 16"><path d="M1,12 C8,10 14,5 29,3" stroke="#9A8670" stroke-width="1.2" fill="none"/></svg>One-foot contours from lidar (feet above sea level)</div>
       <div class="row"><svg viewBox="0 0 30 16"><rect x="2" y="2" width="26" height="12" fill="rgba(24,95,165,0.07)" stroke="rgba(24,95,165,0.6)" stroke-width="1.6"/></svg>The cells the buildings use: A13 to C13, and D13 to F14</div>
     </div>
@@ -185,7 +185,7 @@
         <li>Ask the USDA Service Center about EQIP (records, ranking dates, whether a 76 ft custom length qualifies) and apply before buying or digging anything.</li>
         <li>Ask Elmore County in writing for the agricultural exemption, the setback and easement check, and whether the retaining wall at the berm's foot needs a permit.</li>
         <li>Ask CatchSunlight for the design snow and wind loads, the clear space wanted on each side, and a quote for two bays.</li>
-        <li>Put a temperature sensor at the site when the <a href="weather_station_plan.html">weather station</a> goes in, and watch a full winter before committing. Move the WS90 pole site while the weather plan is still a plan.</li>
+        <li>The WS90 pole is concreted on the property middle line. Put a temperature sensor there when the <a href="weather_station_plan.html">weather station</a> goes in. A west wind still has the west tunnel upwind, so treat the first winter's wind and rain readings as a check, not as open-field numbers.</li>
         <li>Run a perc test where the pit's sump would go; the water plan already calls for perc tests.</li>
         <li>Keep roughly <span id="t-keep"></span> free of trees, pipes, and basins; build the 2027 spreader along the orchard edge only. Line up the local fill.</li>
       </ul></td></tr>
@@ -358,11 +358,11 @@
 
     // Nearby
     const shedN = [88, SG.feature('shed').y0], hyd = SG.feature('hydrant_fence_north'), wb = SG.feature('windbreak');
-    const wsX = 38 + 6 * 18, wsY = 640;
+    const pole = SG.feature('ws90_pole'), wsX = pole.x, wsY = pole.y;
     fill('nearby', [
       ['Orchard R1 trunks and the planned edge', G.R1_Y === G.ORCHARD_EDGE_Y ? `y ${G.R1_Y} (trunks on the planned edge)` : `y ${G.R1_Y} and y ${G.ORCHARD_EDGE_Y}`, { t: G.R1_Y === G.ORCHARD_EDGE_Y ? `The October 24 tape puts the R1 trunks on the planned edge. The tunnel's north wall is ${GOTHIC.y0 - G.R1_Y} ft south of both: that gap is the room left for the spreader basins, snow sliding off the roof, and a path.` : `The tunnel's north wall is ${GOTHIC.y0 - G.R1_Y} ft from R1 and ${GOTHIC.y0 - G.ORCHARD_EDGE_Y} ft from the planned edge: room for the spreader basins, snow sliding off the roof, and a path.` }],
       ['Spreader above R1 (water plan, zone 2)', 'along the orchard\'s south edge', 'Catches sheet flow from upslope and spills into the R1 and R2 basins. The tunnel now stands upslope of it, so its roof water and the toe and diversion swales can feed it.'],
-      ['WS90 wind and rain pole site (weather plan)', `x ${wsX}, y ${wsY}`, { h: `<strong>Still close.</strong> ${wsX - GOTHIC.x1} ft east of the tunnel's east end, only ${fmt((wsX - GOTHIC.x1) / GOTHIC.peak, 1)} times its ${GOTHIC.peak} ft height, and in the tunnel's lee in a west wind: a 76 ft wall upwind would still disturb its wind and rain readings. The <a href="weather_station_plan.html">weather plan</a> can move it farther east or south while it is still a plan.` }],
+      ['WS90 wind and rain pole, concreted', `x ${wsX}, y ${wsY}`, { h: `${wsX - GOTHIC.x1} ft east of the west tunnel's east end and ${wsY - GOTHIC.y1} ft south of its wall, on the property middle line and the orchard center line. A west wind still has that tunnel upwind, only ${fmt((wsX - GOTHIC.x1) / GOTHIC.peak, 1)} times its ${GOTHIC.peak} ft height from the east end, so the wind and rain readings may show that wake. It is set; see the <a href="weather_station_plan.html">weather plan</a>.` }],
       ['Frost-free hydrant at the west fence', `x ${hyd.x}, y ${hyd.y}`, `${fmt(dist([hyd.x, hyd.y], [GOTHIC.x0, GOTHIC.ridgeY]), 0)} ft to the tunnel's west door and ${fmt(dist([hyd.x, hyd.y], [PIT.x0, PIT.y1 - 8]), 0)} ft to the pit's west wall: the water source. The buried 1.5 in line starts at the hydrant and runs south along x ${fmt(hyd.x, 0)}, ${fmt(cut.x0 - hyd.x, 0)} ft west of the open cut (x ${cut.x0}); the berm's retaining wall (x ${fmt(BERM.endX0)} at its west end) is ${fmt(BERM.endX0 - hyd.x, 0)} ft east of the hydrant.`],
       ['Red shed (power; the weather gateway)', `north wall at y ${shedN[1]}`, `${fmt(dist(shedN, [PIT.centerX, PIT.y1]), 0)} ft to the pit's south wall and ${fmt(dist(shedN, [GOTHIC.centerX, GOTHIC.y1]), 0)} ft to the tunnel's: the nearest power. Check its radio range to a sensor inside each building (the metal frame may cost range).`],
       ['West windbreak and its tractor alley', `windbreak x 0 to 35, y ${wb.y0} to ${wb.y1}; alley x ${G.ALLEY.x0} to ${G.ALLEY.x1}`, `The windbreak ends ${GOTHIC.y0 - wb.y1} ft north of the tunnel's northwest corner, and the alley runs down to the tunnel's west end, ${GOTHIC.x0 - G.ALLEY.x1} ft east of the alley's edge. See the alley section above.`],

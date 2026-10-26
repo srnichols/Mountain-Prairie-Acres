@@ -125,7 +125,13 @@ class PropertyDataTest(unittest.TestCase):
         self.assertEqual(query("SELECT state FROM orchard_spots WHERE name = 'R8-C1'", self.root)[0]["state"], "open")
         outside = query("SELECT * FROM current_plantings WHERE plant_group = 'outside-orchard'", self.root)
         self.assertEqual(len(outside), 3)
-        self.assertTrue(all(r["site_ref"] == "PENDING" and r["location_id"] is None for r in outside))
+        # Planted 20 ft south of R1, on and 4 ft either side of odd-row column 7. x 150 is the C/D cell line, so the east tree is D13.
+        self.assertEqual({r["plant_id"]: (r["status"], r["location_name"], r["site_ref"], r["planted_on"]) for r in outside},
+                         {"i65-1": ("planted", "AL-UrbR", "C13-E46-S20", "2026-10"),
+                          "i63-1": ("planted", "AL-UrbGld", "C13-E42-S20", "2026-10"),
+                          "i64-1": ("planted", "AL-UrbGrn", "D13-E0-S20", "2026-10")})
+        for spot in ("R4-C9", "R5-C9", "R5-C10"):
+            self.assertEqual(query(f"SELECT state FROM orchard_spots WHERE name = '{spot}'", self.root)[0]["state"], "open", spot)
         dead = query("SELECT * FROM current_plantings WHERE plant_id = 'i108-1'", self.root)[0]
         self.assertEqual(dead["status"], "dead")
         self.assertEqual(dead["site_ref"], "PENDING", "A vacant planned spot is not the dead plant's current location")
@@ -155,7 +161,8 @@ class PropertyDataTest(unittest.TestCase):
         self.assertEqual({r["planted_on"] for r in planted}, {"2026-10"})
         self.assertTrue(all("October 2026" in r["notes"] for r in planted))
         self.assertEqual(query("SELECT COUNT(*) AS n FROM plantings WHERE status = 'planned'", self.root)[0]["n"], 0)
-        # The rootstock was reported planted earlier with no date; dead trees and the outside-orchard apples are not planted.
+        # The rootstock was reported planted earlier with no date. Dead trees are not planted.
+        # The Urban apples' old outside-orchard rows stay as history, with no date; the planted rows are separate.
         self.assertIsNone(query("SELECT planted_on FROM plantings WHERE plant_id = 'i56-1'", self.root)[0]["planted_on"])
         dead = query("SELECT plant_id, planted_on FROM plantings WHERE status = 'dead'", self.root)
         self.assertEqual(sorted(r["plant_id"] for r in dead), ["i108-1", "i80-1", "i83-1", "i84-1", "i88-1"])
@@ -211,7 +218,11 @@ class PropertyDataTest(unittest.TestCase):
         validate_data(self.data)
 
     def test_features_terrain_water_and_gps_are_queryable(self):
-        self.assertEqual(query("SELECT COUNT(*) AS n FROM site_features", self.root)[0]["n"], 78)
+        self.assertEqual(query("SELECT COUNT(*) AS n FROM site_features", self.root)[0]["n"], 79)
+        pole = query("SELECT center_x_ft, center_y_ft, status FROM site_features WHERE id = 'ws90_pole'", self.root)[0]
+        self.assertEqual(pole["status"], "existing")
+        self.assertAlmostEqual(pole["center_x_ft"], 146)
+        self.assertAlmostEqual(pole["center_y_ft"], 667)
         self.assertEqual(query("SELECT COUNT(*) AS n FROM site_features WHERE kind = 'valve_box'", self.root)[0]["n"], 15)
         self.assertEqual(query("SELECT COUNT(*) AS n FROM terrain_samples", self.root)[0]["n"], 18009)
         self.assertEqual(query("SELECT COUNT(*) AS n FROM climate_months", self.root)[0]["n"], 12)
@@ -522,6 +533,10 @@ class PropertyDataTest(unittest.TestCase):
         path.write_text(json.dumps(locations), encoding="utf-8")
         path = self.root / "data" / "plantings.json"
         plantings = json.loads(path.read_text(encoding="utf-8"))
+        # The tree is already planted outside the orchard, so the fixture retires that row before adding a test location.
+        for record in plantings["records"]:
+            if record["plant_id"] == "i64-1" and record["status"] in ("planned", "planted"):
+                record["status"] = "vacated"
         plantings["records"].append({
             "id": "outside-i64-1", "plant_id": "i64-1", "location_id": "outside-c17",
             "status": "planned", "planted_on": None, "recorded_on": "2026-10-12", "notes": "Test fixture only",

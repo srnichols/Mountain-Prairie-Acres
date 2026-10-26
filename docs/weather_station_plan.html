@@ -162,7 +162,7 @@
 <section aria-labelledby="page-title">
 <h1 id="page-title">Weather Station and Micro-Climate Sensor Plan</h1>
 <p class="subtitle">Prairie Plants · An <a href="https://shop.ecowitt.com/collections/starter-product">Ecowitt</a> Wi-Fi station with frost, soil, and rain sensors for the orchard, freeze alerts for the red shed and pump house, and an auto-fill plan for the irrigation tank · prices and specifications checked October 18–19, 2026</p>
-<p class="source-note">Companion to the <a href="site_climate.html">site climate page</a>, which notes that the lot has no thermometer yet, and the <a href="orchard_water_harvesting_plan.html">water-harvesting plan</a>, which calls for a rain gauge. Prices, specifications, and range figures come from Ecowitt's store pages and manuals and from the other sellers' pages linked below, and they will drift, so follow the links before ordering. This page summarizes them in its own words and links to the sellers; it does not copy their catalogs. Sensor sites are proposals placed with the <a href="site_master_grid.html">site master grid</a> and the <a href="orchard_pollination_grid.html">planting layout</a>, and every distance is measured on that grid.</p>
+<p class="source-note">Companion to the <a href="site_climate.html">site climate page</a>, which notes that the lot has no thermometer yet, and the <a href="orchard_water_harvesting_plan.html">water-harvesting plan</a>, which calls for a rain gauge. Prices, specifications, and range figures come from Ecowitt's store pages and manuals and from the other sellers' pages linked below, and they will drift, so follow the links before ordering. This page summarizes them in its own words and links to the sellers; it does not copy their catalogs. The WS90 pole is concreted; the other sensor sites are still proposals. Both are placed with the <a href="site_master_grid.html">site master grid</a> and the <a href="orchard_pollination_grid.html">planting layout</a>, and every distance is measured on that grid.</p>
 
 <h2>The Pick in Brief</h2>
 <p class="lead">Buy the <strong><a href="https://shop.ecowitt.com/products/gw3001">Wittboy GW3001</a></strong> kit (<strong>$204.99</strong>): a <a href="https://shop.ecowitt.com/products/gw3000">GW3000</a> gateway and a <a href="https://shop.ecowitt.com/products/ws90">WS90</a> outdoor array. It suits a remote, Starlink-connected site better than anything else in <a href="https://shop.ecowitt.com/collections/starter-product">Ecowitt's lineup</a>. It costs $5 more than the older <a href="https://shop.ecowitt.com/products/wittboy-gw2001">GW2001</a> kit ($199.99), whose gateway lacks the SD slot.</p>
@@ -497,7 +497,8 @@
       { id: '6', name: 'High point', at: 'inside the east fence', xy: [325, SG.feature('high_point').y], kit: 'WN31' },
       { id: '7', name: 'Northwest frost pocket', at: 'low corner by the road', xy: [15, 70], kit: 'WN31 (second gateway)' }
     ];
-    var ws90 = { id: 'W', name: 'WS90 pole', at: 'open ground south of the orchard', xy: [SG.treeXY(1, 7)[0], 640], kit: 'WS90, WH40H, CoCoRaHS gauge' };
+    var wsPole = SG.feature('ws90_pole');
+    var ws90 = { id: 'W', name: 'WS90 pole', at: 'concreted on the property middle line and the orchard center line', xy: [wsPole.x, wsPole.y], kit: 'WS90, WH40H, CoCoRaHS gauge' };
     var shed = { id: 'G', name: 'Gateway', at: 'red shed, power here', xy: gate, kit: 'GW3000 (in the kit)' };
     var gw2 = { id: 'G2', name: 'Second gateway, if needed', at: 'near tree R14-C4', xy: SG.treeXY(14, 4) };
     var indoor = [

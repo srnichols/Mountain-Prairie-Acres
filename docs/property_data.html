@@ -42,7 +42,7 @@
 <tr><td>Site baselines</td><td>Reference numbers the climate record does not hold, from the nearest stations, models, and county documents: snow and precipitation by water year at the Prairie SNOTEL, NOAA Atlas 14 design storms, degree days and chill hours from hourly readings, wind (a model at the lot and two measured stations), solar radiation and humidity, Elmore County's frost depth, snow load, wind, and seismic values, and hail reports within 25 miles. None is a reading on the lot; once the weather station has run a year, its monthly averages can be compared with them (SQL view <code>site_baseline_months</code>). Shown on the <a href="site_baselines.html">site baselines page</a>.</td></tr>
 </tbody>
 </table>
-<p>The water-harvesting map now uses the current orchard records: the dead pear, cherry, and three peaches and three Urban apples are not shown occupying their vacated spots, and the planted M-111 rootstock is included for watering. The dead trees all died in pots before planting; none was planted and lost.</p>
+<p>The water-harvesting map now uses the current orchard records: the dead pear, cherry, and three peaches and three Urban apples are not shown occupying their vacated spots, and the planted M-111 rootstock is included for watering. The dead trees all died in pots before planting; none was planted and lost. The Urban apples are planted outside the orchard, 20 ft south of R1.</p>
 
 <h2>Build and Query Locally</h2>
 <p>From the repository root, with Python 3.11+ and SQLite 3.37+ with JSON support:</p>
@@ -56,7 +56,7 @@ python tools\property_data.py query --file database\queries\water_budget.sql</pr
 <h2>Record a Location Without Duplicating It</h2>
 <p><code>i56-1</code> identifies one M-111 rootstock. <code>orchard-r6-c3</code> identifies its spot at x 83, y 500, producing <strong>B11-E33-S0</strong>. A replacement plant can reuse the spot without reusing the dead plant's identity.</p>
 <p>SiteRef, master-cell offsets, and GPS coordinates are calculated from lot feet. For an input code, use <code>python tools\site_grid.py site-ref C17-E12-S18</code> to get x 112, y 818. See the <a href="site_master_grid.html#code-title">grid guide</a> for GPS conversion and its accuracy limits.</p>
-<p>Every orchard assignment is now <strong>planted</strong>: the 106 fruit trees in October 2026 (only the month was reported, so <code>planted_on</code> is <code>2026-10</code>) and the R6-C3 M-111 rootstock earlier (its exact planting date was not supplied). Dead trees and the three Urban apples that move outside the orchard are not planted. A <strong>planned</strong> assignment is not confirmation of planting, so use that status until a tree is in the ground. Outside-orchard locations display <strong>PENDING</strong> until assigned. An old vacated spot is not the tree's new location.</p>
+<p>Every orchard assignment is now <strong>planted</strong>: the 106 fruit trees in October 2026 (only the month was reported, so <code>planted_on</code> is <code>2026-10</code>) and the R6-C3 M-111 rootstock earlier (its exact planting date was not supplied). Dead trees are not planted. The three Urban apples are planted outside the orchard (October 2026; the day was not given). A <strong>planned</strong> assignment is not confirmation of planting, so use that status until a tree is in the ground. An outside location with no assignment still displays <strong>PENDING</strong>. An old vacated spot is not the tree's new location.</p>
 
 <h2>Updating and Publishing</h2>
 <ol>

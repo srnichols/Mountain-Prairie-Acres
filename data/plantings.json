@@ -1035,6 +1035,33 @@
       "planted_on": "2026-10",
       "recorded_on": "2026-10-18",
       "notes": "Planted in October 2026; the owner finished the last block on 2026-10-18. Exact planting date not supplied."
+    },
+    {
+      "id": "planting-i63-1-set",
+      "plant_id": "i63-1",
+      "location_id": "outside-al-urbgld",
+      "status": "planted",
+      "planted_on": "2026-10",
+      "recorded_on": "2026-10-26",
+      "notes": "Owner report 2026-10-26: planted 20 ft south of R1 and 4 ft west of AL-UrbR, which is on the orchard center line (odd-row column 7, x 146). The owner did not give the day, so planted_on is October 2026."
+    },
+    {
+      "id": "planting-i64-1-set",
+      "plant_id": "i64-1",
+      "location_id": "outside-al-urbgrn",
+      "status": "planted",
+      "planted_on": "2026-10",
+      "recorded_on": "2026-10-26",
+      "notes": "Owner report 2026-10-26: planted 20 ft south of R1 and 4 ft east of AL-UrbR, which is on the orchard center line (odd-row column 7, x 146). The owner wrote AL-Urb Gran; the tag is AL-UrbGrn (Urban Green). The owner did not give the day, so planted_on is October 2026."
+    },
+    {
+      "id": "planting-i65-1-set",
+      "plant_id": "i65-1",
+      "location_id": "outside-al-urbr",
+      "status": "planted",
+      "planted_on": "2026-10",
+      "recorded_on": "2026-10-26",
+      "notes": "Owner report 2026-10-26: planted 20 ft south of R1 on the orchard center line (odd-row column 7, the R1-C7 line, x 146). AL-UrbR is on that line. The owner did not give the day, so planted_on is October 2026."
     }
   ]
 }

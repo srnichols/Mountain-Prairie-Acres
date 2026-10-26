@@ -212,7 +212,10 @@ const plantsOf = profile => profile.inventory_rows.flatMap(row => {
 });
 // Only living plants are labeled, so an orchard update here is a tree planned outside the orchard.
 const spotLabel = plant => {
-  if (data.ORCHARD_UPDATES[plant.id]) return 'outside the orchard (location pending)';
+  if (data.ORCHARD_UPDATES[plant.id]) {
+    const outside = data.PLANT_LOCATIONS[plant.id];
+    return outside ? `outside the orchard (${outside.site_ref})` : 'outside the orchard (location pending)';
+  }
   const spot = data.PLANT_LOCATIONS[plant.id];
   const match = spot && /^orchard-r(\d+)-c(\d+)$/.exec(spot.location_id);
   if (match) return `R${match[1]}-C${match[2]}${spot.status === 'planted' ? ' (planted)' : ''}`;

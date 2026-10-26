@@ -68,7 +68,7 @@ water_observations -> locations (when supplied)
 
 ## Views
 
-- **`current_plantings`**: individual plants and current active planned/planted locations. Unassigned/dead plants show `PENDING`; an outside-orchard plan does not pretend to occupy its old orchard slot.
+- **`current_plantings`**: individual plants and current active planned/planted locations. Unassigned/dead plants show `PENDING`; an outside-orchard plan does not pretend to occupy its old orchard slot. A planted outside location shows its SiteRef.
 - **`orchard_spots`**: every orchard spot, its reservation, replacement plan, and occupancy (`planned`, `planted`, `reserved`, `open`).
 - **`planned_spots`**: each spot in the planting plan with its occupancy (`open`, or `reserved` for the R1 graft spots), recorded replacement type, and the planned cultivar, `method` (`buy` or `graft`), library profile, rootstock note, and role. Example: `SELECT spot, method, cultivar, rootstock FROM planned_spots ORDER BY orchard_row, orchard_column`.
 - **`location_refs`**: SiteRef and offsets calculated from lot coordinates and the master cells.

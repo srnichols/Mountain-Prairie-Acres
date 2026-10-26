@@ -514,12 +514,10 @@ function siteMap(host) {
   });
   label(146, 766.8, 'ground falls to the NW', 't-note', 9.5, { 'text-anchor': 'middle' });
 
-  // The weather plan's WS90 pole site stands 33 ft east of the tunnel's east end
-  const ws = [146, 640];
-  poly([[ws[0], ws[1] - 3.6], [ws[0] + 3.6, ws[1]], [ws[0], ws[1] + 3.6], [ws[0] - 3.6, ws[1]]], { fill: '#185FA5', stroke: C.flag, 'stroke-width': 2 }, g);
-  label(150.5, 639.2, 'WS90 pole site in the', 't-warn', 9.5);
-  label(150.5, 644.2, `weather plan: ${ws[0] - GOTHIC.x1} ft off`, 't-warn', 9.5);
-  line([[GOTHIC.x1 + 0.6, ws[1]], [ws[0] - 4.4, ws[1]]], { stroke: C.flag, 'stroke-width': 1, 'stroke-dasharray': '2 2' }, g);
+  // The concreted WS90 pole, from site data: on the orchard center line and the taped property middle line.
+  const pole = root.SiteGrid.feature('ws90_pole'), ws = [pole.x, pole.y];
+  poly([[ws[0], ws[1] - 3.6], [ws[0] + 3.6, ws[1]], [ws[0], ws[1] + 3.6], [ws[0] - 3.6, ws[1]]], { fill: '#185FA5', stroke: '#0E3A66', 'stroke-width': 1.4 }, g);
+  label(ws[0] + 5, ws[1] - 1.2, 'WS90 pole, set', 't-note', 9.5);
   // Scale bar and north arrow
   line([[5, 765], [55, 765]], { stroke: C.ink, 'stroke-width': 2.4 }, g);
   [5, 30, 55].forEach(x => line([[x, 763], [x, 767]], { stroke: C.ink, 'stroke-width': 1.4 }, g));

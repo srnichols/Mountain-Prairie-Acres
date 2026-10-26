@@ -2145,6 +2145,39 @@
       "reserved_for": null,
       "replacement_year": null,
       "replacement_type": null
+    },
+    {
+      "id": "outside-al-urbgld",
+      "name": "AL-UrbGld",
+      "x_ft": 142,
+      "y_ft": 620,
+      "orchard_row": null,
+      "orchard_column": null,
+      "reserved_for": null,
+      "replacement_year": null,
+      "replacement_type": null
+    },
+    {
+      "id": "outside-al-urbgrn",
+      "name": "AL-UrbGrn",
+      "x_ft": 150,
+      "y_ft": 620,
+      "orchard_row": null,
+      "orchard_column": null,
+      "reserved_for": null,
+      "replacement_year": null,
+      "replacement_type": null
+    },
+    {
+      "id": "outside-al-urbr",
+      "name": "AL-UrbR",
+      "x_ft": 146,
+      "y_ft": 620,
+      "orchard_row": null,
+      "orchard_column": null,
+      "reserved_for": null,
+      "replacement_year": null,
+      "replacement_type": null
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "name": "Mountain Prairie Acres",
-  "updated": "2026-10-25",
+  "updated": "2026-10-26",
   "units": "ft",
   "frame": {
     "origin": "NW fence corner",
@@ -1680,6 +1680,18 @@
       ],
       "accuracy_ft": 8,
       "notes": "Berm on the slope chart (October 2026), drawn as the buried 2 in PVC would lie: one gentle bend, not the zigzags of the earlier trace. The lidar was flown before the pads were graded, so the line is shown under the solar container, pump house, and RV where the berm plots. The berm is on the north side of a shallow channel. An active 2 in PVC (water_pasture) lies in this ditch about 2.5 ft down and continues to a cow pasture watering hole. Do not cut it. The ditch still carries water west."
+    },
+    {
+      "id": "ws90_pole",
+      "name": "WS90 pole",
+      "group": "utility",
+      "status": "existing",
+      "kind": "weather_pole",
+      "shape": "point",
+      "x": 146,
+      "y": 667,
+      "accuracy_ft": 5,
+      "notes": "Concreted in. Owner report 2026-10-26: lined up with the center-line property markers (the taped middle line, y 667) and the orchard center line (odd-row column 7, x 146, the same line as the planted AL-UrbR). This replaces the weather plan's draft site at y 640. It is 33 ft east of the west gothic tunnel's east end and 20 ft south of that tunnel's south wall, so a west wind still has the tunnel upwind. As accurate as the middle line, about 5 ft."
     }
   ]
 }

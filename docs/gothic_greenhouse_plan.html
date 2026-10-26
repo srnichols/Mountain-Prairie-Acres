@@ -156,7 +156,7 @@
   <li><strong>Shade.</strong> The tunnel's shadow at noon on the shortest day ends just short of the orchard's planned edge and reaches the R1 row only before about <span id="s-r1-am"></span> and after about <span id="s-r1-pm"></span> solar time on that day; by March 21 it is about <span id="s-mar"></span> ft long (see the site plan). The pit's berm shades the tunnel's south wall only early and late in midwinter: before about <span id="s-from"></span> at the west end and after about <span id="s-to"></span> at the east end.</li>
   <li><strong>Doors and access.</strong> The doors are in the end walls: the west door faces the alley and is <span id="s-hyd"></span> ft from the hydrant, and the east door is about <span id="s-yard"></span> ft from the nearest corner of the yard, over open ground east of the berm (which ends at x <span id="s-berm-e1b"></span>). The pit stands between the west door and the yard, so a path to that door goes around the pit's west side. This draft draws the wide door at both ends (see End Walls); whether both need it, or one end can keep the standard door, is an open question on the site plan.</li>
   <li><strong>Roof water.</strong> The glazing is about <span id="s-glaze"></span> sq ft, roughly <span id="s-galin"></span> gal for each inch of rain. Whether the kit takes gutters, and how it sheds snow at the shallow peak, are questions for the vendor.</li>
-  <li><strong>Weather pole.</strong> The weather plan's WS90 pole site is <span id="s-ws"></span> ft east of the tunnel's east end, in the tunnel's lee in a west wind and only <span id="s-ws-ratio"></span> times its height away. The weather plan should move it farther east or south.</li>
+  <li><strong>Weather pole.</strong> The WS90 pole is concreted <span id="s-ws"></span> ft east of the tunnel's east end and <span id="s-ws-south"></span> ft south of the tunnel wall, on the property middle line. A west wind still has the tunnel upwind, about <span id="s-ws-ratio"></span> times the tunnel's height from the east end, so its wind and rain readings may show that wake. It is set; it is not a draft site to move.</li>
 </ul>
 </section>
 
@@ -280,7 +280,7 @@
     });
 
     const yard = SG.feature('yard').pts, eastDoor = [GOTHIC.x1, GOTHIC.ridgeY], westDoor = [GOTHIC.x0, GOTHIC.ridgeY], hyd = SG.feature('hydrant_fence_north');
-    const win = G.bermClearWindow(), r1h = G.r1ShadeHours(), wsX = 38 + 6 * 18;
+    const win = G.bermClearWindow(), r1h = G.r1ShadeHours(), pole = SG.feature('ws90_pole'), wsX = pole.x, wsY = pole.y;
     T({
       's-slope': `${fmt(plane.east * 100, 1)}% to the east and ${fmt(plane.south * 100, 1)}% to the south`, 's-along': fmt(plane.east * GOTHIC.length, 1), 's-across': fmt(plane.south * GOTHIC.span, 1),
       's-cut': fmt(pad.cutCuYd, 0), 's-high': fmt(pad.high, 1), 's-low': fmt(pad.low, 1), 's-gap': String(GOTHIC.y0 - G.ORCHARD_EDGE_Y),
@@ -290,7 +290,7 @@
       's-berm-x': `${G.PIT.x0} to ${G.PIT.x1}`, 's-berm-e0': String(G.BERM.endX0), 's-berm-e1': String(G.BERM.endX1), 's-berm-e1b': String(G.BERM.endX1),
       's-wall': String(G.BERM.wall), 's-clear': String(G.BERM.toeY - GOTHIC.y1), 's-clear2': String(G.BERM.toeY - GOTHIC.y1),
       's-r1-am': G.clock(r1h.before), 's-r1-pm': G.clock(r1h.after), 's-from': G.clock(win.from), 's-to': G.clock(win.to),
-      's-ws': String(wsX - GOTHIC.x1), 's-ws-ratio': fmt((wsX - GOTHIC.x1) / GOTHIC.peak, 1)
+      's-ws': String(wsX - GOTHIC.x1), 's-ws-south': String(wsY - GOTHIC.y1), 's-ws-ratio': fmt((wsX - GOTHIC.x1) / GOTHIC.peak, 1)
     });
 
     // Bed layout
