@@ -30,6 +30,7 @@ const GOTHIC = {
 GOTHIC.length = GOTHIC.x1 - GOTHIC.x0;
 GOTHIC.span = GOTHIC.y1 - GOTHIC.y0;
 GOTHIC.centerX = (GOTHIC.x0 + GOTHIC.x1) / 2;
+const EAST = root.SiteGrid.feature('greenhouse_gothic_east'); // the pit is centered on this twin, not on GOTHIC
 GOTHIC.ridgeY = (GOTHIC.y0 + GOTHIC.y1) / 2;
 GOTHIC.footprint = GOTHIC.length * GOTHIC.span;
 
@@ -61,7 +62,7 @@ function endDoorSpan(kind) {
 }
 
 const PIT = {
-  x0: 57, x1: 93, y0: 680, y1: 700,       // y0 is the north (berm) wall and y1 the south wall; the pit is centered on the tunnel (both on x 75)
+  x0: 216, x1: 252, y0: 680, y1: 700,     // y0 is the north (berm) wall and y1 the south wall; centered on the east gothic tunnel (both on x 234), 20 ft in from each end
   eave: 0.5, rise: 10, run: 19.5, ventAbove: 4,
   depth: { bed: 4, walk: 6, sink: 6, post: 8 },                    // below the original grade; the owner's depths: beds 4 ft, the cold zone in front 6 ft; the posts end 2 ft below the lowest floor
   northStrip: 2, bedWidth: 12, southWalk: 2, sinkWidth: 4,         // north to south, 20 ft in all
@@ -202,9 +203,9 @@ const overlap = (a0, a1, b0, b1) => { const lo = Math.max(a0, b0), hi = Math.min
 function shadowRow(date, hour) {
   const sun = sunPosition(declinationOf(date), hour), tunnelTip = tunnelShadowTip(sun), bermTip = bermShadowTip(sun);
   const crestN = PIT.y0 - BERM.top;
-  const wallShift = slide(sun, crestN - GOTHIC.y1), r1Shift = slide(sun, GOTHIC.ridgeY - R1_Y);
-  const wallX = bermTip < GOTHIC.y1 ? overlap(PIT.x0 + wallShift, PIT.x1 + wallShift, GOTHIC.x0, GOTHIC.x1) : null;   // where the berm's shadow lies on the tunnel's south wall, if it does
-  return { date, hour, sun, tunnelTip, tunnelReach: GOTHIC.y0 - tunnelTip, bermTip, bermReach: crestN - bermTip, wallX, bermOnTunnel: wallX ? GOTHIC.y1 - bermTip : 0,
+  const wallShift = slide(sun, crestN - EAST.y1), r1Shift = slide(sun, GOTHIC.ridgeY - R1_Y);
+  const wallX = bermTip < EAST.y1 ? overlap(PIT.x0 + wallShift, PIT.x1 + wallShift, EAST.x0, EAST.x1) : null;   // where the berm's shadow lies on the east tunnel's south wall, if it does
+  return { date, hour, sun, tunnelTip, tunnelReach: GOTHIC.y0 - tunnelTip, bermTip, bermReach: crestN - bermTip, wallX, bermOnTunnel: wallX ? EAST.y1 - bermTip : 0,
     r1X: [GOTHIC.x0 + r1Shift, GOTHIC.x1 + r1Shift] };
 }
 // On Dec 21, the solar hours around noon between which the berm's shadow stays off the tunnel's south wall.
@@ -397,9 +398,9 @@ function contourLines(levelM, box) {
 /* ---------- Figure: plan view of the site ---------- */
 function siteMap(host) {
   const SG = root.SiteGrid, F = id => SG.feature(id), site0 = site();
-  const V = { x0: -6, x1: 192, y0: 556, y1: 772 }, K = 1.4;   // K enlarges the type for the size the figure is shown at
+  const V = { x0: -6, x1: 290, y0: 556, y1: 772 }, K = 1.4;   // K enlarges the type for the size the figure is shown at; x1 clears the east tunnel and the pit's berm
   const cv = canvas({ u0: V.x0, u1: V.x1, v0: V.y0, v1: V.y1, scale: 4.4, margin: { l: 3, r: 3, t: 3, b: 3 },
-    title: 'Plan view, north up, of the two greenhouses south of the orchard: the gothic tunnel in cells A13 to C13 with its west end beside the windbreak alley, the pit greenhouse centered on it in B14 with its earth berm between them, the swales, and one-foot lidar contours.' });
+    title: 'Plan view, north up, of the greenhouses south of the orchard: the west gothic tunnel in cells A13 to C13 beside the windbreak alley, the east gothic tunnel lined up with the orchard edge, and the pit greenhouse centered on the east tunnel with its earth berm between them, plus the west swales and one-foot lidar contours.' });
   const { svg, defs, X, Y, S, add, line, poly, rect, circle, text } = cv;
   const clip = svgNode('clipPath', { id: 'gh-map-clip' });
   clip.append(svgNode('rect', { x: X(V.x0), y: Y(V.y0), width: (V.x1 - V.x0) * S, height: (V.y1 - V.y0) * S }));
@@ -427,13 +428,15 @@ function siteMap(host) {
   }
   contourLabels.forEach(([ft, y]) => label(186, y + 2.6, fmt(ft), '', 8.5, { 'text-anchor': 'middle', style: 'fill:#6E5A44;font-weight:600' }));
 
-  // The cells the buildings occupy (A13 to C14: the tunnel, the berm, and the pit) and the 50 ft grid
-  const inBlock = (x, y) => x < 150 && y >= 600 && y < 700;
-  rect(0, 600, 150, 700, { fill: 'rgba(24,95,165,0.07)', stroke: 'rgba(24,95,165,0.6)', 'stroke-width': 1.6 }, g);
+  // The cells the buildings occupy: the west tunnel in A13 to C13, the east tunnel in D13 to F13, and the pit in E14 to F14
+  const inBlock = (x, y) => (y >= 600 && y < 650 && x < 300) || (y >= 650 && y < 700 && x >= 200 && x < 300);
+  rect(0, 600, 150, 650, { fill: 'rgba(24,95,165,0.07)', stroke: 'rgba(24,95,165,0.6)', 'stroke-width': 1.6 }, g);
+  rect(150, 600, 300, 650, { fill: 'rgba(24,95,165,0.07)', stroke: 'rgba(24,95,165,0.6)', 'stroke-width': 1.6 }, g);
+  rect(200, 650, 300, 700, { fill: 'rgba(24,95,165,0.07)', stroke: 'rgba(24,95,165,0.6)', 'stroke-width': 1.6 }, g);
   for (let x = 0; x <= V.x1; x += 50) line([[x, V.y0], [x, V.y1]], { stroke: C.grid, 'stroke-width': 0.9 }, g);
   for (let y = Math.ceil(V.y0 / 50) * 50; y <= V.y1; y += 50) line([[0, y], [V.x1, y]], { stroke: C.grid, 'stroke-width': 0.9 }, g);
   const drawCellLabels = () => {
-    for (let x = 0; x < 200; x += 50) for (let y = Math.floor(V.y0 / 50) * 50; y < V.y1; y += 50) {
+    for (let x = 0; x < V.x1; x += 50) for (let y = Math.floor(V.y0 / 50) * 50; y < V.y1; y += 50) {
       const ref = SG.cellOf(x + 1, y + 1), block = inBlock(x, y);
       if (ref) label(x + 2, Math.max(y, V.y0) + 7.2, ref, '', block ? 11.5 : 9, { style: block ? 'fill:#185FA5;font-weight:700' : `fill:${C.gridLabel}` });
     }
@@ -477,6 +480,8 @@ function siteMap(host) {
   label(GOTHIC.centerX, GOTHIC.ridgeY - 3.4, `Gothic tunnel ${GOTHIC.span} ${SYM.times} ${GOTHIC.length} ft`, 't-glass', 13.5, { 'text-anchor': 'middle' });
   label(GOTHIC.centerX, GOTHIC.ridgeY + 8.6, `${GOTHIC.peak} ft peak, two ${GOTHIC.kitLength} ft bays, unheated`, 't-note', 10.5, { 'text-anchor': 'middle' });
   label(GOTHIC.centerX, 612.6, `${GOTHIC.y0 - ORCHARD_EDGE_Y} ft gap: spreader, snow slide, access`, 't-note', 10.5, { 'text-anchor': 'middle' });
+  rect(EAST.x0, EAST.y0, EAST.x1, EAST.y1, { fill: 'none', stroke: C.glass, 'stroke-width': 2.2, 'stroke-dasharray': '8 4' }, g);
+  label((EAST.x0 + EAST.x1) / 2, EAST.ridgeY || (EAST.y0 + EAST.y1) / 2 - 2, 'East gothic tunnel', 't-glass', 12, { 'text-anchor': 'middle' });
 
   // The pit's earth berm held by a retaining wall at its foot, the open cut, and the pit itself
   const R = BERM.run, yc = PIT.y0;
@@ -502,7 +507,7 @@ function siteMap(host) {
   line(SWALE.diversion, { stroke: C.water, 'stroke-width': 2.6, 'stroke-dasharray': '9 4', 'marker-end': 'url(#gh-arrow-blue)' }, g);
   label(110, 726.5, 'uphill diversion swale (schematic)', 't-water', 10.5, { 'text-anchor': 'middle' });
   label(2, 597.6, 'to the windbreak', 't-water', 9.5);
-  label(PIT.centerX, 650.6, `${BERM.toeY - GOTHIC.y1} ft clear: toe swale and snow-slide room`, 't-water', 9.5, { 'text-anchor': 'middle' });
+  label(GOTHIC.centerX, 650.6, `${BERM.toeY - GOTHIC.y1} ft clear: toe swale and snow-slide room`, 't-water', 9.5, { 'text-anchor': 'middle' });
   [[176, 626], [180, 670], [150, 712], [168, 748], [9, 640], [128, 748]].forEach(([x, y]) => {
     const gx = (SG.elevationFt(x + 8, y) - SG.elevationFt(x - 8, y)) / 16, gy = (SG.elevationFt(x, y + 8) - SG.elevationFt(x, y - 8)) / 16, n = Math.hypot(gx, gy);
     line([[x + 7 * gx / n, y + 7 * gy / n], [x - 7 * gx / n, y - 7 * gy / n]], { stroke: '#5F7F95', 'stroke-width': 2, 'marker-end': 'url(#gh-arrow-gray)' }, g);

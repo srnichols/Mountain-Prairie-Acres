@@ -330,6 +330,14 @@
       "notes": "Owner clarification: this tree was in a pot at the Boise nursery and then at Prairie, and was never in the ground here. It died, or was judged too poor to plant, before planting; which of the two is not recorded."
     },
     {
+      "id": "owner-2026-10-25-i71-1-identified",
+      "plant_id": "i71-1",
+      "event_type": "identified",
+      "recorded_on": "2026-10-25",
+      "occurred_on": null,
+      "notes": "Owner identified the AT-Unk apricot at R11-C2 as Patterson, the purchased tree (catalog row 50) that had no other tagged tree. Metal tag updated from AT-Unk to AT-Patterson."
+    },
+    {
       "id": "owner-2026-10-18-i108-1-lost-before-planting",
       "plant_id": "i108-1",
       "event_type": "lost_before_planting",

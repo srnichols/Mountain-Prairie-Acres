@@ -303,12 +303,13 @@
         "rows": [
           49
         ],
-        "note": "2 found, but 1 Moorpark was purchased. Patterson (row 50) was not found; one of these may be Patterson."
+        "note": "2 found, but 1 Moorpark was purchased. The extra Moorpark tag is still unexplained. The former AT-Unk tree (row 71) was identified as Patterson on 2026-10-25, so it is not one of these."
       },
       "71": {
-        "rows": [],
-        "name": "Unidentified apricot",
-        "note": "Tag AT-Unk. The purchased Patterson (row 50) was not otherwise found."
+        "rows": [
+          50
+        ],
+        "note": "Owner identified the AT-Unk apricot as Patterson on 2026-10-25. Planted at R11-C2. Metal tag is now AT-Patterson."
       },
       "72": {
         "rows": [
@@ -719,7 +720,7 @@
       "39": "FOX",
       "41": "FRQ",
       "62": "UNK",
-      "71": "UNK",
+      "71": "PN",
       "77": "MNT",
       "78": "NKI",
       "79": "NKJ",
@@ -1023,7 +1024,7 @@
       ]
     },
     "UNIDENTIFIED_STONE_FRUIT": {
-      "assumption": "On Oct 16, 2026 every purchased apple was confirmed to have arrived, so an apple purchase with no tagged tree was presumed to have died in Boise, unrecorded. These lists apply the same reasoning to the cherries, peaches, and apricot; that has not been confirmed for them yet.",
+      "assumption": "On Oct 16, 2026 every purchased apple was confirmed to have arrived, so an apple purchase with no tagged tree was presumed to have died in Boise, unrecorded. These lists apply the same reasoning to the cherries and peaches; that has not been confirmed for them yet. The unidentified apricot was identified as Patterson on Oct 25, 2026, and is no longer on this list.",
       "lines": [
         {
           "inventory_row": 81,
@@ -1107,26 +1108,6 @@
               "vendors": [
                 "Lowes"
               ]
-            }
-          ]
-        },
-        {
-          "inventory_row": 71,
-          "type": "Apricot",
-          "label": "AtUnk",
-          "candidates": [
-            {
-              "rows": [
-                50
-              ],
-              "slots": 1,
-              "vendors": [
-                "Lowes"
-              ],
-              "compare_with": [
-                70
-              ],
-              "note": "Two trees are tagged Moorpark but only one Moorpark was bought (Willis), so one tagged Moorpark may really be the Patterson and this tree the Moorpark. Compare all three trees."
             }
           ]
         }

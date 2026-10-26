@@ -496,7 +496,7 @@ function unidentifiedLine(info) {
 function unidentifiedApples() {
   return unidentifiedLine(UNIDENTIFIED_APPLES);
 }
-// The cherries, peaches, and apricot that lost their labels; one entry per inventory line.
+// The cherries and peaches that lost their labels; one entry per inventory line.
 function unidentifiedStoneFruit() {
   return { info:UNIDENTIFIED_STONE_FRUIT, lines:UNIDENTIFIED_STONE_FRUIT.lines.map(unidentifiedLine) };
 }

@@ -3,7 +3,6 @@
   "unprofiled": {
     "61": "Ungrafted apple rootstock of unknown type, not a cultivar",
     "62": "Unidentified apples; see UNIDENTIFIED_APPLES in orchard.json for the possibilities",
-    "71": "Unidentified apricot",
     "81": "Unidentified sweet cherries",
     "91": "Unidentified peaches"
   },
@@ -4921,7 +4920,9 @@
         "Patterson apricot",
         "PN"
       ],
-      "inventory_rows": [],
+      "inventory_rows": [
+        71
+      ],
       "purchase_rows": [
         50
       ],
@@ -4956,8 +4957,8 @@
         ]
       ],
       "basis": "sourced",
-      "note": "Dave Wilson rates it zones 6-9, not the 4-9 on the purchase sheet; none of the listed pages give frost or winter data for zones 4-5. It ripens before Moorpark, so season length matters less than cold.",
-      "reviewed_on": "2026-10-17"
+      "note": "Dave Wilson rates it zones 6-9, not the 4-9 on the purchase sheet; none of the listed pages give frost or winter data for zones 4-5. It ripens before Moorpark, so season length matters less than cold. Owner identified the AT-Unk apricot (inventory row 71, R11-C2) as this cultivar on 2026-10-25.",
+      "reviewed_on": "2026-10-25"
     },
     {
       "id": "plum-italian",

@@ -1043,13 +1043,13 @@
       "category": "Tree",
       "subcategory": "Fruit",
       "type": "Apricot",
-      "variety": "Unknown",
-      "metal_tag": "AT-Unk",
+      "variety": "Patterson",
+      "metal_tag": "AT-Patterson",
       "pseudomonas": "Pos. Untreated",
       "pseudomonas_quantity": 1,
       "place": "Prairie",
       "relocation_date": "3.21.2026",
-      "notes": "",
+      "notes": "Owner identified this tree as Patterson on 2026-10-25. It had been tagged AT-Unk.",
       "zone": null
     },
     {

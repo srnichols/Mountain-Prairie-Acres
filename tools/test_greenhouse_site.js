@@ -20,6 +20,6 @@ test('The planned greenhouses on the site master grid are the footprints the gre
 
 test('The master grid page draws both greenhouses dashed with the other planned buildings', () => {
   const page = read('site_master_grid.html');
-  assert.match(page, /\['house', 'garage', 'workshop', 'greenhouse_gothic', 'greenhouse_pit'\]\.forEach\(id => box\(F\(id\), \{[^}]*'stroke-dasharray'/);
-  for (const id of ['greenhouse_gothic', 'greenhouse_pit']) assert.equal(grid.feature(id).group, 'planned', `${id} is listed with the planned buildings`);
+  assert.match(page, /\['house', 'garage', 'workshop', 'greenhouse_gothic', 'greenhouse_gothic_east', 'greenhouse_pit'\]\.forEach\(id => box\(F\(id\), \{[^}]*'stroke-dasharray'/);
+  for (const id of ['greenhouse_gothic', 'greenhouse_gothic_east', 'greenhouse_pit']) assert.equal(grid.feature(id).group, 'planned', `${id} is listed with the planned buildings`);
 });

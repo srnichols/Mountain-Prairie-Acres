@@ -399,15 +399,14 @@ test('Unidentified stone fruit possibilities reconcile with purchases and planne
   const plain = value => JSON.parse(JSON.stringify(value));
   const { info, lines } = model.unidentifiedStoneFruit();
   assert.ok(typeof info.assumption === 'string' && info.assumption.length > 40, 'The unconfirmed arrival assumption is stated on the sheet');
-  assert.deepEqual(plain(lines.map(line => [line.type, line.tag, line.trees.length])), [['Cherry', 'CR-Sweet', 3], ['Peach', 'PC-Unk', 2], ['Apricot', 'AT-Unk', 1]]);
-  assert.deepEqual(plain(lines.map(line => line.trees.map(tree => tree.label))), [['Sweet-1', 'Sweet-2', 'Sweet-3'], ['PcUnk-1', 'PcUnk-2'], ['AtUnk-1']]);
+  assert.deepEqual(plain(lines.map(line => [line.type, line.tag, line.trees.length])), [['Cherry', 'CR-Sweet', 3], ['Peach', 'PC-Unk', 2]]);
+  assert.deepEqual(plain(lines.map(line => line.trees.map(tree => tree.label))), [['Sweet-1', 'Sweet-2', 'Sweet-3'], ['PcUnk-1', 'PcUnk-2']]);
   assert.deepEqual(plain(lines.map(line => line.pool)), [
     { main:4, longShot:0, trees:3, lostMin:1, lostMax:1 },
-    { main:4, longShot:0, trees:2, lostMin:2, lostMax:2 },
-    { main:1, longShot:0, trees:1, lostMin:0, lostMax:0 }
+    { main:4, longShot:0, trees:2, lostMin:2, lostMax:2 }
   ]);
   const spots = lines.flatMap(line => line.trees.map(tree => tree.spot));
-  assert.equal(new Set(spots).size, 6);
+  assert.equal(new Set(spots).size, 5);
   for (const line of lines) {
     assert.ok(line.trees.every(tree => tree.status === 'planted' && tree.plantedOn === '2026-10' && /^R\d+-C\d+$/.test(tree.spot) && tree.siteRef), line.type);
     for (const candidate of line.candidates) {
@@ -417,12 +416,10 @@ test('Unidentified stone fruit possibilities reconcile with purchases and planne
       assert.ok(candidate.profile.purchase_rows.every(row => candidate.rows.includes(row)), candidate.name);
     }
   }
-  const patterson = lines[2].candidates[0];
-  assert.equal(patterson.name, 'Patterson');
-  assert.deepEqual(plain(patterson.tagged), []);
-  assert.deepEqual(plain(patterson.compareWith), [{ invRow:70, tag:'AT-moorpark', qty:2 }]);
   assert.deepEqual(plain(lines[0].candidates.filter(candidate => candidate.slots > 1).map(candidate => candidate.name)), ['Black Tartarian']);
-  assert.deepEqual(plain(lines.flatMap(line => line.candidates.filter(candidate => !candidate.taggedQty).map(candidate => candidate.name))), ['Sam Sweet', 'Regina', 'Veteran', 'Patterson']);
+  assert.deepEqual(plain(lines.flatMap(line => line.candidates.filter(candidate => !candidate.taggedQty).map(candidate => candidate.name))), ['Sam Sweet', 'Regina', 'Veteran']);
+  assert.equal(model.inventoryLine(71)[5], 'Patterson');
+  assert.equal(model.inventoryLine(71)[6], 'AT-Patterson');
 });
 
 test('Cultivar library covers every inventory line and its links resolve', () => {

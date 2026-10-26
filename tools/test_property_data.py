@@ -211,7 +211,7 @@ class PropertyDataTest(unittest.TestCase):
         validate_data(self.data)
 
     def test_features_terrain_water_and_gps_are_queryable(self):
-        self.assertEqual(query("SELECT COUNT(*) AS n FROM site_features", self.root)[0]["n"], 76)
+        self.assertEqual(query("SELECT COUNT(*) AS n FROM site_features", self.root)[0]["n"], 77)
         self.assertEqual(query("SELECT COUNT(*) AS n FROM site_features WHERE kind = 'valve_box'", self.root)[0]["n"], 15)
         self.assertEqual(query("SELECT COUNT(*) AS n FROM terrain_samples", self.root)[0]["n"], 18009)
         self.assertEqual(query("SELECT COUNT(*) AS n FROM climate_months", self.root)[0]["n"], 12)
@@ -719,7 +719,7 @@ class PropertyDataTest(unittest.TestCase):
             ("orchard", lambda d: d["rules"]["UNIDENTIFIED_STONE_FRUIT"]["lines"][0]["candidates"][0].update(slots=1), "slots disagree"),
             ("orchard", lambda d: d["rules"]["UNIDENTIFIED_STONE_FRUIT"]["lines"][1]["candidates"].pop(0), "omit"),
             ("orchard", lambda d: d["rules"]["UNIDENTIFIED_STONE_FRUIT"]["lines"][0].update(type="Apple"), "must be one of"),
-            ("orchard", lambda d: d["rules"]["UNIDENTIFIED_STONE_FRUIT"]["lines"][2]["candidates"][0].update(compare_with=[81]), "compare_with must be other apricot"),
+            ("orchard", lambda d: d["rules"]["UNIDENTIFIED_STONE_FRUIT"]["lines"][0]["candidates"][0].update(compare_with=[91]), "compare_with must be other cherry"),
             ("orchard", lambda d: d["rules"]["UNIDENTIFIED_STONE_FRUIT"]["lines"][0].update(label="1 bad"), "label must be"),
             ("orchard", lambda d: d["rules"]["UNIDENTIFIED_STONE_FRUIT"]["lines"][0].pop("label"), "missing fields"),
             ("orchard", lambda d: d["rules"]["UNIDENTIFIED_STONE_FRUIT"]["lines"][1].update(label="Sweet"), "used by more than one line"),
@@ -967,11 +967,10 @@ class PropertyDataTest(unittest.TestCase):
         lines = {line["type"]: line for line in info["lines"]}
         self.assertEqual({kind: (inventory[line["inventory_row"]]["metal_tag"], inventory[line["inventory_row"]]["quantity"])
                           for kind, line in lines.items()},
-                         {"Cherry": ("CR-Sweet", 3), "Peach": ("PC-Unk", 2), "Apricot": ("AT-Unk", 1)})
+                         {"Cherry": ("CR-Sweet", 3), "Peach": ("PC-Unk", 2)})
         self.assertEqual({kind: sum(c["slots"] for c in line["candidates"]) for kind, line in lines.items()},
-                         {"Cherry": 4, "Peach": 4, "Apricot": 1})
-        self.assertEqual(lines["Apricot"]["candidates"][0]["compare_with"], [70],
-                         "Two trees are tagged Moorpark but one was bought, so those trees are compared too")
+                         {"Cherry": 4, "Peach": 4})
+        self.assertNotIn("Apricot", lines, "The AT-Unk apricot was identified as Patterson")
         stored = query("SELECT json_extract(data_json, '$.rules.UNIDENTIFIED_STONE_FRUIT.lines[0].type') AS type "
                        "FROM source_documents WHERE name = 'orchard'", self.root)
         self.assertEqual(stored[0]["type"], "Cherry")
@@ -987,7 +986,7 @@ class PropertyDataTest(unittest.TestCase):
         by_row = {r["source_row"]: r["profile_id"] for r in rows}
         self.assertEqual((by_row[7], by_row[13], by_row[30]), ("ash", "juniper-rocky-mountain", "serviceberry-western"))
         links = query("SELECT link_type, COUNT(*) AS n FROM cultivar_profile_links GROUP BY link_type", self.root)
-        self.assertEqual({r["link_type"]: r["n"] for r in links}, {"inventory": 114, "purchase": 105, "seed": 28})
+        self.assertEqual({r["link_type"]: r["n"] for r in links}, {"inventory": 115, "purchase": 105, "seed": 28})
         self.assertEqual(len(self.data["catalog"]["fruit_records"]), 105, "Every purchase-list cultivar has a profile")
         build(self.root)
         generated = (self.root / "docs" / "data" / "orchard_model.js").read_text(encoding="utf-8")
@@ -1006,15 +1005,17 @@ class PropertyDataTest(unittest.TestCase):
         counts = query("SELECT COUNT(*) AS profiles, "
                        "(SELECT COUNT(*) FROM cultivar_profile_links WHERE link_type = 'inventory') AS inventory_links "
                        "FROM cultivar_profiles", self.root)[0]
-        self.assertEqual((counts["profiles"], counts["inventory_links"]), (162, 114))
+        self.assertEqual((counts["profiles"], counts["inventory_links"]), (162, 115))
         cortland = query("SELECT profile_name, ripening FROM plant_profiles WHERE plant_id = 'i29-1'", self.root)[0]
         self.assertEqual((cortland["profile_name"], cortland["ripening"]), ("Cortland", "Mid"))
         unknown = query("SELECT profile_id FROM plant_profiles WHERE plant_id = 'i62-1'", self.root)[0]
         self.assertIsNone(unknown["profile_id"], "Unidentified apples have no profile")
         by_tag = query("SELECT DISTINCT profile_name FROM plant_profiles WHERE metal_tag = 'AL-Zestar'", self.root)
         self.assertEqual([r["profile_name"] for r in by_tag], ["Zestar!"])
-        self.assertEqual(sorted(self.data["cultivar_library"]["unprofiled"], key=int), ["61", "62", "71", "81", "91"])
-        self.assertEqual(query("SELECT COUNT(DISTINCT plant_id) AS n FROM plant_profiles WHERE profile_id IS NULL", self.root)[0]["n"], 13)
+        self.assertEqual(sorted(self.data["cultivar_library"]["unprofiled"], key=int), ["61", "62", "81", "91"])
+        self.assertEqual(query("SELECT COUNT(DISTINCT plant_id) AS n FROM plant_profiles WHERE profile_id IS NULL", self.root)[0]["n"], 12)
+        patterson = query("SELECT profile_name, metal_tag FROM plant_profiles WHERE plant_id = 'i71-1'", self.root)[0]
+        self.assertEqual((patterson["profile_name"], patterson["metal_tag"]), ("Patterson", "AT-Patterson"))
 
     def test_cultivar_library_covers_trees_perennials_traits_and_group_notes(self):
         fir = query("SELECT profile_id, bark, leaf FROM plant_profiles WHERE metal_tag = 'Dg. Fir'", self.root)

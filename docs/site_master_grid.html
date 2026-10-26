@@ -72,7 +72,7 @@
   @media print {
     body { padding: 0; margin: 0; max-width: none; font-size: 8.5pt; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
     .print-help { display: none; }
-    h1 { font-size: 15pt; } h3 { font-size: 9.5pt; margin: 2.2mm 0 0.8mm; }
+    h1 { font-size: 15pt; } h3 { font-size: 9.5pt; margin: 1.6mm 0 0.5mm; }
     p, li, ul.notes li { font-size: 7.8pt; line-height: 1.32; }
     .subtitle { font-size: 8.5pt; margin-bottom: 1.5mm; }
     .sheet-body { grid-template-columns: 4.55in minmax(0, 1fr); gap: 6mm; }
@@ -80,7 +80,7 @@
     figure figcaption { font-size: 9pt; margin-bottom: 1mm; }
     .fact { padding: 1.2mm 1.8mm; } .fact .value { font-size: 9.5pt; } .fact .label { font-size: 6.5pt; } .fact .hint { font-size: 7pt; }
     .howto svg { width: 1.25in; }
-    table.detail { font-size: 6.7pt; margin: 1mm 0 1.5mm; } table.detail th, table.detail td { padding: 0 1.1mm; line-height: 1.2; }
+    table.detail { font-size: 6.6pt; margin: 0.6mm 0 1mm; } table.detail th, table.detail td { padding: 0 1.1mm; line-height: 1.08; }
     table.detail code { font-size: 6.1pt; color: #6F6D66; }
     table.detail .site-ref { white-space: nowrap; }
     table.detail tr { break-inside: avoid; }
@@ -180,7 +180,7 @@ function makeMap() {
   const V = { west: -34, east: lot.width + 40, top: -46, bottom: 1340 }, S = 0.62;
   const X = x => +((x - V.west) * S).toFixed(2), Y = y => +((y - V.top) * S).toFixed(2);
   const svg = svgNode('svg', { viewBox: `0 0 ${(V.east - V.west) * S} ${(V.bottom - V.top) * S}`, class: 'diagram', role: 'img', 'aria-labelledby': 'grid-title' });
-  svg.append(svgNode('title', { id: 'grid-title' }, `The whole lot, ${fmt(lot.width)} by ${fmt(lot.depth)} ft, divided into 50 ft cells A–G west to east and 1–26 north to south, with the roads, driveway, the front gate, orchard block and green dotted lines for rows R1 to R15, homestead, the planned gothic tunnel and pit greenhouse south of the orchard, buried water lines and hydrants, the ${HEAD_STATIONS.length} row laterals with their valve boxes along the main, the middle line marked on each fence, and high and low points.`));
+  svg.append(svgNode('title', { id: 'grid-title' }, `The whole lot, ${fmt(lot.width)} by ${fmt(lot.depth)} ft, divided into 50 ft cells A–G west to east and 1–26 north to south, with the roads, driveway, the front gate, orchard block and green dotted lines for rows R1 to R15, homestead, the two planned gothic tunnels and the pit greenhouse south of the orchard, buried water lines and hydrants, the ${HEAD_STATIONS.length} row laterals with their valve boxes along the main, the middle line marked on each fence, and high and low points.`));
   const defs = svgNode('defs'), clip = svgNode('clipPath', { id: 'mg-lot' });
   clip.append(svgNode('rect', { x: X(0), y: Y(0), width: lot.width * S, height: lot.depth * S }));
   defs.append(clip); svg.append(defs);
@@ -213,7 +213,7 @@ function makeMap() {
   PIPES.forEach(f => line(f.pts, { stroke: COLOR.waterLine, 'stroke-width': f.size_in >= 2 ? 1.5 : 1, 'stroke-linejoin': 'round',
     ...(f.size_in >= 2 ? {} : { 'stroke-dasharray': '3.5 1.6' }) }, inLot));
   WELL_PIPES.forEach(f => line(f.pts, wellStyle, inLot));
-  ['house', 'garage', 'workshop', 'greenhouse_gothic', 'greenhouse_pit'].forEach(id => box(F(id), { fill: 'none', stroke: COLOR.planned, 'stroke-width': 0.8, 'stroke-dasharray': '2.5 1.5' }, inLot));
+  ['house', 'garage', 'workshop', 'greenhouse_gothic', 'greenhouse_gothic_east', 'greenhouse_pit'].forEach(id => box(F(id), { fill: 'none', stroke: COLOR.planned, 'stroke-width': 0.8, 'stroke-dasharray': '2.5 1.5' }, inLot));
   [['shed', '#A9372B'], ['outhouse', '#2F6EB5'], ['container_solar', '#2F4A6E'], ['container_storage', '#BDBDB5'], ['pump_house', '#5D6D7E'], ['rv', '#FFFFFF']]
     .forEach(([id, fill]) => box(F(id), { fill, stroke: '#3D3D3A', 'stroke-width': 0.4 }, inLot));
   const tank = F('irrigation_tank');
@@ -270,10 +270,14 @@ function makeMap() {
   SG.features({ kind: 'well' }).forEach(w => label(w.x + 2, w.y - 4, 'well', 't-well', 5.2, 'start'));
   label(168, 980, 'house pad', 't-title', 6.2);
   label(61, 836, 'workshop pad', 't-note', 5.6);
-  // The planned greenhouses (footprints from the greenhouse pages), each named just east of its outline
-  [['greenhouse_gothic', 'gothic tunnel'], ['greenhouse_pit', 'pit greenhouse']].forEach(([id, name]) => {
-    const f = F(id), [w, h] = SG.size(f);
-    label(f.x1 + 4, (f.y0 + f.y1) / 2 + 2.5, `${name} ${fmt(w)} × ${fmt(h)} ft`, 't-planned', 5.6, 'start');
+  // The west tunnel and the pit are the footprints from the greenhouse pages; the east tunnel is a later twin, labeled inside its outline so the name stays clear of the water main
+  // The pit is centered on the east tunnel, so its name sits west of the outline, clear of the water main. Each tunnel is labeled inside its outline.
+  const pit = F('greenhouse_pit'), [pw, ph] = SG.size(pit);
+  label(pit.x0 - 4, (pit.y0 + pit.y1) / 2 + 2.5, `pit greenhouse ${fmt(pw)} × ${fmt(ph)} ft`, 't-planned', 5.6, 'end');
+  [['greenhouse_gothic', 'gothic, west'], ['greenhouse_gothic_east', 'gothic, east']].forEach(([id, name]) => {
+    const f = F(id), [w, h] = SG.size(f), x = (f.x0 + f.x1) / 2, y = (f.y0 + f.y1) / 2;
+    label(x, y - 1.5, name, 't-planned', 5.2);
+    label(x, y + 6, `${fmt(w)} × ${fmt(h)} ft`, 't-planned', 4.8);
   });
   vlabel(310.8, 420, 'driveway', 't-note', 6);
   label(GATE.pts[0][0] - 4, GATE.pts[0][1] + 11, `front gate, ${GATE.leaves} × ${GATE.leaf_ft} ft`, 't-title', 5.6, 'end');
@@ -487,7 +491,7 @@ function renderConventions() {
     'Feet throughout. Elevations are above sea level (NAVD88) from USGS 3DEP lidar flown before the homestead pads were graded.',
     'SiteRef uses the master cell, then east and south offsets from that cell\'s northwest corner. Offsets are nonnegative, less than 50 ft, and must stay inside the fence, including the partial edge cells. Generated codes use up to two decimal places. E and S are compass directions, even on the orchard map drawn south up.',
     'Planting records should identify each individual plant, not assign one coordinate to a quantity group. SiteRef is calculated from its location; it is not a metal tag or a permanent Plant ID. Keep unlocated plants PENDING and vacant spots separate from dead or moved plants.',
-    'Status is existing or planned; planned buildings (the house, garage, workshop, and the two greenhouses) move once staked. The greenhouse outlines are the footprints from the greenhouse pages; the pit greenhouse\'s berm, retaining wall, and swales are on the greenhouse site plan, not here. Edit canonical data/site.json (rect x0/y0/x1/y1, circle cx/cy/r, polygon/line pts, point x/y), then run python tools/property_data.py build and the tests. Browser files in docs/data/ are generated, not independently editable.',
+    'Status is existing or planned; planned buildings (the house, garage, workshop, and the greenhouses) move once staked. The west tunnel and the pit are the footprints from the greenhouse pages; the east tunnel is a later twin. The pit greenhouse\'s berm, retaining wall, and swales are on the greenhouse site plan, not here. Edit canonical data/site.json (rect x0/y0/x1/y1, circle cx/cy/r, polygon/line pts, point x/y), then run python tools/property_data.py build and the tests. Browser files in docs/data/ are generated, not independently editable.',
     `The red ticks on the east and west fences mark the owner's taped middle line (lot_midline): ${fmt(MIDLINE.pts[0][1])} ft south of the north fence, on the A14 hydrant and 79 ft north of the red shed's north building corner. Half the ${fmt(SG.data.lot.fence.depth, 1)} ft fence is still ${fmt(SG.data.lot.fence.depth / 2, 2)} ft, ${fmt(MIDLINE.pts[0][1] - SG.data.lot.fence.depth / 2)} ft north of these ticks. A tape from the northwest fence corner would confirm the 667.`,
     `The front gate (front_gate, cell ${SG.cellOf(...SG.center(GATE))}): ${GATE.leaves} × ${GATE.leaf_ft} ft metal leaves that swing both ways on treated junior railroad ties (about 8 × 12 in) set in concrete, drawn closed. Placed from the October 2026 drone photos and the owner: the east post is about ${fmt(SG.data.lot.fence.width - GATE.pts[1][0])} ft inside the east fence, the gate about ${fmt(GATE.pts[0][1])} ft inside the mapped north fence, good to about 8 ft.`,
     'Latitude and longitude come from the fitted lot frame, good to about 10 ft: fine for maps and directions, not for boundary questions. For precise layout, measure from the fences.',

@@ -1539,7 +1539,19 @@
       "y0": 620,
       "x1": 113,
       "y1": 647,
-      "notes": "27 x 76 ft unheated polycarbonate tunnel (two bays of the CatchSunlight 27 x 38 ft kit), long side east-west across cells A13 to C13, its west end 37 ft off the west fence beside the windbreak alley and 20 ft south of the orchard strip. Planned for 2028 or 2029; a draft position, not staked. Matches GOTHIC in docs/greenhouse_model.js."
+      "notes": "27 x 76 ft unheated polycarbonate tunnel (two bays of the CatchSunlight 27 x 38 ft kit), long side east-west across cells A13 to C13, its west end 37 ft off the west fence beside the windbreak alley and 20 ft south of the orchard strip. Planned for 2028 or 2029; a draft position, not staked. Matches GOTHIC in docs/greenhouse_model.js. A twin for later growth is greenhouse_gothic_east."
+    },
+    {
+      "id": "greenhouse_gothic_east",
+      "name": "Gothic tunnel, east (planned)",
+      "group": "planned",
+      "status": "planned",
+      "shape": "rect",
+      "x0": 196,
+      "y0": 620,
+      "x1": 272,
+      "y1": 647,
+      "notes": "Twin of the west gothic tunnel, for later growth: same 27 x 76 ft footprint, long side east-west. Its east end lines up with the orchard block's east edge (x 272), and its north wall is 20 ft south of R1, the same line as the west tunnel. Not designed yet; the greenhouse pages still describe only the west tunnel. A draft position, not staked."
     },
     {
       "id": "greenhouse_pit",
@@ -1547,11 +1559,11 @@
       "group": "planned",
       "status": "planned",
       "shape": "rect",
-      "x0": 57,
+      "x0": 216,
       "y0": 680,
-      "x1": 93,
+      "x1": 252,
       "y1": 700,
-      "notes": "20 x 36 ft unheated pit greenhouse sunk 6 ft into the ground, south of the tunnel and centered on it (both on x 75), in cell B14. This is the room inside the posts; its berm on the north side, retaining wall, cut slopes, and swales are on the greenhouse site plan. Planned for 2028 or 2029; a draft position, not staked. Matches PIT in docs/greenhouse_model.js."
+      "notes": "20 x 36 ft unheated pit greenhouse sunk 6 ft into the ground, south of the east gothic tunnel and centered on it (both on x 234), in cells E14 and F14. Same alignment it had under the west tunnel: 20 ft in from each end, and its north wall 33 ft south of the tunnel's south wall. This is the room inside the posts; its berm on the north side, retaining wall, cut slopes, and swales are on the greenhouse site plan. Planned for 2028 or 2029; a draft position, not staked. Matches PIT in docs/greenhouse_model.js."
     },
     {
       "id": "rv_pad",

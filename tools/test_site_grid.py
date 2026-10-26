@@ -273,13 +273,22 @@ class SiteGridTest(unittest.TestCase):
         self.assertEqual(g.size("greenhouse_gothic"), (76, 27))
         self.assertEqual(g.size("greenhouse_pit"), (36, 20))
         self.assertEqual(g.cells("greenhouse_gothic"), ["A13", "B13", "C13"])
-        self.assertEqual(g.cells("greenhouse_pit"), ["B14"])
-        self.assertEqual(g.center("greenhouse_pit")[0], g.center("greenhouse_gothic")[0], "the pit is centered on the tunnel")
-        self.assertGreater(pit["y0"], gothic["y1"], "the pit is south of the tunnel")
+        east = g.feature("greenhouse_gothic_east")
+        self.assertEqual(g.cells("greenhouse_pit"), ["E14", "F14"])
+        self.assertEqual(g.center("greenhouse_pit")[0], g.center("greenhouse_gothic_east")[0], "the pit is centered on the east tunnel")
+        self.assertEqual(pit["x0"] - east["x0"], east["x1"] - pit["x1"], "the pit is inset the same distance from both ends of the east tunnel")
+        self.assertEqual(pit["y0"] - east["y1"], 33, "the pit keeps the same 33 ft gap south of the tunnel")
+        self.assertGreater(pit["y0"], gothic["y1"], "the pit is south of the tunnels")
         self.assertEqual(gothic["y0"] - orchard["y1"], 20, "the tunnel stands 20 ft south of the orchard strip")
+        block = g.feature("orchard_block")
+        self.assertEqual((east["group"], east["status"]), ("planned", "planned"))
+        self.assertEqual(g.size("greenhouse_gothic_east"), g.size("greenhouse_gothic"), "the east tunnel is the same 76 x 27 ft twin")
+        self.assertEqual(east["y0"], gothic["y0"], "both tunnels stand on the same line, 20 ft south of R1")
+        self.assertEqual(east["x1"], block["x1"], "the east tunnel lines up with the orchard block's east edge")
+        self.assertEqual(g.cells("greenhouse_gothic_east"), ["D13", "E13", "F13"])
         pipes = [f for f in g.features("utility") if f.get("kind") == "water_pipe"]
         stands = [f for f in g.features("utility") if f.get("kind") in ("hydrant", "valve_box")]
-        for f in (gothic, pit):
+        for f in (gothic, pit, east):
             x0, y0, x1, y1 = g.bbox(f)
             outline = [(x0, y0), (x1, y0), (x1, y1), (x0, y1), (x0, y0)]
             self.assertGreaterEqual(y0, orchard["y1"], f"{f['id']} stays out of the orchard strip")
@@ -400,7 +409,7 @@ class SiteGridTest(unittest.TestCase):
                  (["site-ref", "C17-E12-S18"], "x 112, y 818"),
                  (["site-ref", "B10-E33-S35"], "x 83, y 485"),
                  (["feature", "shed"], "dji_0073, dji_0065"),
-                 (["where", "B14"], "greenhouse_pit"), (["list", "planned"], "greenhouse_gothic"),
+                 (["where", "E14"], "greenhouse_pit"), (["list", "planned"], "greenhouse_gothic"),
                  (["site-ref", "PENDING"], "location not yet known")]
         for argv, expected in cases:
             out = io.StringIO()
