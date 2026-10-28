@@ -41,8 +41,10 @@
   .loss { border: 1.5px dashed #9F3A32; color: #7A2416; }
   .deferred { border: 1.5px dashed #5F6872; color: #424B54; }
   .planned { background: #E3F1E6; color: #1B4D2B; border: 1.5px solid #3E7B50; }
+  .planned.ordered { background: #E7F0FA; color: #1D3D5C; border-color: #2F5F8A; }
   .planned.loss { border: 1.5px dashed #9F3A32; }
   .planned.deferred { border: 1.5px dashed #5F6872; }
+  .lbox.planned.ordered { background: #E7F0FA; border: 1.5px solid #2F5F8A; }
   .reserved { background: repeating-linear-gradient(135deg, #FCE9E3 0 6px, #F5D3C8 6px 12px); border: 1.5px dashed #C2412F; color: #7A2416; }
   .tri { border: 2px dashed #F2C14E !important; }
   .star { box-shadow: inset 0 0 0 2px rgba(255,180,0,0.55); }
@@ -359,6 +361,15 @@
 <p class="legend-note">Apple <strong>FG</strong> means flowering group, not harvest season. <strong>*</strong> after a group number means sources differ; the planning value follows Orange Pippin. <strong>FG 2?</strong> marks a provisional estimate. <strong>Midseason; FG ?</strong> records nursery bloom guidance without inventing a numbered group.</p>
 </section>
 
+<h2 id="ordered-heading" hidden>Ordered, not yet arrived</h2>
+<p class="source-note" id="ordered-note" hidden></p>
+<div class="table-scroll" id="ordered-wrap" hidden>
+<table class="detail">
+<thead><tr><th>Cultivar</th><th>Spots</th><th>Rootstock and grade</th><th>Nursery</th></tr></thead>
+<tbody id="ordered-table"></tbody>
+</table>
+</div>
+
 <h2 id="windbreak">West Windbreak (35 ft Strip) and East Elderberry Hedge</h2>
 <p class="source-note" id="wb-summary"></p>
 <div class="wb-figures">
@@ -514,6 +525,30 @@ window.addEventListener('afterprint', () => {
 
 const { PLAN_DATE, STATUS_DATE, FRUIT_SHEET, INVENTORY, INVENTORY_MATCH, TYPE_ORDER, BLOCK_ROWS, SHARED_ROWS, RESERVED_ROWS, ORCHARD_ROWS, ROW_PLAN, GRID_COLUMNS, PLOT_WIDTH, EAST_SIDE, PLOT_DEPTH, TREE_SPACING, ROW_SPACING, LOCAL_RADIUS, ORCHARD_WEST_SETBACK, JUNIPER_DISTANCE, WINDBREAK, EAST_HEDGE, OWNER_NOTES, ORCHARD_UPDATES, PLANTED_ROOTSTOCKS, ROOTSTOCK_LABELS, GENERATED_CODES, FAMILY_OVERRIDES, APPLE_ALIASES, HARRISON_BLOOM_RESEARCH, APPLE_BLOOM_RESEARCH, URBAN_APPLE_ROWS, PEAR_BLOOM, CHERRY_CHART, FRUIT_BY_ROW, INVENTORY_BY_ROW, RESERVED, fruitRecord, inventoryLine, rootstockRemaining, normalizeName, placementOf, buildOrchardTrees, balancedRows, blockShape, sharedGroupOf, blockColumns, rowTemplate, layoutRows, lineCount, layoutPlantRow, windbreakLayout, eastHedgeLayout, alleyGeometry, laneGeometry, guildLayout, treeDistance, needsTwoDonors, compatiblePair, nearestPartners, PLANT_LOCATIONS, plantedWhen } = window.OrchardModel;
 const { C1_GUILDS, ORCHARD_X0, PLANTING_PLAN, plannedAt, plannedSpots } = window.OrchardModel;
+const planOrders = PLANTING_PLAN ? PLANTING_PLAN.orders || [] : [];
+function orderFor(item) {
+  for (const order of planOrders) {
+    const line = order.lines.find(entry => entry.item_id === item.id);
+    if (line) return { order, line };
+  }
+  return null;
+}
+function orderedQuantity(item) {
+  return planOrders.reduce((sum, order) => sum + order.lines.filter(line => line.item_id === item.id)
+    .reduce((count, line) => count + line.quantity, 0), 0);
+}
+function isOrdered(item) {
+  return orderedQuantity(item) >= item.quantity;
+}
+function orderedName(item, line) {
+  return line && line.shipped_as ? `${line.shipped_as}, stand-in for ${item.cultivar}` : item.cultivar;
+}
+function orderSentence(item) {
+  const found = orderFor(item);
+  if (!found || !isOrdered(item)) return '';
+  const due = /still due/i.test(found.order.note) ? ' Payment is still due.' : '';
+  return `${found.order.nursery} order ${found.order.order_number}, ${found.order.ordered_on}, ships to ${found.order.ships_to}. Rootstock ${found.line.rootstock}, grade ${found.line.grade}, ${found.line.season}.${due}`;
+}
 
 const orchardTrees = buildOrchardTrees();
 const rows = layoutRows(ROW_PLAN, orchardTrees);
@@ -701,7 +736,11 @@ function replacementNote(tree) {
   const update = tree.orchardUpdate;
   const planned = plannedAt(tree.r, tree.c);
   if (planned) {
-    return `Leave this spot open; the plan is a new ${planned.item.cultivar} (${planned.item.type.toLowerCase()}) in ${update.replacementYear}, described in the planting plan.`;
+    const found = orderFor(planned.item);
+    const ordered = found && isOrdered(planned.item);
+    const name = ordered ? orderedName(planned.item, found.line) : planned.item.cultivar;
+    const bought = ordered ? ` It is ordered and has not arrived: ${orderSentence(planned.item)}` : '';
+    return `Leave this spot open; the plan is a new ${name} (${planned.item.type.toLowerCase()}) in ${update.replacementYear}.${bought} Described in the planting plan.`;
   }
   const replacement = update.replacementType === 'Tree' ? 'tree' : `${update.replacementType.toLowerCase()} tree`;
   return `Leave this spot open; plant a new ${replacement} in ${update.replacementYear} (variety not yet chosen).`;
@@ -897,10 +936,13 @@ rows.forEach(row => {
       if (graft) {
         // A reserved rootstock spot with a planned scion shows as a planned cell, marked "graft".
         cell.classList.remove('reserved');
+        const graftOrder = orderFor(graft.item);
+        const graftOrdered = graftOrder && isOrdered(graft.item);
         cell.classList.add('planned');
-        cell.title = `R${row.r}-C${index + 1} — planned ${PLANTING_PLAN.year}: graft ${graft.item.cultivar} onto a reserved rootstock (${rootstockSummary} rootstocks in the inventory); ${graft.item.role}.\n${graft.item.caution}`;
+        if (graftOrdered) cell.classList.add('ordered');
+        cell.title = `R${row.r}-C${index + 1} — ${graftOrdered ? 'ORDERED, not yet arrived' : `planned ${PLANTING_PLAN.year}`}: graft ${graftOrdered ? orderedName(graft.item, graftOrder.line) : graft.item.cultivar} onto a reserved rootstock (${rootstockSummary} rootstocks in the inventory); ${graft.item.role}.\n${graftOrdered ? orderSentence(graft.item) + '\n' : ''}${graft.item.caution}`;
         cell.setAttribute('aria-label', cell.title);
-        cell.append(element('span', graft.item.code, 'code'), element('span', 'graft', 'fg'));
+        cell.append(element('span', graft.item.code, 'code'), element('span', isOrdered(graft.item) ? 'ord' : 'graft', 'fg'));
       } else {
         cell.title = `R${row.r}-C${index + 1} — reserved for a grafted rootstock apple (${rootstockSummary} rootstocks in the inventory)`;
         cell.setAttribute('aria-label', cell.title);
@@ -909,20 +951,35 @@ rows.forEach(row => {
     } else if (update) {
       const dead = update.orchardUpdate.status === 'dead';
       cell.classList.add(dead ? 'loss' : 'deferred');
-      if (plannedAt(row.r, index + 1)) cell.classList.add('planned');
+      const heldPlan = plannedAt(row.r, index + 1);
+      if (heldPlan) {
+        cell.classList.add('planned');
+        if (isOrdered(heldPlan.item)) cell.classList.add('ordered');
+      }
       // A C1 spot held for a replacement keeps its berry guild.
       const heldGuild = index === 0 ? guilds.bushes.filter(bush => bush.r === row.r) : [];
       if (heldGuild.length) cell.classList.add('guild');
       cell.title = updateNote(update) + (heldGuild.length ? `\nBerry guild on the alley side: ${heldGuild.map(bush => bush.group.name).join(', ')}` : '');
       cell.setAttribute('aria-label', cell.title);
-      cell.append(element('span', 'Open', 'code'), element('span', `${update.code} ${dead ? 'dead' : 'outside'}`, 'fg'),
-        element('span', plannedAt(row.r, index + 1) ? `${plannedAt(row.r, index + 1).item.code} ${update.orchardUpdate.replacementYear}` :
-          `${update.orchardUpdate.replacementType} ${update.orchardUpdate.replacementYear}`, 'fg'));
+      const heldStatus = `${update.code} ${dead ? 'dead' : 'outside'}`;
+      if (heldPlan && isOrdered(heldPlan.item)) {
+        cell.append(element('span', heldPlan.item.code, 'code'), element('span', 'ord', 'fg'), element('span', heldStatus, 'fg'));
+      } else {
+        cell.append(element('span', 'Open', 'code'), element('span', heldStatus, 'fg'),
+          element('span', heldPlan ? `${heldPlan.item.code} ${update.orchardUpdate.replacementYear}` :
+            `${update.orchardUpdate.replacementType} ${update.orchardUpdate.replacementYear}`, 'fg'));
+      }
     } else if (plannedAt(row.r, index + 1)) {
       const { item } = plannedAt(row.r, index + 1);
+      const found = orderFor(item);
+      const ordered = found && isOrdered(item);
       cell.classList.add('planned');
-      cell.title = `R${row.r}-C${index + 1} — planned ${PLANTING_PLAN.year}: ${item.cultivar} (${item.type.toLowerCase()}); ${item.role}.\nRootstock: ${item.rootstock}.\n${item.caution}`;
-      cell.append(element('span', item.code, 'code'), element('span', String(PLANTING_PLAN.year), 'fg'));
+      if (ordered) cell.classList.add('ordered');
+      const name = ordered ? orderedName(item, found.line) : item.cultivar;
+      cell.title = ordered
+        ? `R${row.r}-C${index + 1} — ORDERED, not yet arrived: ${name} (${item.type.toLowerCase()}); ${item.role}.\n${orderSentence(item)}\nNot counted as a pollen partner until it is in the ground.\n${item.caution}`
+        : `R${row.r}-C${index + 1} — planned ${PLANTING_PLAN.year}: ${item.cultivar} (${item.type.toLowerCase()}); ${item.role}.\nRootstock: ${item.rootstock}.\n${item.caution}`;
+      cell.append(element('span', item.code, 'code'), element('span', ordered ? 'ord' : String(PLANTING_PLAN.year), 'fg'));
     } else {
       cell.title = row.future ? `R${row.r}-C${index + 1} — open position in a row held for trees you buy or graft later` :
         row.shared ? `R${row.r}-C${index + 1} — open position in the rows shared by ${listText(row.types.map(type => PLURAL[type]))}` :
@@ -995,14 +1052,51 @@ if (plannedSpots().length) {
   const item = element('div');
   item.append(box, `Planned ${PLANTING_PLAN.year}: recommended cultivar for an open spot (a dashed border marks a spot held for a dead or relocated tree; "graft" marks a scion for one of your rootstocks)`);
   legendBox.append(item);
+  const orderedCount = plannedSpots().filter(({ item: planned }) => isOrdered(planned)).length;
+  if (orderedCount) {
+    const orderedItem = element('div');
+    orderedItem.append(element('span', '', 'lbox planned ordered'), `Ordered ${PLANTING_PLAN.year}: bought, not yet arrived (blue cell, marked ord). Not a pollen partner until it is in the ground`);
+    legendBox.append(orderedItem);
+  }
   const note = document.getElementById('plan-note');
   const counts = {};
   plannedSpots().forEach(({ item: planned }) => { counts[planned.type] = (counts[planned.type] || 0) + 1; });
   const graftCount = plannedSpots().filter(({ item: planned }) => planned.method === 'graft').length;
   const link = element('a', `${PLANTING_PLAN.year} planting plan`);
   link.href = 'fy27_planting_plan.html';
-  note.append(`Green cells are the recommended ${PLANTING_PLAN.year} plantings for every open spot in R1 to R${PLANTING_PLAN.covers_rows} (${Object.entries(counts).map(([type, count]) => `${count} ${count === 1 ? type.toLowerCase() : PLURAL[type]}`).join(', ')}), shown by cultivar code with the year${graftCount ? `; the ${graftCount} marked graft are scions for the rootstocks you own` : ''}. The rootstocks, cautions, and buy list are in the `, link, '. The planned trees are not counted as pollen partners for the trees on this page.');
+  note.append(`Green cells are the recommended ${PLANTING_PLAN.year} plantings for every open spot in R1 to R${PLANTING_PLAN.covers_rows} (${Object.entries(counts).map(([type, count]) => `${count} ${count === 1 ? type.toLowerCase() : PLURAL[type]}`).join(', ')}), shown by cultivar code with the year${graftCount ? `; the ${graftCount} marked graft are scions for the rootstocks you own` : ''}. ${orderedCount ? `${orderedCount} of those spots are ordered and show in blue, marked ord; they have not arrived. ` : ''}The rootstocks, cautions, and buy list are in the `, link, '. Planned and ordered trees are not counted as pollen partners for the trees on this page.');
   note.hidden = false;
+}
+if (planOrders.length) {
+  const heading = document.getElementById('ordered-heading');
+  const wrap = document.getElementById('ordered-wrap');
+  const body = document.getElementById('ordered-table');
+  heading.hidden = false;
+  wrap.hidden = false;
+  document.getElementById('ordered-note').hidden = false;
+  document.getElementById('ordered-note').textContent = 'These trees are bought for the blue cells. A stand-in is the tree that was ordered for that planned cultivar. None of them is in the ground, so none is counted as a pollen partner.';
+  planOrders.forEach(order => {
+    order.lines.forEach(line => {
+      const item = PLANTING_PLAN.items.find(entry => entry.id === line.item_id);
+      const name = element('div');
+      const shipped = line.shipped_as && CultivarLibrary.profiles.find(profile => profile.name === line.shipped_as);
+      const label = line.shipped_as || item.cultivar;
+      const strong = element('strong');
+      if (shipped) {
+        const cultivarLink = element('a', label);
+        cultivarLink.href = CultivarLibrary.guideHref(shipped);
+        strong.append(cultivarLink);
+      } else strong.textContent = label;
+      name.append(strong);
+      if (line.shipped_as) name.append(element('div', `Stand-in for planned ${item.cultivar}`, 'source-note'));
+      const where = element('div');
+      const nursery = element('a', order.nursery);
+      nursery.href = line.product_url;
+      where.append(nursery, ` ${order.order_number}, ${order.ordered_on}`);
+      if (/still due/i.test(order.note)) where.append(element('div', 'Payment still due', 'source-note'));
+      addTableRow('ordered-table', [name, `${line.quantity}: ${item.spots.join(', ')}`, `${line.rootstock}, grade ${line.grade}`, where]);
+    });
+  });
 }
 windbreakRows.forEach(row => addLegend(row.color, `Windbreak: ${row.name}`));
 if (guilds.bushes.length) {
@@ -1648,7 +1742,8 @@ const leftover = rootstockCount - reservedTotal;
   plannedSpots().length ? (() => {
     const grafts = plannedSpots().filter(({ item }) => item.method === 'graft').length;
     const others = plannedSpots().length - grafts - openRecords.length;
-    return `The ${PLANTING_PLAN.year} planting plan names a cultivar for every open spot in R1 to R${PLANTING_PLAN.covers_rows}: ${plannedSpots().length} in all (the ${openRecords.length} spots held for replacements, ${others} other empty positions, and the ${grafts} reserved spots in R1, which are grafted). They show as green cells and are not counted as trees or pollen partners until the trees are in the ground.${futureRows.length ? ` ${futureRange} stay open for later.` : ''}`;
+    const orderedCount = plannedSpots().filter(({ item }) => isOrdered(item)).length;
+    return `The ${PLANTING_PLAN.year} planting plan names a cultivar for every open spot in R1 to R${PLANTING_PLAN.covers_rows}: ${plannedSpots().length} in all (the ${openRecords.length} spots held for replacements, ${others} other empty positions, and the ${grafts} reserved spots in R1, which are grafted). They show as green cells, and the ${orderedCount} already ordered show in blue, marked ord. None is counted as a tree or pollen partner until it is in the ground.${futureRows.length ? ` ${futureRange} stay open for later.` : ''}`;
   })() : '',
   'The Chinese apricot and Craig\'s Crimson cherry are still in Boise (girdled and mulched) and are not part of the Prairie plan.'
 ].filter(Boolean).forEach(text => document.getElementById('separate-notes').append(element('p', text)));

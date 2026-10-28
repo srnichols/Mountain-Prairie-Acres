@@ -35,6 +35,7 @@ Status key: **In progress** (work under way), **Planned** (designed, not started
 
 ## Project log
 
+- **2026-10-27**: The pollination grid marks the 18 ordered spring 2027 trees in blue, labeled ord, with the nursery, rootstock, and grade. They are not counted as pollen partners until they arrive.
 - **2026-10-27**: Recorded three more spring 2027 orders that accepted Idaho: Roots to Fruits RTF12645 (11 bare-root trees, $666, payment still due; Moonglow stands in for Harrow Delight and Redhaven for Harrow Diamond), Raintree U2TM4QUWD (one Seckel on OHxF 87, charged $89.98), and Trees of Antiquity 2R8PX8Q8P (Harcot, Stanley, and Damson on Mariana, charged $249.77). The spots stay planned until the trees arrive. The street address is not stored.
 - **2026-10-27**: Recorded Cummins order 039970 on the 2027 planting plan: three Williams' Pride on B.118, Grade 1, for spring 2027, charged $227.24 and shipping to Idaho. The order is queryable (`planting_plan_orders`), the three spots stay planned until the trees arrive and are added to the inventory, and the street address is not stored.
 - **2026-10-26**: Recorded the three planted Urban apples, 20 ft south of R1 on the orchard center line (AL-UrbR on odd-row column 7, AL-UrbGld 4 ft west, AL-UrbGrn 4 ft east). The owner wrote AL-Urb Gran; the tag is AL-UrbGrn. The day was not given, so `planted_on` is `2026-10`. Their old orchard spots stay open. The WS90 pole is concreted where that center line crosses the taped property middle line (x 146, y 667), replacing the draft site at y 640.
