@@ -412,7 +412,7 @@ function featureRow(f) {
   const area = pts => Math.abs(pts.reduce((sum, [x, y], i) => { const [x2, y2] = pts[(i + 1) % pts.length]; return sum + x * y2 - x2 * y; }, 0)) / 2;
   const size = f.kind === 'water_pipe' ? `${f.size_in} in pipe, ${fmt(Math.round(pathLength(f.pts) / 5) * 5)} long`
     : f.kind === 'well_pipe' ? `${f.depth_ft ? `${f.depth_ft} ft down, ` : ''}${fmt(Math.round(pathLength(f.pts)))} ft long`
-    : f.kind === 'well' ? `${f.depth_ft} ft deep`
+    : f.kind === 'well' ? `${f.depth_ft} ft drilled${f.pump_set_ft ? `, pump at ${f.pump_set_ft}` : ''}`
     : f.kind === 'hydrant' && f.depth_ft ? `${f.depth_ft} ft down`
     : f.kind === 'valve_box' ? (f.lateral ? `${f.riser_in} in riser, ${fmt(Math.round(pathLength(F(f.lateral).pts)))} ft lateral` : `${f.setback_ft} ft back on the line`)
     : f.kind === 'midline' ? `${fmt(pathLength(f.pts), 1)} long`

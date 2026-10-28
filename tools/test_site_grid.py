@@ -199,7 +199,11 @@ class SiteGridTest(unittest.TestCase):
         branch = g.feature("well_line_shed")
         mid_y = (pump[1] + pump[3]) / 2
         self.assertEqual((well["x"], well["y"]), (pump[2] + 18, mid_y), "the well head is 18 ft east of the pump house, on its midline")
-        self.assertEqual(well["depth_ft"], 350)
+        self.assertEqual(well["depth_ft"], 375)
+        self.assertEqual(well["pump_set_ft"], 350)
+        self.assertEqual(well["first_water_ft"], 200)
+        self.assertEqual(well["production_ft"], 300)
+        self.assertEqual(well["water_strikes_when"], "July 2021")
         self.assertEqual((near["x"], near["y"]), (well["x"] - 1, well["y"]), "the well hydrant is 1 ft west of the head")
         self.assertEqual(near["depth_ft"], 5)
         self.assertEqual(line["depth_ft"], 5)

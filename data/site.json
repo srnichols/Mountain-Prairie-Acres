@@ -1,6 +1,6 @@
 {
   "name": "Mountain Prairie Acres",
-  "updated": "2026-10-26",
+  "updated": "2026-10-28",
   "units": "ft",
   "frame": {
     "origin": "NW fence corner",
@@ -1285,9 +1285,13 @@
       "shape": "point",
       "x": 97,
       "y": 913.25,
-      "depth_ft": 350,
+      "depth_ft": 375,
+      "pump_set_ft": 350,
+      "first_water_ft": 200,
+      "production_ft": 300,
+      "water_strikes_when": "July 2021",
       "pump": "240 V, 3 hp, 18 to 22 gpm",
-      "notes": "18 ft east of the pump house's east wall, on the pump house's midline (moved 10 ft east of the first east-side mark). The well is 350 ft deep, with a 240 V, 3 hp pump that pushes 18 to 22 gpm. Owner, October 24, 2026.",
+      "notes": "18 ft east of the pump house's east wall, on the pump house's midline (moved 10 ft east of the first east-side mark). Drilled to 375 ft; the pump sits at 350 ft, 25 ft off the bottom. A 240 V, 3 hp pump pushes 18 to 22 gpm. The October 24, 2026 note had called the well 350 ft deep; that figure is the pump setting, not the drilled depth. The driller hit low flow at about 200 ft, then a high-pressure flow at about 300 ft, and kept going to 350 ft to set the pump below that zone. The owner recalls those readings from July 2021, five years before October 2026. Those strike depths are a recollection, not a driller's log. The lot sits on basalt lava, not Idaho batholith granite: the Idaho Geological Survey state map (M-9, 2012) maps this point as Pliocene and Miocene basalt. Owner, October 28, 2026.",
       "accuracy_ft": 2
     },
     {

@@ -426,7 +426,7 @@ function renderInventory() {
   const sizeText = f => {
     if (f.kind === 'water_pipe') return `${f.size_in} in pipe, ${fmt(Math.round(pathLength(f.pts) / 5) * 5)} long`;
     if (f.kind === 'well_pipe') return `${f.depth_ft ? `${f.depth_ft} ft down, ` : ''}${fmt(Math.round(pathLength(f.pts)))} ft long`;
-    if (f.kind === 'well') return `${f.depth_ft} ft deep`;
+    if (f.kind === 'well') return `${f.depth_ft} ft drilled${f.pump_set_ft ? `, pump at ${f.pump_set_ft}` : ''}`;
     if (f.shape === 'circle') return `${fmt(2 * f.r)} across`;
     if (f.shape === 'line') return `${fmt(f.width)} wide, ${fmt(Math.round(pathLength(f.pts) / 10) * 10)} long`;
     if (f.shape === 'polygon' && f.group === 'access') return `${fmt(Math.round(area(f.pts) / 100) * 100)} sq ft`;
