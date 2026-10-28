@@ -112,6 +112,21 @@ CREATE TABLE planting_plan_spots (
     item_id TEXT NOT NULL REFERENCES planting_plan_items(id),
     location_id TEXT NOT NULL UNIQUE REFERENCES locations(id), PRIMARY KEY (item_id, location_id)
 ) STRICT;
+CREATE TABLE planting_plan_orders (
+    id TEXT PRIMARY KEY, plan_year INTEGER NOT NULL, ordered_on TEXT NOT NULL,
+    nursery TEXT NOT NULL, order_number TEXT NOT NULL, ships_to TEXT NOT NULL, currency TEXT NOT NULL,
+    subtotal_cents INTEGER NOT NULL, shipping_cents INTEGER NOT NULL, handling_cents INTEGER NOT NULL,
+    phyto_cents INTEGER NOT NULL, tax_cents INTEGER NOT NULL, card_surcharge_cents INTEGER NOT NULL,
+    total_cents INTEGER NOT NULL, note TEXT NOT NULL
+) STRICT;
+CREATE TABLE planting_plan_order_lines (
+    order_id TEXT NOT NULL REFERENCES planting_plan_orders(id),
+    item_id TEXT NOT NULL REFERENCES planting_plan_items(id),
+    quantity INTEGER NOT NULL CHECK (quantity > 0), grade TEXT NOT NULL, rootstock TEXT NOT NULL,
+    season TEXT NOT NULL, unit_price_cents INTEGER NOT NULL, product_url TEXT NOT NULL,
+    shipped_as TEXT,
+    PRIMARY KEY (order_id, item_id)
+) STRICT;
 CREATE TABLE site_features (
     id TEXT PRIMARY KEY, name TEXT NOT NULL, feature_group TEXT NOT NULL, status TEXT NOT NULL,
     shape TEXT NOT NULL CHECK (shape IN ('rect', 'circle', 'line', 'point', 'polygon')),

@@ -479,6 +479,17 @@ test('The 2027 planting plan fills every open spot in R1 to R12 and leaves livin
   const spots = model.plannedSpots();
   assert.equal(plan.year, 2027);
   assert.equal(plan.covers_rows, 12);
+  assert.equal(plan.orders.length, 4);
+  assert.equal(plan.orders[0].order_number, '039970');
+  assert.equal(plan.orders[0].lines[0].item_id, 'williams-pride');
+  assert.equal(plan.orders[0].lines[0].quantity, 3);
+  assert.equal(plan.orders[0].lines[0].rootstock, 'B.118');
+  const roots = plan.orders.find(order => order.order_number === 'RTF12645');
+  assert.equal(roots.total, 666);
+  assert.equal(roots.lines.find(line => line.item_id === 'harrow-delight').shipped_as, 'Moonglow');
+  assert.equal(roots.lines.find(line => line.item_id === 'harrow-diamond').shipped_as, 'Redhaven');
+  assert.equal(plan.orders.find(order => order.order_number === 'U2TM4QUWD').lines[0].item_id, 'seckel');
+  assert.equal(plan.orders.find(order => order.order_number === '2R8PX8Q8P').lines.length, 3);
   assert.equal(spots.length, 49);
   assert.equal(new Set(spots.map(entry => entry.spot)).size, 49);
   const counts = {};

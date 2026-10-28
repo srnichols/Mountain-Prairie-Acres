@@ -215,6 +215,43 @@ class PropertyDataTest(unittest.TestCase):
         linked = query("SELECT COUNT(*) AS n FROM planting_plan_items i JOIN cultivar_profiles p ON p.id = i.profile_id "
                        "WHERE p.type = i.type", self.root)[0]["n"]
         self.assertEqual(linked, 29)
+        orders = query("SELECT id, order_number, ships_to, total_cents FROM planting_plan_orders ORDER BY id", self.root)
+        self.assertEqual(orders, [
+            {"id": "cummins-039970", "order_number": "039970", "ships_to": "Idaho", "total_cents": 22724},
+            {"id": "raintree-u2tm4quwd", "order_number": "U2TM4QUWD", "ships_to": "Idaho", "total_cents": 8998},
+            {"id": "roots-to-fruits-rtf12645", "order_number": "RTF12645", "ships_to": "Idaho", "total_cents": 66600},
+            {"id": "trees-of-antiquity-2r8px8q8p", "order_number": "2R8PX8Q8P", "ships_to": "Idaho", "total_cents": 24977},
+        ])
+        lines = query("SELECT order_id, item_id, quantity, rootstock, unit_price_cents, shipped_as "
+                      "FROM planting_plan_order_lines ORDER BY order_id, item_id", self.root)
+        self.assertEqual(lines, [
+            {"order_id": "cummins-039970", "item_id": "williams-pride", "quantity": 3, "rootstock": "B.118",
+             "unit_price_cents": 4375, "shipped_as": None},
+            {"order_id": "raintree-u2tm4quwd", "item_id": "seckel", "quantity": 1, "rootstock": "OHxF 87",
+             "unit_price_cents": 6499, "shipped_as": None},
+            {"order_id": "roots-to-fruits-rtf12645", "item_id": "contender", "quantity": 1, "rootstock": "Lovell",
+             "unit_price_cents": 4700, "shipped_as": None},
+            {"order_id": "roots-to-fruits-rtf12645", "item_id": "freedom", "quantity": 3, "rootstock": "M.111",
+             "unit_price_cents": 5900, "shipped_as": None},
+            {"order_id": "roots-to-fruits-rtf12645", "item_id": "haralson", "quantity": 2, "rootstock": "M.7",
+             "unit_price_cents": 5900, "shipped_as": None},
+            {"order_id": "roots-to-fruits-rtf12645", "item_id": "harrow-delight", "quantity": 1, "rootstock": "OHxF 97",
+             "unit_price_cents": 5900, "shipped_as": "Moonglow"},
+            {"order_id": "roots-to-fruits-rtf12645", "item_id": "harrow-diamond", "quantity": 1, "rootstock": "Seedling",
+             "unit_price_cents": 4700, "shipped_as": "Redhaven"},
+            {"order_id": "roots-to-fruits-rtf12645", "item_id": "intrepid", "quantity": 1, "rootstock": "Seedling",
+             "unit_price_cents": 4700, "shipped_as": None},
+            {"order_id": "roots-to-fruits-rtf12645", "item_id": "pristine", "quantity": 1, "rootstock": "B.118",
+             "unit_price_cents": 5900, "shipped_as": None},
+            {"order_id": "roots-to-fruits-rtf12645", "item_id": "reliance", "quantity": 1, "rootstock": "Seedling",
+             "unit_price_cents": 4700, "shipped_as": None},
+            {"order_id": "trees-of-antiquity-2r8px8q8p", "item_id": "damson", "quantity": 1, "rootstock": "Mariana",
+             "unit_price_cents": 5895, "shipped_as": None},
+            {"order_id": "trees-of-antiquity-2r8px8q8p", "item_id": "harcot", "quantity": 1, "rootstock": "Mariana",
+             "unit_price_cents": 5995, "shipped_as": None},
+            {"order_id": "trees-of-antiquity-2r8px8q8p", "item_id": "stanley", "quantity": 1, "rootstock": "Mariana",
+             "unit_price_cents": 5995, "shipped_as": None},
+        ])
         validate_data(self.data)
 
     def test_features_terrain_water_and_gps_are_queryable(self):
@@ -779,6 +816,12 @@ class PropertyDataTest(unittest.TestCase):
              "have no planting plan item"),
             ("plants", lambda d: [p.update(health_status="dead") for p in d["records"] if p["id"] in ("i56-2", "i56-3")],
              "rootstocks are unplanted"),
+            ("orchard", lambda d: d["rules"]["PLANTING_PLAN"]["orders"][0].update(total=1), "do not add up"),
+            ("orchard", lambda d: d["rules"]["PLANTING_PLAN"]["orders"][0]["lines"][0].update(item_id="redfree"), "not a tree the plan buys"),
+            ("orchard", lambda d: d["rules"]["PLANTING_PLAN"]["orders"][0]["lines"][0].update(quantity=4), "more trees than the plan"),
+            ("orchard", lambda d: d["rules"]["PLANTING_PLAN"]["orders"][0].update(receipt="https://example.invalid"), "unknown fields"),
+            ("orchard", lambda d: d["rules"]["PLANTING_PLAN"]["orders"][0]["lines"][0].update(shipped_as="Williams' Pride"),
+             "only for a different tree"),
             ("orchard", lambda d: d["rules"]["PLANTING_PLAN"].update(year=1999), "planting plan year"),
             ("cultivar_library", lambda d: next(r for r in d["records"] if r["id"] == "apple-dayton").update(type="Pear"), "disagrees with Apple"),
             ("locations", lambda d: next(r for r in d["records"] if r["name"] == "R13-C1").update(replacement_year=2027, replacement_type="Apple"),

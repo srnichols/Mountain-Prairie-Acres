@@ -1181,11 +1181,204 @@
     "PLANTING_PLAN": {
       "year": 2027,
       "covers_rows": 12,
-      "status": "Recommended cultivars for every open spot in R1 to R12; nothing is bought or grafted yet",
+      "status": "Eighteen spring 2027 trees are ordered and not planted yet: Cummins 039970, Roots to Fruits RTF12645, Raintree U2TM4QUWD, and Trees of Antiquity 2R8PX8Q8P. Roots to Fruits is confirmed, but $666 is still due. Eighteen trees are still to buy, and nothing is grafted yet",
       "summary": "Chosen in October 2026 for a short-season, frost-prone U-pick orchard at about 4,750 ft (the frost dates are on the site climate page). Disease-resistant apples that ripen early or in mid-season fill R4 to R6 and the grafted row R1; hardy tart and sweet cherries and a Seckel pear fill R8 to R10; and the shared stone-fruit rows R11 and R12 get four plums, two apricots, and four peaches, three of the peaches replacing ones that died in their pots. R13 to R15 stay open for later.",
       "rootstock_advice": "Ask nurseries for semi-dwarf trees (about 60 to 75 percent of standard; G.890, G.214 or M.7 for apples). The grid is 18 x 20 ft and the site is dry and windy, so dwarf stocks (M.27, M.9, B.9) would need permanent stakes and leave gaps.",
       "graft_advice": "The 13 grafts in R1 go onto rootstocks you already own: 11 M-111 (vigorous, semi-standard), 2 EMLA 7 (semi-dwarf) and 1 of unknown type, so one rootstock is left as a spare. Order scionwood in winter from a nursery that sells it for spring 2027 (some sell out early), keep it cold and damp until grafting, and graft in early spring as the rootstock buds begin to swell. Use the two EMLA 7 rootstocks for Redfree, a vigorous scion (its third tree goes on an M-111), and put lower-vigor scions such as Pixie Crunch on the vigorous M-111. Grafted trees take longer to bear than bought trees. Check that a cultivar may be propagated at home before ordering scionwood.",
-      "shipping_note": "Confirm that each nursery ships the item to Idaho before ordering; some retailers exclude Idaho for some items.",
+      "shipping_note": "Confirm that each nursery ships the item to Idaho before ordering; some retailers exclude Idaho for some items. Cummins Nursery accepted the apple order below for Idaho and charged a phytosanitary certificate, but its checkout will not send peach, plum, cherry, nectarine, or apricot trees, scion, or rootstock there. Roots to Fruits, Raintree Nursery, and Trees of Antiquity each accepted an Idaho order on October 27, 2026. That acceptance is for those orders only.",
+      "orders": [
+        {
+          "id": "cummins-039970",
+          "ordered_on": "2026-10-27",
+          "nursery": "Cummins Nursery",
+          "order_number": "039970",
+          "ships_to": "Idaho",
+          "currency": "USD",
+          "subtotal": 131.25,
+          "shipping": 66.83,
+          "handling": 7.65,
+          "phyto": 15.0,
+          "tax": 0,
+          "card_surcharge": 6.51,
+          "total": 227.24,
+          "note": "Spring 2027 bare-root trees. The receipt is Cummins order 039970. The street address and the receipt link are not stored.",
+          "lines": [
+            {
+              "item_id": "williams-pride",
+              "quantity": 3,
+              "grade": "1",
+              "rootstock": "B.118",
+              "season": "Spring 2027",
+              "unit_price": 43.75,
+              "product_url": "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=tree&id=21505"
+            }
+          ]
+        },
+        {
+          "id": "roots-to-fruits-rtf12645",
+          "ordered_on": "2026-10-27",
+          "nursery": "Roots to Fruits Nursery",
+          "order_number": "RTF12645",
+          "ships_to": "Idaho",
+          "currency": "USD",
+          "subtotal": 601.0,
+          "shipping": 65.0,
+          "handling": 0,
+          "phyto": 0,
+          "tax": 0,
+          "card_surcharge": 0,
+          "total": 666.0,
+          "note": "Spring 2027 bare-root trees. Confirmed as Roots to Fruits order RTF12645. Paid today $0.00, so the $666.00 is still due. Moonglow on OHxF 97 stands in for Harrow Delight, and Redhaven on seedling stands in for Harrow Diamond. Freedom was ordered Hand Select on M.111. The street address and the receipt link are not stored.",
+          "lines": [
+            {
+              "item_id": "freedom",
+              "quantity": 3,
+              "grade": "Hand Select",
+              "rootstock": "M.111",
+              "season": "Spring 2027",
+              "unit_price": 59.0,
+              "product_url": "https://rootstofruitsnursery.com/products/freedom"
+            },
+            {
+              "item_id": "pristine",
+              "quantity": 1,
+              "grade": "Hand Select",
+              "rootstock": "B.118",
+              "season": "Spring 2027",
+              "unit_price": 59.0,
+              "product_url": "https://rootstofruitsnursery.com/products/pristine-apple-tree"
+            },
+            {
+              "item_id": "haralson",
+              "quantity": 2,
+              "grade": "Hand Select",
+              "rootstock": "M.7",
+              "season": "Spring 2027",
+              "unit_price": 59.0,
+              "product_url": "https://rootstofruitsnursery.com/products/haralson-apple"
+            },
+            {
+              "item_id": "intrepid",
+              "quantity": 1,
+              "grade": "Field Ready",
+              "rootstock": "Seedling",
+              "season": "Spring 2027",
+              "unit_price": 47.0,
+              "product_url": "https://rootstofruitsnursery.com/products/intrepid-peach"
+            },
+            {
+              "item_id": "contender",
+              "quantity": 1,
+              "grade": "Field Ready",
+              "rootstock": "Lovell",
+              "season": "Spring 2027",
+              "unit_price": 47.0,
+              "product_url": "https://rootstofruitsnursery.com/products/contender-peach"
+            },
+            {
+              "item_id": "reliance",
+              "quantity": 1,
+              "grade": "Field Ready",
+              "rootstock": "Seedling",
+              "season": "Spring 2027",
+              "unit_price": 47.0,
+              "product_url": "https://rootstofruitsnursery.com/products/reliance-peach"
+            },
+            {
+              "item_id": "harrow-diamond",
+              "quantity": 1,
+              "grade": "Field Ready",
+              "rootstock": "Seedling",
+              "season": "Spring 2027",
+              "unit_price": 47.0,
+              "shipped_as": "Redhaven",
+              "product_url": "https://rootstofruitsnursery.com/products/redhaven-peach"
+            },
+            {
+              "item_id": "harrow-delight",
+              "quantity": 1,
+              "grade": "Hand Select",
+              "rootstock": "OHxF 97",
+              "season": "Spring 2027",
+              "unit_price": 59.0,
+              "shipped_as": "Moonglow",
+              "product_url": "https://rootstofruitsnursery.com/products/moonglow-pear"
+            }
+          ]
+        },
+        {
+          "id": "raintree-u2tm4quwd",
+          "ordered_on": "2026-10-27",
+          "nursery": "Raintree Nursery",
+          "order_number": "U2TM4QUWD",
+          "ships_to": "Idaho",
+          "currency": "USD",
+          "subtotal": 64.99,
+          "shipping": 24.99,
+          "handling": 0,
+          "phyto": 0,
+          "tax": 0,
+          "card_surcharge": 0,
+          "total": 89.98,
+          "note": "Spring 2027 bare-root preorder. Confirmed as Raintree order U2TM4QUWD and charged $89.98. One Seckel on OHxF 87. The street address and the receipt link are not stored.",
+          "lines": [
+            {
+              "item_id": "seckel",
+              "quantity": 1,
+              "grade": "4-5 ft whip",
+              "rootstock": "OHxF 87",
+              "season": "Spring 2027",
+              "unit_price": 64.99,
+              "product_url": "https://raintreenursery.com/products/seckel-e-pear-semi-dwarf"
+            }
+          ]
+        },
+        {
+          "id": "trees-of-antiquity-2r8px8q8p",
+          "ordered_on": "2026-10-27",
+          "nursery": "Trees of Antiquity",
+          "order_number": "2R8PX8Q8P",
+          "ships_to": "Idaho",
+          "currency": "USD",
+          "subtotal": 178.85,
+          "shipping": 70.92,
+          "handling": 0,
+          "phyto": 0,
+          "tax": 0,
+          "card_surcharge": 0,
+          "total": 249.77,
+          "note": "Spring 2027 bare-root trees. Confirmed as Trees of Antiquity order 2R8PX8Q8P and charged $249.77. Harcot, Stanley, and Blue Damson, each on Mariana. The street address and the receipt link are not stored.",
+          "lines": [
+            {
+              "item_id": "harcot",
+              "quantity": 1,
+              "grade": "Feathered",
+              "rootstock": "Mariana",
+              "season": "Spring 2027",
+              "unit_price": 59.95,
+              "product_url": "https://www.treesofantiquity.com/products/harcot-apricot"
+            },
+            {
+              "item_id": "stanley",
+              "quantity": 1,
+              "grade": "Feathered",
+              "rootstock": "Mariana",
+              "season": "Spring 2027",
+              "unit_price": 59.95,
+              "product_url": "https://www.treesofantiquity.com/products/stanley-plum"
+            },
+            {
+              "item_id": "damson",
+              "quantity": 1,
+              "grade": "Feathered",
+              "rootstock": "Mariana",
+              "season": "Spring 2027",
+              "unit_price": 58.95,
+              "product_url": "https://www.treesofantiquity.com/products/blue-damson-plum"
+            }
+          ]
+        }
+      ],
       "items": [
         {
           "id": "williams-pride",
@@ -1200,7 +1393,7 @@
             "R6-C8",
             "R5-C9"
           ],
-          "rootstock": "Semi-dwarf wanted; G.214 is cold-hardy and fire-blight resistant",
+          "rootstock": "Ordered on B.118, Grade 1 (Cummins order 039970). About the same vigor as M.111, so it fills an 18 x 20 ft spot; hardier than M.111 and without burrknots. A semi-dwarf such as G.214 was the first ask",
           "flowering_group": 2,
           "ploidy": "Diploid",
           "role": "Early block: the first apples of the season",
@@ -1255,7 +1448,7 @@
             "R6-C6",
             "R6-C13"
           ],
-          "rootstock": "Size-controlling semi-dwarf wanted; nurseries often ship it on MM.111, which stays large",
+          "rootstock": "Ordered on M.111, Hand Select (Roots to Fruits order RTF12645). About the same vigor as the M.111 you already use, so it fills an 18 x 20 ft spot. A smaller semi-dwarf was the first ask",
           "flowering_group": 3,
           "ploidy": "Diploid",
           "role": "Large striped-red apple for early October; very disease resistant",
@@ -1273,7 +1466,7 @@
             "R4-C9",
             "R6-C10"
           ],
-          "rootstock": "M.7 semi-dwarf; B.9 dwarf is also offered but too small here",
+          "rootstock": "Ordered on M.7, Hand Select (Roots to Fruits order RTF12645). About 15 to 17 ft, roughly two-thirds of M.111, so it leaves a little gap; stake it the first few years. B.9 was offered and was not ordered",
           "flowering_group": 4,
           "ploidy": "Diploid",
           "role": "October pie and cider apple; zone 3, late bloom",
@@ -1290,7 +1483,7 @@
           "spots": [
             "R6-C9"
           ],
-          "rootstock": "Semi-dwarf wanted; nurseries list M.27 or EMLA 26 dwarfs, too small here",
+          "rootstock": "Ordered on B.118, Hand Select (Roots to Fruits order RTF12645). About the same vigor as M.111, so it fills an 18 x 20 ft spot. M.27 and EMLA 26 were offered and were not ordered",
           "flowering_group": 2,
           "ploidy": "Diploid",
           "role": "One-tree test of a very early yellow apple",
@@ -1307,7 +1500,7 @@
           "spots": [
             "R8-C1"
           ],
-          "rootstock": "OHxF 87 (semi-dwarf, cold-hardy, fire-blight resistant)",
+          "rootstock": "Ordered Moonglow on OHxF 97, Hand Select (Roots to Fruits order RTF12645), as a stand-in for Harrow Delight. About 17 to 21 ft, close to an M.111 apple. It still needs a European pear partner; Seckel is ordered and may cover it if the bloom overlaps",
           "self_fertile": false,
           "pear_bloom": [
             "Mid",
@@ -1347,7 +1540,7 @@
           "spots": [
             "R11-C10"
           ],
-          "rootstock": "Lovell or Bailey peach seedling stock (best survival in the NC-140 trials, per Penn State); a hybrid stock such as Krymsk 86, suggested earlier, had more cold injury and canker in those trials",
+          "rootstock": "Ordered on peach seedling, Field Ready (Roots to Fruits order RTF12645). About 10 to 15 ft, a normal peach, not a staked dwarf. Lovell or Bailey was the first ask",
           "self_fertile": true,
           "role": "Bud-hardy, self-fertile mid-season freestone",
           "caution": "Peaches here carry bacterial canker (untreated positives). Prune only in dry weather, use dormant copper, and buy clean certified stock."
@@ -1363,7 +1556,7 @@
           "spots": [
             "R11-C12"
           ],
-          "rootstock": "Lovell or Bailey peach seedling stock (best survival in the NC-140 trials, per Penn State)",
+          "rootstock": "Ordered on Lovell, Field Ready (Roots to Fruits order RTF12645). About 10 to 15 ft, a normal peach",
           "self_fertile": true,
           "role": "Very cold-hardy, late-blooming yellow freestone with excellent flavor, ripe 16 to 20 days after Redhaven",
           "caution": "A second Contender, so you can compare it with the tree you already have. Utah State lists it as very cold hardy and tolerant of spring frost, but it ripens a few weeks after Redhaven, so it is a mid-season peach in a short season. Peaches here carry bacterial canker (untreated positives): prune only in dry weather, use dormant copper, and buy clean certified stock."
@@ -1379,7 +1572,7 @@
           "spots": [
             "R12-C11"
           ],
-          "rootstock": "Lovell or Bailey peach seedling stock (best survival in the NC-140 trials, per Penn State)",
+          "rootstock": "Ordered Redhaven on peach seedling, Field Ready (Roots to Fruits order RTF12645), as a stand-in for Harrow Diamond. About 10 to 15 ft. The nursery lists it for zones 5 to 9",
           "self_fertile": true,
           "role": "Early yellow freestone, ripe about 11 days before Redhaven, with good hardiness and bacterial spot resistance (University of Kentucky)",
           "caution": "The breeder's trial winters were -26 and -28 C, with 43 percent flower bud loss at -26 C, so zone 5a is a test. It sets a heavy crop that needs early thinning. No source rates bacterial canker (the breeder gives only moderate tolerance to the fungal perennial canker), and peaches here carry bacterial canker (untreated positives): prune only in dry weather, use dormant copper, and buy clean certified stock."
@@ -1395,7 +1588,7 @@
           "spots": [
             "R12-C8"
           ],
-          "rootstock": "Lovell or Bailey peach seedling stock (best survival in the NC-140 trials, per Penn State)",
+          "rootstock": "Ordered on peach seedling, Field Ready (Roots to Fruits order RTF12645). About 10 to 15 ft. Lovell or Bailey was the first ask",
           "self_fertile": true,
           "role": "Very cold-hardy early peach (zone 4 to 8) with very hardy fruit buds and late bloom, the safe early tree",
           "caution": "A third Reliance, next to the one at R12-C9, so the same cultivar sits together for easy picking and comparison. The fruit is sweet and very juicy but soft, so it bruises and does not ship well, and Gurney's says newer hardy peaches such as Contender taste better. Ripening dates vary a lot by region (July to mid August in the sources), so track your own first harvest. Peaches here carry bacterial canker (untreated positives): prune only in dry weather, use dormant copper, and buy clean certified stock."
@@ -1630,7 +1823,7 @@
           "spots": [
             "R12-C3"
           ],
-          "rootstock": "Semi-dwarf tree",
+          "rootstock": "Ordered on Mariana (Trees of Antiquity order 2R8PX8Q8P). About 12 to 16 ft",
           "self_fertile": true,
           "role": "Late-blooming prune plum (zone 5 to 7) that eats fresh and dries; ripe in early September",
           "caution": "Penn State rates Stanley very susceptible to black knot, so prune knots out in winter; that is why the plan has one Stanley, not three. It goes in the lowest plum spot because its late bloom (Stark Bro's) helps it miss spring frost. Early September ripening is close to the limit in a short season."
@@ -1646,7 +1839,7 @@
           "spots": [
             "R12-C4"
           ],
-          "rootstock": "Semi-dwarf tree",
+          "rootstock": "Ordered on Mariana (Trees of Antiquity order 2R8PX8Q8P). About 12 to 16 ft",
           "self_fertile": true,
           "role": "Tart blue jam and baking plum (zone 4 to 8), ripe in September",
           "caution": "Sources disagree on its black knot resistance and on whether it ripens before or after Stanley."
@@ -1678,7 +1871,7 @@
           "spots": [
             "R11-C5"
           ],
-          "rootstock": "Semi-dwarf tree (your purchase sheet lists it as a semi-dwarf); ask the nursery which rootstock it uses",
+          "rootstock": "Ordered on Mariana (Trees of Antiquity order 2R8PX8Q8P). About 12 to 16 ft, smaller than M.111 because it is an apricot",
           "self_fertile": true,
           "role": "Late-blooming, frost-hardy, self-pollinating apricot (zone 5 to 7) with sweet, juicy, rich fruit, ripe in mid July; Stark Bro's reports good tolerance to bacterial spot and perennial canker",
           "caution": "A second Harcot, so you can compare it with the tree at R12-C1. Sources disagree on its hardiness (zone 5 to 7 at Utah State, 4 to 9 at Dave Wilson). Tolerance to bacterial spot and to perennial canker, a fungus, is not tolerance to bacterial canker, which the apricots here carry (untreated positives). The same frost and clean-stock cautions as the Chinese (Mormon) apply."
@@ -1694,7 +1887,7 @@
           "spots": [
             "R8-C13"
           ],
-          "rootstock": "Semi-dwarf; ask for OHxF 87 or another fire-blight-resistant stock",
+          "rootstock": "Ordered on OHxF 87 (Raintree order U2TM4QUWD). About 15 ft, roughly three-quarters of a seedling pear, and a step down from M.111. It can pollinate Moonglow if the bloom overlaps",
           "self_fertile": false,
           "pear_bloom": [
             "Early-mid (Stark Bro's)",

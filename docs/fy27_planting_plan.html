@@ -55,12 +55,14 @@
   .map td.tree { color: #424b54; background: #fff; }
   .map td.empty { color: #9aa29a; background: var(--row); }
   .map td.planned { background: var(--green); border: 1.5px solid var(--green-line); color: var(--green-ink); font-weight: bold; }
+  .map td.ordered { background: #e7f0fa; border-color: #2f5f8a; color: #1d3d5c; }
   .map td.held { border-style: dashed; }
   .map td.graft { border-style: dotted; border-width: 2px; }
   .key { display: inline-block; width: 0.14in; height: 0.14in; vertical-align: middle; border: 1.5px solid var(--green-line); background: var(--green); }
   .key.tree { border: 1px solid var(--border); background: #fff; }
   .key.held { border-style: dashed; }
   .key.graft { border-style: dotted; border-width: 2px; }
+  .key.ordered { background: #e7f0fa; border-color: #2f5f8a; }
   .callout { margin: 0.05in 0 0.1in; padding: 0.07in 0.12in; border: 1px solid var(--border); border-left: 4px solid #c2412f; background: #fdf3f0; font-size: 9pt; }
   .callout p:last-child { margin-bottom: 0; }
   [hidden] { display: none !important; }
@@ -100,6 +102,9 @@
 <p class="small" id="glance-note"></p>
 
 <h2>Buy list</h2>
+<h3 id="ordered-heading" hidden></h3>
+<div id="ordered-list"></div>
+<p class="small" id="ordered-notes" hidden></p>
 <h3 id="trees-heading"></h3>
 <div id="buy-list"></div>
 <p class="small" id="buy-notes"></p>
@@ -111,7 +116,7 @@
 <h2 id="map-heading"></h2>
 <p>Rows are listed south to north and columns east to west, as in the planting map: C1, the west end of each row beside the windbreak, is on the right, and C13, the east end by the driveway, is on the left. Every other row is staggered half a spot. Where it works, same-cultivar trees sit side by side for signage and easy picking. The west end of R1 (on the right) holds the Chestnut crabapple because that end has the fewest pollen partners, and the east end of the apple rows (on the left) holds three different apples for the same reason.</p>
 <div id="map"></div>
-<p class="small"><span class="key"></span> planned 2027 cultivar code &nbsp; <span class="key graft"></span> a graft onto a rootstock you own (R1) &nbsp; <span class="key held"></span> a spot held for a dead or relocated tree &nbsp; <span class="key tree"></span> tree already on hand, by its code. <span id="map-note"></span></p>
+<p class="small"><span class="key"></span> planned 2027 cultivar code &nbsp; <span class="key ordered"></span> ordered, not yet arrived &nbsp; <span class="key graft"></span> a graft onto a rootstock you own (R1) &nbsp; <span class="key held"></span> a spot held for a dead or relocated tree &nbsp; <span class="key tree"></span> tree already on hand, by its code. <span id="map-note"></span></p>
 <p class="small">Codes: <span id="codes"></span>.</p>
 </section>
 
@@ -239,6 +244,7 @@ const TYPE_ORDER = ['Apple', 'Pear', 'Cherry', 'Peach', 'Plum', 'Apricot'];
 const BANDS = ['Early', 'Mid', 'Late', 'Very late'];
 const num = (count, type) => `${count} ${count === 1 ? type.toLowerCase() : PLURAL[type]}`;
 const profileOf = item => library.byId(item.profile);
+const profileNamed = name => library.profiles.find(profile => profile.name === name);
 const guideLink = (text, profile) => {
   const link = element('a', text);
   link.href = library.guideHref(profile);
@@ -264,7 +270,19 @@ const table = (headers, bodyRows, className) => {
   return node;
 };
 
+const orders = PLANTING_PLAN.orders || [];
+const orderedLine = item => orders.flatMap(order => order.lines).find(line => line.item_id === item.id);
+const orderedLabel = item => {
+  const line = orderedLine(item);
+  return line && line.shipped_as ? `${line.shipped_as}, stand-in for ${item.cultivar}` : item.cultivar;
+};
+const orderedQuantity = item => orders.reduce((sum, order) => sum + order.lines
+  .filter(line => line.item_id === item.id).reduce((count, line) => count + line.quantity, 0), 0);
+const fullyOrdered = item => orderedQuantity(item) >= item.quantity;
+const money = cents => `$${(cents / 100).toFixed(2)}`;
 const bought = spots.filter(entry => entry.item.method === 'buy');
+const orderedSpots = bought.filter(entry => fullyOrdered(entry.item));
+const stillToBuy = bought.filter(entry => !fullyOrdered(entry.item));
 const grafted = spots.filter(entry => entry.item.method === 'graft');
 const typeCounts = list => {
   const counts = {};
@@ -275,7 +293,7 @@ const countText = counts => TYPE_ORDER.filter(type => counts[type]).map(type => 
 const heldCount = rows.reduce((sum, row) => sum + row.held.length, 0);
 const otherCount = spots.length - grafted.length - heldCount;
 document.getElementById('subtitle').textContent =
-  `${spots.length} open spots in R1 to R${COVERS}, ${PLANTING_PLAN.items.length} cultivars: ${bought.length} trees to buy and ${grafted.length} grafts. ${PLANTING_PLAN.status}.`;
+  `${spots.length} open spots in R1 to R${COVERS}, ${PLANTING_PLAN.items.length} cultivars: ${orderedSpots.length} ordered, ${stillToBuy.length} trees still to buy, and ${grafted.length} grafts. ${PLANTING_PLAN.status}.`;
 document.getElementById('what-this-is').append(element('strong', 'What this is: '),
   `the recommended cultivar for every open spot in R1 to R${COVERS}, so no hole is left: the ${heldCount} spots held for dead or relocated trees, ${otherCount} other empty positions, and the ${grafted.length} reserved spots in R1 where you graft onto your own rootstocks. It is chosen for a short-season U-pick orchard at about 4,750 ft. R13 to R15 are future rows and are not planned yet. Every cultivar links to its profile in the `);
 const guideAnchor = element('a', 'cultivar guide');
@@ -291,12 +309,13 @@ const glanceRows = TYPE_ORDER.map(type => {
   return { type, now, added, grafts };
 }).filter(row => row.now || row.added);
 const totalNow = glanceRows.reduce((sum, row) => sum + row.now, 0);
+const orderedOfType = type => orderedSpots.filter(entry => entry.item.type === type).length;
 document.getElementById('glance').append(table(
-  ['Fruit', 'On hand now', 'New trees to buy', 'New grafts (R1)', 'After the plan'],
-  [...glanceRows.map(row => [PLURAL[row.type][0].toUpperCase() + PLURAL[row.type].slice(1), String(row.now), String(row.added - row.grafts), String(row.grafts), String(row.now + row.added)]),
-    [element('strong', 'All fruit trees'), String(totalNow), String(bought.length), String(grafted.length), String(totalNow + spots.length)]]));
+  ['Fruit', 'On hand now', 'Ordered', 'Still to buy', 'New grafts (R1)', 'After the plan'],
+  [...glanceRows.map(row => [PLURAL[row.type][0].toUpperCase() + PLURAL[row.type].slice(1), String(row.now), String(orderedOfType(row.type)), String(row.added - row.grafts - orderedOfType(row.type)), String(row.grafts), String(row.now + row.added)]),
+    [element('strong', 'All fruit trees'), String(totalNow), String(orderedSpots.length), String(stillToBuy.length), String(grafted.length), String(totalNow + spots.length)]]));
 document.getElementById('glance-note').textContent =
-  'On hand counts the living fruit trees placed in the orchard, with the unidentified trees counted by fruit type; the planted M-111 rootstock and the Urban apples that move outside are not counted. New grafts are the 13 apples in R1.';
+  'On hand counts the living fruit trees placed in the orchard, with the unidentified trees counted by fruit type; the planted M-111 rootstock and the Urban apples that move outside are not counted. Ordered trees stay on this plan until they arrive and are added to the inventory. New grafts are the 13 apples in R1.';
 
 // Buy list: apples first, earliest ripening first.
 const sortItems = list => [...list].sort((a, b) =>
@@ -318,8 +337,36 @@ const buyRows = list => list.map(item => {
   return [name, `${item.quantity}: ${item.spots.join(', ')}`, ripens, item.rootstock, pollinationText(item), why];
 });
 const buyHeaders = rootstockLabel => ['Cultivar', 'Count and spots', 'Ripens', rootstockLabel, 'Pollination', 'Why, and cautions'];
-document.getElementById('trees-heading').textContent = `Trees to buy (${bought.length}: ${countText(typeCounts(bought))})`;
-document.getElementById('buy-list').append(table(buyHeaders('Rootstock'), buyRows(treeItems)));
+if (orders.length) {
+  const orderedHeading = document.getElementById('ordered-heading');
+  orderedHeading.hidden = false;
+  orderedHeading.textContent = `Ordered, not yet arrived (${orderedSpots.length}: ${countText(typeCounts(orderedSpots))})`;
+  const orderedRows = orders.flatMap(order => order.lines.map(line => {
+      const item = PLANTING_PLAN.items.find(entry => entry.id === line.item_id);
+      const name = element('div');
+      const shipped = line.shipped_as ? profileNamed(line.shipped_as) : null;
+      name.append(element('strong', `${item.type}: `), shipped ? guideLink(line.shipped_as, shipped) : guideLink(item.cultivar, profileOf(item)));
+      if (line.shipped_as) name.append(element('div', `Stand-in for planned ${item.cultivar}`, 'small'));
+    const link = element('a', order.nursery);
+    link.href = line.product_url;
+    const where = element('div');
+    where.append(link, ` order ${order.order_number}, ${order.ordered_on}, ships to ${order.ships_to}`);
+    return [name, `${line.quantity}: ${item.spots.join(', ')}`, `${line.rootstock}, grade ${line.grade}`, line.season, where,
+      `${money(Math.round(line.unit_price * 100))} each, ${money(Math.round(line.quantity * line.unit_price * 100))}`];
+  }));
+  document.getElementById('ordered-list').append(table(
+    ['Cultivar', 'Count and spots', 'Rootstock ordered', 'Season', 'Nursery', 'Price'], orderedRows));
+  const notes = document.getElementById('ordered-notes');
+  notes.hidden = false;
+  notes.textContent = orders.map(order => {
+    const charges = [['trees', order.subtotal], ['shipping', order.shipping], ['handling', order.handling],
+      ['phytosanitary certificate', order.phyto], ['tax', order.tax], ['card surcharge', order.card_surcharge]]
+      .filter(([, amount]) => amount).map(([label, amount]) => `${label} ${money(Math.round(amount * 100))}`).join('; ');
+    return `${order.nursery} order ${order.order_number}: ${charges}; charged ${money(Math.round(order.total * 100))}. ${order.note}`;
+  }).join(' ');
+}
+document.getElementById('trees-heading').textContent = `Trees still to buy (${stillToBuy.length}: ${countText(typeCounts(stillToBuy))})`;
+document.getElementById('buy-list').append(table(buyHeaders('Rootstock'), buyRows(treeItems.filter(item => !fullyOrdered(item)))));
 document.getElementById('buy-notes').textContent = `${PLANTING_PLAN.rootstock_advice} ${PLANTING_PLAN.shipping_note}`;
 document.getElementById('grafts-heading').textContent = `Scionwood to buy and graft onto your rootstocks (${grafted.length} apples in R1)`;
 document.getElementById('graft-list').append(table(buyHeaders('Graft onto'), buyRows(graftItems)));
@@ -343,9 +390,10 @@ for (let r = 1; r <= COVERS; r++) {
     const tree = rows[r - 1].trees[c - 1];
     const held = rows[r - 1].held.find(entry => entry.c === c);
     if (planned) {
-      cell.className = 'planned' + (held ? ' held' : '') + (planned.item.method === 'graft' ? ' graft' : '');
+      const ordered = fullyOrdered(planned.item);
+      cell.className = 'planned' + (held ? ' held' : '') + (planned.item.method === 'graft' ? ' graft' : '') + (ordered ? ' ordered' : '');
       cell.textContent = planned.item.code;
-      cell.title = `R${r}-C${c}: planned ${planned.item.cultivar}${planned.item.method === 'graft' ? ' (graft)' : ''}${held ? ` (${held.name} ${held.orchardUpdate.status === 'dead' ? `died${held.orchardUpdate.lostBeforePlanting ? ' in its pot' : ''}` : 'moved outside'})` : ''}`;
+      cell.title = `R${r}-C${c}: ${ordered ? 'ordered' : 'planned'} ${orderedLabel(planned.item)}${planned.item.method === 'graft' ? ' (graft)' : ''}${held ? ` (${held.name} ${held.orchardUpdate.status === 'dead' ? `died${held.orchardUpdate.lostBeforePlanting ? ' in its pot' : ''}` : 'moved outside'})` : ''}`;
     } else if (tree) {
       cell.className = 'tree';
       cell.textContent = tree.code;

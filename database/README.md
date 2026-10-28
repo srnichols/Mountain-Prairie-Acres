@@ -28,7 +28,8 @@ Queries are read-only: writes, attachment of another database, and extension loa
 | `event_types` | The event vocabulary: `history` types, yearly growth `stage` types (with their calendar `stage_order`), and `condition` notes. See "Tracking your trees" in the [data guide](../data/README.md) |
 | `cultivar_profiles`, `cultivar_profile_links`, `cultivar_profile_aliases`, `cultivar_profile_uses`, `cultivar_profile_sources`, `cultivar_group_notes`, `cultivar_group_note_sources` | The cultivar library: one profile per cultivar, species, genus, or rootstock in the inventory, the purchase list, the seed list, or the planting plan (including habit, bark, and leaf notes, which are `NULL` unless a source describes that plant), linked to inventory lines (`link_type = 'inventory'`), purchase rows (`'purchase'`), and seed-list rows (`'seed'`), with aliases, uses, and sources; plus a general habit, bark, and leaf note for each fruit-tree type. A cultivar you plan to buy is linked through `planting_plan_items.profile_id` instead of a row. Not the same as `cultivars`, which holds purchase-sheet rows |
 | `workbook_rows`, `purchases` | Lossless structured workbook cells and purchase-list projections; headers are not purchases, dates not supplied stay null |
-| `planting_plan_items`, `planting_plan_spots` | The planting plan (`PLANTING_PLAN` in `orchard.json`): one row per recommended cultivar with its fruit type, whether it is bought or grafted (`method`), quantity, rootstock note, and library profile, and one row per planned orchard spot (reserved R1 spots for grafts). A recommendation, not a record of trees: nothing here is bought, grafted, or planted |
+| `planting_plan_items`, `planting_plan_spots` | The planting plan (`PLANTING_PLAN` in `orchard.json`): one row per recommended cultivar with its fruit type, whether it is bought or grafted (`method`), quantity, rootstock note, and library profile, and one row per planned orchard spot (reserved R1 spots for grafts). A recommendation until the trees arrive and are inventoried | 
+| `planting_plan_orders`, `planting_plan_order_lines` | Nursery orders placed for plan items that are bought, not grafted. Charges are whole cents. A line names the grade, rootstock, season, unit price, and product link. `shipped_as` is set only when the ordered tree is a stand-in for the planned cultivar. The street address is not stored. An order does not plant the tree or take its spot out of the plan |
 | `grid_cells` | All master cells, clipped to the actual fence, with their northwest-corner latitude/longitude |
 | `site_features`, `feature_points` | Full mapped geometry and queryable vertices, including water pipes, hydrants, and valve boxes |
 | `photos`, `feature_photos` | The drone photos (the files, the original's name, the local time taken, the camera's place in lot feet and grid `cell`, its height above the take-off point, heading, tilt, and field of view, a caption, and alt text), and which photos each mapped item shows. `cell` is `NULL` for a camera outside the fence |
@@ -59,6 +60,7 @@ inventory_batches -> plants -> plantings -> locations
                        +-> cultivars
 inventory_batches / cultivars / workbook_rows (seed list) -> cultivar_profile_links -> cultivar_profiles -> aliases, uses, sources
 planting_plan_items -> cultivar_profiles; planting_plan_spots -> planting_plan_items, locations
+planting_plan_orders -> planting_plan_order_lines -> planting_plan_items
 site_features -> feature_points
 site_features -> feature_photos -> photos
 terrain_lines -> terrain_points

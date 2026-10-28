@@ -72,6 +72,15 @@ def load_data(root=ROOT):
 LARGEST_NUMBER = 10 ** 12
 
 
+def _cents(value, name):
+    """A money amount in dollars, stored and checked as a whole number of cents."""
+    _number(value, name, 0)
+    cents = round(float(value) * 100)
+    if abs(float(value) * 100 - cents) > 1e-4 or cents > 10 ** 9:
+        raise ValueError(f"{name} must be a whole number of cents")
+    return int(cents)
+
+
 def _number(value, name, minimum=None):
     if not isinstance(value, (int, float)) or isinstance(value, bool):
         raise ValueError(f"{name} must be a finite number")
@@ -490,6 +499,71 @@ def _validate_planting_plan(data, locations, active_spots):
     held = {name for name, location in spots.items() if location["replacement_year"] == plan["year"]}
     if held - seen_spots:
         raise ValueError(f"Open replacement spots without a planting plan item: {sorted(held - seen_spots)}")
+    _validate_planting_orders(plan)
+
+
+def _validate_planting_orders(plan):
+    """Nursery orders placed for plan items. A tree stays on the plan until it arrives and is inventoried."""
+    orders = plan.get("orders", [])
+    if not isinstance(orders, list):
+        raise ValueError("Planting plan orders must be a list")
+    items = {item["id"]: item for item in plan["items"] if isinstance(item, dict) and isinstance(item.get("id"), str)}
+    money = ("subtotal", "shipping", "handling", "phyto", "tax", "card_surcharge", "total")
+    required = ("id", "ordered_on", "nursery", "order_number", "ships_to", "currency", *money, "note", "lines")
+    line_fields = ("item_id", "quantity", "grade", "rootstock", "season", "unit_price", "product_url")
+    optional_line_fields = {"shipped_as"}
+    seen, ordered = set(), {}
+    for order in orders:
+        if not isinstance(order, dict):
+            raise ValueError("Each planting plan order must be an object")
+        _require(order, required, "planting plan order")
+        label = order["id"]
+        if extra := set(order) - set(required):
+            raise ValueError(f"Planting plan order {label} has unknown fields: {sorted(extra)}")
+        if not isinstance(label, str) or not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", label) or label in seen:
+            raise ValueError(f"Planting plan order id must be a unique lowercase slug: {label}")
+        seen.add(label)
+        _date(order["ordered_on"], f"planting plan order {label} ordered_on")
+        if order["ordered_on"] is None:
+            raise ValueError(f"Planting plan order {label} needs an ordered_on date")
+        for key in ("nursery", "order_number", "ships_to", "note"):
+            _text(order[key], f"planting plan order {label} {key}", False)
+        if order["currency"] != "USD":
+            raise ValueError(f"Planting plan order {label}: currency must be USD")
+        cents = {key: _cents(order[key], f"planting plan order {label} {key}") for key in money}
+        if cents["subtotal"] + cents["shipping"] + cents["handling"] + cents["phyto"] + cents["tax"] + cents["card_surcharge"] != cents["total"]:
+            raise ValueError(f"Planting plan order {label}: the charges do not add up to the total")
+        if not isinstance(order["lines"], list) or not order["lines"]:
+            raise ValueError(f"Planting plan order {label} needs at least one line")
+        line_total, seen_lines = 0, set()
+        for line in order["lines"]:
+            if not isinstance(line, dict):
+                raise ValueError(f"Planting plan order {label}: each line must be an object")
+            _require(line, line_fields, f"planting plan order {label} line")
+            item_id = line["item_id"]
+            if extra := set(line) - set(line_fields) - optional_line_fields:
+                raise ValueError(f"Planting plan order {label} line {item_id} has unknown fields: {sorted(extra)}")
+            item = items.get(item_id)
+            if item is None or item.get("method") != "buy":
+                raise ValueError(f"Planting plan order {label}: {item_id} is not a tree the plan buys")
+            if item_id in seen_lines:
+                raise ValueError(f"Planting plan order {label} lists {item_id} twice")
+            seen_lines.add(item_id)
+            _integer(line["quantity"], f"planting plan order {label} {item_id} quantity", 1)
+            ordered[item_id] = ordered.get(item_id, 0) + line["quantity"]
+            if ordered[item_id] > item["quantity"]:
+                raise ValueError(f"Planting plan order {label}: {item_id} orders more trees than the plan")
+            for key in ("grade", "rootstock", "season"):
+                _text(line[key], f"planting plan order {label} {item_id} {key}", False)
+            if "shipped_as" in line:
+                _text(line["shipped_as"], f"planting plan order {label} {item_id} shipped_as", False)
+                if line["shipped_as"] == item["cultivar"]:
+                    raise ValueError(f"Planting plan order {label} {item_id}: shipped_as is only for a different tree than the planned cultivar")
+            line_total += line["quantity"] * _cents(line["unit_price"], f"planting plan order {label} {item_id} unit_price")
+            if not isinstance(line["product_url"], str) or not line["product_url"].startswith("https://"):
+                raise ValueError(f"Planting plan order {label} {item_id}: product_url must be an https link")
+        if line_total != cents["subtotal"]:
+            raise ValueError(f"Planting plan order {label}: line prices do not add up to the subtotal")
 
 
 def _validate_unidentified_apples(rules, inventory, fruit, workbook, profile_by_purchase_row):
@@ -1890,6 +1964,19 @@ def _populate(connection, data, digest):
                   i["role"], i["caution"]) for i in plan["items"]])
         _insert(connection, "planting_plan_spots", ("item_id", "location_id"),
                 [(i["id"], spot_ids[spot]) for i in plan["items"] for spot in i["spots"]])
+        _insert(connection, "planting_plan_orders",
+                ("id", "plan_year", "ordered_on", "nursery", "order_number", "ships_to", "currency",
+                 "subtotal_cents", "shipping_cents", "handling_cents", "phyto_cents", "tax_cents",
+                 "card_surcharge_cents", "total_cents", "note"),
+                [(o["id"], plan["year"], o["ordered_on"], o["nursery"], o["order_number"], o["ships_to"], o["currency"],
+                  round(o["subtotal"] * 100), round(o["shipping"] * 100), round(o["handling"] * 100), round(o["phyto"] * 100),
+                  round(o["tax"] * 100), round(o["card_surcharge"] * 100), round(o["total"] * 100), o["note"])
+                 for o in plan.get("orders", [])])
+        _insert(connection, "planting_plan_order_lines",
+                ("order_id", "item_id", "quantity", "grade", "rootstock", "season", "unit_price_cents", "product_url", "shipped_as"),
+                [(o["id"], line["item_id"], line["quantity"], line["grade"], line["rootstock"], line["season"],
+                  round(line["unit_price"] * 100), line["product_url"], line.get("shipped_as"))
+                 for o in plan.get("orders", []) for line in o["lines"]])
     features, points = [], []
     for feature in grid.data["features"]:
         x, y = grid.center(feature)
