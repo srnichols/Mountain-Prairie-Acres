@@ -442,7 +442,7 @@ test('Cultivar library covers every inventory line and its links resolve', () =>
   assert.equal(library.byId('apple-cortland').inventory_rows[0], 29);
   assert.ok(library.tooltip(library.byId('apple-cortland')).startsWith('Cortland: '));
   assert.equal(library.guideHref(library.byId('apple-cortland')), 'cultivar_guide.html#apple-cortland');
-  assert.equal(library.profiles.length, 162);
+  assert.equal(library.profiles.length, 158);
   assert.equal(library.GROUPS.length, 11);
   assert.ok(library.profiles.every(profile => library.GROUPS.includes(profile.group)));
 });
@@ -479,7 +479,15 @@ test('The 2027 planting plan fills every open spot in R1 to R12 and leaves livin
   const spots = model.plannedSpots();
   assert.equal(plan.year, 2027);
   assert.equal(plan.covers_rows, 12);
-  assert.equal(plan.orders.length, 4);
+  assert.equal(plan.orders.length, 8);
+  assert.equal(plan.orders.find(order => order.order_number === 'XFEEV5ANY').total, 291);
+  assert.equal(plan.orders.find(order => order.order_number === 'US332070').total, 266.36);
+  assert.match(plan.orders.find(order => order.order_number === 'US332070').note, /still due/i);
+  assert.doesNotMatch(plan.orders.find(order => order.order_number === 'XFEEV5ANY').note, /still due/i);
+  assert.equal(plan.orders.find(order => order.order_number === '1101164703766').total, 413.74);
+  assert.doesNotMatch(plan.orders.find(order => order.order_number === '1101164703766').note, /still due/i);
+  assert.equal(plan.orders.find(order => order.order_number === 'WZTA0LZIJ').lines[0].quantity, 2);
+  assert.equal(plan.orders.find(order => order.order_number === 'WZTA0LZIJ').total, 149);
   assert.equal(plan.orders[0].order_number, '039970');
   assert.equal(plan.orders[0].lines[0].item_id, 'williams-pride');
   assert.equal(plan.orders[0].lines[0].quantity, 3);
@@ -494,17 +502,17 @@ test('The 2027 planting plan fills every open spot in R1 to R12 and leaves livin
   assert.equal(new Set(spots.map(entry => entry.spot)).size, 49);
   const counts = {};
   spots.forEach(entry => { counts[entry.item.type] = (counts[entry.item.type] || 0) + 1; });
-  assert.deepEqual(counts, { Apple: 26, Pear: 2, Cherry: 11, Peach: 4, Plum: 4, Apricot: 2 });
+  assert.deepEqual(counts, { Apple: 26, Pear: 2, Cherry: 12, Peach: 6, Plum: 2, Apricot: 1 });
   spots.forEach(({ r, c, spot }) => assert.equal(rows[r - 1].trees[c - 1], null, `${spot} should be open`));
   rows.flatMap(row => row.held).forEach(tree => assert.ok(model.plannedAt(tree.r, tree.c), `R${tree.r}-C${tree.c} has no planned cultivar`));
   assert.equal(model.plannedAt(6, 4).item.cultivar, 'Dayton');
   // Spots left open by dead or moved trees are planned for the same fruit type; the moved plums' new spots are not planned.
-  for (const [r, c, type] of [[11, 7, 'Plum'], [12, 7, 'Plum'], [11, 10, 'Peach'], [11, 12, 'Peach'], [12, 11, 'Peach'], [9, 2, 'Cherry'], [8, 1, 'Pear']]) {
+  for (const [r, c, type] of [[11, 7, 'Peach'], [12, 7, 'Peach'], [11, 10, 'Peach'], [11, 12, 'Peach'], [12, 11, 'Peach'], [9, 2, 'Cherry'], [8, 1, 'Pear']]) {
     assert.equal(model.plannedAt(r, c).item.type, type, `R${r}-C${c}`);
   }
-  // The other stone-fruit gap spots: two apricots in the higher spots of R11 beside the apricot block, plums beside the Italian plums,
-  // and one more peach beside the peach block.
-  for (const [r, c, type, cultivar] of [[11, 4, 'Apricot', 'Chinese (Mormon)'], [11, 5, 'Apricot', 'Harcot'], [12, 3, 'Plum', 'Stanley'],
+  // The other stone-fruit gap spots: the extra Bing in the old Chinese (Mormon) spot, Harcot beside the apricot block,
+  // Stanley and Damson beside the Italian plums, and Reliance beside the peach block.
+  for (const [r, c, type, cultivar] of [[11, 4, 'Cherry', 'Bing'], [11, 5, 'Apricot', 'Harcot'], [12, 3, 'Plum', 'Stanley'],
                                         [12, 4, 'Plum', 'Damson'], [12, 8, 'Peach', 'Reliance']]) {
     const entry = model.plannedAt(r, c);
     assert.deepEqual([entry.item.type, entry.item.cultivar], [type, cultivar], `R${r}-C${c}`);
@@ -582,16 +590,22 @@ test('The planned pear, cherries, plums, apricots and peaches follow the pollina
   const bartlett = records.find(tree => tree.name === 'Bartlett');
   assert.equal(model.compatiblePair(seckel.tree, bartlett), null);
   assert.ok(model.compatiblePair({ ...seckel.tree, avoid: [] }, bartlett), 'Without the exclusion the bloom chart would count it');
-  const cherry = planned('Black Gold').tree;
-  assert.equal(cherry.selfFertile, true);
+  const pearl = planned('Black Pearl').tree;
+  assert.equal(pearl.selfFertile, false);
   assert.equal(planned('Intrepid').partners.length, 0, 'A self-fertile peach needs no partner');
-  // Black Gold blooms later than Bing, so it adds no pollen for Bing; a chart step earlier would.
-  const bing = records.find(tree => tree.name === 'Bing');
-  assert.equal(model.compatiblePair(bing, cherry), null);
-  assert.ok(model.compatiblePair(bing, { ...cherry, cherryChart: { group: null, bloom: 4 } }));
-  // The new sweet cherries are self-fertile and bloom a period after Bing, and tart cherries, plums, apricots and peaches need no partner.
-  for (const name of ['Skeena', 'WhiteGold']) assert.equal(planned(name).tree.selfFertile, true, name);
-  for (const name of ['Surefire', 'Meteor', 'Carmine Jewel', 'Mount Royal', 'Stanley', 'Damson', 'Chinese (Mormon)', 'Harcot', 'Contender', 'Harrow Diamond', 'Reliance']) {
+  // Black Pearl blooms with Lapins, one period from Bing, so a living Bing can cover the west tree. Burgundy Pearl cannot use Bing.
+  const bing = records.find(tree => tree.name === 'Bing' && !tree.planned);
+  assert.ok(model.compatiblePair(pearl, bing));
+  const burgundy = planned('Burgundy Pearl').tree;
+  assert.equal(model.compatiblePair(burgundy, bing), null);
+  assert.ok(model.plannedPollination(records).filter(entry => entry.tree.name === 'Burgundy Pearl')
+    .every(entry => entry.partners.some(partner => partner.donor.name === 'Black Pearl')));
+  assert.ok(planned('Black Tartarian').partners.some(partner => partner.donor.name === 'Black Pearl'));
+  const newBing = planned('Bing');
+  assert.deepEqual(Array.from(newBing.partners, partner => partner.donor.name), ['Lapins']);
+  assert.equal(model.compatiblePair(newBing.tree, records.find(tree => tree.name === 'Stella')), null);
+  // Tart cherries, plums, the apricot and peaches need no partner.
+  for (const name of ['Surefire', 'Montmorency', 'Stanley', 'Damson', 'Harcot', 'Contender', 'Harrow Diamond', 'Reliance']) {
     const entry = planned(name);
     assert.equal(entry.tree.selfFertile, true, name);
     assert.equal(entry.partners.length, 0, `${name} is self-fertile and nothing is counted as its partner`);

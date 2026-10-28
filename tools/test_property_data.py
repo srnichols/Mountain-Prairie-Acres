@@ -150,8 +150,8 @@ class PropertyDataTest(unittest.TestCase):
                          {"R4-C9", "R5-C9", "R5-C10", "R8-C1", "R9-C2", "R11-C7", "R11-C10", "R11-C12", "R12-C7", "R12-C11"})
         self.assertTrue(all(r["replacement_year"] == 2027 for r in vacancies))
         self.assertEqual({r["name"]: r["replacement_type"] for r in vacancies},
-                         {"R4-C9": "Apple", "R5-C9": "Apple", "R5-C10": "Apple", "R8-C1": "Pear", "R9-C2": "Cherry", "R11-C7": "Plum",
-                          "R11-C10": "Peach", "R11-C12": "Peach", "R12-C7": "Plum", "R12-C11": "Peach"})
+                         {"R4-C9": "Apple", "R5-C9": "Apple", "R5-C10": "Apple", "R8-C1": "Pear", "R9-C2": "Cherry", "R11-C7": "Peach",
+                          "R11-C10": "Peach", "R11-C12": "Peach", "R12-C7": "Peach", "R12-C11": "Peach"})
 
     def test_every_orchard_fruit_tree_is_planted_in_october_2026(self):
         # The owner finished the last block on 2026-10-18 and gave only the month, so no day is invented.
@@ -183,7 +183,7 @@ class PropertyDataTest(unittest.TestCase):
         self.assertEqual((plan["year"], plan["covers_rows"]), (2027, 12))
         items = query("SELECT id, type, method, quantity, profile_id FROM planting_plan_items ORDER BY id", self.root)
         self.assertEqual(len(items), len(plan["items"]))
-        self.assertEqual(len(items), 29)
+        self.assertEqual(len(items), 27)
         self.assertEqual(sum(r["quantity"] for r in items), 49)
         spots = query("SELECT spot, state, type, method, cultivar FROM planned_spots ORDER BY orchard_row, orchard_column", self.root)
         self.assertEqual(len(spots), 49)
@@ -191,11 +191,11 @@ class PropertyDataTest(unittest.TestCase):
         by_type = {}
         for r in spots:
             by_type[r["type"]] = by_type.get(r["type"], 0) + 1
-        self.assertEqual(by_type, {"Apple": 26, "Pear": 2, "Cherry": 11, "Peach": 4, "Plum": 4, "Apricot": 2})
+        self.assertEqual(by_type, {"Apple": 26, "Pear": 2, "Cherry": 12, "Peach": 6, "Plum": 2, "Apricot": 1})
         wanted = ("R8-C1", "R8-C13", "R9-C2", "R11-C4", "R11-C5", "R11-C7", "R11-C10", "R12-C3", "R12-C4", "R12-C7", "R12-C8")
         self.assertEqual({r["spot"]: r["cultivar"] for r in spots if r["spot"] in wanted},
-                         {"R8-C1": "Harrow Delight", "R8-C13": "Seckel", "R9-C2": "Black Gold", "R11-C4": "Chinese (Mormon)", "R11-C5": "Harcot",
-                          "R11-C7": "Mount Royal", "R11-C10": "Intrepid", "R12-C3": "Stanley", "R12-C4": "Damson", "R12-C7": "Mount Royal",
+                         {"R8-C1": "Harrow Delight", "R8-C13": "Seckel", "R9-C2": "Black Pearl", "R11-C4": "Bing", "R11-C5": "Harcot",
+                          "R11-C7": "Intrepid", "R11-C10": "Intrepid", "R12-C3": "Stanley", "R12-C4": "Damson", "R12-C7": "Intrepid",
                           "R12-C8": "Reliance"})
         # The moved plums' new spots hold living trees, so the plan does not use them.
         self.assertFalse({r["spot"] for r in spots} & {"R11-C6", "R12-C5"})
@@ -214,19 +214,25 @@ class PropertyDataTest(unittest.TestCase):
         self.assertTrue({r["name"] for r in held} <= {r["spot"] for r in spots}, "Every held replacement spot has a planned cultivar")
         linked = query("SELECT COUNT(*) AS n FROM planting_plan_items i JOIN cultivar_profiles p ON p.id = i.profile_id "
                        "WHERE p.type = i.type", self.root)[0]["n"]
-        self.assertEqual(linked, 29)
+        self.assertEqual(linked, 27)
         orders = query("SELECT id, order_number, ships_to, total_cents FROM planting_plan_orders ORDER BY id", self.root)
         self.assertEqual(orders, [
             {"id": "cummins-039970", "order_number": "039970", "ships_to": "Idaho", "total_cents": 22724},
+            {"id": "orange-pippin-us332070", "order_number": "US332070", "ships_to": "Idaho", "total_cents": 26636},
             {"id": "raintree-u2tm4quwd", "order_number": "U2TM4QUWD", "ships_to": "Idaho", "total_cents": 8998},
             {"id": "roots-to-fruits-rtf12645", "order_number": "RTF12645", "ships_to": "Idaho", "total_cents": 66600},
+            {"id": "roots-to-fruits-wzta0lzij", "order_number": "WZTA0LZIJ", "ships_to": "Idaho", "total_cents": 14900},
+            {"id": "roots-to-fruits-xfeev5any", "order_number": "XFEEV5ANY", "ships_to": "Idaho", "total_cents": 29100},
             {"id": "trees-of-antiquity-2r8px8q8p", "order_number": "2R8PX8Q8P", "ships_to": "Idaho", "total_cents": 24977},
+            {"id": "willis-1101164703766", "order_number": "1101164703766", "ships_to": "Idaho", "total_cents": 41374},
         ])
         lines = query("SELECT order_id, item_id, quantity, rootstock, unit_price_cents, shipped_as "
                       "FROM planting_plan_order_lines ORDER BY order_id, item_id", self.root)
         self.assertEqual(lines, [
             {"order_id": "cummins-039970", "item_id": "williams-pride", "quantity": 3, "rootstock": "B.118",
              "unit_price_cents": 4375, "shipped_as": None},
+            {"order_id": "orange-pippin-us332070", "item_id": "surefire", "quantity": 4, "rootstock": "Mahaleb",
+             "unit_price_cents": 4595, "shipped_as": None},
             {"order_id": "raintree-u2tm4quwd", "item_id": "seckel", "quantity": 1, "rootstock": "OHxF 87",
              "unit_price_cents": 6499, "shipped_as": None},
             {"order_id": "roots-to-fruits-rtf12645", "item_id": "contender", "quantity": 1, "rootstock": "Lovell",
@@ -245,12 +251,24 @@ class PropertyDataTest(unittest.TestCase):
              "unit_price_cents": 5900, "shipped_as": None},
             {"order_id": "roots-to-fruits-rtf12645", "item_id": "reliance", "quantity": 1, "rootstock": "Seedling",
              "unit_price_cents": 4700, "shipped_as": None},
+            {"order_id": "roots-to-fruits-wzta0lzij", "item_id": "intrepid", "quantity": 2, "rootstock": "Seedling",
+             "unit_price_cents": 4700, "shipped_as": None},
+            {"order_id": "roots-to-fruits-xfeev5any", "item_id": "black-pearl", "quantity": 2, "rootstock": "Mazzard",
+             "unit_price_cents": 5900, "shipped_as": None},
+            {"order_id": "roots-to-fruits-xfeev5any", "item_id": "burgundy-pearl", "quantity": 2, "rootstock": "Mazzard",
+             "unit_price_cents": 5900, "shipped_as": None},
             {"order_id": "trees-of-antiquity-2r8px8q8p", "item_id": "damson", "quantity": 1, "rootstock": "Mariana",
              "unit_price_cents": 5895, "shipped_as": None},
             {"order_id": "trees-of-antiquity-2r8px8q8p", "item_id": "harcot", "quantity": 1, "rootstock": "Mariana",
              "unit_price_cents": 5995, "shipped_as": None},
             {"order_id": "trees-of-antiquity-2r8px8q8p", "item_id": "stanley", "quantity": 1, "rootstock": "Mariana",
              "unit_price_cents": 5995, "shipped_as": None},
+            {"order_id": "willis-1101164703766", "item_id": "bing", "quantity": 1, "rootstock": "Not stated",
+             "unit_price_cents": 7495, "shipped_as": None},
+            {"order_id": "willis-1101164703766", "item_id": "black-tartarian", "quantity": 1, "rootstock": "Not stated",
+             "unit_price_cents": 7495, "shipped_as": None},
+            {"order_id": "willis-1101164703766", "item_id": "montmorency", "quantity": 2, "rootstock": "Not stated",
+             "unit_price_cents": 7495, "shipped_as": None},
         ])
         validate_data(self.data)
 
@@ -791,11 +809,11 @@ class PropertyDataTest(unittest.TestCase):
             ("orchard", lambda d: plan_item(d, "dayton").update(type="Grape"), "type must be one of"),
             ("orchard", lambda d: plan_item(d, "harrow-delight").pop("self_fertile"), "self_fertile"),
             ("orchard", lambda d: plan_item(d, "harrow-delight").update(pear_bloom=["Mid"]), "pear_bloom"),
-            ("orchard", lambda d: plan_item(d, "black-gold").update(cherry_chart={"group": None, "bloom": 9}), "cherry bloom must be 1 to 6"),
+            ("orchard", lambda d: plan_item(d, "black-pearl").update(cherry_chart={"group": None, "bloom": 9}), "cherry bloom must be 1 to 6"),
             ("orchard", lambda d: plan_item(d, "dayton").update(self_fertile=True), "unknown fields"),
             ("orchard", lambda d: plan_item(d, "harrow-delight").update(flowering_group=2), "unknown fields"),
             ("orchard", lambda d: plan_item(d, "harrow-delight").update(pear_bloom=["Mid", "Mid"]), "pear_bloom needs"),
-            ("orchard", lambda d: plan_item(d, "black-gold").update(self_fertile="yes"), "self_fertile must be true or false"),
+            ("orchard", lambda d: plan_item(d, "black-pearl").update(self_fertile="yes"), "self_fertile must be true or false"),
             ("orchard", add_plan_item_with_dayton_profile, "repeats a profile"),
             ("orchard", lambda d: plan_item(d, "dayton").update(method="seed"), "method must be one of"),
             ("orchard", lambda d: plan_item(d, "redfree").update(type="Pear"), "only apples are grafted"),
@@ -812,7 +830,7 @@ class PropertyDataTest(unittest.TestCase):
             ("orchard", lambda d: plan_item(d, "dayton").update(not_pollinated_by=["Kumquat"]), "matches no living or planned apple"),
             ("orchard", lambda d: plan_item(d, "dayton").update(not_pollinated_by=["Dayton"]), "matches no living or planned apple"),
             ("orchard", lambda d: plan_item(d, "seckel").update(not_pollinated_by=["Dayton"]), "matches no living or planned pear"),
-            ("orchard", lambda d: (plan_item(d, "mount-royal")["spots"].pop(), plan_item(d, "mount-royal").update(quantity=1)),
+            ("orchard", lambda d: (plan_item(d, "intrepid")["spots"].pop(), plan_item(d, "intrepid").update(quantity=2)),
              "have no planting plan item"),
             ("plants", lambda d: [p.update(health_status="dead") for p in d["records"] if p["id"] in ("i56-2", "i56-3")],
              "rootstocks are unplanted"),
@@ -1063,7 +1081,7 @@ class PropertyDataTest(unittest.TestCase):
         counts = query("SELECT COUNT(*) AS profiles, "
                        "(SELECT COUNT(*) FROM cultivar_profile_links WHERE link_type = 'inventory') AS inventory_links "
                        "FROM cultivar_profiles", self.root)[0]
-        self.assertEqual((counts["profiles"], counts["inventory_links"]), (162, 115))
+        self.assertEqual((counts["profiles"], counts["inventory_links"]), (158, 115))
         cortland = query("SELECT profile_name, ripening FROM plant_profiles WHERE plant_id = 'i29-1'", self.root)[0]
         self.assertEqual((cortland["profile_name"], cortland["ripening"]), ("Cortland", "Mid"))
         unknown = query("SELECT profile_id FROM plant_profiles WHERE plant_id = 'i62-1'", self.root)[0]

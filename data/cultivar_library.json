@@ -3935,230 +3935,7 @@
       "note": "Canker and brown rot resistance is Cummins' nursery claim, not a university trial; WSU material covers sweet cherry but names tart cherry as another host of the same bacterium. No poor fit found for zone 5a, season length, or canker.",
       "reviewed_on": "2026-10-17"
     },
-    {
-      "id": "cherry-meteor",
-      "group": "Cherry",
-      "type": "Cherry",
-      "kind": "cultivar",
-      "name": "Meteor",
-      "aliases": [],
-      "inventory_rows": [],
-      "purchase_rows": [],
-      "tagline": "Early; amarelle red and yellow; ultra-hardy dwarf",
-      "summary": "A 1952 University of Minnesota tart cherry crossing Montmorency with hardy Russian cherries; a naturally dwarf, extremely cold-hardy tree with red-skinned, yellow-fleshed Amarelle fruit for pies and sauce.",
-      "appearance": "Large, round cherry with bright red skin and pale yellow flesh (an Amarelle type) that presses to clear juice; medium-firm, medium-juicy texture per Intermountain.",
-      "flavor_use": "Clear-juiced, yellow-fleshed fruit used for pies and sauce rather than fresh eating; keeps under a month. Self-fertile, no pollenizer needed. Cummins rates it resistant to leaf spot and brown rot; none of these sources give it a bacterial canker rating.",
-      "uses": [
-        "cooking",
-        "canning",
-        "jelly"
-      ],
-      "ripening": "Early",
-      "ripening_note": "Sources disagree: Cummins and UMN, its own breeder, put it about 1 week after Montmorency, early July; Intermountain lists late July.",
-      "id_cues": "Yellow flesh matches Montmorency, a shared, weak cue; ripens about a week after Montmorency per Cummins and UMN, though Intermountain says much later. Its dwarf, 10 to 14 ft size is shared with North Star, but North Star has red, not yellow, flesh.",
-      "habit": "Naturally dwarf tree, about 10 to 14 ft tall, upright-spreading with a rounded, dense crown that helps hide fruit from birds.",
-      "bark": null,
-      "leaf": null,
-      "hardiness": "Zone 4-7 (Intermountain); to -50F dormant (Cummins).",
-      "sources": [
-        [
-          "Cummins Nursery: Meteor Cherry on Mahaleb",
-          "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=tree&id=21997"
-        ],
-        [
-          "Intermountain Fruit: Cherry variety table",
-          "https://intermountainfruit.org/fruit-tables/cherry"
-        ],
-        [
-          "Univ. of Minnesota Extension: Growing stone fruits in the home garden",
-          "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-stone-fruits-in-the-home-garden"
-        ]
-      ],
-      "basis": "sourced",
-      "note": "Ripening claims conflict by weeks: Cummins and its own breeder, UMN, say early July, but Intermountain says late July; I favored the breeder. No poor fit found for zone 5a, season length, or canker; no canker rating at all was located.",
-      "reviewed_on": "2026-10-17"
-    },
-    {
-      "id": "cherry-carmine-jewel",
-      "group": "Cherry",
-      "type": "Cherry",
-      "kind": "cultivar",
-      "name": "Carmine Jewel",
-      "aliases": [],
-      "inventory_rows": [],
-      "purchase_rows": [],
-      "tagline": "Late; dwarf bush cherry; dark red, sweet-tart, heavy bearer",
-      "summary": "A 1999 University of Saskatchewan dwarf sour cherry, Prunus fruticosa x P. cerasus, grown as an own-root shrub rather than a tree; dark red, sweet-tart fruit for fresh eating and jam.",
-      "appearance": "Small to medium, round, dark red cherry, called quarter-sized by St. Lawrence Nurseries, with juicy, sweet-tart flesh that darkens and sweetens further as it fully ripens.",
-      "flavor_use": "Sweet-tart flesh eaten fresh or made into jam; self-fertile, so one plant fruits alone, though a second plant nearby can raise yields. One Green World states plainly that bacterial canker can still damage branches despite the plant's hardiness; no brown rot rating was found.",
-      "uses": [
-        "fresh",
-        "jelly"
-      ],
-      "ripening": "Late",
-      "ripening_note": "St. Lawrence Nurseries: ripens in late July; One Green World gives only a vague mid-summer window.",
-      "id_cues": "Grows as a multi-stemmed shrub, not a standard tree like Montmorency or Surefire, usually sold own-root. Fruit darkens toward near-black red at full ripeness, later than Montmorency; Nanking cherry is a different, non-dwarf species with smaller, single-seeded fruit, a weak cue in young plants.",
-      "habit": "Own-root, multi-stemmed shrub pruned as a bush rather than trained as a tree; mature height is given as about 6 ft (USask), 6 to 12 ft (One Green World) or 8 to 10 ft (St. Lawrence).",
-      "bark": null,
-      "leaf": null,
-      "hardiness": "Zone 2 (USask) to zone 3 (OGW); -40F to -50F with injury, sources vary.",
-      "sources": [
-        [
-          "Univ. of Saskatchewan: Sour cherry varieties",
-          "https://research-groups.usask.ca/fruit/our-varieties/sour-cherry-varieties.php"
-        ],
-        [
-          "One Green World: Carmine Jewel Bush Cherry",
-          "https://onegreenworld.com/product/carmine-jewel-bush-cherry/"
-        ],
-        [
-          "St. Lawrence Nurseries: Carmine Jewel dwarf sour cherry",
-          "https://www.slngrow.com/products/carmine-jewel-dwarf-sour-cherry"
-        ]
-      ],
-      "basis": "sourced",
-      "note": "One Green World plainly warns bacterial canker can still damage this plant, a real caution for a canker-prone site. Mature height and hardiness zone (2 vs 3) also vary by source; all give it far more cold tolerance than zone 5a needs.",
-      "reviewed_on": "2026-10-17"
-    },
-    {
-      "id": "cherry-skeena",
-      "group": "Cherry",
-      "type": "Cherry",
-      "kind": "cultivar",
-      "name": "Skeena",
-      "aliases": [],
-      "inventory_rows": [],
-      "purchase_rows": [],
-      "tagline": "Late; self-fertile; very large, near-black, firm",
-      "summary": "A self-fertile sweet cherry bred at a Canadian station in Summerland, British Columbia. Very large, firm, dark red to near-black fruit with high sugar, ripening late among sweet cherries. Used mainly fresh, also in pies, juice and jam.",
-      "appearance": "Very large, round to kidney-shaped fruit. Skin dark red, deepening to nearly black at full ripeness; flesh dark red, firm and crunchy.",
-      "flavor_use": "Sweet, about 18-19 percent sugar, firm and crunchy; mainly fresh eating, also pies, juice and jam. Self-fertile. Brighter Blooms calls the fruit crack-resistant, a retail claim, not an independent trial. No university trial names Skeena as canker-susceptible or canker-resistant.",
-      "uses": [
-        "fresh",
-        "cooking",
-        "juice",
-        "jelly"
-      ],
-      "ripening": "Late",
-      "ripening_note": "WSU: ripens 12-15 days after Bing and blooms 4-5 days after Bing; WSU's own tag for this timing is Late.",
-      "id_cues": "Self-fertile like Lapins, Stella and Black Gold, so that trait does not separate them (Bing needs a second tree). Fruit color overlaps too, dark red to near black in all, so color and size are weak cues. The better cue is ripening, 12-15 days after Bing per WSU, about with Lapins (10-14 days).",
-      "habit": "Moderate-growing tree reaching about 12-18 ft tall and 12-15 ft wide at maturity, per Brighter Blooms.",
-      "bark": null,
-      "leaf": null,
-      "hardiness": "Zone 5-9, to about -10F (Brighter Blooms); WSU's page gives no number.",
-      "sources": [
-        [
-          "Washington State Univ. Tree Fruit: Skeena sweet cherry variety profile",
-          "https://treefruit.wsu.edu/variety/skeena/"
-        ],
-        [
-          "Washington State Univ. Extension: Bacterial canker in Washington sweet cherries",
-          "https://treefruit.wsu.edu/bacterial-canker-in-washington-sweet-cherries/"
-        ],
-        [
-          "Brighter Blooms: Skeena Cherry Tree",
-          "https://www.brighterblooms.com/products/skeena-cherry-tree"
-        ]
-      ],
-      "basis": "sourced",
-      "note": "WSU's canker-susceptibility list does not name Skeena at all; its only numeric hardiness claim, -10F, is milder than zone 5a's usual minimum.",
-      "reviewed_on": "2026-10-17"
-    },
-    {
-      "id": "cherry-whitegold",
-      "group": "Cherry",
-      "type": "Cherry",
-      "kind": "cultivar",
-      "name": "WhiteGold",
-      "aliases": [
-        "White Gold"
-      ],
-      "inventory_rows": [],
-      "purchase_rows": [],
-      "tagline": "Mid; self-fertile; yellow blushed red, white flesh",
-      "summary": "A self-fertile sweet cherry Cornell bred in Geneva, NY from Emperor Francis x Stella, introduced around 2001. Medium to large yellow fruit blushed red, white flesh, sweet, crack-resistant. Used fresh, canned, baked and brined.",
-      "appearance": "Medium to large, round fruit. Skin yellow with a red blush; flesh white and firm, unlike the all-red to near-black look-alikes in this group.",
-      "flavor_use": "Sweet and firm, said to resist cracking per Cummins and Stark. Self-fertile, diploid; Cummins says it can pollinize other early to mid-blooming cherries. Cummins and Stark both call it very resistant to bacterial canker, Stark adds brown rot, but WSU's canker list does not include WhiteGold among tested cultivars.",
-      "uses": [
-        "fresh",
-        "cooking",
-        "canning",
-        "jelly",
-        "pollinizer"
-      ],
-      "ripening": "Mid",
-      "ripening_note": "Cummins: ripens about 10 days after Bing; Stark Bro's describes it as a June, mid-season ripener.",
-      "id_cues": "Yellow skin with a red blush and white flesh set WhiteGold apart at a glance from the all-red to near-black Bing, Stella, Skeena and Black Gold; color is the strongest cue, since its ripening, about 10 days after Bing per Cummins, is close to Lapins (10-14 days per WSU).",
-      "habit": null,
-      "bark": null,
-      "leaf": null,
-      "hardiness": "Zone 5-7 per Stark Bro's; Cummins calls it cold-hardy, no zone given.",
-      "sources": [
-        [
-          "Cummins Nursery: WhiteGold Cherry on Mahaleb",
-          "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=tree&id=22325"
-        ],
-        [
-          "Stark Bro's: WhiteGold Sweet Cherry",
-          "https://www.starkbros.com/products/fruit-trees/cherry-trees/whitegold-sweet-cherry"
-        ],
-        [
-          "Washington State Univ. Extension: Bacterial canker in Washington sweet cherries",
-          "https://treefruit.wsu.edu/bacterial-canker-in-washington-sweet-cherries/"
-        ]
-      ],
-      "basis": "sourced",
-      "note": "Cummins and Stark call WhiteGold canker-resistant, but WSU's trial-based list does not name it; Cummins gives 2001 as introduction year, Stark says circa 2003.",
-      "reviewed_on": "2026-10-17"
-    },
-    {
-      "id": "cherry-black-gold",
-      "group": "Cherry",
-      "type": "Cherry",
-      "kind": "cultivar",
-      "name": "Black Gold",
-      "aliases": [
-        "Blackgold",
-        "NY 13791"
-      ],
-      "inventory_rows": [],
-      "purchase_rows": [],
-      "tagline": "Very late bloom; near-black firm fruit; self-fertile, canker-tolerant",
-      "summary": "Black Gold (NY 13791) is a Cornell Geneva sweet cherry, Stark Gold x Stella, bred for very late bloom that helps it escape spring frost. Fruit is large, glossy, near black and firm, used fresh, in preserves, and for canning.",
-      "appearance": "Large, glossy, heart-shaped sweet cherry; skin and flesh both deep red to near black.",
-      "flavor_use": "Firm, juicy fruit for fresh eating, preserves and canning; keeps under a month. Self-fertile, diploid; stands alone or pollinizes other mid to late cherries. Cummins reports considerable bacterial canker resistance with only moderate crack tolerance; Fedco calls it disease and crack resistant instead.",
-      "uses": [
-        "fresh",
-        "cooking",
-        "canning",
-        "jelly"
-      ],
-      "ripening": "Mid",
-      "ripening_note": "Cummins says fruit matures early to mid cherry season; no source gives a date relative to Bing, only its much later bloom.",
-      "id_cues": "OSU's bloom chart places Black Gold in Period IV, later than Bing and Stella (Period II) and Lapins (Period I); its near-black skin is common among dark sweet cherries generally, so bloom timing is the stronger, more specific cue.",
-      "habit": "Upright, spreading growth habit; late blooming and very hardy, reported undamaged near -30F in Minnesota plantings.",
-      "bark": null,
-      "leaf": null,
-      "hardiness": "Zone 4; undamaged near -30F (Cummins) to -33F (Fedco) in Minnesota plantings.",
-      "sources": [
-        [
-          "Cummins Nursery: BlackGold Cherry on Mahaleb",
-          "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=tree&id=21573"
-        ],
-        [
-          "Fedco Seeds: BlackGold sweet cherry",
-          "https://fedcoseeds.com/trees/blackgold-sweet-cherry-7389"
-        ],
-        [
-          "OSU Extension: Sweet cherry compatibility and bloom timing chart",
-          "https://extension.oregonstate.edu/catalog/em-9484-sweet-cherry-compatibility-bloom-timing-chart-commercial-growers"
-        ]
-      ],
-      "basis": "sourced",
-      "note": "Sources differ on release year (about 2000 per Cummins vs 2001 per Fedco) and on crack tolerance (moderate vs resistant).",
-      "reviewed_on": "2026-10-17"
-    },
-    {
+                        {
       "id": "peach-blazing-star",
       "group": "Peach",
       "type": "Peach",
@@ -5015,51 +4792,6 @@
       ],
       "basis": "sourced",
       "note": "Italian Plum, Italian Prune and Fellenberg are one variety (Stark). 'Italian Seedling' may be grown from seed and vary in fruit; 'Lovell' is normally a peach rootstock name, so the tag may refer to rootstock.",
-      "reviewed_on": "2026-10-17"
-    },
-    {
-      "id": "plum-mount-royal",
-      "group": "Plum",
-      "type": "Plum",
-      "kind": "cultivar",
-      "name": "Mount Royal",
-      "aliases": [],
-      "inventory_rows": [],
-      "purchase_rows": [],
-      "tagline": "August; small blue freestone; self-fertile; very hardy",
-      "summary": "A European plum grown in Quebec since before 1903; Raintree calls it bred there while Stark Bros calls it a chance seedling. Round blue freestone fruit, yellow flesh, sweet, used fresh, canned, baked or dried.",
-      "appearance": "Small to medium, round plums with deep blue skin over yellow, freestone flesh, borne in heavy clusters each August.",
-      "flavor_use": "Sweet and juicy, good fresh and for jam, baking, canning, drying or freezing per Stark Bros. Self-fertile, so one tree can bear alone. Neither opened source rates this cultivar for black knot, brown rot or bacterial canker.",
-      "uses": [
-        "fresh",
-        "jelly",
-        "cooking",
-        "canning",
-        "drying"
-      ],
-      "ripening": "Early",
-      "ripening_note": "Ripens in August per Raintree and Stark Bros, ahead of Italian Prune's mid to late August window.",
-      "id_cues": "Ripens earlier than Italian Prune and well ahead of Stanley; fruit runs small to medium, against the large Italian Prune and Stanley. Blue skin alone is a weak cue, since these plums share it.",
-      "habit": "Raintree lists a mature height of about 12 feet; neither opened source describes shape, vigor or bearing habit further.",
-      "bark": null,
-      "leaf": null,
-      "hardiness": "Zone 4 (Raintree) to Zones 4-7 (Stark Bros), both above this site's zone 5a.",
-      "sources": [
-        [
-          "Raintree Nursery: Mount Royal European Plum",
-          "https://raintreenursery.com/products/mount-royal-e-plum-semi-dwarf"
-        ],
-        [
-          "Stark Bros: Mount Royal Plum Tree",
-          "https://www.starkbros.com/products/fruit-trees/plum-trees/mount-royal-plum"
-        ],
-        [
-          "Intermountain Tree Fruit Guide: Plum Variety Table",
-          "https://intermountainfruit.org/fruit-tables/plum"
-        ]
-      ],
-      "basis": "sourced",
-      "note": "Raintree says Mount Royal was bred in Quebec; Stark Bros calls it a chance seedling near Montreal. Penn State's black knot list does not name it; no opened source rates it for bacterial canker.",
       "reviewed_on": "2026-10-17"
     },
     {
@@ -8378,6 +8110,95 @@
       "basis": "sourced",
       "note": "Purdue's table omits Pixie Crunch and Co-op 33, so the cedar-apple rust and mildew susceptibility above comes from Cummins Nursery only, not a university rating.",
       "reviewed_on": "2026-10-17"
+    },
+    {
+      "id": "cherry-black-pearl",
+      "group": "Cherry",
+      "type": "Cherry",
+      "kind": "cultivar",
+      "name": "Black Pearl",
+      "aliases": [],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Early firm dark sweet; needs a partner; Mazzard size",
+      "summary": "Cornell NY 8139, sold as Black Pearl. Cummins calls it an early, firm, canker-resistant sweet cherry that is not self-fertile and ripens about ten days before Bing. Orange Pippin puts its bloom with Lapins.",
+      "appearance": "Large, very dark red sweet cherry with red flesh. Cummins says it is firm, about 20 percent sugar, and cracks less than many sweet cherries.",
+      "flavor_use": "Sweet and firm for fresh eating, jam, baking, canning, and freezing. It stores less than a month. It needs a different sweet cherry in bloom; tart cherries do not pollinate it.",
+      "uses": [
+        "fresh",
+        "cooking",
+        "canning",
+        "jelly"
+      ],
+      "ripening": "Early",
+      "ripening_note": "Cummins: about ten days before Bing. Harvest timing, not bloom.",
+      "id_cues": "Dark firm fruit about ten days before Bing, on Mazzard rather than Gisela. Not the same tree as Burgundy Pearl.",
+      "habit": "Vigorous Mazzard tree, about 17 to 21 ft. Cummins calls the canker resistance a nursery claim, not a trial rating.",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "Zone 5 to 8 (Roots to Fruits).",
+      "sources": [
+        [
+          "Cummins Nursery: BlackPearl cherry",
+          "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=tree&id=18288"
+        ],
+        [
+          "Orange Pippin: BlackPearl pollination",
+          "https://www.orangepippintrees.com/pollinationchecker.aspx?c=12708"
+        ],
+        [
+          "Roots to Fruits Nursery: Black Pearl cherry",
+          "https://rootstofruitsnursery.com/products/black-pearl-cherry"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "Roots to Fruits calls it semi-self-fertile. Cummins and Orange Pippin say it is not. The plan follows the stricter sources. S-alleles were not found, so its chart group is left open and only bloom is set.",
+      "reviewed_on": "2026-10-28"
+    },
+    {
+      "id": "cherry-burgundy-pearl",
+      "group": "Cherry",
+      "type": "Cherry",
+      "kind": "cultivar",
+      "name": "Burgundy Pearl",
+      "aliases": [],
+      "inventory_rows": [],
+      "purchase_rows": [],
+      "tagline": "Early-mid sweet; needs a partner; not with Bing",
+      "summary": "Cornell NY 38L, sold as Burgundy Pearl. Dave Wilson lists it as S3S4, the same incompatibility group as Bing, blooming in the early midseason and ripening 3 to 5 days before Bing.",
+      "appearance": "Large translucent red sweet cherry, about 12 g, with firm crunchy flesh. Cummins says the skin is attractive and the fruit is larger than Bing.",
+      "flavor_use": "Mild and sweet, about 22 percent sugar, for fresh eating. Not self-fertile. Bing cannot pollinate it. Cummins names Sweetheart or WhiteGold; this plan pairs it with Black Pearl.",
+      "uses": [
+        "fresh",
+        "cooking",
+        "canning",
+        "jelly"
+      ],
+      "ripening": "Early",
+      "ripening_note": "Dave Wilson: ripe 3 to 5 days before Bing. Cummins says just before Bing.",
+      "id_cues": "Translucent red fruit a few days before Bing, and it will not set with Bing. Black Pearl is the partner planted beside it.",
+      "habit": "Vigorous pendant Mazzard tree, about 17 to 21 ft. Prune it so it does not overcrop. Canker resistance is a nursery claim.",
+      "bark": null,
+      "leaf": null,
+      "hardiness": "Zone 5 to 7 (Roots to Fruits).",
+      "sources": [
+        [
+          "Cummins Nursery: BurgundyPearl cherry",
+          "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=tree&id=18294"
+        ],
+        [
+          "Dave Wilson Nursery: BurgundyPearl cherry",
+          "https://www.wheretobuy.davewilson.com/product-information-commercial/product/burgundypearl-cherry"
+        ],
+        [
+          "Roots to Fruits Nursery: Burgundy Pearl cherry",
+          "https://rootstofruitsnursery.com/products/burgundy-pearl-cherry"
+        ]
+      ],
+      "basis": "sourced",
+      "note": "S3S4 is why the plan puts it in group III with Bing and lists Bing under not_pollinated_by. Canker resistance is Cummins' claim, not a trial.",
+      "reviewed_on": "2026-10-28"
     }
+
   ]
 }

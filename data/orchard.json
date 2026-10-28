@@ -1181,11 +1181,11 @@
     "PLANTING_PLAN": {
       "year": 2027,
       "covers_rows": 12,
-      "status": "Eighteen spring 2027 trees are ordered and not planted yet: Cummins 039970, Roots to Fruits RTF12645, Raintree U2TM4QUWD, and Trees of Antiquity 2R8PX8Q8P. Roots to Fruits is confirmed, but $666 is still due. Eighteen trees are still to buy, and nothing is grafted yet",
-      "summary": "Chosen in October 2026 for a short-season, frost-prone U-pick orchard at about 4,750 ft (the frost dates are on the site climate page). Disease-resistant apples that ripen early or in mid-season fill R4 to R6 and the grafted row R1; hardy tart and sweet cherries and a Seckel pear fill R8 to R10; and the shared stone-fruit rows R11 and R12 get four plums, two apricots, and four peaches, three of the peaches replacing ones that died in their pots. R13 to R15 stay open for later.",
+      "status": "Thirty-two spring 2027 trees are ordered and not planted yet: Cummins 039970, Roots to Fruits RTF12645, WZTA0LZIJ, and XFEEV5ANY, Raintree U2TM4QUWD, Trees of Antiquity 2R8PX8Q8P, Orange Pippin US332070, and Willis 1101164703766. Roots to Fruits RTF12645 is confirmed, but $666 is still due. Orange Pippin US332070 is a pre-order and $266.36 is still due. WZTA0LZIJ was charged $149 and XFEEV5ANY was charged $291. Four apples are still to buy, and nothing is grafted yet.",
+      "summary": "Chosen in October 2026 for a short-season, frost-prone U-pick orchard at about 4,750 ft (the frost dates are on the site climate page). Disease-resistant apples that ripen early or in mid-season fill R4 to R6 and the grafted row R1; hardy tart and sweet cherries and a Seckel pear fill R8 to R10; and the shared stone-fruit rows R11 and R12 get two plums, one apricot, six peaches, and one Bing cherry in the spot that had been the Chinese (Mormon) apricot. Three of the peaches replace ones that died in their pots, and two more Intrepid trees replace the Mount Royal plums. R13 to R15 stay open for later.",
       "rootstock_advice": "Ask nurseries for semi-dwarf trees (about 60 to 75 percent of standard; G.890, G.214 or M.7 for apples). The grid is 18 x 20 ft and the site is dry and windy, so dwarf stocks (M.27, M.9, B.9) would need permanent stakes and leave gaps.",
       "graft_advice": "The 13 grafts in R1 go onto rootstocks you already own: 11 M-111 (vigorous, semi-standard), 2 EMLA 7 (semi-dwarf) and 1 of unknown type, so one rootstock is left as a spare. Order scionwood in winter from a nursery that sells it for spring 2027 (some sell out early), keep it cold and damp until grafting, and graft in early spring as the rootstock buds begin to swell. Use the two EMLA 7 rootstocks for Redfree, a vigorous scion (its third tree goes on an M-111), and put lower-vigor scions such as Pixie Crunch on the vigorous M-111. Grafted trees take longer to bear than bought trees. Check that a cultivar may be propagated at home before ordering scionwood.",
-      "shipping_note": "Confirm that each nursery ships the item to Idaho before ordering; some retailers exclude Idaho for some items. Cummins Nursery accepted the apple order below for Idaho and charged a phytosanitary certificate, but its checkout will not send peach, plum, cherry, nectarine, or apricot trees, scion, or rootstock there. Roots to Fruits, Raintree Nursery, and Trees of Antiquity each accepted an Idaho order on October 27, 2026. That acceptance is for those orders only.",
+      "shipping_note": "Confirm that each nursery ships the item to Idaho before ordering; some retailers exclude Idaho for some items. Cummins Nursery accepted the apple order below for Idaho and charged a phytosanitary certificate, but its checkout will not send peach, plum, cherry, nectarine, or apricot trees, scion, or rootstock there. Roots to Fruits, Raintree Nursery, and Trees of Antiquity each accepted an Idaho order on October 27, 2026, and Roots to Fruits accepted two more on October 28. Orange Pippin Trees USA and Willis Orchard Company each accepted a cherry order for Idaho on October 28. That acceptance is for those orders only.",
       "orders": [
         {
           "id": "cummins-039970",
@@ -1377,6 +1377,141 @@
               "product_url": "https://www.treesofantiquity.com/products/blue-damson-plum"
             }
           ]
+        },
+        {
+          "id": "roots-to-fruits-wzta0lzij",
+          "ordered_on": "2026-10-28",
+          "nursery": "Roots to Fruits Nursery",
+          "order_number": "WZTA0LZIJ",
+          "ships_to": "Idaho",
+          "currency": "USD",
+          "subtotal": 94.0,
+          "shipping": 55.0,
+          "handling": 0,
+          "phyto": 0,
+          "tax": 0,
+          "card_surcharge": 0,
+          "total": 149.0,
+          "note": "Spring 2027 bare-root trees. Confirmed as Roots to Fruits order WZTA0LZIJ and charged $149.00. Two Intrepid on seedling, Field Ready, ships 5 to 6 ft or 5/8 in caliper, for R11-C7 and R12-C7. The street address and the receipt link are not stored.",
+          "lines": [
+            {
+              "item_id": "intrepid",
+              "quantity": 2,
+              "grade": "Field Ready",
+              "rootstock": "Seedling",
+              "season": "Spring 2027",
+              "unit_price": 47.0,
+              "product_url": "https://rootstofruitsnursery.com/products/intrepid-peach"
+            }
+          ]
+        },
+        {
+          "id": "roots-to-fruits-xfeev5any",
+          "ordered_on": "2026-10-28",
+          "nursery": "Roots to Fruits Nursery",
+          "order_number": "XFEEV5ANY",
+          "ships_to": "Idaho",
+          "currency": "USD",
+          "subtotal": 236,
+          "shipping": 55,
+          "handling": 0,
+          "phyto": 0,
+          "tax": 0,
+          "card_surcharge": 0,
+          "total": 291,
+          "note": "Spring 2027 bare-root trees. Confirmed as Roots to Fruits order XFEEV5ANY and charged $291.00. Two Black Pearl and two Burgundy Pearl, each on Mazzard, Hand Select. The confirmation does not show whether they ship in fall 2026 or spring 2027. The street address and the receipt link are not stored.",
+          "lines": [
+            {
+              "item_id": "black-pearl",
+              "quantity": 2,
+              "grade": "Hand Select",
+              "rootstock": "Mazzard",
+              "season": "Spring 2027",
+              "unit_price": 59,
+              "product_url": "https://rootstofruitsnursery.com/products/black-pearl-cherry"
+            },
+            {
+              "item_id": "burgundy-pearl",
+              "quantity": 2,
+              "grade": "Hand Select",
+              "rootstock": "Mazzard",
+              "season": "Spring 2027",
+              "unit_price": 59,
+              "product_url": "https://rootstofruitsnursery.com/products/burgundy-pearl-cherry"
+            }
+          ]
+        },
+        {
+          "id": "orange-pippin-us332070",
+          "ordered_on": "2026-10-28",
+          "nursery": "Orange Pippin Trees USA",
+          "order_number": "US332070",
+          "ships_to": "Idaho",
+          "currency": "USD",
+          "subtotal": 183.8,
+          "shipping": 82.56,
+          "handling": 0,
+          "phyto": 0,
+          "tax": 0,
+          "card_surcharge": 0,
+          "total": 266.36,
+          "note": "Spring 2027 bare-root pre-order. Confirmed as Orange Pippin Trees USA order US332070. Payment is still due; they will confirm the order and payment nearer delivery. Four Surefire, 1-year, listed as vigorous rootstock. The $45.95 price matches their full-size Mahaleb listing, not the $47.95 Krymsk 7. The street address and the receipt link are not stored.",
+          "lines": [
+            {
+              "item_id": "surefire",
+              "quantity": 4,
+              "grade": "1-year",
+              "rootstock": "Mahaleb",
+              "season": "Spring 2027",
+              "unit_price": 45.95,
+              "product_url": "https://www.orangepippintrees.com/trees/cherry-trees/tart-cherry-trees/surefire"
+            }
+          ]
+        },
+        {
+          "id": "willis-1101164703766",
+          "ordered_on": "2026-10-28",
+          "nursery": "Willis Orchard Company",
+          "order_number": "1101164703766",
+          "ships_to": "Idaho",
+          "currency": "USD",
+          "subtotal": 299.8,
+          "shipping": 89.94,
+          "handling": 24,
+          "phyto": 0,
+          "tax": 0,
+          "card_surcharge": 0,
+          "total": 413.74,
+          "note": "Spring 2027 bare-root trees. Confirmed as Willis Orchard Company order 1101164703766, with March 2027 shipping chosen (the page dates that window January 15 to March 15, 2027). Two Montmorency EZ-Pick fruiting-size trees, one Bing at 6 to 7 ft, and one Black Tartarian at 6 to 7 ft branched. The $24 handling amount is the oversize fee. Rootstocks are not stated. The confirmation shows the totals but not whether the card was charged. The street address and the receipt link are not stored.",
+          "lines": [
+            {
+              "item_id": "montmorency",
+              "quantity": 2,
+              "grade": "EZ-Pick fruiting size",
+              "rootstock": "Not stated",
+              "season": "Spring 2027",
+              "unit_price": 74.95,
+              "product_url": "https://www.willisorchards.com/product/montmorency-cherry-tree"
+            },
+            {
+              "item_id": "bing",
+              "quantity": 1,
+              "grade": "6-7 ft",
+              "rootstock": "Not stated",
+              "season": "Spring 2027",
+              "unit_price": 74.95,
+              "product_url": "https://www.willisorchards.com/product/bing-cherry-tree"
+            },
+            {
+              "item_id": "black-tartarian",
+              "quantity": 1,
+              "grade": "6-7 ft branched",
+              "rootstock": "Not stated",
+              "season": "Spring 2027",
+              "unit_price": 74.95,
+              "product_url": "https://www.willisorchards.com/product/black-tartarian-cherry-tree"
+            }
+          ]
         }
       ],
       "items": [
@@ -1510,40 +1645,22 @@
           "caution": "Not self-fertile. Only one pollination partner counts within 50 ft (Red Bartlett at 49 ft), so fruit set may be light. A fifth Asian pear would have Hosui and Hardy Giant beside it."
         },
         {
-          "id": "black-gold",
-          "type": "Cherry",
-          "method": "buy",
-          "cultivar": "Black Gold",
-          "code": "BGD",
-          "profile": "cherry-black-gold",
-          "quantity": 1,
-          "spots": [
-            "R9-C2"
-          ],
-          "rootstock": "Mazzard or another canker-tolerant stock; avoid Gisela 6, the most canker-susceptible (Intermountain Fruit)",
-          "self_fertile": true,
-          "cherry_chart": {
-            "group": null,
-            "bloom": 5
-          },
-          "role": "Hardy, late-blooming, canker-resistant dark sweet cherry",
-          "caution": "Blooms later than Bing, so it adds no pollen for the Bing or Black Tartarian trees, which still depend on Lapins at R10-C2. Birds need netting."
-        },
-        {
           "id": "intrepid",
           "type": "Peach",
           "method": "buy",
           "cultivar": "Intrepid",
           "code": "INT",
           "profile": "peach-intrepid",
-          "quantity": 1,
+          "quantity": 3,
           "spots": [
-            "R11-C10"
+            "R11-C10",
+            "R11-C7",
+            "R12-C7"
           ],
-          "rootstock": "Ordered on peach seedling, Field Ready (Roots to Fruits order RTF12645). About 10 to 15 ft, a normal peach, not a staked dwarf. Lovell or Bailey was the first ask",
+          "rootstock": "All three are ordered on peach seedling, Field Ready, about 10 to 15 ft, a normal peach, not a staked dwarf. R11-C10 is Roots to Fruits order RTF12645. R11-C7 and R12-C7 are Roots to Fruits order WZTA0LZIJ, ships 5 to 6 ft or 5/8 in caliper",
           "self_fertile": true,
-          "role": "Bud-hardy, self-fertile mid-season freestone",
-          "caution": "Peaches here carry bacterial canker (untreated positives). Prune only in dry weather, use dormant copper, and buy clean certified stock."
+          "role": "Best all-around peach for this site: bud-hardy, self-fertile, firmer than Reliance, ripe about two weeks after Redhaven",
+          "caution": "NC State's patent for Intrepid (PP12357) records about a 40 percent crop at Sandhills in 1996, when the commercial varieties in those plots set nothing after six freezing nights in flower. It ripens about two weeks after Redhaven, earlier than Contender's 16 to 20 days in the University of Kentucky HO-6 table, so it has a better chance of finishing before an early September frost here. The fruit is firmer and larger than Reliance, with high bacterial spot resistance. It does not win every category: Contender is the better-documented flavor peach, Utah State lists Contender as frost tolerant, and the living Contender at R11-C8 was not flagged for bacterial canker. Reliance is hardier and earlier but soft. R11-C7 and R12-C7 replace the Mount Royal plums and are ordered on Roots to Fruits WZTA0LZIJ, charged $149, on seedling rather than the Lovell or Bailey that was the first ask. Peaches here carry bacterial canker (untreated positives): prune only in dry weather, use dormant copper, and buy clean certified stock."
         },
         {
           "id": "contender",
@@ -1703,114 +1820,128 @@
           "caution": "Cummins rates it susceptible to cedar-apple rust and powdery mildew (Purdue's table does not list it), and junipers grow near the orchard. Thin the crop or it turns biennial."
         },
         {
+          "id": "black-pearl",
+          "type": "Cherry",
+          "method": "buy",
+          "cultivar": "Black Pearl",
+          "code": "BPL",
+          "profile": "cherry-black-pearl",
+          "quantity": 2,
+          "spots": [
+            "R9-C2",
+            "R9-C10"
+          ],
+          "rootstock": "Both ordered on Mazzard, Hand Select, about 17 to 21 ft. Avoid Gisela 6.",
+          "self_fertile": false,
+          "cherry_chart": {
+            "group": null,
+            "bloom": 2
+          },
+          "role": "Early firm sweet cherry on Mazzard, one beside Lapins and one between the Burgundy Pearls",
+          "caution": "Cummins and Orange Pippin say it is not self-fertile. Roots to Fruits calls it semi-self-fertile; do not count on a crop without a partner. Orange Pippin puts it in flowering group 2, with Lapins, so this plan uses bloom 2. R9-C2 is beside the living Bing trees and about 22 ft from Lapins at R10-C2. R9-C10 sits between the two Burgundy Pearls. Cummins calls it canker resistant, a nursery claim, and says it ripens about ten days before Bing. Birds need netting."
+        },
+        {
+          "id": "burgundy-pearl",
+          "type": "Cherry",
+          "method": "buy",
+          "cultivar": "Burgundy Pearl",
+          "code": "BGY",
+          "profile": "cherry-burgundy-pearl",
+          "quantity": 2,
+          "spots": [
+            "R9-C9",
+            "R9-C11"
+          ],
+          "rootstock": "Both ordered on Mazzard, Hand Select, about 17 to 21 ft. Avoid Gisela 6.",
+          "self_fertile": false,
+          "cherry_chart": {
+            "group": "III",
+            "bloom": 3
+          },
+          "not_pollinated_by": [
+            "Bing"
+          ],
+          "role": "Early-mid sweet cherry on Mazzard, each one beside a Black Pearl",
+          "caution": "Not self-fertile. Dave Wilson lists it as S3S4, the same incompatibility group as Bing, so Bing cannot pollinate it. This plan gives it group III and bloom 3. Each tree sits beside the Black Pearl at R9-C10, which is its partner. Cummins calls it canker resistant, a nursery claim, and says it ripens just before Bing. Birds need netting."
+        },
+        {
+          "id": "black-tartarian",
+          "type": "Cherry",
+          "method": "buy",
+          "cultivar": "Black Tartarian",
+          "code": "BTR",
+          "profile": "cherry-black-tartarian",
+          "quantity": 1,
+          "spots": [
+            "R10-C10"
+          ],
+          "rootstock": "Not stated on the Willis confirmation. The two already here are standard trees.",
+          "self_fertile": false,
+          "cherry_chart": {
+            "group": "I",
+            "bloom": 1
+          },
+          "role": "Third Black Tartarian, across the row from the east Black Pearl",
+          "caution": "The purchase sheet calls the ones you own partly self-fertile, but this chart does not treat bloom group I as a partner for Bing. R10-C10 is about 22 ft from the Black Pearl at R9-C10. A third tree cannot pollinate the Black Tartarian trees at R10-C1 and R10-C3. Birds need netting."
+        },
+        {
+          "id": "montmorency",
+          "type": "Cherry",
+          "method": "buy",
+          "cultivar": "Montmorency",
+          "code": "MON",
+          "profile": "cherry-montmorency",
+          "quantity": 2,
+          "spots": [
+            "R10-C12",
+            "R10-C13"
+          ],
+          "rootstock": "Not stated on the Willis confirmation. The two already here are standard pie cherries.",
+          "self_fertile": true,
+          "role": "Two more pie cherries at the east end, earlier than Surefire",
+          "caution": "You already have Montmorency at R10-C5 and R10-C8. These are more of the same self-fertile pie cherry, not a new pollen source. Tart cherries do not pollinate sweet cherries. The confirmation does not name the rootstock."
+        },
+        {
+          "id": "bing",
+          "type": "Cherry",
+          "method": "buy",
+          "cultivar": "Bing",
+          "code": "BNG",
+          "profile": "cherry-bing",
+          "quantity": 1,
+          "spots": [
+            "R11-C4"
+          ],
+          "rootstock": "Not stated on the Willis confirmation. This tree ships at 6 to 7 ft.",
+          "self_fertile": false,
+          "cherry_chart": {
+            "group": "III",
+            "bloom": 3
+          },
+          "not_pollinated_by": [
+            "Stella"
+          ],
+          "role": "Third Bing, in the old apricot gap, within range of Lapins",
+          "caution": "The cherry rows had no twelfth hole, so this tree takes R11-C4 and the Chinese (Mormon) apricot trial comes off the plan. A third Bing cannot pollinate the trees at R9-C1 and R9-C3. Lapins at R10-C2 is about 34 ft away and can cover it. Stella does not pollinate Bing in this chart. WSU lists Bing as susceptible to bacterial canker. Birds need netting."
+        },
+        {
           "id": "surefire",
           "type": "Cherry",
           "method": "buy",
           "cultivar": "Surefire",
           "code": "SUR",
           "profile": "cherry-surefire",
-          "quantity": 3,
+          "quantity": 4,
           "spots": [
             "R10-C9",
-            "R10-C10",
-            "R10-C11"
-          ],
-          "rootstock": "Mahaleb, as nurseries sell it",
-          "self_fertile": true,
-          "role": "Late-blooming tart pie cherry; ripe about two weeks after Montmorency",
-          "caution": "Cummins calls it somewhat resistant to canker and brown rot, which is a nursery claim and not a trial. Tart cherries do not pollinate sweet cherries."
-        },
-        {
-          "id": "meteor",
-          "type": "Cherry",
-          "method": "buy",
-          "cultivar": "Meteor",
-          "code": "MET",
-          "profile": "cherry-meteor",
-          "quantity": 2,
-          "spots": [
+            "R10-C11",
             "R9-C12",
             "R9-C13"
           ],
-          "rootstock": "Mahaleb (the dwarf size, 10 to 12 ft, is genetic)",
+          "rootstock": "Mahaleb, about 16 to 24 ft. Orange Pippin listed the rootstock as vigorous; the $45.95 price matches its full-size Mahaleb tree, not the $47.95 Krymsk 7.",
           "self_fertile": true,
-          "role": "Dwarf Minnesota tart cherry that you can pick without a ladder",
-          "caution": "Sources disagree on ripening: about a week after Montmorency, in early July (Cummins and the University of Minnesota), or late July (Intermountain's table). No source gives it a bacterial canker rating."
-        },
-        {
-          "id": "carmine-jewel",
-          "type": "Cherry",
-          "method": "buy",
-          "cultivar": "Carmine Jewel",
-          "code": "CJL",
-          "profile": "cherry-carmine-jewel",
-          "quantity": 2,
-          "spots": [
-            "R10-C12",
-            "R10-C13"
-          ],
-          "rootstock": "Usually sold on its own roots (it is a bush of 6 to 12 ft, not a tree)",
-          "self_fertile": true,
-          "role": "Very hardy tart bush cherry (zone 2 to 3), a multi-stemmed shrub of about 6 to 12 ft",
-          "caution": "One Green World warns that bacterial canker can still damage it. It is a shrub, so it stands lower than the cherry trees beside it."
-        },
-        {
-          "id": "skeena",
-          "type": "Cherry",
-          "method": "buy",
-          "cultivar": "Skeena",
-          "code": "SKN",
-          "profile": "cherry-skeena",
-          "quantity": 2,
-          "spots": [
-            "R9-C10",
-            "R9-C11"
-          ],
-          "rootstock": "Mazzard, the least canker-susceptible; avoid Gisela 6",
-          "self_fertile": true,
-          "cherry_chart": {
-            "group": null,
-            "bloom": 4
-          },
-          "role": "Very large, very firm dark sweet cherry; ripe 12 to 15 days after Bing",
-          "caution": "Hardiness is the thinnest margin in the cherry block: the only figure found is a retailer's zone 5 to 9 (about -10 F), milder than zone 5a's usual low, and WSU gives none. No trial rates its bacterial canker resistance. Birds need netting."
-        },
-        {
-          "id": "whitegold",
-          "type": "Cherry",
-          "method": "buy",
-          "cultivar": "WhiteGold",
-          "code": "WGC",
-          "profile": "cherry-whitegold",
-          "quantity": 1,
-          "spots": [
-            "R9-C9"
-          ],
-          "rootstock": "Mazzard, the least canker-susceptible; Cummins sells it on Mahaleb",
-          "self_fertile": true,
-          "cherry_chart": {
-            "group": null,
-            "bloom": 4
-          },
-          "role": "Cold-hardy yellow sweet cherry from Cornell",
-          "caution": "Cummins and Stark call it very resistant to bacterial canker, a nursery claim that WSU's trial list does not confirm. Cummins showed it sold out for spring 2027 in mid-October, so confirm stock elsewhere (Stark Bro's lists it). Birds need netting."
-        },
-        {
-          "id": "mount-royal",
-          "type": "Plum",
-          "method": "buy",
-          "cultivar": "Mount Royal",
-          "code": "MTR",
-          "profile": "plum-mount-royal",
-          "quantity": 2,
-          "spots": [
-            "R11-C7",
-            "R12-C7"
-          ],
-          "rootstock": "Semi-dwarf tree (Raintree sells it as a semi-dwarf)",
-          "self_fertile": true,
-          "role": "Hardy blue European plum (zone 4 to 7) that ripens in August, before Italian plum",
-          "caution": "Bloom timing and black knot rating were not documented (Penn State's black knot list does not name it). The two trees stand side by side at the east end of the plum block, in the highest plum spots. The peaches and apricots nearby carry bacterial canker, so buy clean stock."
+          "role": "Late-blooming tart pie cherry; ripe about two weeks after Montmorency",
+          "caution": "All four are ordered. Cummins calls Surefire somewhat resistant to canker and brown rot, which is a nursery claim and not a trial. Tart cherries do not pollinate sweet cherries, so these trees are not partners for the Bing or pearl cherries."
         },
         {
           "id": "stanley",
@@ -1843,22 +1974,6 @@
           "self_fertile": true,
           "role": "Tart blue jam and baking plum (zone 4 to 8), ripe in September",
           "caution": "Sources disagree on its black knot resistance and on whether it ripens before or after Stanley."
-        },
-        {
-          "id": "chinese-mormon",
-          "type": "Apricot",
-          "method": "buy",
-          "cultivar": "Chinese (Mormon)",
-          "code": "CE",
-          "profile": "apricot-chinese-mormon",
-          "quantity": 1,
-          "spots": [
-            "R11-C4"
-          ],
-          "rootstock": "Semi-dwarf tree (your purchase sheet lists it as a semi-dwarf); ask the nursery which rootstock it uses",
-          "self_fertile": true,
-          "role": "Hardy apricot (zone 4 to 7) that blooms late, which avoids some late frost, and ripens in late June to July; a heavy producer with good flavor and texture (Utah State)",
-          "caution": "Apricots lose the most to spring frost: Utah State's frost table puts 10 percent bloom kill at 27 F and 90 percent at 22 F, and at the Prairie station a 28 F night still comes after the middle of May in most years, so expect only some crops (see the site climate page). The Chinese (Mormon) on your inventory is the one noted as girdled and kept in Boise, so this tree would be a second or replacement tree; if the Boise tree recovers, plant it here and skip this purchase. The apricots here carry bacterial canker (untreated positives): buy clean certified stock, prune only in dry weather, and use dormant copper."
         },
         {
           "id": "harcot",
