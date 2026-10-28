@@ -217,7 +217,7 @@ class PropertyDataTest(unittest.TestCase):
         self.assertEqual(linked, 27)
         orders = query("SELECT id, order_number, ships_to, total_cents FROM planting_plan_orders ORDER BY id", self.root)
         self.assertEqual(orders, [
-            {"id": "cummins-039970", "order_number": "039970", "ships_to": "Idaho", "total_cents": 22724},
+            {"id": "cummins-039970", "order_number": "039970", "ships_to": "Idaho", "total_cents": 40593},
             {"id": "orange-pippin-us332070", "order_number": "US332070", "ships_to": "Idaho", "total_cents": 26636},
             {"id": "raintree-u2tm4quwd", "order_number": "U2TM4QUWD", "ships_to": "Idaho", "total_cents": 8998},
             {"id": "roots-to-fruits-rtf12645", "order_number": "RTF12645", "ships_to": "Idaho", "total_cents": 66600},
@@ -229,8 +229,12 @@ class PropertyDataTest(unittest.TestCase):
         lines = query("SELECT order_id, item_id, quantity, rootstock, unit_price_cents, shipped_as "
                       "FROM planting_plan_order_lines ORDER BY order_id, item_id", self.root)
         self.assertEqual(lines, [
-            {"order_id": "cummins-039970", "item_id": "williams-pride", "quantity": 3, "rootstock": "B.118",
-             "unit_price_cents": 4375, "shipped_as": None},
+            {"order_id": "cummins-039970", "item_id": "dayton", "quantity": 2, "rootstock": "G.890",
+                         "unit_price_cents": 4800, "shipped_as": None},
+                        {"order_id": "cummins-039970", "item_id": "sweet-sixteen", "quantity": 2, "rootstock": "G.890",
+                         "unit_price_cents": 4425, "shipped_as": None},
+                        {"order_id": "cummins-039970", "item_id": "williams-pride", "quantity": 3, "rootstock": "B.118",
+                         "unit_price_cents": 4375, "shipped_as": None},
             {"order_id": "orange-pippin-us332070", "item_id": "surefire", "quantity": 4, "rootstock": "Mahaleb",
              "unit_price_cents": 4595, "shipped_as": None},
             {"order_id": "raintree-u2tm4quwd", "item_id": "seckel", "quantity": 1, "rootstock": "OHxF 87",
@@ -1011,7 +1015,7 @@ class PropertyDataTest(unittest.TestCase):
     def test_not_pollinated_by_names_must_match_a_living_or_planned_cultivar(self):
         # The names the shipped plan relies on, in any letter case, and a planned cultivar's name all validate.
         for changes in ({"seckel": ["Bartlett", "Red Bartlett"]}, {"seckel": ["bartlett", "red bartlett", "COMICE"]},
-                        {"dayton": ["priscilla", "Honeycrisp"]}):
+                        {"dayton": ["sweet sixteen", "Honeycrisp"]}):
             data = copy.deepcopy(self.data)
             for item_id, names in changes.items():
                 plan_item(data["orchard"], item_id)["not_pollinated_by"] = names
@@ -1081,7 +1085,7 @@ class PropertyDataTest(unittest.TestCase):
         counts = query("SELECT COUNT(*) AS profiles, "
                        "(SELECT COUNT(*) FROM cultivar_profile_links WHERE link_type = 'inventory') AS inventory_links "
                        "FROM cultivar_profiles", self.root)[0]
-        self.assertEqual((counts["profiles"], counts["inventory_links"]), (158, 115))
+        self.assertEqual((counts["profiles"], counts["inventory_links"]), (157, 115))
         cortland = query("SELECT profile_name, ripening FROM plant_profiles WHERE plant_id = 'i29-1'", self.root)[0]
         self.assertEqual((cortland["profile_name"], cortland["ripening"]), ("Cortland", "Mid"))
         unknown = query("SELECT profile_id FROM plant_profiles WHERE plant_id = 'i62-1'", self.root)[0]

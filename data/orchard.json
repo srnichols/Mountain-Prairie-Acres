@@ -1181,7 +1181,7 @@
     "PLANTING_PLAN": {
       "year": 2027,
       "covers_rows": 12,
-      "status": "Thirty-two spring 2027 trees are ordered and not planted yet: Cummins 039970, Roots to Fruits RTF12645, WZTA0LZIJ, and XFEEV5ANY, Raintree U2TM4QUWD, Trees of Antiquity 2R8PX8Q8P, Orange Pippin US332070, and Willis 1101164703766. Roots to Fruits RTF12645 is confirmed, but $666 is still due. Orange Pippin US332070 is a pre-order and $266.36 is still due. WZTA0LZIJ was charged $149 and XFEEV5ANY was charged $291. Four apples are still to buy, and nothing is grafted yet.",
+      "status": "Thirty-six spring 2027 trees are ordered and not planted yet: Cummins 039970, Roots to Fruits RTF12645, WZTA0LZIJ, and XFEEV5ANY, Raintree U2TM4QUWD, Trees of Antiquity 2R8PX8Q8P, Orange Pippin US332070, and Willis 1101164703766. Roots to Fruits RTF12645 is confirmed, but $666 is still due. Orange Pippin US332070 is a pre-order and $266.36 is still due. WZTA0LZIJ was charged $149 and XFEEV5ANY was charged $291. The bought trees are all ordered. The 13 R1 grafts are still to buy.",
       "summary": "Chosen in October 2026 for a short-season, frost-prone U-pick orchard at about 4,750 ft (the frost dates are on the site climate page). Disease-resistant apples that ripen early or in mid-season fill R4 to R6 and the grafted row R1; hardy tart and sweet cherries and a Seckel pear fill R8 to R10; and the shared stone-fruit rows R11 and R12 get two plums, one apricot, six peaches, and one Bing cherry in the spot that had been the Chinese (Mormon) apricot. Three of the peaches replace ones that died in their pots, and two more Intrepid trees replace the Mount Royal plums. R13 to R15 stay open for later.",
       "rootstock_advice": "Ask nurseries for semi-dwarf trees (about 60 to 75 percent of standard; G.890, G.214 or M.7 for apples). The grid is 18 x 20 ft and the site is dry and windy, so dwarf stocks (M.27, M.9, B.9) would need permanent stakes and leave gaps.",
       "graft_advice": "The 13 grafts in R1 go onto rootstocks you already own: 11 M-111 (vigorous, semi-standard), 2 EMLA 7 (semi-dwarf) and 1 of unknown type, so one rootstock is left as a spare. Order scionwood in winter from a nursery that sells it for spring 2027 (some sell out early), keep it cold and damp until grafting, and graft in early spring as the rootstock buds begin to swell. Use the two EMLA 7 rootstocks for Redfree, a vigorous scion (its third tree goes on an M-111), and put lower-vigor scions such as Pixie Crunch on the vigorous M-111. Grafted trees take longer to bear than bought trees. Check that a cultivar may be propagated at home before ordering scionwood.",
@@ -1194,14 +1194,14 @@
           "order_number": "039970",
           "ships_to": "Idaho",
           "currency": "USD",
-          "subtotal": 131.25,
+          "subtotal": 315.75,
           "shipping": 66.83,
-          "handling": 7.65,
+                    "handling": 8.35,
           "phyto": 15.0,
           "tax": 0,
-          "card_surcharge": 6.51,
-          "total": 227.24,
-          "note": "Spring 2027 bare-root trees. The receipt is Cummins order 039970. The street address and the receipt link are not stored.",
+                    "card_surcharge": 0,
+                    "total": 405.93,
+                    "note": "Spring 2027 bare-root trees. The receipt is Cummins order 039970, updated October 28, 2026, and paid in full. Added two Dayton on G.890, Grade 0, and two Sweet Sixteen on G.890, Grade 1. Shipping is $66.83 and handling is $8.35. The $15.00 phytosanitary certificate from the first charge is still in the total. The earlier $6.51 card surcharge is not on this total. The street address and the receipt link are not stored.",
           "lines": [
             {
               "item_id": "williams-pride",
@@ -1211,8 +1211,26 @@
               "season": "Spring 2027",
               "unit_price": 43.75,
               "product_url": "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=tree&id=21505"
-            }
-          ]
+                      },
+                      {
+                        "item_id": "dayton",
+                        "quantity": 2,
+                        "grade": "0",
+                        "rootstock": "G.890",
+                        "season": "Spring 2027",
+                        "unit_price": 48.0,
+                        "product_url": "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=tree&id=21745"
+                      },
+                      {
+                        "item_id": "sweet-sixteen",
+                        "quantity": 2,
+                        "grade": "1",
+                        "rootstock": "G.890",
+                        "season": "Spring 2027",
+                        "unit_price": 44.25,
+                        "product_url": "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=tree&id=21852"
+                      }
+                    ]
         },
         {
           "id": "roots-to-fruits-rtf12645",
@@ -1535,22 +1553,22 @@
           "caution": "Ripens unevenly over about a week, so plan on more than one picking; keeps about six weeks in the fridge. Sources put its bloom early, in group 1 to 2, so group 2 is a planning value."
         },
         {
-          "id": "priscilla",
+          "id": "sweet-sixteen",
           "type": "Apple",
           "method": "buy",
-          "cultivar": "Priscilla",
-          "code": "PSC",
-          "profile": "apple-priscilla",
+                    "cultivar": "Sweet Sixteen",
+                    "code": "SWT",
+                    "profile": "apple-sweet-sixteen",
           "quantity": 2,
           "spots": [
             "R5-C10",
             "R6-C12"
           ],
-          "rootstock": "Semi-dwarf wanted; G.890 (about 60 percent of standard) is offered",
-          "flowering_group": 3,
+                    "rootstock": "Ordered on G.890, Grade 1 (Cummins order 039970). Half-standard, about 60 percent of standard, so it fills an 18 x 20 ft spot",
+                    "flowering_group": 4,
           "ploidy": "Diploid",
-          "role": "Early-to-mid September apple; hardy to about -50 F",
-          "caution": "Medium fruit with a mild flavor and a licorice note; bears heavily, so thin the crop."
+                    "role": "Mid-to-late September U-pick apple; zone 3 and a later bloom than the early block",
+                    "caution": "The flavor is unusual, like raspberry candy, and it is best fresh: about six weeks, though Cummins also lists one to three months. The tree is upright, so spread the branches. Cummins says somewhat resistant to fire blight, scab, and cedar-apple rust, not immune."
         },
         {
           "id": "dayton",
@@ -1564,7 +1582,7 @@
             "R6-C4",
             "R6-C11"
           ],
-          "rootstock": "Semi-dwarf wanted; nurseries list EMLA 27 or M.26 dwarfs, too small for 18 x 20 ft spacing",
+          "rootstock": "Ordered on G.890, Grade 0 Fancy (Cummins order 039970). Half-standard, about 60 percent of standard, so it fills an 18 x 20 ft spot. Listed dwarf stocks were too small and were not ordered",
           "flowering_group": 3,
           "ploidy": "Diploid",
           "role": "Large crisp sweet-tart apple for mid to late September",

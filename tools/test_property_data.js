@@ -442,7 +442,7 @@ test('Cultivar library covers every inventory line and its links resolve', () =>
   assert.equal(library.byId('apple-cortland').inventory_rows[0], 29);
   assert.ok(library.tooltip(library.byId('apple-cortland')).startsWith('Cortland: '));
   assert.equal(library.guideHref(library.byId('apple-cortland')), 'cultivar_guide.html#apple-cortland');
-  assert.equal(library.profiles.length, 158);
+  assert.equal(library.profiles.length, 157);
   assert.equal(library.GROUPS.length, 11);
   assert.ok(library.profiles.every(profile => library.GROUPS.includes(profile.group)));
 });
@@ -489,9 +489,14 @@ test('The 2027 planting plan fills every open spot in R1 to R12 and leaves livin
   assert.equal(plan.orders.find(order => order.order_number === 'WZTA0LZIJ').lines[0].quantity, 2);
   assert.equal(plan.orders.find(order => order.order_number === 'WZTA0LZIJ').total, 149);
   assert.equal(plan.orders[0].order_number, '039970');
-  assert.equal(plan.orders[0].lines[0].item_id, 'williams-pride');
-  assert.equal(plan.orders[0].lines[0].quantity, 3);
-  assert.equal(plan.orders[0].lines[0].rootstock, 'B.118');
+    assert.equal(plan.orders[0].total, 405.93);
+    assert.doesNotMatch(plan.orders[0].note, /still due/i);
+    assert.equal(plan.orders[0].lines.find(line => line.item_id === 'williams-pride').quantity, 3);
+    assert.equal(plan.orders[0].lines.find(line => line.item_id === 'williams-pride').rootstock, 'B.118');
+    assert.equal(plan.orders[0].lines.find(line => line.item_id === 'dayton').quantity, 2);
+    assert.equal(plan.orders[0].lines.find(line => line.item_id === 'dayton').rootstock, 'G.890');
+    assert.equal(plan.orders[0].lines.find(line => line.item_id === 'sweet-sixteen').quantity, 2);
+    assert.equal(plan.orders[0].lines.find(line => line.item_id === 'sweet-sixteen').grade, '1');
   const roots = plan.orders.find(order => order.order_number === 'RTF12645');
   assert.equal(roots.total, 666);
   assert.equal(roots.lines.find(line => line.item_id === 'harrow-delight').shipped_as, 'Moonglow');
@@ -506,6 +511,8 @@ test('The 2027 planting plan fills every open spot in R1 to R12 and leaves livin
   spots.forEach(({ r, c, spot }) => assert.equal(rows[r - 1].trees[c - 1], null, `${spot} should be open`));
   rows.flatMap(row => row.held).forEach(tree => assert.ok(model.plannedAt(tree.r, tree.c), `R${tree.r}-C${tree.c} has no planned cultivar`));
   assert.equal(model.plannedAt(6, 4).item.cultivar, 'Dayton');
+  assert.equal(model.plannedAt(5, 10).item.cultivar, 'Sweet Sixteen');
+  assert.equal(model.plannedAt(6, 12).item.cultivar, 'Sweet Sixteen');
   // Spots left open by dead or moved trees are planned for the same fruit type; the moved plums' new spots are not planned.
   for (const [r, c, type] of [[11, 7, 'Peach'], [12, 7, 'Peach'], [11, 10, 'Peach'], [11, 12, 'Peach'], [12, 11, 'Peach'], [9, 2, 'Cherry'], [8, 1, 'Pear']]) {
     assert.equal(model.plannedAt(r, c).item.type, type, `R${r}-C${c}`);

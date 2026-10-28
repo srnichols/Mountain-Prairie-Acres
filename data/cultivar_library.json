@@ -1883,7 +1883,9 @@
       "type": "Apple",
       "kind": "cultivar",
       "name": "Sweet Sixteen",
-      "aliases": [],
+            "aliases": [
+              "MN 1630"
+            ],
       "inventory_rows": [
         60
       ],
@@ -1893,12 +1895,12 @@
       "tagline": "Mid; pink-red stripes; yellow flesh, candy-sweet",
       "summary": "University of Minnesota apple, rose-red over yellow with crisp, golden-yellow flesh and an unusually candy-like flavor. Cold hardy and a reliable annual cropper.",
       "appearance": "Medium-large, blushed and striped rose-red over yellow and speckled with pale lenticels. The crisp flesh is distinctly yellow, almost golden.",
-      "flavor_use": "Sweet but balanced by enough acid, with candy-like flavors often compared to cherry and bubblegum. Best eaten fresh off the tree; stores passably for about six weeks.",
+      "flavor_use": "Sweet but balanced by enough acid, with candy-like flavors often compared to cherry and bubblegum. Best eaten fresh off the tree; stores passably for about six weeks. Cummins says somewhat resistant to fire blight, scab, and cedar-apple rust, not immune. Diploid, bloom group 4, not self-fertile.",
       "uses": [
         "fresh"
       ],
       "ripening": "Mid",
-      "ripening_note": "Typically mid to late September",
+      "ripening_note": "Cummins lists Sep 22, about a week after their Sep 15 Honeycrisp date. Other sources say mid to late September.",
       "id_cues": "Yellow flesh and a candy-like flavor set it apart from other red-striped apples. The tree is vigorous with a very upright habit that benefits from spreading.",
       "habit": "Vigorous, moderate-sized, vase-shaped tree growing upright; slender branches carry heavy crops without breaking. Very upright, so spreading the branches helps (one nursery says moderately spreading). Easy to manage; annual bearer if thinned. Blooms mid to late season.",
       "bark": null,
@@ -1919,8 +1921,8 @@
         ]
       ],
       "basis": "general",
-      "note": "Ripening timing is a general figure; the listed page covers appearance, flavor, storage, hardiness and tree habit.",
-      "reviewed_on": "2026-10-17"
+      "note": "Cummins says somewhat resistant, not immune. Its writeup says about six weeks and best fresh; the storage field on the same page says one to three months.",
+            "reviewed_on": "2026-10-28"
     },
     {
       "id": "apple-blushing-delight",
@@ -7621,50 +7623,6 @@
       "reviewed_on": "2026-10-17"
     },
     {
-      "id": "apple-priscilla",
-      "group": "Apple",
-      "type": "Apple",
-      "kind": "cultivar",
-      "name": "Priscilla",
-      "aliases": [
-        "Co-op 4"
-      ],
-      "inventory_rows": [],
-      "purchase_rows": [],
-      "tagline": "Mid-Sept; red over yellow; mild subacid, licorice note",
-      "summary": "Priscilla (Co-op 4) is a 1972 Purdue-Rutgers-Illinois release from a 1961 Starking Delicious cross. The medium apple is blushed red over yellow, with white, coarse flesh, a mild subacid flavor and a licorice note.",
-      "appearance": "Medium-sized fruit blushed bright red over a yellow background; flesh is white, coarse textured and juicy.",
-      "flavor_use": "White, crisp flesh; mild subacid flavor with a licorice note; fresh eating or baking. Purdue: scab Very Resistant, fire blight and cedar rust Resistant, mildew Moderately Resistant. Diploid, group 3, not self-fertile; bears heavily, can overbear if not thinned. Keeps 1 to 3 months chilled.",
-      "uses": [
-        "fresh",
-        "cooking"
-      ],
-      "ripening": "Mid",
-      "ripening_note": "SLN Nursery says early to mid September; no source names a benchmark cultivar",
-      "id_cues": "Ripens early-mid September, overlapping Honeycrisp and McIntosh. Medium fruit blushed red over a yellow background, with a licorice note in the flavor; McIntosh is more solidly bright red, but season overlap makes timing alone a weak cue.",
-      "habit": "Productive, spreading, vigorous tree; bears consistently as an annual cropper and can overbear if the fruit is not thinned.",
-      "bark": null,
-      "leaf": null,
-      "hardiness": "To about -50 F per SLN Nursery; no USDA zone number stated in these sources.",
-      "sources": [
-        [
-          "SLN Nursery: Priscilla Apple product page",
-          "https://www.slngrow.com/products/priscilla-apple"
-        ],
-        [
-          "Cummins Nursery: Priscilla Apple on G.890 product page",
-          "https://www.cumminsnursery.com/buy-trees/product-detail.php?type=tree&id=36749"
-        ],
-        [
-          "Purdue Extension: Disease Susceptibility of Common Apple Cultivars",
-          "https://extension.purdue.edu/extmedia/BP/BP-132-W.pdf"
-        ]
-      ],
-      "basis": "sourced",
-      "note": "SLN calls it immune to scab; Purdue's university table rates scab Very Resistant (not immune) and mildew only Moderately Resistant.",
-      "reviewed_on": "2026-10-17"
-    },
-    {
       "id": "apple-dayton",
       "group": "Apple",
       "type": "Apple",
@@ -8088,7 +8046,7 @@
       ],
       "ripening": "Mid",
       "ripening_note": "Cummins places harvest in mid-September; Roots to Fruits says about a week before Delicious.",
-      "id_cues": "Far smaller than Honeycrisp despite a similar crisp texture, and ripens later than the early Zestar!. Closest in timing to Priscilla, which is a bit larger, tastes milder with a licorice note, and is rated Resistant to cedar-apple rust by Purdue, where Cummins calls Pixie Crunch susceptible.",
+      "id_cues": "Far smaller than Honeycrisp despite a similar crisp texture, and ripens later than the early Zestar!. Sweet Sixteen ripens in the same mid-September window but is larger, rose-red striped, and tastes like raspberry candy. Cummins calls Pixie Crunch susceptible to cedar-apple rust.",
       "habit": "Small, spreading tree with a spindly habit needing careful pruning; fruit must be thinned or it bears only every other year (Cummins Nursery).",
       "bark": null,
       "leaf": null,
