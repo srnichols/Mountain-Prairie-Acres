@@ -7188,7 +7188,7 @@
       "group": "Perennial",
       "type": "Comfrey",
       "kind": "genus",
-      "name": "Comfrey (variety not recorded)",
+      "name": "Comfrey (sterile-seed type)",
       "aliases": [
         "Comfrey",
         "Symphytum",
@@ -7198,8 +7198,8 @@
         16
       ],
       "purchase_rows": [],
-      "tagline": "Coarse hairy leaves; deep roots; mulch and bees; do not eat",
-      "summary": "Vigorous perennial with large, coarse, hairy leaves and drooping bell flowers, grown here for mulch and bee forage. It contains liver-toxic alkaloids, so do not eat it.",
+      "tagline": "Coarse hairy leaves; sterile seed; mulch and bees; do not eat",
+      "summary": "Vigorous perennial with large, coarse, hairy leaves and drooping bell flowers, grown here for mulch and bee forage. It is the sterile-seed (Bocking) kind, so it makes no seedlings. It contains liver-toxic alkaloids, so do not eat it.",
       "appearance": "Clump of upright leafy stems that pass 3 ft before flowering. Bocking types then collapse into a thick mat and regrow from the base. Drooping bell flowers open from early summer into fall: usually cream on common comfrey, blue to red-purple on Russian or Bocking types.",
       "flavor_use": "Do not eat or brew it: comfrey carries pyrrolizidine alkaloids that can injure the liver, and oral products are banned or restricted in most countries. In the garden the leaf mat smothers weeds and adds organic matter, and the long bloom draws pollinators. Roots resprout, so removal is hard.",
       "uses": [
@@ -7208,8 +7208,8 @@
       ],
       "ripening": null,
       "ripening_note": "Leaves grow from late May to hard frost in the upper Midwest; flowering starts late May or June and runs to fall",
-      "id_cues": "Large, coarsely hairy, lance-shaped leaves, long-stalked at the base and stalkless or running down the stem higher up; drooping bell flowers in one-sided clusters. Flower color is a weak cue: common comfrey is usually cream, Bocking blue to red-purple. Self-sown seedlings suggest common comfrey.",
-      "habit": "Herbaceous perennial from a deep, thick root system. Shoots start early in spring, keep adding stems all season and regrow fast after cutting. Bocking types stay in a clump and spread only from disturbed roots; common comfrey also spreads by seed.",
+      "id_cues": "Large, coarsely hairy, lance-shaped leaves, long-stalked at the base and stalkless or running down the stem higher up; drooping bell flowers in one-sided clusters, blue to red-purple on Bocking types (common comfrey is usually cream). Seedlings near the clumps mean they are not the sterile kind.",
+      "habit": "Herbaceous perennial from a deep, thick root system. Shoots start early in spring, keep adding stems all season and regrow fast after cutting. The sterile Bocking kind sets no seed and stays in a clump, spreading only from roots that are cut or dug up.",
       "bark": "Erect, leafy, fast-growing stems over 3 ft tall. Leaves on the flowering stems sit directly on the stem or run down it, and the stems end in one-sided clusters of drooping flowers.",
       "leaf": "Basal leaves large, lance-shaped, long-stalked and coarsely hairy; stem leaves get smaller toward the top and are nearly stalkless or run down the stem.",
       "hardiness": "Crowns and roots very winter hardy in northern Midwest; no zone given",
@@ -7228,8 +7228,8 @@
         ]
       ],
       "basis": "sourced",
-      "note": "Variety not recorded: could be common comfrey or sterile Bocking 14. Sources disagree on seed set of common comfrey (UMN: heavy; Wisconsin bulletin: rare). The Wisconsin page dates from 1992.",
-      "reviewed_on": "2026-10-17"
+      "note": "Owner reports (2026-10-29) that these are the sterile-seed kind. UMN names the Bocking series (Bocking 4 and 14) as the sterile comfreys; which one is not recorded. Seedlings near the clumps would mean otherwise. Sources disagree on seed set of common comfrey (UMN: heavy; Wisconsin bulletin of 1992: rare).",
+      "reviewed_on": "2026-10-29"
     },
     {
       "id": "mint",

@@ -104,6 +104,7 @@ test('The small plants on the inventory sheet that the plan leaves out are found
     [16, 'Comfrey', 25, 'Perennial'], [17, 'Mint', 18, 'Perennial'], [18, 'Rhubarb', 15, 'Perennial']
   ]);
   assert.equal(ctx.others.find(item => item.name === 'Mint').note, 'all planted');
+  assert.match(ctx.others.find(item => item.name === 'Comfrey').note, /sterile-seed kind/, 'the sheet records that the comfrey sets no seed');
   assert.ok(!ctx.others.some(item => /honey|josta|currant|gooseberry|viking/i.test(item.name)), 'the guild berries are in the row, not left out');
   const table = P.otherRows(patterns.B);
   assert.equal((table.match(/<tr>/g) || []).length, 8, 'honeyberry and the seven left out');
@@ -114,11 +115,17 @@ test('The small plants on the inventory sheet that the plan leaves out are found
   assert.match(table, /bought: Blue Diamond ×3, Blue Palm ×3, Indigo Treat ×2, Cinderella ×2, Maxine, Sunrise/);
   assert.match(table, /deep, thick root system that resprouts, so it is hard to remove/);
   assert.match(table, /The sheet says: all planted/);
+  assert.match(table, /The sheet says yours is the sterile-seed kind, so it sows no seedlings and there is no need to cut the flower stalks; it spreads only from roots that are cut or dug up/);
+  assert.doesNotMatch(table, /variety is not recorded|spreads by seed/, 'the sheet answers it, so the page no longer hedges');
   assert.match(table, /sex and species of the 4 on hand/);
   assert.doesNotMatch(table, /NaN|undefined/);
   // A plant the page has no advice for still gets a row.
   const unknown = { ...patterns.B, ctx: { ...ctx, others: [{ row: 99, qty: 2, subcategory: 'Berry', type: 'Blueberry', variety: '', name: 'Blueberry', note: '' }] } };
   assert.match(P.otherRows(unknown), /<strong>Blueberry<\/strong>[\s\S]*Not assessed yet/);
+  // Without the sheet's note, the page cannot know the kind, so it says so and tells you to stop the seed.
+  const unrecorded = { ...patterns.B, ctx: { ...ctx, others: ctx.others.map(item => (item.name === 'Comfrey' ? { ...item, note: '' } : item)) } };
+  assert.match(P.otherRows(unrecorded), /The variety is not recorded: common comfrey also spreads by seed, so cut the flower stalks/);
+  assert.doesNotMatch(P.otherRows(unrecorded), /sterile/);
 });
 
 test('The strip ends at the berry row, and the alley takes the room', () => {

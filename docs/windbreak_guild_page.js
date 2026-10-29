@@ -82,9 +82,11 @@ function layerRows(proposed, light) {
 // here still gets a row, so a new line on the sheet does not break the page.
 const OTHER_ORDER = ['comfrey', 'rhubarb', 'sea berry', 'blackberry', 'rasberry?', 'hardy kiwi', 'mint'];
 const OTHER_ADVICE = {
-  'comfrey': () => ({
+  'comfrey': item => ({
     where: 'A bed of its own, in ground you will not dig again. To have its mulch close to the berries, put the bed just past the north end of the row.',
-    why: 'A clump that passes 3 ft, from a deep, thick root system that resprouts, so it is hard to remove. It does not belong beside the pick lane or the alley, where you may dig or reshape the ground. The variety is not recorded: common comfrey also spreads by seed, so cut the flower stalks. Not for eating (cultivar library).'
+    why: `A clump that passes 3 ft, from a deep, thick root system that resprouts, so it is hard to remove. It does not belong beside the pick lane or the alley, where you may dig or reshape the ground. ${/sterile/i.test(item.note)
+      ? 'The sheet says yours is the sterile-seed kind, so it sows no seedlings and there is no need to cut the flower stalks; it spreads only from roots that are cut or dug up (UMN).'
+      : 'The variety is not recorded: common comfrey also spreads by seed, so cut the flower stalks.'} Not for eating (cultivar library).`
   }),
   'rhubarb': () => ({
     where: 'A garden bed.',
