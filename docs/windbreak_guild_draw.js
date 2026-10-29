@@ -26,11 +26,19 @@ function svg(width, height, body, label, cls) {
 
 const BUSH_STROKE = '#4E8A26';
 const CANOPY_OPACITY = { M: 0.13, H: 0.3 };
+// Trunk marks, in feet of radius: a mulberry's is the larger, so the mulberry trunks can be told from the hazelnuts' in a row where every place looks alike.
+const TRUNK_RADIUS = { M: 0.8, H: 0.5 };
 
-// The first two neighbors of a kind that both sit inside [from, to] ft, as [y1, y2], or null.
-function neighbors(layout, kind, from, to) {
-  const list = layout.plants.filter(plant => plant.kind === kind);
-  for (let index = 0; index + 1 < list.length; index++) if (list[index].y >= from && list[index + 1].y <= to) return [list[index].y, list[index + 1].y];
+// About how long a label written along a dimension line is, in feet of figure for each character, so a label can be kept inside the frame.
+const LABEL_FT = 0.55;
+
+// The first two neighbors in `list` (each has a `y`) that both sit inside [from, to] ft and leave room, inside too, for their label written along the line
+// between them. `labelOf(y1, y2)` gives the label. Returns [y1, y2, label], or null.
+function pairIn(list, from, to, labelOf) {
+  for (let index = 0; index + 1 < list.length; index++) {
+    const a = list[index].y, b = list[index + 1].y, label = labelOf(a, b), half = label.length * LABEL_FT / 2, mid = (a + b) / 2;
+    if (a >= from && b <= to && mid - half >= from && mid + half <= to) return [a, b, label];
+  }
   return null;
 }
 
@@ -60,7 +68,7 @@ function tape(list, point, out, label) {
 function planView(layout, o = {}) {
   const ctx = layout.ctx, K = layout.kinds, S = o.scale || 10, compact = Boolean(o.compact), grid = o.grid !== false;
   const y0 = o.y0 === undefined ? -12 : o.y0, y1 = o.y1 === undefined ? 48 : o.y1;
-  const xWest = o.xWest === undefined ? -10 : o.xWest;
+  const xWest = o.xWest === undefined ? -11 : o.xWest;
   const xEast = o.xEast === undefined ? ctx.orchardX0 + ctx.treeSpacing / 2 + ctx.limb + 3 : o.xEast;
   const padL = grid ? 38 : 0, padR = grid ? 14 : 0;
   const head = (compact ? 30 : 40) + (grid ? 20 : 0), foot = compact ? 46 : 48;
@@ -94,7 +102,7 @@ function planView(layout, o = {}) {
     if (!compact) field.push(text(X(bush.x), Y(bush.y) + 4, bush.group.code, 'halo t-title', { 'text-anchor': 'middle', 'font-size': 11 }));
   });
   ['M', 'H'].forEach(kind => layout.plants.filter(plant => plant.kind === kind && plant.planted && inside(plant.y, 0.5))
-    .forEach(plant => field.push(circle(X(plant.x), Y(plant.y), 0.6 * S, 'c-trunk', { fill: K[kind].color }))));
+    .forEach(plant => field.push(circle(X(plant.x), Y(plant.y), TRUNK_RADIUS[kind] * S, 'c-trunk', { fill: K[kind].color }))));
   field.push(line(X(0), Y(y0), X(0), Y(y1), 'd-fence'));
   const middle = Y((y0 + y1) / 2);
   field.push(turned(X((alley.west + alley.east) / 2), middle, `Tractor alley · ${num(alley.clear)} ft clear`, 't-title'));
@@ -105,7 +113,8 @@ function planView(layout, o = {}) {
     group(field, { 'clip-path': `url(#${clip})` }),
     rect(X(xEast), Y(y0), (xEast - xWest) * S, (y1 - y0) * S, 'd-frame')
   ];
-  // Dimensions: the spacing along the fence, written along a line west of the fence for each row, and the widths of the alley and the lane across the strip.
+  // Dimensions: the spacing along the fence, written along a line west of the fence for each row (the mulberries, the hazelnuts, and the berry bushes of a
+  // proposed row), and the widths of the alley and the lane across the strip.
   const dimV = (x, a, b, label) => {
     parts.push(line(X(x), Y(a), X(x), Y(b), 'd-dim'), line(X(x) - 6, Y(a), X(x) + 6, Y(a), 'd-dim'), line(X(x) - 6, Y(b), X(x) + 6, Y(b), 'd-dim'));
     parts.push(turned(X(x) + 14, (Y(a) + Y(b)) / 2, label, 'halo t-title', { 'font-size': 12 }));
@@ -114,10 +123,20 @@ function planView(layout, o = {}) {
     parts.push(line(X(a), Y(y), X(b), Y(y), 'd-dim'), line(X(a), Y(y) - 6, X(a), Y(y) + 6, 'd-dim'), line(X(b), Y(y) - 6, X(b), Y(y) + 6, 'd-dim'));
     parts.push(text(X((a + b) / 2), Y(y) - 8, label, 'halo t-title', { 'text-anchor': 'middle', 'font-size': 12 }));
   };
-  const tall = neighbors(layout, 'M', y0 + 0.5, y1 - 0.5), low = neighbors(layout, 'H', y0 + 0.5, y1 - 0.5);
-  const guild = layout.pattern ? ' · 1 guild' : '';
-  if (tall) dimV(-2.5, tall[0], tall[1], `Mulberry ${num(tall[1] - tall[0])} ft${guild}`);
-  if (low) dimV(-6, low[0], low[1], `Hazelnut ${num(low[1] - low[0])} ft`);
+  const within = (list, labelOf) => pairIn(list, y0 + 0.5, y1 - 0.5, labelOf);
+  const plantsOf = kind => layout.plants.filter(plant => plant.kind === kind);
+  // One guild, mulberry to mulberry. The line has a tick at every plant between its ends, so the gap from a mulberry to the hazelnut beside it,
+  // and from one hazelnut to the next, reads off the same line, and the label counts the gaps.
+  const between = (a, b) => layout.plants.map(plant => plant.y).filter(y => y > a + 1e-9 && y < b - 1e-9);
+  const tall = within(plantsOf('M'), (a, b) => (layout.pattern ? `Mulberry ${num(b - a)} ft · 1 guild (${between(a, b).length + 1} × ${num(layout.step)} ft)` : `Mulberry ${num(b - a)} ft`));
+  const low = within(plantsOf('H'), (a, b) => `Hazelnut ${num(b - a)} ft`);
+  const bushes = layout.berryRow ? within(layout.berries, (a, b) => `Berries ${num(b - a)} ft`) : null;
+  if (tall) {
+    dimV(-2, tall[0], tall[1], tall[2]);
+    if (layout.pattern) between(tall[0], tall[1]).forEach(y => parts.push(line(X(-2) - 4, Y(y), X(-2) + 4, Y(y), 'd-dim')));
+  }
+  if (low) dimV(-5, low[0], low[1], low[2]);
+  if (bushes) dimV(-8, bushes[0], bushes[1], bushes[2]);
   dimH(alley.west, alley.east, y0 + 2.5, `${num(alley.clear)} ft`);
   dimH(lane.west, lane.east, y0 + 2.5, `${num(lane.width)} ft`);
 
@@ -136,8 +155,10 @@ function planView(layout, o = {}) {
   const ticks = [...new Set([0, ...layout.rows.map(row => row.x), lane.west, lane.east, alley.west, alley.east, ctx.stripWidth, ctx.orchardX0, ctx.orchardX0 + ctx.treeSpacing / 2])];
   ticks.forEach(x => parts.push(line(X(x), Y(y1), X(x), Y(y1) + 10, 'd-tick'), text(X(x), Y(y1) + 26, num(x), '', { 'text-anchor': 'middle', 'font-size': 11 })));
   parts.push(text(X(xWest) - 4, Y(y1) + (compact ? 42 : 26), 'ft from fence', '', { 'text-anchor': 'end', 'font-size': 11 }));
+  const apart = [`mulberries ${num(layout.rows[0].spacing)} ft`, `hazelnuts ${num(layout.rows[1].spacing)} ft`, ...(layout.berryRow ? [`berries ${num(layout.rows[2].spacing)} ft`] : [])];
   const label = `Plan view, to scale, south up and west on the right: ${layout.title}. ${layout.counts.M.planted} red mulberries, ${layout.counts.H.planted} hazelnuts, and ${layout.counts.berries.planted} small berries ${layout.counts.berries.place}; `
-    + `a ${num(lane.width)} ft ${lane.name.toLowerCase()} and a tractor alley ${num(alley.clear)} ft clear, ${num(y1 - y0)} ft of the fence shown.${grid ? ' The grid blocks are 1 ft by 1 ft.' : ''}`;
+    + `a ${num(lane.width)} ft ${lane.name.toLowerCase()} and a tractor alley ${num(alley.clear)} ft clear, ${num(y1 - y0)} ft of the fence shown. Spacing along the fence: ${apart.join(', ')}.`
+    + `${layout.pattern ? ` Every place in the guild row is ${num(layout.step)} ft from the next, so each hazelnut is ${num(layout.step)} ft from the trunk of the mulberry beside it.` : ''}${grid ? ' The grid blocks are 1 ft by 1 ft.' : ''}`;
   return svg(width, height, parts, label, 'plan-view');
 }
 

@@ -240,16 +240,16 @@ test('The 1 ft grid: a block on every foot, firmer every 5 and 10 ft, a ruler on
   const across = (markup, direction) => [1, 5, 10]
     .flatMap(weight => [...new RegExp(`<path d="([^"]*)" class="g-grid g${weight}"`).exec(markup)[1].matchAll(/M([\d.]+),([\d.]+)(V|H)([\d.]+)/g)])
     .filter(found => found[3] === direction).map(found => Number(found[direction === 'V' ? 1 : 2])).sort((a, b) => a - b);
-  // The plan: a vertical line on each whole foot from 10 ft west of the fence to 56 ft east of it, a horizontal line on each whole foot from 12 ft south of R1 to 48 ft north.
+  // The plan: a vertical line on each whole foot from 11 ft west of the fence to 56 ft east of it, a horizontal line on each whole foot from 12 ft south of R1 to 48 ft north.
   const plan = D.planView(patterns.B);
-  assert.equal(segments(plan, 1) + segments(plan, 5) + segments(plan, 10), 67 + 61);
+  assert.equal(segments(plan, 1) + segments(plan, 5) + segments(plan, 10), 68 + 61);
   assert.equal(segments(plan, 10), 7 + 6, 'every 10 ft: x of -10, 0, 10 ... 50 and y of -10, 0, 10 ... 40 (R1 is the 0 line)');
   assert.equal(segments(plan, 5), 7 + 6, 'every 5 ft but not 10');
   const verticals = across(plan, 'V'), horizontals = across(plan, 'H');
-  assert.deepEqual([verticals.length, horizontals.length], [67, 61]);
+  assert.deepEqual([verticals.length, horizontals.length], [68, 61]);
   for (let index = 1; index < verticals.length; index++) near(verticals[index] - verticals[index - 1], 10, 0.02, 'one foot is 10 units across, so a block is square');
   for (let index = 1; index < horizontals.length; index++) near(horizontals[index] - horizontals[index - 1], 10, 0.02, 'and 10 units along');
-  assert.equal((plan.match(/class="g-ruler"/g) || []).length, 67 + 61, 'a tick on every foot of both rulers');
+  assert.equal((plan.match(/class="g-ruler"/g) || []).length, 68 + 61, 'a tick on every foot of both rulers');
   for (const label of ['-10', '5', '25', '55', '45', 'ft north of the R1 line']) assert.match(plan, new RegExp(`class="g-ruler-t"[^>]*>${label}</text>`), label);
   assert.match(plan, /The grid blocks are 1 ft by 1 ft/);
   // The profile: whole feet from 22 ft west of the fence to 58 ft east of it, and from the ground to 58 ft up.
@@ -272,7 +272,7 @@ test('The 1 ft grid: a block on every foot, firmer every 5 and 10 ft, a ruler on
   assert.ok(width(plan) > width(D.planView(patterns.B, { grid: false })), 'the grid adds margins for the rulers');
 });
 
-test('The spacing of the mulberries and of the hazelnuts along the fence is measured on every plan, the full-size ones and the four on the options page', () => {
+test('The spacing of the mulberries, the hazelnuts, and the berry bushes along the fence is measured on every plan, the full-size ones and the four on the options page', () => {
   const layouts = [now, patterns.A, patterns.B, patterns.C];
   const figures = P.planFigures(now, [patterns.A, patterns.B, patterns.C]).split('<figure ').slice(1);
   assert.equal(figures.length, 4);
@@ -281,19 +281,74 @@ test('The spacing of the mulberries and of the hazelnuts along the fence is meas
   const along = markup => [...markup.matchAll(/<line x1="([\d.]+)" y1="([\d.]+)" x2="([\d.]+)" y2="([\d.]+)" class="d-dim"\/>/g)]
     .filter(found => found[1] === found[3] && Math.abs(found[4] - found[2]) > 20).map(found => ({ x: Number(found[1]), length: Math.abs(found[4] - found[2]) }));
   layouts.forEach((layout, index) => {
-    const mulberries = layout.rows[0].spacing, hazelnuts = layout.rows[1].spacing, guild = layout.pattern ? ' · 1 guild' : '';
-    // The line is as long as the spacing is on the ground; the label is the whole number of feet nearest to it.
-    const labels = [`Mulberry ${Math.round(mulberries)} ft${guild}`, `Hazelnut ${Math.round(hazelnuts)} ft`];
+    const mulberries = layout.rows[0].spacing, hazelnuts = layout.rows[1].spacing;
+    // The line is as long as the spacing is on the ground; the label is the whole number of feet nearest to it. The current plan has no berry row, only
+    // bushes around the first-column trees, so it has no berry spacing to measure. A guild's mulberry line also counts its gaps.
+    const berries = layout.berryRow ? layout.rows[2].spacing : null;
+    const guild = layout.pattern ? ` · 1 guild \\(${layout.pattern.sequence.length} × ${layout.step} ft\\)` : '';
+    const labels = [`Mulberry ${Math.round(mulberries)} ft${guild}`, `Hazelnut ${Math.round(hazelnuts)} ft`, ...(berries ? [`Berries ${Math.round(berries)} ft`] : [])];
     for (const [name, markup] of [['full-size', D.planView(layout)], ['on the options page', figures[index]]]) {
       for (const label of labels) assert.match(markup, new RegExp(`>${label}</text>`), `${layout.id} ${name}: ${label}`);
-      const lines = along(markup), lengths = lines.map(line => line.length).sort((a, b) => a - b), wanted = [mulberries * 10, hazelnuts * 10].sort((a, b) => a - b);
-      assert.equal(lines.length, 2, `${layout.id} ${name}: one line for each row`);
+      if (!berries) assert.doesNotMatch(markup, />Berries \d+ ft</, `${layout.id} ${name}: no berry row, no berry spacing`);
+      const lines = along(markup), lengths = lines.map(line => line.length).sort((a, b) => a - b);
+      const wanted = [mulberries * 10, hazelnuts * 10, ...(berries ? [berries * 10] : [])].sort((a, b) => a - b);
+      assert.equal(lines.length, wanted.length, `${layout.id} ${name}: one line for each row`);
       lengths.forEach((length, at) => near(length, wanted[at], 0.02, `${layout.id} ${name}: a line as long as the spacing, at 10 units a foot`));
       for (const line of lines) assert.ok(frame(markup).right - line.x >= 30, `${layout.id} ${name}: room inside the frame for the label beside the line`);
+      const xs = lines.map(line => line.x).sort((a, b) => a - b);
+      xs.slice(1).forEach((x, at) => assert.ok(x - xs[at] >= 30, `${layout.id} ${name}: the lines stand 3 ft apart, so one label does not run into the next line`));
+      // A label is centered on its line, and the line is chosen so the whole label, longer than the line when the spacing is short, stays inside the frame.
+      const frameBox = /<rect x="[\d.]+" y="([\d.]+)" width="[\d.]+" height="([\d.]+)" class="d-frame"\/>/.exec(markup);
+      const top = Number(frameBox[1]), bottom = top + Number(frameBox[2]);
+      const written = [...markup.matchAll(/<text x="[\d.]+" y="([\d.]+)" class="halo t-title" text-anchor="middle" transform="rotate\(-90 [\d.]+ [\d.]+\)" font-size="12">((?:Mulberry|Hazelnut|Berries) [^<]*)<\/text>/g)];
+      assert.equal(written.length, wanted.length, `${layout.id} ${name}: a label on each line`);
+      for (const found of written) {
+        const half = found[2].length * 5.5 / 2;
+        assert.ok(Number(found[1]) - half >= top && Number(found[1]) + half <= bottom, `${layout.id} ${name}: "${found[2]}" stays inside the frame`);
+      }
     }
   });
   assert.deepEqual(plain(layouts.map(layout => [layout.rows[0].spacing, layout.rows[1].spacing])), [[12.5, 9], [12, 12], [18, 6], [24, 6]], 'the spacing the figures draw');
+  assert.deepEqual(plain(layouts.slice(1).map(layout => layout.rows[2].spacing)), [6, 6, 6], 'the berry bushes are one step apart in every pattern');
   assert.match(D.planView(now), />Mulberry 13 ft</, 'the current plan\'s 12.5 ft is written 13');
+  assert.match(D.planView(patterns.B), /Spacing along the fence: mulberries 18 ft, hazelnuts 6 ft, berries 6 ft\./, 'and the drawing\'s text says it too');
+});
+
+test('A guild is drawn place by place: a tick at every plant between two mulberries, a larger trunk for a mulberry, and the 6 ft from a trunk to the hazelnut beside it said in words', () => {
+  const lines = markup => [...markup.matchAll(/<line x1="([\d.]+)" y1="([\d.]+)" x2="([\d.]+)" y2="([\d.]+)" class="d-dim"\/>/g)].map(found => found.slice(1, 5).map(Number));
+  // The short ticks of a chain: horizontal, 8 units long (4 either side of the mulberry line), at every plant between the two mulberries.
+  const chainTicks = markup => lines(markup).filter(([x1, y1, x2, y2]) => y1 === y2 && Math.abs(x2 - x1 - 8) < 0.01).map(([, y1]) => y1);
+  const trunks = markup => [...markup.matchAll(/<circle cx="[\d.]+" cy="[\d.]+" r="([\d.]+)" class="c-trunk" fill="(#[0-9A-Fa-f]{6})"\/>/g)].map(found => ({ r: Number(found[1]), fill: found[2] }));
+  const figures = P.planFigures(now, [patterns.A, patterns.B, patterns.C]).split('<figure ').slice(1);
+  [now, patterns.A, patterns.B, patterns.C].forEach((layout, index) => {
+    const places = layout.pattern ? layout.pattern.sequence.length - 1 : 0;
+    for (const [name, markup] of [['full-size', D.planView(layout)], ['on the options page', figures[index]]]) {
+      const ticks = chainTicks(markup);
+      assert.equal(ticks.length, places, `${layout.id} ${name}: ${places} ticks between the two mulberries`);
+      // They stand a step apart, 60 units at 10 units a foot, and the first and last are a step from the ends of the line.
+      ticks.sort((a, b) => a - b).slice(1).forEach((y, at) => near(y - ticks[at], layout.step * 10, 0.02, `${layout.id} ${name}: a step between ticks`));
+    }
+    const sizes = trunks(D.planView(layout));
+    const byColor = color => new Set(sizes.filter(trunk => trunk.fill.toLowerCase() === color.toLowerCase()).map(trunk => trunk.r));
+    assert.deepEqual([...byColor(layout.kinds.M.color)], [8], `${layout.id}: every mulberry trunk is one size, the larger`);
+    assert.deepEqual([...byColor(layout.kinds.H.color)], [5], `${layout.id}: every hazelnut trunk is one size, the smaller`);
+  });
+  // Every gap in a guild is one step, mulberry to hazelnut included, in all three patterns.
+  for (const layout of Object.values(patterns)) {
+    const places = layout.plants.map(plant => plant.y);
+    places.slice(1).forEach((y, at) => assert.equal(y - places[at], layout.step, `${layout.id}: the gap after place ${at}`));
+    assert.match(D.planView(layout), new RegExp(`Every place in the guild row is ${layout.step} ft from the next, so each hazelnut is ${layout.step} ft from the trunk of the mulberry beside it`));
+  }
+  assert.doesNotMatch(D.planView(now), /Every place in the guild row/);
+  assert.match(P.layerRows(patterns.B, { now: light.now, proposed: light.B }), /Each stands 6 ft from the next place in the row, so the hazelnut beside a mulberry is 6 ft from its trunk/);
+  for (const file of ['windbreak_guild_mockup.html', 'windbreak_guild_options.html']) {
+    assert.match(read(file), /Trunks: the large dot is a mulberry, the small dot a hazelnut/, `${file} explains the two dot sizes`);
+    assert.match(read(file), /the mulberry line has a tick at every plant between its ends/, `${file} explains the ticks`);
+  }
+  const view = fakeDocument('windbreak_guild_mockup.html', '#pattern=B');
+  view.page.mockup();
+  assert.equal(view.spans.find(span => span.key === 'step').textContent, '6');
+  assert.match(read('windbreak_guild_mockup.html'), /with every place <span data-m="step"><\/span> ft from the next along the row, so each hazelnut is <span data-m="step"><\/span> ft from the trunk of the mulberry beside it/);
 });
 
 test('Every distance the drawings and pages write is a whole number of feet: no decimals, no fractions, no inches', () => {
