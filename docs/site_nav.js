@@ -37,6 +37,9 @@ window.SITE_NAV = /* BEGIN SITE_NAV JSON */
       {"href": "site_baselines.html", "label": "Site baselines"},
       {"href": "weather_station_plan.html", "label": "Weather station plan"}
     ]},
+    {"id": "business", "label": "Business", "items": [
+      {"href": "homestead_income.html", "label": "Crop and producer income"}
+    ]},
     {"id": "project", "label": "Project & data", "items": [
       {"href": "index.html#tracker", "label": "Project tracker"},
       {"href": "index.html#log", "label": "Project log"},

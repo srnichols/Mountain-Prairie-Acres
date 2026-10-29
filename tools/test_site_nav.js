@@ -14,7 +14,7 @@ test('The menu script loads without a page and offers its list and helpers', () 
   assert.ok(nav, 'window.SiteNav should exist');
   assert.deepEqual(Object.keys(nav).sort(), ['data', 'fileOf', 'groupOf', 'stepIndex']);
   assert.equal(nav.data.home.href, 'index.html');
-  assert.equal(nav.data.groups.length, 6);
+  assert.equal(nav.data.groups.length, 7);
 });
 
 test('A URL path is matched to its page file, and a folder is the home page', () => {

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crop and Producer Income — Mountain Prairie Acres</title>
+<style>
+  :root {
+    --bg: #fff; --bg2: #f5f4f0; --bg3: #eae8e1;
+    --text: #2C2C2A; --text2: #5F5E5A; --text3: #888780;
+    --border: #d3d1c7; --link: #185FA5; --accent: #3B6D11;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0 auto; max-width: 1100px; padding: 24px; color: var(--text);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  a { color: var(--link); }
+  h1 { margin: 0 0 6px; font-size: 28px; font-weight: 600; }
+  h2 { margin: 28px 0 8px; font-size: 18px; font-weight: 600; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+  p { margin: 6px 0; }
+  .tagline, .note, .fine { color: var(--text2); }
+  .fine { font-size: 13px; }
+  .warn { margin: 14px 0; padding: 10px 12px; background: #FAEEDA; border: 1px solid #BA7517; border-radius: 8px; font-size: 14px; }
+  .stages { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0; }
+  .stage { text-align: left; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: #fff; cursor: pointer; font: inherit; color: inherit; }
+  .stage strong { display: block; font-size: 14px; }
+  .stage span { display: block; color: var(--text2); font-size: 12px; }
+  .stage em { display: block; margin-top: 4px; font-style: normal; font-weight: 600; color: var(--accent); }
+  .stage[aria-pressed="true"] { border-color: var(--accent); background: #EAF3DE; }
+  .total { display: flex; flex-wrap: wrap; gap: 18px; align-items: baseline; margin: 8px 0 4px; }
+  .total b { font-size: 34px; font-weight: 650; letter-spacing: -0.5px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { padding: 6px 8px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+  th { font-weight: 600; color: var(--text2); font-size: 12px; }
+  td.num, th.num { text-align: right; white-space: nowrap; }
+  tr.off td { color: var(--text3); }
+  .bar { height: 8px; background: var(--bg3); border-radius: 99px; overflow: hidden; min-width: 72px; }
+  .bar i { display: block; height: 100%; background: var(--accent); }
+  .group { margin: 18px 0; }
+  .group h3 { margin: 0 0 8px; font-size: 15px; }
+  .card { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin: 8px 0; }
+  .card header { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+  .card h4 { margin: 0; font-size: 15px; }
+  .card .dollars { font-weight: 650; }
+  .fields { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 8px; }
+  label { display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: var(--text2); }
+  input[type="number"] { width: 100%; padding: 4px 6px; border: 1px solid var(--border); border-radius: 4px; font: inherit; color: var(--text); }
+  .switch { flex-direction: row; align-items: center; gap: 6px; font-size: 13px; color: var(--text); }
+  .tag { display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: 99px; background: #E3EEF9; color: #185FA5; font-size: 11px; font-weight: 600; }
+  button.reset { margin-top: 8px; padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; background: #fff; font: inherit; cursor: pointer; }
+  ul { margin: 6px 0; padding-left: 18px; }
+  @media (max-width: 800px) {
+    .stages, .fields { grid-template-columns: 1fr 1fr; }
+    .total b { font-size: 28px; }
+  }
+  @media print {
+    body { padding: 0; }
+    .fields, .reset, .stage { break-inside: avoid; }
+    input { border: 0; padding: 0; }
+  }
+</style>
+</head>
+<body>
+<script src="site_nav.js"></script>
+<nav class="home-link" aria-label="Back to the home page"><a href="index.html">← Mountain Prairie Acres — Orchard and Ranch Projects</a></nav>
+
+<header>
+  <h1>Crop and producer income</h1>
+  <p class="tagline">What each part of the lot could add to a homestead business · planning allowances, not a promise · October 28, 2026</p>
+</header>
+
+<p>This page prices the producers already on the place, the ones you named, and a few the inventory already implies. The number is <strong>gross sales</strong>: pounds times a farmgate price times the share you can actually sell. Feed, pots, fuel, the drive to Mountain Home or Boise, and your time are not subtracted. A total of several thousand dollars is a delivery route or a shipped product. The gate in Prairie will not clear it.</p>
+<div class="warn">Hard cider is not in the total. Selling it needs a license. Jam and syrup are the same fruit at a higher price, not a second crop, so they are not added on top of the berry and elderberry lines.</div>
+
+<div class="stages" id="stages" role="group" aria-label="Which years to price"></div>
+<p class="note" id="stage-detail"></p>
+<div class="total"><b id="total">$0</b><span class="note" id="total-note"></span></div>
+<p class="fine" id="ramp"></p>
+
+<h2>What each one adds</h2>
+<table>
+  <thead>
+    <tr><th>Producer</th><th>How the number is built</th><th class="num">Gross</th><th>Share</th></tr>
+  </thead>
+  <tbody id="summary"></tbody>
+</table>
+
+<h2>Change the assumptions</h2>
+<p class="fine">Counts, prices, and the sold share are yours to move. Changes stay in this browser. They are not written back to the property records.</p>
+<div id="cards"></div>
+<button class="reset" type="button" id="reset">Reset to the planning allowances</button>
+
+<h2>Left out on purpose</h2>
+<ul>
+  <li>Hard cider, wine, and any other alcohol.</li>
+  <li>Jam, jelly, and syrup as extra income on top of the fruit they are made from.</li>
+  <li>The workshop. It is a cost until it does custom work, and that work is not a crop.</li>
+  <li>Agritourism. The lot is too remote, and the season is too short, to count on visitors.</li>
+</ul>
+<p class="fine">Prices are 2026 direct-sale allowances for a small Idaho flock and a farmstand, not Boise farmers-market peaks and not wholesale. Orchard pounds match the trees planted in October 2026: about 40 dessert apples, 24 pears, 31 stone-fruit trees, and the cider and crab trees pressed separately. Greenhouse dates come from the <a href="gothic_greenhouse_plan.html">tunnel</a> and <a href="pit_greenhouse_plan.html">pit</a> pages. Hedge counts come from the inventory: 34 Jefferson hazelnuts, 25 red mulberries, 19 elderberries.</p>
+
+<script src="income_plan.js"></script>
+<script>
+(function () {
+  const KEY = "mpa-income-plan-v1";
+  const money = n => "$" + Math.round(n).toLocaleString("en-US");
+  const pct = n => Math.round(n * 100) + "%";
+  let stageId = "coming";
+  let overrides = {};
+
+  function load() {
+    try { overrides = JSON.parse(localStorage.getItem(KEY)) || {}; }
+    catch (e) { overrides = {}; }
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(overrides)); }
+    catch (e) { /* a private browser can refuse storage; the page still works */ }
+  }
+  function setOver(bucket, id, value) {
+    overrides[bucket] = overrides[bucket] || {};
+    overrides[bucket][id] = value;
+    save();
+    draw();
+  }
+
+  function drawStages() {
+    const host = document.getElementById("stages");
+    host.replaceChildren();
+    IncomePlan.totalsByStage(overrides).forEach(item => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "stage";
+      button.setAttribute("aria-pressed", String(item.id === stageId));
+      const name = document.createElement("strong");
+      name.textContent = item.label;
+      const years = document.createElement("span");
+      years.textContent = item.years;
+      const total = document.createElement("em");
+      total.textContent = money(item.total);
+      button.append(name, years, total);
+      button.addEventListener("click", () => { stageId = item.id; draw(); });
+      host.append(button);
+    });
+  }
+
+  function draw() {
+    const result = IncomePlan.project(stageId, overrides);
+    drawStages();
+    document.getElementById("stage-detail").textContent = result.stage.detail;
+    document.getElementById("total").textContent = money(result.total);
+    const on = result.lines.filter(line => line.on && line.gross > 0);
+    document.getElementById("total-note").textContent = on.length + " producers adding cash in " + result.stage.years + ". Honey and hay are off until you turn them on.";
+    const ramp = IncomePlan.totalsByStage(overrides).map(item => item.label + " " + money(item.total)).join(" · ");
+    document.getElementById("ramp").textContent = "Same assumptions, four stages: " + ramp + ".";
+
+    const body = document.getElementById("summary");
+    body.replaceChildren();
+    result.lines.slice().sort((a, b) => b.gross - a.gross || a.name.localeCompare(b.name)).forEach(line => {
+      const tr = document.createElement("tr");
+      if (!line.on || line.gross === 0) tr.className = "off";
+      const name = document.createElement("td");
+      name.textContent = line.name;
+      const how = document.createElement("td");
+      how.textContent = line.on
+        ? line.units.toLocaleString("en-US") + " " + line.unitLabel + " × " + line.amount + " " + line.yieldLabel
+          + " × " + money(line.price) + " × " + pct(line.sold) + " sold"
+        : "Turned off";
+      const gross = document.createElement("td");
+      gross.className = "num";
+      gross.textContent = money(line.gross);
+      const share = document.createElement("td");
+      const bar = document.createElement("div");
+      bar.className = "bar";
+      const fill = document.createElement("i");
+      fill.style.width = pct(line.share);
+      bar.append(fill);
+      share.append(bar, document.createTextNode(" " + (line.gross ? pct(line.share) : "—")));
+      tr.append(name, how, gross, share);
+      body.append(tr);
+    });
+
+    const cards = document.getElementById("cards");
+    cards.replaceChildren();
+    const groups = [];
+    result.lines.forEach(line => {
+      let group = groups.find(item => item.name === line.group);
+      if (!group) groups.push(group = { name: line.group, lines: [] });
+      group.lines.push(line);
+    });
+    groups.forEach(group => {
+      const section = document.createElement("section");
+      section.className = "group";
+      const heading = document.createElement("h3");
+      heading.textContent = group.name;
+      section.append(heading);
+      group.lines.forEach(line => {
+        const card = document.createElement("article");
+        card.className = "card";
+        const head = document.createElement("header");
+        const title = document.createElement("h4");
+        title.textContent = line.name;
+        if (!line.asked) {
+          const tag = document.createElement("span");
+          tag.className = "tag";
+          tag.textContent = line.on ? "not on your list" : "left out until you turn it on";
+          title.append(tag);
+        }
+        const dollars = document.createElement("div");
+        dollars.className = "dollars";
+        dollars.textContent = money(line.gross);
+        head.append(title, dollars);
+        const note = document.createElement("p");
+        note.className = "fine";
+        note.textContent = line.note;
+        const fields = document.createElement("div");
+        fields.className = "fields";
+        const toggle = document.createElement("label");
+        toggle.className = "switch";
+        const box = document.createElement("input");
+        box.type = "checkbox";
+        box.checked = line.on;
+        box.addEventListener("change", () => setOver("on", line.id, box.checked));
+        toggle.append(box, document.createTextNode(" Count it"));
+        fields.append(toggle);
+        fields.append(numberField("Count", line.units, 0, value => setOver("units", line.id, value)));
+        fields.append(numberField(line.yieldLabel, line.amount, 0, value => setOver("yield", line.id + ":" + stageId, value), 0.1));
+        fields.append(numberField(line.priceLabel, line.price, 0, value => setOver("price", line.id, value), 0.25));
+        fields.append(numberField("Sold, percent", Math.round(line.sold * 100), 0, value => setOver("sold", line.id, value / 100), 1));
+        card.append(head, note, fields);
+        section.append(card);
+      });
+      cards.append(section);
+    });
+  }
+
+  function numberField(label, value, min, onChange, step) {
+    const wrap = document.createElement("label");
+    wrap.textContent = label;
+    const input = document.createElement("input");
+    input.type = "number";
+    input.min = String(min);
+    input.step = String(step || 1);
+    input.value = String(value);
+    input.addEventListener("change", () => onChange(Number(input.value)));
+    wrap.append(input);
+    return wrap;
+  }
+
+  document.getElementById("reset").addEventListener("click", () => {
+    overrides = {};
+    save();
+    draw();
+  });
+  load();
+  draw();
+})();
+</script>
+</body>
+</html>
