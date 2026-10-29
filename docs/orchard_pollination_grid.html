@@ -161,6 +161,11 @@
 
   .footer { margin-top: 24px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text3); }
   .print-only { display: none; }
+  /* Marks the three maps for "Print maps only". The wrapper adds no box of its own, so the normal page and its print are laid out exactly as without it. */
+  .print-map { display: contents; }
+  .print-help button { font: inherit; padding: 1px 10px; border: 1px solid var(--link); border-radius: 4px; background: var(--bg); color: var(--link); cursor: pointer; }
+  .print-help button:hover:enabled, .print-help button:focus-visible { background: var(--link); color: #fff; }
+  .print-help button:disabled { border-color: var(--border); color: var(--text3); cursor: default; }
 
   @page {
     size: 17in 11in;
@@ -305,6 +310,20 @@
     .source-list li { margin: 0.8mm 0; break-inside: avoid; }
     a { text-decoration: none; }
     .footer { font-size: 8pt; margin-top: 4mm; padding-top: 2mm; }
+    /* Maps only: "Print maps only" puts .print-maps-only on <html> for one print. Only the .print-map blocks stay (the planting map with its key, the windbreak figures,
+       and the site plan with its key), one to a sheet; the tables and the narrative paragraphs are left out. Whatever is not a map, does not hold one, and is not
+       inside one is hidden, so content added to the page later stays out of the print. The two windbreak figures are sized to fill the sheet's width side by side,
+       and the site plan's 238 mm leaves a little slack under the 259 mm of height the sheet allows. */
+    .print-maps-only body *:not(.print-map, .print-map *, :has(.print-map)) { display: none !important; }
+    .print-maps-only #map-note, .print-maps-only #wb-summary, .print-maps-only .site-notes { display: none; }
+    .print-maps-only .print-map { display: block; break-before: page; }
+    .print-maps-only .wb-figures { display: flex; justify-content: center; align-items: flex-start; gap: 8mm; margin: 4mm 0 0; }
+    .print-maps-only .wb-figure .diagram { width: auto; max-width: none; height: 128mm; }
+    .print-maps-only .site-sheet { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto auto 1fr; column-gap: 9mm; align-content: start; }
+    .print-maps-only .site-sheet > h2 { grid-column: 1 / -1; }
+    .print-maps-only .site-sheet > .site-layout { display: block; grid-column: 1; grid-row: 2 / span 3; }
+    .print-maps-only .site-sheet > p { grid-column: 2; font-size: 9.5pt; line-height: 1.35; }
+    .print-maps-only .site-plan { width: auto; max-width: none; height: 238mm; margin: 2mm 0 0; }
   }
   .home-link { margin: 0 0 0.1in; font-size: 9.5pt; }
   @media print { .home-link { display: none; } }
@@ -314,7 +333,7 @@
 <script src="site_nav.js"></script>
 <nav class="home-link" aria-label="Back to the home page"><a href="index.html">← Mountain Prairie Acres — Orchard and Ranch Projects</a></nav>
 
-<div class="notice print-help" role="note"><strong>Print setup:</strong> Tabloid / Ledger (11 × 17 in), landscape, 100% scale. Turn on background graphics and turn off the browser's headers and footers. Page 1 is the planting map, followed by the metal-tag planting checklist, windbreak plan, site plan, and reference tables. Collapsed sections open automatically when printing.</div>
+<div class="notice print-help" role="note"><strong>Print setup:</strong> Tabloid / Ledger (11 × 17 in), landscape, 100% scale. Turn on background graphics and turn off the browser's headers and footers. Page 1 is the planting map, followed by the metal-tag planting checklist, windbreak plan, site plan, and reference tables. Collapsed sections open automatically when printing. To print just the three maps (the planting map, the windbreak plan and profile, and the site plan), one to a sheet, use <button type="button" id="print-maps" disabled>Print maps only</button>.</div>
 <section class="map-sheet" aria-label="Printable orchard planting map">
 <h1>Orchard Pollination Planting Grid and West Windbreak</h1>
 <p class="subtitle" id="subtitle"></p>
@@ -337,6 +356,7 @@
 <div class="notice error" id="data-error" role="alert" hidden></div>
 <noscript><div class="notice error">JavaScript is required to calculate and display this planting plan.</div></noscript>
 
+<div class="print-map">
 <h2>Planting Map — South at Top, West Fence on the Right</h2>
 <p class="source-note" id="map-note"></p>
 
@@ -359,6 +379,7 @@
 <p class="legend-note" id="plan-note" hidden></p>
 <p class="legend-note"><strong>S</strong> = self-fertile according to the planning notes; <strong>?</strong> = information missing or needing confirmation; <strong>UNK</strong> / <strong>SWT</strong> = unidentified tree (not counted as a pollen donor until identified; see the possibility lists for the <a href="unidentified_apple_id_sheet.html">apples</a> and for the <a href="unidentified_stone_fruit_id_sheet.html">cherries and peaches</a>). Hover over a tree for its cultivar profile, or click or tap it to jump to its row in the inventory table, which links to the <a href="cultivar_guide.html">cultivar guide</a>. Different trees of the same cultivar, including color sports, are not counted as different pollen partners.</p>
 <p class="legend-note">Apple <strong>FG</strong> means flowering group, not harvest season. <strong>*</strong> after a group number means sources differ; the planning value follows Orange Pippin. <strong>FG 2?</strong> marks a provisional estimate. <strong>Midseason; FG ?</strong> records nursery bloom guidance without inventing a numbered group.</p>
+</div>
 </section>
 
 <h2 id="ordered-heading" hidden>Ordered, not yet arrived</h2>
@@ -370,11 +391,13 @@
 </table>
 </div>
 
+<div class="print-map">
 <h2 id="windbreak">West Windbreak (35 ft Strip) and East Elderberry Hedge</h2>
 <p class="source-note" id="wb-summary"></p>
 <div class="wb-figures">
   <figure class="wb-figure"><figcaption id="wb-plan-caption">Blow-up plan view</figcaption><div id="wb-plan"></div></figure>
   <figure class="wb-figure"><figcaption>Profile, looking south: plant heights step down from the fence toward the orchard</figcaption><div id="wb-cross"></div></figure>
+</div>
 </div>
 <div class="table-scroll">
 <table class="detail windbreak-detail">
@@ -384,6 +407,7 @@
 </table>
 </div>
 
+<div class="print-map site-sheet">
 <h2 class="page-break" id="site-plan-heading">Site Plan — To Scale, South Up</h2>
 <p class="source-note" id="site-plan-note"></p>
 <p class="source-note">Lot coordinates: x here is the same as on the <a href="site_master_grid.html">site master grid</a>, and a spot N ft north of R1 is at grid y = 600 − N (R1-C1 is at x 38, y 600, cell A13; R15 runs along y 320). The whole-site maps, the homestead plot map, and the water plan all use that grid.</p>
@@ -393,6 +417,7 @@
     <h3 id="wb-notes-heading">Windbreak, hedge, and berry guild notes</h3>
     <div class="note-section" id="wb-notes"></div>
   </section>
+</div>
 </div>
 
 <form class="planting-form" aria-labelledby="planting-checklist-heading">
@@ -522,6 +547,14 @@ window.addEventListener('afterprint', () => {
   printOpenedDetails.forEach(details => { details.open = false; });
   printOpenedDetails.clear();
 });
+
+function printMapsOnly() {
+  const root = document.documentElement;
+  const done = () => { root.classList.remove('print-maps-only'); window.removeEventListener('afterprint', done); };
+  root.classList.add('print-maps-only');
+  window.addEventListener('afterprint', done);
+  window.print();
+}
 
 const { PLAN_DATE, STATUS_DATE, FRUIT_SHEET, INVENTORY, INVENTORY_MATCH, TYPE_ORDER, BLOCK_ROWS, SHARED_ROWS, RESERVED_ROWS, ORCHARD_ROWS, ROW_PLAN, GRID_COLUMNS, PLOT_WIDTH, EAST_SIDE, PLOT_DEPTH, TREE_SPACING, ROW_SPACING, LOCAL_RADIUS, ORCHARD_WEST_SETBACK, JUNIPER_DISTANCE, WINDBREAK, EAST_HEDGE, OWNER_NOTES, ORCHARD_UPDATES, PLANTED_ROOTSTOCKS, ROOTSTOCK_LABELS, GENERATED_CODES, FAMILY_OVERRIDES, APPLE_ALIASES, HARRISON_BLOOM_RESEARCH, APPLE_BLOOM_RESEARCH, URBAN_APPLE_ROWS, PEAR_BLOOM, CHERRY_CHART, FRUIT_BY_ROW, INVENTORY_BY_ROW, RESERVED, fruitRecord, inventoryLine, rootstockRemaining, normalizeName, placementOf, buildOrchardTrees, balancedRows, blockShape, sharedGroupOf, blockColumns, rowTemplate, layoutRows, lineCount, layoutPlantRow, windbreakLayout, eastHedgeLayout, alleyGeometry, laneGeometry, guildLayout, treeDistance, needsTwoDonors, compatiblePair, nearestPartners, PLANT_LOCATIONS, plantedWhen } = window.OrchardModel;
 const { C1_GUILDS, ORCHARD_X0, PLANTING_PLAN, plannedAt, plannedSpots } = window.OrchardModel;
@@ -1468,6 +1501,9 @@ const lostByType = listText(TYPE_ORDER.filter(type => lostTrees.some(tree => tre
   return count > 1 ? `${count} ${PLURAL[type]}` : `1 ${type.toLowerCase()}`;
 }));
 document.getElementById('site-plan-note').textContent = `To scale, south up and west on the right, matching the planting map (the view from the north end looking south). East–west distances are from the west fence; north–south distances are from the R1 row line. Large dots are orchard trees in fruit-type colors; the olive dot at R6-C3 is the planted M-111 rootstock. Filled dashed red rings are positions reserved for grafted rootstock apples, and dashed gray circles are open positions. The unfilled dark-red rings at ${lostTrees.map(position).join(', ')} mark the open positions of the dead trees (${lostByType}). Slate rings at ${outsideTrees.map(position).join(', ')} mark the open spots the Urban apples left. Those trees are planted 20 ft south of R1, off this orchard plot. All ${lostTrees.length + outsideTrees.length} spots are labeled for 2027 replacements. Small dots are windbreak plants (purple red mulberry, olive hazelnut) with their managed mature width shaded; the ${num(lane.width)} ft walking lane runs between the two rows. Lime dots beside the C1 trees are the berry guilds, and dashed lime rings are guild positions waiting for the R1 and future-row trees. The green dots between the driveway and the east fence are the elderberry hedge, and its dashed rings mark positions for plants to add later. East of the orchard are ${num(headland)} ft of open ground for turning at the row ends, the driveway, the hedge, and the east fence. The plot is ${PLOT_DEPTH} ft deep; only the planted ${Math.round(plantedDepth)} ft is drawn. The block can slide north or south, but keeping it toward the north end adds distance from the junipers. Hover over a dot for its position.`;
+const printMapsButton = document.getElementById('print-maps');
+printMapsButton.disabled = false;
+printMapsButton.addEventListener('click', printMapsOnly);
 
 [
   ...openRecords.map(updateNote),

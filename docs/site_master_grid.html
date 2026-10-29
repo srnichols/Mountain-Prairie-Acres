@@ -25,6 +25,9 @@
   .source-note { font-size: 11px; color: var(--text2); }
   .notice { background: var(--bg2); border-left: 4px solid #BA7517; border-radius: 4px; padding: 8px 12px; margin: 0 0 12px; font-size: 12px; }
   .notice.error { border-left-color: #E24B4A; }
+  .print-help button { font: inherit; padding: 1px 10px; border: 1px solid var(--link); border-radius: 4px; background: var(--bg); color: var(--link); cursor: pointer; }
+  .print-help button:hover:enabled, .print-help button:focus-visible { background: var(--link); color: #fff; }
+  .print-help button:disabled { border-color: var(--border); color: var(--text3); cursor: default; }
 
   .sheet-body { display: grid; grid-template-columns: minmax(300px, 0.8fr) minmax(0, 1.2fr); gap: 18px; align-items: start; }
   .map svg { display: block; width: 100%; height: auto; }
@@ -69,6 +72,12 @@
     @bottom-left { content: "Mountain Prairie Acres - Site master grid"; font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
     @bottom-right { content: "Page " counter(page) " of " counter(pages); font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
   }
+  @page map-sheet {
+    size: 11in 17in;
+    margin: 9mm 9mm 11mm;
+    @bottom-left { content: "Mountain Prairie Acres - Site master grid: whole lot, north up, 50 ft cells"; }
+    @bottom-right { content: none; }
+  }
   @media print {
     body { padding: 0; margin: 0; max-width: none; font-size: 8.5pt; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
     .print-help { display: none; }
@@ -90,13 +99,20 @@
     .source-note { font-size: 7.2pt; }
     a { text-decoration: none; color: inherit; }
     footer { display: none; }
+    /* Map only: "Print map only" puts .print-map-only on <html> for one print. Everything that is not the map, does not hold it, and is not inside it is hidden,
+       so a change to the page's markup cannot blank the sheet. The map is 16 in tall because the page allows 16.2 in, and a taller map would spill onto a second sheet. */
+    .print-map-only body *:not(.map, .map *, :has(.map)) { display: none !important; }
+    .print-map-only .map figcaption { display: none; }
+    .print-map-only .sheet-body { display: block; }
+    .print-map-only .map { page: map-sheet; }
+    .print-map-only .map svg { height: 16in; max-height: none; margin: 0 auto; }
   }
 </style>
 </head>
 <body>
 <script src="site_nav.js"></script>
 
-<div class="notice print-help" role="note"><strong>Print setup:</strong> Tabloid / Ledger (11 × 17 in), portrait, 100% scale. Turn on background graphics and turn off the browser's headers and footers. <a href="index.html">Back to the project home page</a>.</div>
+<div class="notice print-help" role="note"><strong>Print setup:</strong> Tabloid / Ledger (11 × 17 in), portrait, 100% scale. Turn on background graphics and turn off the browser's headers and footers. To print just the map on one tabloid sheet, use <button type="button" id="print-map" disabled>Print map only</button>. <a href="index.html">Back to the project home page</a>.</div>
 <noscript><div class="notice error">JavaScript is required to draw the grid and tables.</div></noscript>
 <div class="notice error" id="render-error" hidden></div>
 
@@ -508,9 +524,20 @@ function renderConventions() {
   ].forEach(t => document.getElementById('conventions').append(element('li', t)));
 }
 
+function printMapOnly() {
+  const root = document.documentElement;
+  const done = () => { root.classList.remove('print-map-only'); window.removeEventListener('afterprint', done); };
+  root.classList.add('print-map-only');
+  window.addEventListener('afterprint', done);
+  window.print();
+}
+
 try {
   if (!window.SiteGrid) throw new Error('data/site_grid.js did not load');
   document.getElementById('map').append(makeMap());
+  const printButton = document.getElementById('print-map');
+  printButton.disabled = false;
+  printButton.addEventListener('click', printMapOnly);
   if (window.SitePhotos) SitePhotos.hint(document.getElementById('map'));
   renderHowTo(); renderFacts(); renderFeatures(); renderWaterDetail(); renderCode(); renderConventions();
 } catch (error) {

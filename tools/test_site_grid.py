@@ -362,6 +362,17 @@ class SiteGridTest(unittest.TestCase):
         self.assertEqual(pages, 2, "the page sends readers to the SiteRef guide on the second printed page; if a new feature pushes the "
                                    "feature table onto a third page, tighten the print layout in docs/site_master_grid.html and print again")
 
+    def test_master_grid_page_can_print_just_the_map_on_one_tabloid_sheet(self):
+        page = (pathlib.Path(__file__).resolve().parent.parent / "docs" / "site_master_grid.html").read_text(encoding="utf-8")
+        self.assertRegex(page, r"@page map-sheet \{[^}]*size: 11in 17in;", "the map-only sheet is tabloid, 11 x 17 in")
+        self.assertIn(".print-map-only .map { page: map-sheet; }", page, "the map prints on its own named sheet")
+        self.assertIn(".print-map-only body *:not(.map, .map *, :has(.map)) { display: none !important; }", page,
+                      "everything but the map is hidden while the map-only class is on")
+        self.assertRegex(page, r'<button type="button" id="print-map"[^>]*>Print map only</button>')
+        self.assertRegex(page, r"classList\.add\('print-map-only'\);[^}]*window\.print\(\);", "the class is on before the print dialog opens")
+        self.assertRegex(page, r"addEventListener\('afterprint', done\)[^}]*window\.print\(\)", "the class comes off when the dialog closes")
+        self.assertRegex(page, r"const done = \(\) => \{ root\.classList\.remove\('print-map-only'\);", "so a later Ctrl+P prints the whole page")
+
     def test_cells_a_feature_touches(self):
         g = self.grid
         self.assertEqual(g.cells("pump_house"), ["B19"])
