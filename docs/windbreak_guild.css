@@ -1,0 +1,179 @@
+/* Shared by the two windbreak guild-row mock-up pages. The figure colors match the windbreak figures on the orchard pollination grid. */
+:root {
+  --bg: #ffffff; --bg2: #f5f4f0; --bg3: #eae8e1;
+  --text: #2C2C2A; --text2: #5F5E5A; --text3: #888780;
+  --border: #d3d1c7; --link: #185FA5;
+  --mulberry: #5B2A86; --hazel: #6E6B2F; --berry: #7CC242; --berry-dark: #4E8A26;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg); color: var(--text);
+  padding: 24px; max-width: 1440px; margin: 0 auto; line-height: 1.6;
+}
+h1 { font-size: 22px; font-weight: 500; margin-bottom: 2px; }
+h2 { font-size: 16px; font-weight: 500; margin: 24px 0 8px; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+h3 { font-size: 13px; font-weight: 600; margin: 12px 0 4px; color: var(--text2); }
+a { color: var(--link); }
+p { margin: 6px 0; }
+.home-link { margin: 0 0 0.1in; font-size: 9.5pt; }
+.subtitle { font-size: 13px; color: var(--text2); margin-bottom: 12px; max-width: 980px; }
+.source-note { font-size: 11px; color: var(--text2); }
+.prose { font-size: 13px; color: var(--text2); max-width: 980px; }
+.prose strong { color: var(--text); font-weight: 600; }
+.notice { background: var(--bg2); border-left: 4px solid #BA7517; border-radius: 4px; padding: 10px 12px; margin: 12px 0; font-size: 12px; }
+.notice.ok { border-color: #3B6D11; }
+.notice.error { border-color: #E24B4A; }
+.footer { margin-top: 24px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text3); }
+
+.specs { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; margin: 12px 0; }
+.spec { background: var(--bg2); border-radius: 8px; padding: 10px 12px; }
+.spec .label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
+.spec .value { font-size: 16px; font-weight: 500; }
+.spec .sub { font-size: 11px; color: var(--text2); line-height: 1.35; }
+
+fieldset.choice-set { border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px 12px; margin: 12px 0; }
+fieldset.choice-set legend { font-size: 12px; font-weight: 600; color: var(--text2); padding: 0 6px; }
+.choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px; }
+.choice { display: flex; gap: 8px; align-items: flex-start; border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; cursor: pointer; font-size: 12px; line-height: 1.4; }
+.choice:hover { background: var(--bg2); }
+.choice.on { border-color: #3B6D11; background: #EAF3DE; box-shadow: inset 0 0 0 1px #3B6D11; }
+.choice input { margin-top: 3px; }
+.choice .name { font-weight: 600; font-size: 13px; }
+.choice .what { color: var(--text2); display: block; }
+.choice:focus-within { outline: 2px solid #185FA5; outline-offset: 1px; }
+.toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text2); margin: 2px 0 6px; cursor: pointer; }
+.toggle input { margin: 0; }
+
+.wg-figures { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; margin: 8px 0; }
+.wg-figures.four { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.wg-figures.four .wg-figure figcaption { min-height: 3.3em; }
+.wg-figure figcaption { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 4px; }
+.wg-figure figcaption span { font-weight: 400; }
+@media screen and (max-width: 1000px) { .wg-figures { grid-template-columns: 1fr; } }
+/* On a phone the drawings keep a readable size and scroll sideways instead of shrinking to a few pixels of text. */
+@media screen and (max-width: 700px) {
+  .wg-figure { overflow-x: auto; }
+  .wg-figure .diagram { min-width: 560px; }
+}
+
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 11px; color: var(--text2); margin: 8px 0; }
+.legend div { display: flex; align-items: center; gap: 5px; }
+.lbox { width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.12); }
+.lbox.ring { border: 1.5px dashed var(--text3); background: #fff; border-radius: 50%; }
+.lbox.tree { background: rgba(226,75,74,0.35); border-color: #993C1D; border-radius: 50%; }
+
+.table-scroll { overflow-x: auto; }
+table.detail { width: 100%; border-collapse: collapse; font-size: 12px; margin: 8px 0 16px; }
+table.detail th { background: var(--bg3); text-align: left; padding: 5px 8px; font-weight: 500; color: var(--text); border: 1px solid var(--border); }
+table.detail td { padding: 5px 8px; border: 1px solid var(--border); vertical-align: top; }
+table.detail tbody tr:nth-child(even) td, table.detail tbody tr:nth-child(even) th { background: var(--bg2); }
+table.detail th[scope="row"] { background: var(--bg3); font-weight: 500; }
+table.detail td.num, table.detail th.num { text-align: right; font-variant-numeric: tabular-nums; }
+table.detail .group th { background: #E4E2DA; font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text2); }
+table.detail .src { font-size: 11px; color: var(--text2); display: block; }
+table.detail .bar { display: block; height: 6px; margin-top: 3px; border-radius: 3px; background: var(--berry-dark); }
+table.detail .picked { box-shadow: inset 0 0 0 2px #3B6D11; }
+.tag { display: inline-block; padding: 1px 5px; border-radius: 3px; font-size: 10px; font-weight: 500; margin-right: 3px; background: #EEEDEA; color: #3d3c38; border: 1px solid #AAA89F; }
+.tag.good { background: #EAF3DE; color: #3B6D11; border-color: #97C459; }
+.tag.warn { background: #FAEEDA; color: #854F0B; border-color: #BA7517; }
+
+.columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin: 8px 0; }
+.columns h3 { margin-top: 0; }
+.columns ul, .list { font-size: 12px; color: var(--text2); padding-left: 20px; }
+.columns li, .list li { margin: 4px 0; }
+.columns strong, .list strong { color: var(--text); font-weight: 600; }
+
+.diagram { display: block; width: 100%; height: auto; margin: 8px 0 12px; }
+.wg-figure .diagram { margin-top: 0; }
+.diagram text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: #3d3c38; }
+.diagram .t-title { font-weight: 600; fill: #2C2C2A; }
+.diagram .halo { paint-order: stroke; stroke: #fff; stroke-width: 3px; stroke-linejoin: round; }
+.d-ground { stroke: #5F5E5A; stroke-width: 2; }
+.d-tick { stroke: #888780; stroke-width: 1; }
+.d-strip { fill: #EEF5E8; }
+.d-alley { fill: #E9E9E5; stroke: #888780; stroke-dasharray: 6 4; }
+.d-plot { fill: none; stroke: #888780; stroke-dasharray: 8 5; }
+.d-fence { stroke: #6B5A45; stroke-width: 4; }
+.d-post { fill: #6B5A45; }
+.d-trunk, .c-trunk { fill: #7A5C3E; }
+.d-wind { stroke: #2F7FC1; stroke-width: 2.5; fill: none; }
+.d-wind-lift { stroke: #2F7FC1; stroke-width: 2; fill: none; stroke-dasharray: 7 5; }
+.d-open { fill: #fff; stroke: #888780; stroke-dasharray: 2 2; }
+.d-reserved { fill: #FCE9E3; stroke: #C2412F; stroke-width: 1.5; stroke-dasharray: 3 2; }
+.d-dim { stroke: #2C2C2A; stroke-width: 1.2; }
+.d-frame { fill: none; stroke: #5F5E5A; stroke-width: 1.5; }
+.d-future { fill: none; stroke-width: 1.5; stroke-dasharray: 4 3; }
+.d-orchard-crown { fill: #E24B4A; fill-opacity: 0.35; stroke: #993C1D; }
+/* The 1 ft grid and its rulers: a faint line every foot, firmer every 5 ft and every 10 ft. */
+.diagram .g-grid { fill: none; stroke: #2C2C2A; }
+.diagram .g1 { stroke-opacity: 0.1; stroke-width: 0.5; }
+.diagram .g5 { stroke-opacity: 0.22; stroke-width: 0.7; }
+.diagram .g10 { stroke-opacity: 0.4; stroke-width: 0.9; }
+.diagram .g-ruler { stroke: #5F5E5A; stroke-width: 1; }
+.diagram text.g-ruler-t { fill: #5F5E5A; }
+
+/* Printing: Tabloid (11 x 17 in) landscape, like the windbreak figures on the orchard pollination grid. The drawings come first, one sheet each (.print-sheet);
+   the tables and notes follow. "Print graphics only" puts .print-graphics-only on <html> for one print, and only the sheets stay. */
+.print-sheet { display: contents; }
+.print-help button { font: inherit; padding: 1px 10px; border: 1px solid var(--link); border-radius: 4px; background: var(--bg); color: var(--link); cursor: pointer; }
+.print-help button:hover:enabled, .print-help button:focus-visible { background: var(--link); color: #fff; }
+.print-help button:disabled { border-color: var(--border); color: var(--text3); cursor: default; }
+
+@page {
+  size: 17in 11in;
+  margin: 10mm;
+  @bottom-left { content: "Prairie Plants - West windbreak as one guild row (mock-up, not the planting plan)"; font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+  @bottom-right { content: "Page " counter(page) " of " counter(pages); font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+}
+
+@media print {
+  body { padding: 0; max-width: none; font-size: 9pt; line-height: 1.3; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .home-link, .print-help, fieldset.choice-set, .toggle { display: none; }
+  a { text-decoration: none; }
+  h1 { font-size: 17pt; line-height: 1.15; }
+  h2 { font-size: 12pt; margin: 3mm 0 1.5mm; padding-bottom: 1mm; break-after: avoid; }
+  h3 { font-size: 10pt; margin: 2mm 0 1mm; break-after: avoid; }
+  p { orphans: 3; widows: 3; }
+  .subtitle, .prose { font-size: 9pt; max-width: none; }
+  .subtitle { margin-bottom: 1.5mm; }
+  .source-note { font-size: 8pt; line-height: 1.3; }
+  .notice { font-size: 8pt; padding: 1.5mm 2mm; margin: 2mm 0; }
+  .footer { font-size: 8pt; margin-top: 4mm; padding-top: 2mm; }
+
+  .print-sheet { display: block; break-after: page; }
+  .print-sheet > :first-child { margin-top: 0; }
+  .specs { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2mm; margin: 2mm 0; }
+  .spec { padding: 1.5mm 2mm; border-radius: 1mm; }
+  .spec .label { font-size: 7pt; letter-spacing: 0; }
+  .spec .value { font-size: 10.5pt; }
+  .spec .sub { font-size: 7.5pt; line-height: 1.25; }
+  .legend { font-size: 8pt; gap: 1mm 4mm; margin: 1.5mm 0; }
+  .lbox { width: 3mm; height: 3mm; }
+
+  /* The drawings are sized to the sheet: the plans by height, so a sheet holds its title, its notes, and both drawings without spilling over, and the
+     profiles and the four options by the width of their column. */
+  .wg-figures { gap: 8mm; margin: 2mm 0; }
+  .wg-figures.plan { display: flex; justify-content: center; align-items: flex-start; }
+  .wg-figures.plan .diagram { width: auto; height: 178mm; }
+  .wg-figures.four { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6mm; }
+  .wg-figure, .diagram, table.detail tr { break-inside: avoid; }
+  .wg-figure figcaption { font-size: 8.5pt; margin-bottom: 1mm; }
+  .diagram { margin: 0 auto; }
+  .diagram .g1 { stroke-opacity: 0.16; }
+  .diagram .g5 { stroke-opacity: 0.3; }
+
+  .table-scroll { overflow: visible; }
+  table.detail { font-size: 8.5pt; line-height: 1.25; margin: 2mm 0 3mm; }
+  table.detail th, table.detail td { padding: 1mm 2mm; }
+  table.detail .src { font-size: 7.5pt; }
+  thead { display: table-header-group; }
+  .columns { grid-template-columns: repeat(auto-fit, minmax(80mm, 1fr)); gap: 6mm; margin: 2mm 0; }
+  .columns ul, .list { font-size: 9pt; }
+  .columns li, .list li { margin: 1.5mm 0; }
+  .columns > section { break-inside: avoid; }
+  .page-break { break-before: page; }
+
+  /* Graphics only: whatever is not a sheet, does not hold one, and is not inside one is hidden, so content added to the page later stays out of the print. */
+  .print-graphics-only body *:not(.print-sheet, .print-sheet *, :has(.print-sheet)) { display: none !important; }
+}

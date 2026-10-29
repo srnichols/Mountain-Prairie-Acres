@@ -6,6 +6,8 @@ window.SITE_NAV = /* BEGIN SITE_NAV JSON */
   "groups": [
     {"id": "orchard", "label": "Orchard", "items": [
       {"href": "orchard_pollination_grid.html", "label": "Planting map and west windbreak"},
+      {"href": "windbreak_guild_mockup.html", "label": "West windbreak as one guild row (mock-up)"},
+      {"href": "windbreak_guild_options.html", "label": "Guild row options and light check"},
       {"href": "metal_tag_planting_checklist.html", "label": "Metal-tag planting checklist"},
       {"href": "fy27_planting_plan.html", "label": "2027 planting plan and buy list"},
       {"href": "cultivar_guide.html", "label": "Cultivar guide"},

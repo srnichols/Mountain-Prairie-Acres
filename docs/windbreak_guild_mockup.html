@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>West Windbreak as One Guild Row (Mock-up) — Prairie Plants</title>
+<link rel="stylesheet" href="windbreak_guild.css">
+</head>
+<body>
+<script src="site_nav.js"></script>
+<nav class="home-link" aria-label="Back to the home page"><a href="index.html">← Mountain Prairie Acres — Orchard and Ranch Projects</a></nav>
+
+<div class="print-sheet" id="sheet-plan">
+<h1>West Windbreak as One Guild Row — Mock-up</h1>
+<p class="subtitle">One row at the west fence instead of two: red mulberries with hazelnuts between them, and a row of small berries like Josta in front. The <span data-m="laneNow"></span> ft walking lane and the separate hazelnut row go away, and the tractor alley gets the room.</p>
+
+<div class="notice" role="note"><strong>Mock-up only.</strong> The planting plan, the data files, and every other page are unchanged. The current two-row windbreak is on the <a href="orchard_pollination_grid.html#windbreak">orchard pollination grid</a>; the left side of each pair of figures below is drawn from that same data, at the same scale. To see all three patterns side by side, and how much sun the hazelnuts get, open the <a href="windbreak_guild_options.html">options and light check</a>.</div>
+<div class="notice error" id="data-error" role="alert" hidden></div>
+<noscript><div class="notice error">JavaScript is required to draw the mock-up.</div></noscript>
+<div class="notice print-help" role="note"><strong>Print setup:</strong> Tabloid / Ledger (11 × 17 in), landscape, 100% scale. Turn on background graphics and turn off the browser's headers and footers. The pattern chosen below prints: sheet 1 is the plan view and sheet 2 the profile, then the tables and notes. To print just the two drawing sheets, use <button type="button" id="print-graphics" disabled>Print graphics only</button>. The PDF of the whole page, drawn for pattern B, is <a href="downloads/windbreak_guild_mockup.pdf" download>windbreak_guild_mockup.pdf</a>.</div>
+
+<fieldset class="choice-set"><legend>Pattern along the fence</legend><div class="choices" id="pattern-choice"></div></fieldset>
+<label class="toggle"><input type="checkbox" id="grid-toggle" checked> Show the 1 ft grid: each block is 1 ft × 1 ft, with firmer lines every 5 ft and 10 ft and a ruler along the top and left edges</label>
+
+<div class="specs" id="wg-specs"></div>
+
+<h2>Plan view — to scale, south up, west fence on the right</h2>
+<div class="wg-figures plan">
+  <figure class="wg-figure"><figcaption>Now: two rows and a walking lane <span>(the current plan)</span></figcaption><div id="plan-now"></div></figure>
+  <figure class="wg-figure"><figcaption id="plan-new-caption">Proposed</figcaption><div id="plan-new"></div></figure>
+</div>
+<div class="legend" aria-label="Key to the plan view and the profile">
+  <div><span class="lbox" style="background:#5B2A86; opacity:0.55"></span>Red mulberry</div>
+  <div><span class="lbox" style="background:#6E6B2F; opacity:0.7"></span>Hazelnut</div>
+  <div><span class="lbox" style="background:#7CC242"></span>Small berries</div>
+  <div><span class="lbox tree"></span>First-column orchard tree and its limb room</div>
+  <div><span class="lbox ring"></span>A place for a plant still to add</div>
+</div>
+<p class="source-note">Stretch shown: 12 ft south to 48 ft north of the R1 line, beside the first three orchard rows. The top ruler reads feet from the fence; the left ruler reads feet north of the R1 line. The two measurements west of the fence are the distance from one mulberry to the next and from one hazelnut to the next. Every distance is in whole feet; where the current plan falls between two feet, the figure is rounded up. The berry bushes stand in runs by kind, honeyberries first: <span id="berry-codes"></span>. Distances are to plant centers; the circles are the managed widths the plan already uses.</p>
+</div>
+
+<div class="print-sheet" id="sheet-profile">
+<h2>Profile — looking south, heights to scale</h2>
+<div class="wg-figures profile">
+  <figure class="wg-figure"><figcaption>Now: mulberry, walking lane, hazelnut, alley</figcaption><div id="profile-now"></div></figure>
+  <figure class="wg-figure"><figcaption id="profile-new-caption">Proposed</figcaption><div id="profile-new"></div></figure>
+</div>
+<p class="source-note">From the side the plants of a row overlap, so one crown of each kind stands for the row. The mulberry is drawn at the plan's own size: <span data-m="mulberryHeight"></span> tall, trunk to <span data-m="mulberryTrunk"></span> ft, crown from <span data-m="mulberryBase"></span> ft, kept to <span data-m="mulberryWidth"></span> ft wide. The top ruler reads feet from the fence; the left ruler reads feet above the ground.</p>
+</div>
+
+<h2>The layers, west to east</h2>
+<div class="table-scroll">
+<table class="detail">
+<thead><tr><th>Layer</th><th>Plant</th><th>Count</th><th>From west fence</th><th>In-row spacing</th><th>First plant</th><th>Last plant</th><th>Mature size</th><th>Notes</th></tr></thead>
+<tbody id="layer-table"></tbody>
+</table>
+</div>
+
+<h2 id="other-plants">Other small plants in your inventory</h2>
+<p class="prose">Honeyberry is already in the front row: all <span data-m="honeyberries"></span> are among the <span data-m="berryTotal"></span> bushes, standing together as one group. The table below adds the other small plants on your inventory sheet that the plan does not place yet, with where each would go. The front row is for bushes that are thornless or nearly so, do not run, and put up with part shade, next to a pick lane and a tractor alley. The rest do better in a bed or block of their own.</p>
+<div class="table-scroll">
+<table class="detail">
+<thead><tr><th>Plant</th><th>On hand</th><th>In the front row?</th><th>Where it would go</th><th>Why</th></tr></thead>
+<tbody id="others-table"></tbody>
+</table>
+</div>
+
+<h2 class="page-break">How it is laid out</h2>
+<p class="prose">The mulberries stay <span data-m="rowX"></span> ft from the fence, where they are in the plan today. The hazelnuts stand in the same row, <span data-m="betweenWords"></span> between each pair of mulberries, with plants <span data-m="step"></span> ft apart along the row, so one guild is <span data-m="module"></span> ft of fence. A row of small berries stands <span data-m="berryX"></span> ft from the fence, with a <span data-m="pickLane"></span> ft pick lane between it and the hazelnuts. Everything now ends <span data-m="band"></span> ft from the fence instead of <span data-m="bandNow"></span>.</p>
+
+<div class="columns">
+<section>
+<h3>What you gain</h3>
+<ul>
+  <li><strong>A wider alley.</strong> The tractor alley is <span data-m="alley"></span> ft clear instead of <span data-m="alleyNow"></span> (<span data-m="alleyFull"></span> ft against <span data-m="alleyFullNow"></span> ft if every plant reaches its full width). About <span data-m="sqft"></span> sq ft is freed along the <span data-m="length"></span> ft of fence, and all of it goes to the alley: the orchard trees are in the ground, so the orchard does not move.</li>
+  <li><strong>No dead lane.</strong> The <span data-m="laneNow"></span> ft walking lane, and the <span data-m="shadeGap"></span> ft shade gap that called for it, become a <span data-m="pickLane"></span> ft pick lane.</li>
+  <li><strong>One barrier, dense from the ground up.</strong> The hazelnuts fill the open space under the mulberry crowns, so the row blocks wind near the ground as well as above it. Red mulberry grown in the open tends to have low limbs, and the hazelnuts cover the base while you lift them.</li>
+  <li><strong>A home for the berries.</strong> All <span data-m="berryTotal"></span> berry bushes planned around the C1 trees move to the lee of the row, and the C1 trees no longer need guilds around them. Each kind stands in a run, so the honeyberries are one group and a net covers a run. Only the <span data-m="gooseberries"></span> gooseberries are likely to have thorns (their cultivar is not recorded); the rest are thornless, so the row is easy to pick.</li>
+</ul>
+</section>
+<section>
+<h3>What it costs</h3>
+<ul>
+  <li><strong>Hazelnut light depends on the mulberry crowns.</strong> With the mulberries kept as the plan assumes (<span data-m="keptDetail"></span>), the hazelnuts get <span data-m="keptNow"></span> of the season's direct sun now and <span data-m="keptProp"></span> in pattern <span data-m="pattern"></span>. If the mulberries are left to spread (<span data-m="spreadDetail"></span>), it is <span data-m="spreadNow"></span> now and <span data-m="spreadProp"></span> here. The guild row works only with firm pruning: one trunk, limbs from <span data-m="mulberryBase"></span> ft, and the east side cut back to <span data-m="mulberryEast"></span> ft from the trunk. <a href="windbreak_guild_options.html#light">How the light is worked out</a>.</li>
+  <li><strong>Fewer mulberries, or fewer hazelnuts.</strong> This pattern plants <span data-m="mulberries"></span> mulberries (<span data-m="mulberriesNow"></span> now; <span data-m="mulberryNote"></span>) and <span data-m="hazels"></span> hazelnuts (<span data-m="hazelsNow"></span> now; <span data-m="hazelNote"></span>).</li>
+  <li><strong>Tighter work space.</strong> With no walking lane, mulberries are pruned and hazelnuts picked from the <span data-m="pickLane"></span> ft pick lane or from the alley side. That takes a person and a cart, not a mower.</li>
+  <li><strong>Shade and snow on the berries.</strong> The row throws afternoon shade on them: about <span data-m="berryKept"></span> of the season's sun reaches the berry row. West winds drop their drifts just east of the row, over the berries and the alley, as the water plan already expects for the hazelnut row.</li>
+</ul>
+</section>
+<section>
+<h3>What else it touches</h3>
+<ul>
+  <li><strong>The water plan.</strong> Zone 9 makes the walking lane a sunken wood-chip path between the two rows; here that job moves to the pick lane. Zone 8's water bars turn water west into the hazelnut row, which becomes the guild row, and zone 7's drifts land on the berry row. See the <a href="orchard_water_harvesting_plan.html">water-harvesting plan</a>.</li>
+  <li><strong>The income page.</strong> It counts <span data-m="mulberriesNow"></span> mulberries and <span data-m="hazelsNow"></span> hazelnuts; see <a href="homestead_income.html">crop and producer income</a>.</li>
+  <li><strong>The wind.</strong> No wind has been measured at the lot, and the stations disagree about winter wind direction. A west windbreak, in either layout, is a bet that the winter wind blows from the west; the <a href="site_baselines.html">site baselines</a> say to wait for a year of weather-station readings.</li>
+</ul>
+</section>
+<section>
+<h3>Decisions for you</h3>
+<ul>
+  <li><strong>Which pattern.</strong> A keeps the most mulberries but gives the hazelnuts the least light. C gives the hazelnuts the most light and uses the fewest mulberries. B sits between. Choose above and the figures redraw.</li>
+  <li><strong>Where the berries go.</strong> The figures move all of them to the front row. Splitting them, some here and some around the C1 trees, leaves places open in the row; keep the honeyberries together wherever they go. Comfrey, rhubarb, and the brambles are <a href="#other-plants">left out of the row</a>.</li>
+  <li><strong>How firmly you will prune.</strong> The numbers above assume the plan's pruning. A mulberry left to spread costs the hazelnuts far more in the guild row than in two rows.</li>
+</ul>
+</section>
+</div>
+
+<div class="footer">The current plan is read from <code>data/orchard.json</code> through the orchard model (<code>data/orchard_model.js</code>), so the left-hand figures follow the data. The proposal's own choices, a <span data-m="step"></span> ft step along the row, a <span data-m="pickLane"></span> ft pick lane, and a <span data-m="berryWidth"></span> ft berry row, are in <code>windbreak_guild_model.js</code>. Josta grows 5–8 ft tall and wide (cultivar library). Widths are the managed widths the plan already uses: mulberry <span data-m="mulberryWidth"></span> ft, hazelnut <span data-m="hazelWidth"></span> ft.</div>
+
+<script src="data/orchard_model.js"></script>
+<script src="windbreak_guild_model.js"></script>
+<script src="windbreak_guild_draw.js"></script>
+<script src="windbreak_guild_page.js"></script>
+<script>WindbreakGuildPage.mockup();</script>
+</body>
+</html>
