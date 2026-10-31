@@ -37,6 +37,27 @@ test('The unheated four-layer tunnels are given a longer shoulder than the outdo
   assert.match(read('pit_greenhouse_plan.html'), /four-layer polycarbonate/);
 });
 
+test('The Finch-style option is a 96 ft reconstruction and does not hold a January night on tubes alone', () => {
+  const g = G.finchGeometry();
+  const heat = G.finchHeat();
+  assert.equal(G.FINCH.length, 96);
+  assert.equal(G.FINCH.width, 17);
+  assert.equal(g.bays, 16);
+  assert.equal(g.tubes, 16);
+  assert.equal(g.pipeFt, 4000);
+  assert.ok(Math.abs(g.run + g.northCap - 17) < 1e-9, 'the glass run and the north cap fill the 17 ft width');
+  assert.equal(g.rockClear, 2);
+  assert.ok(heat.soil.januaryLow < heat.balanceOut, 'an average January night is colder than the tube balance point');
+  assert.ok(heat.lossAtRecord > 70000 && heat.lossAtRecord < 80000, 'the record-night load stays inside the 80,000 BTU/hr heater step');
+  const page = read('finch_greenhouse_plan.html');
+  assert.match(page, /id="verdict-heading"/);
+  assert.match(page, /not a copy of the Greenhouse in the Snow build manual/);
+  assert.match(page, /id="s-eq"/);
+  assert.match(read('greenhouse_model.js'), /march-equinox/);
+  assert.match(read('greenhouse_model.js'), /september-equinox/);
+  assert.match(read('site_nav.js'), /finch_greenhouse_plan\.html/);
+});
+
 test('The master grid page draws both greenhouses dashed with the other planned buildings', () => {
   const page = read('site_master_grid.html');
   assert.match(page, /\['house', 'garage', 'workshop', 'greenhouse_gothic', 'greenhouse_gothic_east', 'greenhouse_pit'\]\.forEach\(id => box\(F\(id\), \{[^}]*'stroke-dasharray'/);

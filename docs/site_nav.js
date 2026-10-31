@@ -17,7 +17,8 @@ window.SITE_NAV = /* BEGIN SITE_NAV JSON */
     {"id": "greenhouses", "label": "Greenhouses", "items": [
       {"href": "greenhouse_site_plan.html", "label": "Greenhouse site plan"},
       {"href": "gothic_greenhouse_plan.html", "label": "Gothic tunnel, 27 \u00d7 76 ft"},
-      {"href": "pit_greenhouse_plan.html", "label": "Pit greenhouse, 20 \u00d7 36 ft"}
+      {"href": "pit_greenhouse_plan.html", "label": "Pit greenhouse, 20 \u00d7 36 ft"},
+      {"href": "finch_greenhouse_plan.html", "label": "Finch-style pit, 17 \u00d7 96 ft"}
     ]},
     {"id": "workshop", "label": "Workshop", "items": [
       {"href": "workshop_pole_barn.html", "label": "Workshop pole barn, 32 \u00d7 48 ft"},

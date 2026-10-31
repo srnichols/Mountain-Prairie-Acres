@@ -1,4 +1,4 @@
-// Shared numbers, geometry, and drawings for the three greenhouse pages: the site plan, the gothic tunnel, and the pit greenhouse.
+// Shared numbers, geometry, and drawings for the greenhouse pages: the site plan, the gothic tunnel, the pit greenhouse, and the Finch-style option.
 // The pages take every figure from the constants and functions below, so their text, tables, and drawings cannot drift apart.
 // Load data/site_grid.js, data/site_terrain.js, and data/site_climate.js first. This file is ASCII only; \u escapes stand for the symbols.
 (function (root) {
@@ -93,6 +93,18 @@ BERM.wallLength = PIT.length + Math.PI * BERM.run + 2 * BERM.top;   // along the
 const SECTION_X = GOTHIC.centerX;      // the north-south section is cut along the tunnel's middle line, which is also the pit's
 
 const SOIL = { frostIn: 30, boundaryIn: 42, rockFt: 10 };        // county frost depth, clay loam over sandy loam (NRCS), rock depth (owner's note)
+// An independent 17 x 96 ft reconstruction of the published Greenhouse in the Snow kit, for comparison with the unheated pit.
+// Published and used as published: width, length, 6 ft bays, floor about 4 ft down (their later 1.2 m figure; an older article said 5 ft),
+// 4 in tubes buried 8 ft with about 200 ft of a 250 ft loop in the ground, and one loop per 6 ft of length (13 loops on the published 78 ft house).
+// Our choices, because they have not published them: the 45 degree south slope, the 14 ft sheet run up that slope, the north insulated cap, the bed widths, and the trench spacing.
+const FINCH = {
+  length: 96, width: 17, bay: 6, floor: 4, eave: 1.5, tiltDeg: 45, sheetSlope: 14, sheetWidthIn: 71.25,
+  northStrip: 2, northBed: 4, walk: 3, southBed: 4.5, airlock: 6, eastBay: 6,
+  capPitch: 2 / 12, wallR: 15, capR: 30, glazingR: 1.7, ach: 0.5,
+  tubeLoopsPerBay: 1, tubeTotal: 250, tubeBuried: 200, tubeDepth: 8, tubeDiameterIn: 4, trenchSpacing: 6, trenchWidth: 2,
+  velocityFpm: 400, effectiveness: 0.6, targetF: 35, designNightF: -20, recordNightF: -32,
+  kitUsdPerFt: 220, liquidUsd: 7699, sheetUsd: 307, blowerUsd: 845, boxUsd: 378
+};
 const CUT = { type: { A: 0.75, B: 1, C: 1.5 } };                 // OSHA Appendix B: feet across for each foot of depth
 
 /* ---------- small helpers ---------- */
@@ -1085,11 +1097,206 @@ function pitSeason() {
   };
 }
 
+// Derived geometry for the Finch-style house. The 14 ft sheet is the catalog roof panel; at 45 degrees it cannot span 17 ft, so the north part of the width is an insulated cap.
+function finchGeometry() {
+  const F = FINCH, tilt = F.tiltDeg * D2R;
+  const run = F.sheetSlope * Math.cos(tilt), rise = F.sheetSlope * Math.sin(tilt), northCap = F.width - run;
+  if (!(northCap > 1)) throw new Error('The glazed slope does not leave room for the north cap');
+  const capRise = northCap * F.capPitch, ridge = F.eave + rise, northTop = ridge + capRise;
+  const bays = F.length / F.bay;
+  if (bays !== Math.round(bays)) throw new Error('Finch length is not a whole number of bays');
+  const tubes = bays * F.tubeLoopsPerBay;
+  const southLow = F.width - F.northStrip - F.northBed - F.walk - F.southBed;
+  if (!(southLow > 0)) throw new Error('Finch beds and walks overrun the width');
+  const hN = northTop + F.floor, hRidge = ridge + F.floor, hS = F.eave + F.floor;
+  const capPlan = northCap, glassPlan = run;
+  const section = capPlan * (hN + hRidge) / 2 + glassPlan * (hRidge + hS) / 2;
+  const capSlope = Math.hypot(northCap, capRise);
+  const growing = F.length - F.airlock - F.eastBay;
+  const stair = (function () {
+    const dropIn = F.floor * 12, steps = Math.ceil(dropIn / 7.75);
+    return { steps, riseIn: dropIn / steps, treadIn: 10, runFt: (steps - 1) * 10 / 12 };
+  })();
+  return {
+    run, rise, northCap, capRise, capSlope, ridge, northTop, bays, tubes, southLow, hN, hRidge, hS, section,
+    aboveGrade: section - F.width * F.floor, volume: section * F.length, yGlass: northCap, growing,
+    pipeFt: tubes * F.tubeTotal, buriedFt: tubes * F.tubeBuried, sheets: bays,
+    glazingSqFt: bays * F.bay * F.sheetSlope, bedSqFt: growing * (F.northBed + F.southBed),
+    trenchCount: tubes, trenchLength: F.tubeBuried / 2, fieldWidth: (tubes - 1) * F.trenchSpacing,
+    rockClear: SOIL.rockFt - F.tubeDepth, stair
+  };
+}
+// Deep-soil temperature estimated from the Prairie SNOTEL monthly means. Not a measured soil temperature.
+function finchSoilF() {
+  const station = root.SiteClimate.data.sources.find(item => item.id === 'snotel-prairie') || root.SiteClimate.data.sources[0];
+  const monthly = station.temperature.high_f.map((high, i) => (high + station.temperature.low_f[i]) / 2);
+  return { mean: monthly.reduce((sum, value) => sum + value, 0) / monthly.length, januaryLow: station.temperature.low_f[0], monthly };
+}
+// Steady-state check: conduction plus infiltration against closed-loop tubes. Assumptions live on FINCH and are named in the return.
+function finchHeat(glazingR = FINCH.glazingR) {
+  const g = finchGeometry(), F = FINCH, soil = finchSoilF();
+  const parts = [
+    ['South glazing', g.glazingSqFt, 1 / glazingR],
+    ['North cap', g.capSlope * F.length, 1 / F.capR],
+    ['North wall above grade', F.length * g.northTop, 1 / F.wallR],
+    ['South knee above grade', F.length * F.eave, 1 / F.wallR],
+    ['End walls above grade', 2 * g.aboveGrade, 1 / F.wallR]
+  ];
+  const ua = parts.reduce((sum, part) => sum + part[1] * part[2], 0);
+  const inf = 0.018 * F.ach * g.volume;
+  const lossPerDegree = ua + inf;
+  const pipeArea = Math.PI * Math.pow(F.tubeDiameterIn / 24, 2);
+  const cfm = pipeArea * F.velocityFpm * g.tubes;
+  const tubePerDegree = 1.08 * cfm * F.effectiveness;
+  const tubeAtTin = tubePerDegree * (soil.mean - F.targetF);
+  const lossAt = night => lossPerDegree * (F.targetF - night);
+  return {
+    g, soil, parts, ua, inf, lossPerDegree, cfm, tubePerDegree, tubeAtTin, glazingR,
+    lossAtDesign: lossAt(F.designNightF), lossAtRecord: lossAt(F.recordNightF),
+    balanceOut: F.targetF - tubeAtTin / lossPerDegree
+  };
+}
+
+/* ---------- Figure: Finch-style floor plan, north up ---------- */
+function finchPlan(host) {
+  const F = FINCH, g = finchGeometry(), L = F.length, W = F.width;
+  const cv = canvas({ u0: -8, u1: L + 14, v0: -8, v1: W + 8, scale: 8.2, margin: { l: 8, r: 8, t: 8, b: 8 },
+    title: `Floor plan of the Finch-style greenhouse, ${L} by ${W} feet, north up: airlock, beds, walk, north blower strip, south glazing, and the east exit.` });
+  const { defs, line, rect, text } = cv;
+  defs.append(hatchPattern('fn-hatch', '#A8906A', 7), arrowMarker('fn-arrow', C.flag));
+  const label = (u, v, str, cls = '', size = 12, extra = {}) => text(u, v, str, { class: `halo ${cls}`.trim(), 'font-size': size, ...extra });
+  const yBedN = F.northStrip, yWalk = yBedN + F.northBed, yBedS = yWalk + F.walk, yLow = yBedS + F.southBed;
+  rect(0, 0, L, g.yGlass, { fill: '#E7E4DC' });
+  rect(0, g.yGlass, L, W, { fill: C.glassFill, stroke: C.glass, 'stroke-width': 1.2 });
+  rect(F.airlock, yBedN, L - F.eastBay, yWalk, { fill: C.bed, opacity: 0.9, stroke: '#4F7A34', 'stroke-width': 1 });
+  rect(F.airlock, yBedS, L - F.eastBay, yLow, { fill: C.bed, opacity: 0.9, stroke: '#4F7A34', 'stroke-width': 1 });
+  rect(F.airlock, yWalk, L - F.eastBay, yBedS, { fill: C.walk });
+  rect(0, 0, F.airlock, W, { fill: '#F3E6D4', stroke: C.flag, 'stroke-width': 1.4 });
+  rect(L - F.eastBay, 0, L, W, { fill: '#F7F1E6', stroke: C.ink, 'stroke-width': 1 });
+  rect(0, 0, L, F.northStrip, { fill: '#D5DDE3' });
+  rect(0, yLow, L, W, { fill: C.sink, opacity: 0.85 });
+  for (let i = 0; i <= g.bays; i++) line([[i * F.bay, 0], [i * F.bay, W]], { stroke: 'rgba(60,60,60,0.25)', 'stroke-width': 0.8 });
+  line([[1.2, W - 1.2], [4.6, W - 1.2]], { stroke: C.flag, 'stroke-width': 1.6, 'marker-end': 'url(#fn-arrow)' });
+  rect(-1.6, 6.2, 0, 9.2, { fill: '#fff', stroke: C.flag, 'stroke-width': 1.5 });
+  rect(L, 6.2, L + 1.5, 9.2, { fill: '#fff', stroke: C.flag, 'stroke-width': 1.5 });
+  line([[L + 1.5, 7.7], [L + 6.2, 7.7]], { stroke: C.flag, 'stroke-width': 1.4, 'marker-end': 'url(#fn-arrow)' });
+  label(L + 6.4, 6.6, 'east stair', 't-warn', 10);
+  label(L + 6.4, 8.2, 'well, outside', 't-warn', 10);
+  label(F.airlock / 2, 3.2, 'AIRLOCK', 't-warn', 11, { 'text-anchor': 'middle' });
+  label(F.airlock / 2, 5, 'door at grade,', 't-note', 10, { 'text-anchor': 'middle' });
+  label(F.airlock / 2, 6.5, 'stair down', 't-note', 10, { 'text-anchor': 'middle' });
+  label(L / 2, 1, 'blowers and manifold', 't-water', 11, { 'text-anchor': 'middle' });
+  label(L / 2, yBedN + F.northBed / 2, `north bed, ${F.northBed} ft, under the cap`, 't-b', 12, { 'text-anchor': 'middle' });
+  label(L / 2, yWalk + F.walk / 2 + 0.3, `walk ${F.walk} ft`, 't-note', 11, { 'text-anchor': 'middle' });
+  label(L / 2, yBedS + F.southBed / 2, `south bed, ${F.southBed} ft, under the glass`, 't-b', 12, { 'text-anchor': 'middle' });
+  label(L / 2, yLow + southCenter(F, yLow, W), `low zone ${fmt(g.southLow, 1)} ft`, 't-note', 11, { 'text-anchor': 'middle' });
+  label(L / 2, -3.2, 'insulated north cap above this strip; tube field is north of the wall', 't-earth', 12, { 'text-anchor': 'middle' });
+  label(L / 2, g.yGlass + 1.3, 'glazing starts', 't-glass', 11, { 'text-anchor': 'middle' });
+  rect(0, 0, L, W, { fill: 'none', stroke: '#4A3320', 'stroke-width': 2.4 });
+  dimH(cv, 0, L, W + 2.4, `${L} ft east to west, ${g.bays} bays of ${F.bay} ft`, 12);
+  dimV(cv, -2.2, 0, W, `${W} ft`, 12, 'left');
+  cv.add(svgNode('path', { d: `M${cv.X(-5.5)},${cv.Y(4)}L${cv.X(-4.4)},${cv.Y(1.4)}L${cv.X(-5.5)},${cv.Y(2.1)}L${cv.X(-6.6)},${cv.Y(1.4)}Z`, fill: C.ink }));
+  label(-5.5, 5.6, 'N', 't-b', 13, { 'text-anchor': 'middle' });
+  host.replaceChildren(cv.svg);
+}
+function southCenter(F, yLow, W) { return (W - yLow) / 2; }
+
+/* ---------- Figure: Finch-style section, north on the left ---------- */
+function finchSection(host) {
+  const F = FINCH, g = finchGeometry();
+  const u0 = -18, u1 = F.width + 20, v0 = -SOIL.rockFt - 2.2, v1 = g.northTop + 5.4;
+  const cv = canvas({ u0, u1, v0, v1, scale: 16, up: true, margin: { l: 8, r: 8, t: 8, b: 8 },
+    title: 'North-south section of the Finch-style greenhouse, looking east, one scale, with noon sun at the winter solstice, the equinox, and the summer solstice.' });
+  const { defs, line, poly, text } = cv;
+  defs.append(arrowMarker('fs-sun', C.sun));
+  const label = (u, v, str, cls = '', size = 12, extra = {}) => text(u, v, str, { class: `halo ${cls}`.trim(), 'font-size': size, ...extra });
+  poly([[u0, 0], [u1, 0], [u1, v0], [u0, v0]], { fill: C.soil });
+  line([[u0, -SOIL.frostIn / 12], [u1, -SOIL.frostIn / 12]], { stroke: C.water, 'stroke-width': 1.1, 'stroke-dasharray': '2 3' });
+  line([[u0, -SOIL.rockFt], [u1, -SOIL.rockFt]], { stroke: '#6E6E68', 'stroke-width': 1.5, 'stroke-dasharray': '10 4' });
+  line([[u0, -F.tubeDepth], [0, -F.tubeDepth]], { stroke: C.water, 'stroke-width': 2.2 });
+  cv.circle(-4, -F.tubeDepth, 0.22, { fill: C.water });
+  poly([[0, -F.floor], [F.width, -F.floor], [F.width, F.eave], [g.run ? F.width - g.run : g.yGlass, g.ridge], [0, g.northTop]], { fill: 'rgba(255,255,255,0.55)', stroke: 'none' });
+  poly([[0, g.northTop], [g.northCap, g.ridge], [g.northCap, -F.floor], [0, -F.floor]], { fill: '#E7E4DC', stroke: C.earthEdge, 'stroke-width': 1.3 });
+  line([[g.northCap, g.ridge], [F.width, F.eave]], { stroke: C.glass, 'stroke-width': 3 });
+  line([[0, -F.floor], [0, g.northTop]], { stroke: C.wall, 'stroke-width': 2.4 });
+  line([[F.width, -F.floor], [F.width, F.eave]], { stroke: C.wall, 'stroke-width': 2.4 });
+  line([[0, -F.floor], [F.width, -F.floor]], { stroke: C.walk, 'stroke-width': 2 });
+  const bedN0 = F.northStrip, bedN1 = bedN0 + F.northBed, walk1 = bedN1 + F.walk, bedS1 = walk1 + F.southBed;
+  poly([[bedN0, -F.floor], [bedN1, -F.floor], [bedN1, -F.floor + 2], [bedN0, -F.floor + 2]], { fill: C.bed, opacity: 0.85, stroke: '#4F7A34', 'stroke-width': 1 });
+  poly([[walk1, -F.floor], [bedS1, -F.floor], [bedS1, -F.floor + 2], [walk1, -F.floor + 2]], { fill: C.bed, opacity: 0.85, stroke: '#4F7A34', 'stroke-width': 1 });
+  const person = bedN1 + F.walk / 2;
+  line([[person, -F.floor], [person, -F.floor + 4.6], [person - 0.7, -F.floor + 3.3], [person, -F.floor + 4.6], [person + 0.7, -F.floor + 3.3], [person, -F.floor + 2.4], [person - 0.45, -F.floor], [person, -F.floor + 2.4], [person + 0.45, -F.floor]], { stroke: '#555', 'stroke-width': 1.6 });
+  cv.circle(person, -F.floor + 5.15, 0.28, { fill: 'none', stroke: '#555', 'stroke-width': 1.6 });
+  // Noon sun at the winter low, the equinox, and the summer high, from the climate page. Rays travel north (left) and down.
+  // Spring and fall are the same noon height at this latitude, so they share one line unless the climate data says otherwise.
+  const noonDate = id => root.SiteClimate.data.daylight.key_dates.find(item => item.id === id);
+  const shortDate = iso => {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const parts = iso.split('-');
+    return `${months[Number(parts[1]) - 1]} ${Number(parts[2])}`;
+  };
+  const winter = noonDate('december-solstice'), spring = noonDate('march-equinox'), fall = noonDate('september-equinox'), summer = noonDate('june-solstice');
+  const equinoxSame = Math.abs(spring.noon_altitude_deg - fall.noon_altitude_deg) < 0.15;
+  const rays = [
+    { item: winter, name: shortDate(winter.date), t: 0.8, len: 10 },
+    { item: spring, name: equinoxSame ? `${shortDate(spring.date)} and ${shortDate(fall.date)}` : shortDate(spring.date), t: 0.48, len: 7.8 },
+    { item: summer, name: shortDate(summer.date), t: 0.18, len: 5.8 }
+  ];
+  if (!equinoxSame) rays.splice(2, 0, { item: fall, name: shortDate(fall.date), t: 0.62, len: 7.2 });
+  rays.forEach(ray => {
+    const alt = ray.item.noon_altitude_deg, a = alt * D2R, tan = Math.tan(a);
+    const hitU = g.northCap + ray.t * g.run, hitV = g.ridge - ray.t * g.rise;
+    const tail = [hitU + ray.len * Math.cos(a), hitV + ray.len * Math.sin(a)];
+    line([tail, [hitU, hitV]], { stroke: C.sun, 'stroke-width': 1.8, 'marker-end': 'url(#fs-sun)' });
+    let landU = hitU - (hitV + F.floor) / tan, landV = -F.floor;
+    if (landU < 0) { landU = 0; landV = hitV - hitU * tan; }
+    line([[hitU, hitV], [landU, landV]], { stroke: C.sun, 'stroke-width': 1.3, 'stroke-dasharray': '4 3' });
+    cv.circle(landU, landV, 0.16, { fill: C.sun });
+    label(tail[0] + 0.4, tail[1] + 0.45, `${ray.name} noon, ${fmt(alt, 1)}${SYM.deg}`, 't-sun', 11, { 'text-anchor': 'start' });
+  });
+  label(-10, -F.tubeDepth + 0.7, 'tubes, 8 ft', 't-water', 11);
+  label(u0 + 0.4, -SOIL.rockFt - 0.7, 'rock about 10 ft (basalt under the Simonton soil)', 't-note', 11);
+  label(g.northCap / 2, g.ridge + 0.8, 'insulated cap', 't-earth', 11, { 'text-anchor': 'middle' });
+  label(g.northCap + g.run / 2, g.ridge - g.rise / 2 + 1.4, '8 mm twin-wall', 't-glass', 11, { 'text-anchor': 'middle' });
+  label(F.width / 2, -F.floor - 1.1, 'floor 4 ft below grade', 't-note', 11, { 'text-anchor': 'middle' });
+  dimV(cv, -1.3, 0, -F.floor, '4 ft', 11, 'left');
+  dimV(cv, -4.6, -F.floor, g.northTop, `${fmt(g.hN, 1)} ft`, 12, 'left');
+  label(-4.6, g.northTop + 0.15, `${fmt(g.northTop, 1)} ft above grade`, 't-b', 11, { 'text-anchor': 'end' });
+  dimV(cv, F.width + 1.3, 0, F.eave, `${fmt(F.eave, 1)} ft`, 11, 'right');
+  dimH(cv, 0, F.width, -F.floor - 2.4, `${F.width} ft`, 12, true);
+  callout(cv, 1, 2.2, g.northTop + 1.5, g.northCap / 2, g.ridge + 0.3);
+  callout(cv, 2, g.northCap + 2.4, g.ridge + 1.5, g.northCap + g.run * 0.55, g.ridge - g.rise * 0.55);
+  callout(cv, 3, -6, -F.tubeDepth - 1.2, -4, -F.tubeDepth);
+  host.replaceChildren(cv.svg);
+}
+
+/* ---------- Figure: tube field north of the house ---------- */
+function finchTubes(host) {
+  const F = FINCH, g = finchGeometry();
+  const cv = canvas({ u0: -8, u1: F.length + 8, v0: -g.trenchLength - 8, v1: F.width + 6, scale: 5.4, margin: { l: 8, r: 8, t: 8, b: 8 },
+    title: `Tube field for the Finch-style greenhouse: ${g.tubes} closed loops north of the house, each about ${g.trenchLength} ft out and back, buried ${F.tubeDepth} ft.` });
+  const { line, rect, text } = cv;
+  const label = (u, v, str, cls = '', size = 12, extra = {}) => text(u, v, str, { class: `halo ${cls}`.trim(), 'font-size': size, ...extra });
+  rect(0, 0, F.length, F.width, { fill: C.glassFill, stroke: '#4A3320', 'stroke-width': 2 });
+  label(F.length / 2, F.width / 2, 'greenhouse, glass to the south', 't-b', 13, { 'text-anchor': 'middle' });
+  const x0 = (F.length - g.fieldWidth) / 2;
+  for (let i = 0; i < g.tubes; i++) {
+    const x = x0 + i * F.trenchSpacing;
+    line([[x, -1.2], [x, -g.trenchLength], [x + 1.2, -g.trenchLength], [x + 1.2, -1.2]], { stroke: C.water, 'stroke-width': 1.3 });
+  }
+  line([[8, -0.6], [F.length - 8, -0.6]], { stroke: '#2E4559', 'stroke-width': 2.4 });
+  label(F.length / 2, -g.trenchLength / 2, `${g.tubes} loops, ${F.trenchSpacing} ft apart`, 't-water', 13, { 'text-anchor': 'middle' });
+  label(F.length / 2, -3.6, 'manifold on the north wall', 't-water', 11, { 'text-anchor': 'middle' });
+  label(F.length / 2,  F.width + 2.4, 'south glazing', 't-glass', 12, { 'text-anchor': 'middle' });
+  dimV(cv, -3, 0, -g.trenchLength, `${fmt(g.trenchLength, 0)} ft`, 12, 'left');
+  host.replaceChildren(cv.svg);
+}
+
 root.Greenhouse = {
-  SYM, GOTHIC, ENDWALL, BEDS, PIT, BERM, SOIL, CUT, ARCH, SWELL, ORCHARD_EDGE_Y, R1_Y, SECTION_X, UPSLOPE_SQFT, ALLEY, SWALE, C,
+  SYM, GOTHIC, ENDWALL, BEDS, PIT, BERM, FINCH, SOIL, CUT, ARCH, SWELL, ORCHARD_EDGE_Y, R1_Y, SECTION_X, UPSLOPE_SQFT, ALLEY, SWALE, C,
   fmt, num, feet, clock, setText, svgNode, element, canvas, groundFt, site, latitude, declinationOf, sunPosition, shadowRow, bermOption, bermClearWindow, r1ShadeHours, beamShare,
   fitPlane, padCutFill, pitExcavation, bermVolume, bermOutline, openCut, wallToCut, swaleClearance, runoffInches, gallons, annualRainIn, endwallOpenings, endDoorSpan, bedLayout, bedOptions, archReach, roofRange,
-  siteMap, siteSection, pitPlan, pitSection, gothicSection, gothicEndwalls, gothicBeds, gothicBedSections, gothicPosts,
-  tunnelSeason, pitSeason, SUN_DATES
+  siteMap, siteSection, pitPlan, pitSection, finchPlan, finchSection, finchTubes, gothicSection, gothicEndwalls, gothicBeds, gothicBedSections, gothicPosts,
+  tunnelSeason, pitSeason, finchGeometry, finchSoilF, finchHeat, SUN_DATES
 };
 })(typeof window !== 'undefined' ? window : globalThis);

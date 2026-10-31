@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finch-Style Pit Greenhouse: 17 × 96 ft — Mountain Prairie Acres</title>
+<link rel="stylesheet" href="greenhouse.css">
+<style>
+  @page {
+    @bottom-left { content: "Mountain Prairie Acres - Finch-style greenhouse"; font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+  }
+  .key-list { font-size: 12px; padding-left: 0; list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 24px; margin: 6px 0 12px; }
+  .key-list li { margin: 3px 0; padding-left: 26px; position: relative; }
+  .key-list li b { position: absolute; left: 0; top: 0; width: 20px; height: 20px; border: 1.6px solid #8A3B12; border-radius: 50%; color: #8A3B12; font-size: 11.5px; line-height: 17px; text-align: center; }
+  @media (max-width: 860px) { .key-list { grid-template-columns: 1fr; } }
+  @media print { .key-list { font-size: 8pt; } .key-list li { padding-left: 6mm; } .key-list li b { width: 4.6mm; height: 4.6mm; font-size: 7pt; line-height: 4mm; } }
+</style>
+</head>
+<body>
+<script src="site_nav.js"></script>
+<nav class="home-link" aria-label="Back to the home page"><a href="index.html">← Mountain Prairie Acres — Orchard and Ranch Projects</a></nav>
+
+<div class="notice print-help" role="note"><strong>Print setup:</strong> Letter (8.5 × 11 in), portrait, 100% scale. Turn on background graphics and turn off the browser's headers and footers.</div>
+<noscript><div class="notice error">JavaScript is required to draw the figures and fill in the tables.</div></noscript>
+<div class="notice error" id="render-error" hidden></div>
+
+<section aria-labelledby="page-title">
+<h1 id="page-title">Finch-Style Pit Greenhouse: 17 × 96 ft</h1>
+<p class="subtitle">A closed-loop earth-tube house in the published Greenhouse in the Snow size, drawn so it can be priced against the unheated 20 × 36 ft pit · not sited, not ordered, and not engineered · a draft for review</p>
+<p class="source-note">This is an independent reconstruction, not a copy of the Greenhouse in the Snow build manual, joint plates, or catalog drawings. The published sizes used here are the 17 ft width, the 96 ft length, the 6 ft bays, a floor about 4 ft down, 4 in closed-loop tubes about 8 ft down, and 8 mm twin-wall sheets 14 ft by 71.25 in. Where they have not published a number, the page says it is our choice. The <a href="pit_greenhouse_plan.html">20 × 36 ft pit</a> remains the planned pit. This house is the other option. It is not on the <a href="site_master_grid.html">site master grid</a>.</p>
+
+<div class="notice ask"><strong>Read this before treating it as a build set.</strong> The roof has not been checked against the 120 lb/sq ft ground snow load used on this place. The rafter size is deliberately not given. Their original wood greenhouse in Alliance collapsed under 8 ft of snow in 2022. About 10 ft of Simonton soil sits on basalt here, so an 8 ft tube trench has about 2 ft of soil under it. Probe the rock before believing the tube field.</div>
+
+<h2>The Design in Brief</h2>
+<ul class="points">
+  <li><strong>Room:</strong> <span id="d-size"></span>, long axis east to west, glass facing south. Sixteen bays of 6 ft. The west bay is an airlock. The east bay is a work bay with the second exit. The middle <span id="d-grow"></span> ft is beds and a walk.</li>
+  <li><strong>Floor:</strong> one level, <span id="d-floor"></span> ft below grade. Raised beds sit 2 ft above that floor. Their later published figure is 1.2 m (about 4 ft). An older kit article said 5 ft. Four feet is used here so the post bottoms, 2 ft under the floor, stay clear of the rock.</li>
+  <li><strong>Roof:</strong> our choice, because they have not published the angle. A <span id="d-tilt"></span> south slope, one 14 ft sheet long, so there is no mid-slope joint. That slope covers <span id="d-run"></span> ft of the 17 ft width. The north <span id="d-cap"></span> ft is an insulated cap, pitched 2:12 to the north so it is not a flat pond. The south eave is <span id="d-eave"></span> ft above grade. The ridge is <span id="d-ridge"></span> ft above grade. The north wall is <span id="d-wall"></span> ft from the floor to its top, of which <span id="d-north"></span> ft stands above grade.</li>
+  <li><strong>Glazing:</strong> <span id="d-sheets"></span> sheets of 8 mm twin-wall, 14 ft by 71.25 in, one per bay, UV face out, flutes running down the slope. Ends taped: solid tape at the high end, vented tape at the low end, so the flutes drain and do not fill with algae. A typical rating for this sheet is about R-1.7. The tunnels' four-layer panel is R-2.2 and is a better night blanket, but it is not the sheet they publish for this house.</li>
+  <li><strong>Tubes:</strong> <span id="d-tubes"></span> closed loops of solid 4 in corrugated HDPE, scaled from their published 13 loops on a 78 ft house (one loop per 6 ft bay). Each loop is 250 ft, with about 200 ft buried 8 ft down and the rest in the risers. The field is north of the house: <span id="d-field"></span>. Not perforated drain tile. Joints sealed so the blowers cannot suck soil gas.</li>
+  <li><strong>Heat:</strong> the tubes run first. A propane unit heater is the backup, because on this lot the ground at depth is near <span id="d-soil"></span>, not the 52°F they quote for Alliance. The heater is sized to hold the room alone on a hard night, so a dead blower does not freeze it.</li>
+</ul>
+</section>
+
+<section aria-labelledby="verdict-heading">
+<h2 id="verdict-heading">What It Can Hold Here</h2>
+<p>Alliance sits near 42.1°N and about 3,900 ft. This lot is 43.47°N and about 4,750 ft. Their ground figure of 52°F does not travel. The Prairie SNOTEL monthly averages, high and low together, mean <span id="v-soil"></span>. Soil near 8 to 10 ft is usually close to that. It has not been measured here.</p>
+<p>Under the assumptions in the heat table, the tubes can hold <span id="v-tin"></span> inside only while the night stays above about <span id="v-balance"></span>. A normal January night here averages <span id="v-jan"></span>. The tubes do not carry that night. A night insulation blanket on the glass moves the balance only to about <span id="v-blanket"></span>. December 21 is a <span id="v-day"></span> hour day, under the 10 hours they say most plants need. Lights can stretch the day. They cannot make the ground warmer.</p>
+<ul class="points">
+  <li><strong>A fair job for this house:</strong> a bright winter workroom, and cool greens, with the propane heater carrying the nights below freezing outside. The tubes cut the hours the heater runs. They are not the heater.</li>
+  <li><strong>Not this house:</strong> citrus or other plants that want nights near 50°F, unless the heater and the lights run as a matter of course. Their own later notes recommend a backup heater. Finch used a small propane forced-air heater a few times in 23 years in Alliance. That climate is not this one, and that count is not a design load.</li>
+  <li><strong>Against the planned pit:</strong> the <a href="pit_greenhouse_plan.html">20 × 36 ft pit</a> is the start house and the late house, and it does not need an 8 ft trench in 10 ft of soil. This 96 ft house is the option only if winter work, and a real heater, are worth the tube field.</li>
+</ul>
+</section>
+
+<section class="page-break" aria-labelledby="plan-heading">
+<h2 id="plan-heading">Floor Plan</h2>
+<figure class="plot">
+  <figcaption>Figure 1. Floor plan, north up (inside the walls; the tube field is beyond the north wall)</figcaption>
+  <div id="finch-plan"></div>
+  <p class="caption-note">The pale band on the north is under the insulated cap. The blue band on the south is under the glass. Beds are green, the walk tan, the low south zone blue, the airlock marked in red. Bay lines are 6 ft. The east stair well is outside the 96 ft.</p>
+</figure>
+<p>From the north wall: a <span id="p-strip"></span> ft strip for the manifold, blowers, and the heater; a <span id="p-nbed"></span> ft north bed; a <span id="p-walk"></span> ft walk; a <span id="p-sbed"></span> ft south bed; then <span id="p-low"></span> ft under the low eave, where the roof is too low to stand and the cold air can settle. Beds stop at the airlock and at the east work bay. Bed soil is in raised boxes 2 ft above the floor, not left as a native bench the way the Oehler pit does it. Their finished houses are built that way: one floor, boxes on it.</p>
+</section>
+
+<section aria-labelledby="section-heading">
+<h2 id="section-heading">North–South Section</h2>
+<figure class="plot">
+  <figcaption>Figure 2. Section through the middle, looking east (north on the left), at one scale for distance and height</figcaption>
+  <div id="finch-section"></div>
+  <p class="caption-note">The ground is drawn flat. On the homestead it climbs about 2% to the south, so the south wall of a 17 ft house sits a few inches higher than the north wall. Orange arrows are solar noon on <span id="s-dec-date"></span> (<span id="s-dec"></span>), <span id="s-eq-date"></span> (<span id="s-eq"></span>), and <span id="s-jun-date"></span> (<span id="s-jun"></span>): the winter low, the spring and fall equinox, and the summer high, from the <a href="site_climate.html">climate page</a>. <span id="s-eq-note"></span> Dashed lines continue each ray to where it lands. They are drawn straight, before the sheet bends them. The person stands on the walk.</p>
+</figure>
+<ol class="key-list" aria-label="What the numbers on the section mean">
+  <li><b>1</b><span><strong>North wall:</strong> <span id="k-wall"></span> ft from the floor to the top, <span id="k-above"></span> ft of that above grade. The insulated cap over the north <span id="k-cap"></span> ft pitches 2:12 off that top. The cap is a roof and sees the snow load. The span is short, which is why it is buildable, but it is still not sized here.</span></li>
+  <li><b>2</b><span><strong>South glass:</strong> 45°, 14 ft of sheet, from a south eave <span id="k-eave"></span> ft above grade up to a ridge <span id="k-ridge"></span> ft above grade. At December noon this face catches about <span id="k-dec"></span> of the direct beam, at the equinox about <span id="k-eq"></span>, and at June noon about <span id="k-jun"></span>, before the sheet's own losses.</span></li>
+  <li><b>3</b><span><strong>Tubes:</strong> 8 ft down, north of the wall. Rock is about 10 ft down, so the trench bottom has about <span id="k-clear"></span> ft of soil under it if the rock is even. It will not be even.</span></li>
+</ol>
+<table class="detail" id="depths">
+  <caption>Heights, from original grade</caption>
+  <thead><tr><th>Item</th><th class="num">From original grade</th><th>Why it is there</th></tr></thead>
+  <tbody></tbody>
+</table>
+</section>
+
+<section class="page-break" aria-labelledby="tubes-heading">
+<h2 id="tubes-heading">The Tube Field</h2>
+<figure class="plot">
+  <figcaption>Figure 3. Closed loops north of the house (schematic; not a surveyed trench plan)</figcaption>
+  <div id="finch-tubes"></div>
+  <p class="caption-note">Each line is one loop: out 100 ft, a U-turn, and back in the same trench. Sixteen trenches at 6 ft centers fit under the length of the house and run 100 ft north. Six feet and the shared trench are our choices. They have not published the spacing.</p>
+</figure>
+<ul class="points">
+  <li><strong>Pipe:</strong> <span id="t-pipe"></span> ft of solid 4 in corrugated HDPE (<span id="t-buried"></span> ft of it in the ground). Smooth-wall pipe moves the same air with less friction if it can be had; the published material is corrugated, so that is the count.</li>
+  <li><strong>Slope and water:</strong> pitch each buried leg about 1% so condensate runs to a low point, and give that point a cleanout and a drain to its own dry well. Do not dump tube water into the beds. Standing water in a closed loop is how these pipes go sour.</li>
+  <li><strong>How to dig it:</strong> plan on type C soil until a competent person says otherwise, the same rule as the <a href="greenhouse_site_plan.html">site plan</a>. An 8 ft open cut at 1½:1 is about 26 ft wide at the top. Sixteen of those are one hole, not sixteen ditches. The practical dig is a trench shield, about 2 ft wide in the shield, or the air tubes are not dug. Shielded volume is about <span id="t-yd"></span> cu yd in the ground, and it all goes back as backfill except the pipe.</li>
+  <li><strong>Rock:</strong> stop if the probe finds basalt above 9 ft anywhere on the field. Switch to the liquid loop under the floor, described below, or drop this option.</li>
+  <li><strong>Blowers:</strong> their catalog sells a ½ hp, 115 V squirrel-cage blower per tube circuit, in a galvanized box, on a thermostat that spans 30 to 110°F. One per loop is 16 motors. That is a subpanel, not a spare breaker. A manifold with fewer blowers is simpler and is not what they publish; either way an electrician sizes the circuits. The heat table assumes about <span id="t-cfm"></span> cfm through all 16 loops together, which is 400 ft/min in a 4 in pipe. Faster air picks up less heat per pass.</li>
+  <li><strong>Controls:</strong> tube thermostat at 40°F, so the loops lead. Heater thermostat at 34°F, so propane fires only when the loops cannot hold the room. A winter/summer switch, which they sell, keeps the same fans from heating the house in July. Horizontal airflow fans, one every 20 to 25 ft, stop the ridge from stratifying. End vents stay shut in winter.</li>
+</ul>
+<h3>If the rock says no</h3>
+<p>Their short kits, and any long kit that sits in a high water table, use a liquid-to-air loop instead: nontoxic antifreeze in smaller trenches, through a coil and a fan, all inside the footprint. They do not publish the trench layout. For this lot the owner-build version is a closed propylene-glycol loop in trenches under the floor, bottom about 6 ft below grade (2 ft under the floor, about 4 ft above the rock if the rock is at 10 ft), headers in the north strip, a circulator, and a fan-coil. The coil size is not designed on this page. Their June 2026 catalog prices that hardware, shipped, at $<span id="t-liquid"></span> for a house 90 to 126 ft long. Buying that unit is a price check, not a requirement.</p>
+</section>
+
+<section aria-labelledby="build-heading">
+<h2 id="build-heading">Build Sequence</h2>
+<p>Stake nothing until the rock probe and the snow-load engineer have answered. The sequence below is the order of the work, not a permit.</p>
+<ol class="points">
+  <li><strong>Probe.</strong> Auger or dig test holes on the tube-field centerline and at both ends of the house, to 9 ft or to rock, whichever comes first. Call 811 before any of it. If rock is above 9 ft, do not lay out the air tubes.</li>
+  <li><strong>Stake.</strong> A 96 × 17 ft rectangle, long axis east to west, within a few degrees of true south. The glass faces south. Leave 100 ft clear to the north if the air tubes stay in the plan, plus room for the spoil. The east stair well adds about 4 × 8 ft outside the east wall.</li>
+  <li><strong>Strip and dig the pit</strong> to 4 ft below grade inside the walls. Set the subgrade so a 4 in collector in the gravel under the walk falls about 1% to a sump at the east end of the walk. Keep the brick walk itself nearly level. An open cut follows the type C slopes on the site plan unless it is shielded.</li>
+  <li><strong>Posts and shoring.</strong> Pressure-treated 6×6 posts on the perimeter, 6 ft on center along the long walls, bottoms 6 ft below grade (2 ft under the floor). Shore the cut with 2× boards and 6 mil polyethylene, the same method as the <a href="pit_greenhouse_plan.html">Oehler pit</a>. Corners are shared. End walls get posts at 6 ft and 12 ft off the north wall; the last bay on a 17 ft end is 5 ft.</li>
+  <li><strong>Drain and insulation at the perimeter.</strong> A 4 in perforated drain at the footing, to daylight or a dry well, not into the tube dry well. Two inches of extruded polystyrene (about R-10) on the outside of the shoring, from the floor to grade, and a 24 in horizontal wing at the bottom. This is our thickness. They sell perimeter insulation and do not publish the inches.</li>
+  <li><strong>Floor.</strong> Four inches of compacted gravel, then the collector and the sump, then pavers or brick when the shell is closed. No slab is required. Slope only the gravel.</li>
+  <li><strong>Walls above grade.</strong> A treated plate on the shoring. North wall and end walls: 2×6 at 16 in, R-21 batts, a taped warm-side vapor layer (6 mil poly or foil-faced foam) so greenhouse moisture does not soak the batts, then metal siding outside. The south knee is the same build, only <span id="b-eave"></span> ft above grade. The north wall from grade to its top is about <span id="b-north"></span> ft. A 4 ft retaining wall that carries this building is not clearly inside Elmore County's under-4-ft exemption, because the wall holds a surcharge. Read the county list before calling it exempt. The agricultural-building note on the <a href="greenhouse_site_plan.html#rules-heading">site plan</a> is the place to start, not a ruling.</li>
+  <li><strong>North cap and rafters.</strong> Frame the cap at 2:12, insulated to about R-30, metal roofing, overhang enough to drip clear of the wall. The south rafters carry the 45° glass. Do not pick them from a 30 or 40 lb snow table. The number used on this place is 120 lb/sq ft on the ground. A steep roof sheds snow better than the 27° pit roof, and it can also dump a slab of it in front of the south eave. An engineer sizes the rafters, the glazing bars, and the connections before any of that lumber is bought. Eight-millimeter twin-wall does not span 6 ft under that load by itself.</li>
+  <li><strong>Glaze.</strong> Sixteen sheets, UV face out, flutes downhill, high end taped solid, low end taped vented, seated in gasketed bars with rubber-backed washers. Do not cinch the washers flat. Leave the sheet room to move. A wind clip at each bar is worth adding on this site; they sell one for high-wind places.</li>
+  <li><strong>Doors and the second way out.</strong> West door at grade, into the airlock, then seven steps down to the floor (48 in of drop, <span id="b-rise"></span> in risers, 10 in treads, 5 ft of run). The stair runs across the width, not along the 6 ft bay, because a landing plus a 5 ft run will not fit in 6 ft end to end. Inner door at floor level. East door at floor level, opening into an exterior stair well with its own drain. A ladder is not the second exit.</li>
+  <li><strong>Tubes or liquid loop,</strong> then the blowers, the horizontal fans, and the end vents. One vent high in each end wall, thermostat-opened, pan sloped so it does not hold water. Summer cooling is a fan at one end and, if the house overheats, an evaporative pad at the other. Their catalog pairs those two and says the wall fans then need an adapter because they cannot sit in the wall. Winter vents stay shut.</li>
+  <li><strong>Heater.</strong> A vented propane unit heater of about <span id="b-heater"></span> BTU/hr, thermostat at 34°F, hung where the flame and the exhaust cannot touch poly or a bed. That size covers the record-night load in the table, not just a mild night. Set it after the tube thermostat, not instead of a CO alarm.</li>
+  <li><strong>Close the shell before a hard night.</strong> Their original house, once the roof failed, was below zero inside within a day or two. This design stores hours, not a week.</li>
+</ol>
+</section>
+
+<section class="page-break" aria-labelledby="heat-heading">
+<h2 id="heat-heading">Heat Balance</h2>
+<p>This is a steady-state check, not a simulation. It is here so the propane heater is not a surprise. Conduction uses the areas below. Infiltration is <span id="q-ach"></span> air changes an hour, which is a tight house; a leaky door doubles that line. The tubes are credited only for air that enters at <span id="q-tin"></span> and leaves partway to the <span id="q-soil"></span> soil, at the effectiveness named in the table. Below-grade walls are left out of the loss: if the perimeter foam is in place, that soil is warmer than the room we are trying to hold, so it is a small gain, not a night loss. Skip the foam and this table is optimistic.</p>
+<table class="detail" id="heat-parts">
+  <caption>Loss at the design night, holding 35°F inside</caption>
+  <thead><tr><th>Surface</th><th class="num">Area</th><th class="num">U</th><th class="num">BTU/hr at the design night</th></tr></thead>
+  <tbody></tbody>
+  <tfoot><tr><td colspan="3">Design-night total, including infiltration</td><td class="num" id="heat-total"></td></tr></tfoot>
+</table>
+<table class="detail" id="heat-cases">
+  <caption>What the tubes can hold, and what the heater must cover</caption>
+  <thead><tr><th>Case</th><th class="num">Outside</th><th class="num">Load to hold 35°F</th><th>Tubes</th></tr></thead>
+  <tbody></tbody>
+</table>
+<p>Glazing is most of the loss. Doubling its R-value at night, with a blanket, cuts the design-night load to about <span id="q-blanket"></span> BTU/hr and still does not make January free. Five times the tube heat assumed here still leaves the balance near 20°F, short of the January average low. The 45° glass is the right December collector — it takes about <span id="q-dec"></span> of the noon beam, against about <span id="q-dec27"></span> for the planned pit's 27° roof — and it is also the radiator. That is the trade.</p>
+</section>
+
+<section aria-labelledby="qty-heading">
+<h2 id="qty-heading">Quantities and a Price Check</h2>
+<table class="detail" id="quantities">
+  <caption>Counts taken off this reconstruction</caption>
+  <thead><tr><th>Item</th><th class="num">Amount</th><th>Basis</th></tr></thead>
+  <tbody></tbody>
+</table>
+<p>Their June 2026 catalog, read for this page on October 29, 2026, prices a 54 to 150 ft kit at $<span id="c-rate"></span> a lineal foot, frame and polycarbonate only. A 96 ft kit on that rate is $<span id="c-kit"></span>, before freight, tax, excavation, retaining, siding, insulation, doors, tubes, blowers, and the heater. They say a finished house costs about the same per square foot as a conventional permanent greenhouse. The difference they claim is the fuel bill. On this lot the fuel bill includes propane.</p>
+</section>
+
+<section aria-labelledby="compare-heading">
+<h2 id="compare-heading">Against the Planned Pit</h2>
+<table class="detail" id="compare">
+  <caption>Two pit options, same lot</caption>
+  <thead><tr><th>Item</th><th>20 × 36 ft Oehler pit</th><th>17 × 96 ft Finch-style</th></tr></thead>
+  <tbody></tbody>
+</table>
+</section>
+
+<section aria-labelledby="review-heading">
+<h2 id="review-heading">Items to Settle</h2>
+<div class="cards">
+  <div class="card pit"><h3>Where it would sit</h3><ul>
+    <li>Not in E14 and F14. That pad is the 20 × 36 ft pit. This house is 96 ft long, and the air-tube field wants about 100 ft to the north of that.</li>
+    <li>South glass must see December sun. Anything tall to the south, including a future berm, shades the collector the design depends on.</li>
+    <li>The east stair well and the tube-drain dry well need a place that is not the uphill swale.</li>
+  </ul></div>
+  <div class="card"><h3>Ground</h3><ul>
+    <li>Rock depth along the whole tube run, not one hole. Basalt at 10 ft is the owner's report and the soil survey's order of magnitude, not a trench log.</li>
+    <li>Water table unknown. Their liquid loop is the published answer for a high table. A floor 4 ft down cannot sit in the water either way.</li>
+    <li>A soil temperature at 8 ft, measured, would replace the <span id="r-soil"></span> estimate.</li>
+  </ul></div>
+  <div class="card"><h3>Structure and power</h3><ul>
+    <li>Rafters, glazing bars, and the north cap, checked at 120 lb/sq ft ground snow. No member size on this page is approved for construction.</li>
+    <li>Sixteen ½ hp motors, the vent fans, lights, and the heater need a subpanel. That load is not designed here.</li>
+    <li>Whether to buy their galvanized frame instead of building the wood walls above grade. The kit does not remove the excavation, the retaining, the tubes, or the engineer.</li>
+  </ul></div>
+  <div class="card pit"><h3>What "above freezing" costs</h3><ul>
+    <li>The heater, the CO alarm, and the propane are part of the design, not extras.</li>
+    <li>A night blanket is the cheapest way to cut the glazing loss. It is still not a substitute for the heater in January.</li>
+    <li>If the goal is only starts and a late tomato, build the <a href="pit_greenhouse_plan.html">20 × 36 ft pit</a> and stop.</li>
+  </ul></div>
+</div>
+</section>
+
+<section aria-labelledby="sources-heading">
+<h2 id="sources-heading">Sources</h2>
+<ul class="source-list">
+  <li>Greenhouse in the Snow, <a href="https://www.greenhouseinthesnow.com/greenhouse-kit-info">kit page</a> and the June 2026 sales catalog (linked from their quote page): 17 ft wide, 36 to 150 ft in 6 ft steps, 96 and 102 ft called the efficient lengths, $220 a foot for 54 to 150 ft, $272 a foot for 36 to 48 ft, short kits liquid-to-air only, galvanized frame, twin-wall polycarbonate with a 15-year warranty. Catalog prices for the liquid unit ($6,865.75 / $7,698.86 / $8,553.18 by length band, shipping included), the 8 mm sheet ($307, 14 ft by 71.25 in; their catalog says "8 mil" and labels the 0.98 in sheet "25 mil," so the unit is the millimeter), and the ½ hp blower ($844.99). Prices move. Read October 29, 2026.</li>
+  <li>Farm Show, the kit follow-up (aid 31586): a 78 × 17 ft house, 13 loops of 250 ft of 4 in pipe, about 200 ft of each buried 8 ft, floor 5 ft down, sized to stay above 28°F. The 16 loops on this page are that ratio applied to 96 ft, not a count they published for 96 ft. The floor here is 4 ft, from their later 1.2 m figure, not from that article.</li>
+  <li>Greenhouse in the Snow Europe, questions and answers (the same concept, metric): floor about 1.2 m down, tube ditch about 2.4 m, a conventional greenhouse cannot use the tubes because the glass loss is too great, backup heat recommended, a 30 m house called the favorite. That page is older than the current Alliance catalog.</li>
+  <li>University of Nebraska Omaha, Nebraska Business Development Center, September 13, 2023: the original Alliance greenhouse collapsed under 8 ft of snow in 2022 and the plants froze. Used here only as the snow-load warning.</li>
+  <li>This lot: <a href="site_climate.html">site climate</a> (latitude, December noon altitude 23.1°, day length 8.95 hours, January average low, SNOTEL monthly temperatures), <a href="site_baselines.html">site baselines</a> (30 in frost depth, 120 lb/sq ft ground snow), and the October 28, 2026 note that about 10 ft of Simonton soil covers basalt. Soil temperature at 8 ft is estimated from the SNOTEL monthly means. It is not a measurement.</li>
+  <li>The planned alternative: <a href="pit_greenhouse_plan.html">pit greenhouse, 20 × 36 ft</a>, and the excavation rules on the <a href="greenhouse_site_plan.html#rules-heading">site plan</a>.</li>
+</ul>
+</section>
+
+<div class="footer">Mountain Prairie Acres · Finch-style greenhouse · created October 29, 2026 · quantities are calculated from the design numbers in <code>greenhouse_model.js</code>; the design is a draft for review and has not been engineered.</div>
+
+<script src="data/site_grid.js"></script>
+<script src="data/site_terrain.js"></script>
+<script src="data/water_harvesting.js"></script>
+<script src="data/site_climate.js"></script>
+<script src="data/site_baselines.js"></script>
+<script src="greenhouse_model.js"></script>
+<script>
+(function () {
+  'use strict';
+  const errorBox = document.getElementById('render-error');
+  function fail(message) { errorBox.textContent = 'This page could not finish drawing: ' + message; errorBox.hidden = false; }
+  window.addEventListener('error', event => fail(event.message));
+  try { main(); } catch (error) { fail(error.message); }
+
+  function main() {
+    const G = window.Greenhouse;
+    const { FINCH: F, SYM, fmt } = G;
+    const g = G.finchGeometry(), heat = G.finchHeat(), blanket = G.finchHeat(F.glazingR * 2);
+    const T = G.setText, deg = SYM.deg;
+    const money = n => `$${Math.round(n).toLocaleString('en-US')}`;
+    const btu = n => `${fmt(n, 0)} BTU/hr`;
+    const cell = spec => {
+      const td = document.createElement('td');
+      if (spec !== null && typeof spec === 'object') { td.textContent = spec.t; if (spec.c) td.className = spec.c; }
+      else td.textContent = spec;
+      return td;
+    };
+    const fill = (id, rows) => {
+      const body = document.querySelector('#' + id + ' tbody');
+      rows.forEach(row => { const tr = document.createElement('tr'); row.forEach(spec => tr.append(cell(spec))); body.append(tr); });
+    };
+    const dates = window.SiteClimate.data.daylight.key_dates;
+    const noon = dates.find(item => item.id === 'december-solstice');
+    const spring = dates.find(item => item.id === 'march-equinox');
+    const fall = dates.find(item => item.id === 'september-equinox');
+    const june = dates.find(item => item.id === 'june-solstice');
+    const monthDay = iso => {
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const parts = iso.split('-');
+      return `${months[Number(parts[1]) - 1]} ${Number(parts[2])}`;
+    };
+    const sameEq = Math.abs(spring.noon_altitude_deg - fall.noon_altitude_deg) < 0.15;
+    const share = (tilt, alt) => `${fmt(G.beamShare(tilt, alt) * 100, 0)}%`;
+    const sizes = [60000, 80000, 100000, 125000];
+    const heater = sizes.find(n => n >= heat.lossAtRecord);
+    const shieldedYd = g.trenchCount * g.trenchLength * F.trenchWidth * F.tubeDepth / 27;
+    const posts = 17 + 17 + 4;
+    const kit = F.length * F.kitUsdPerFt;
+    const up = (v, digits = 1) => `${v < 0 ? SYM.minus : '+'}${fmt(Math.abs(v), digits)} ft`;
+
+    G.finchPlan(document.getElementById('finch-plan'));
+    G.finchSection(document.getElementById('finch-section'));
+    G.finchTubes(document.getElementById('finch-tubes'));
+
+    T({
+      'd-size': `${F.length} ft east to west by ${F.width} ft north to south`,
+      'd-grow': String(g.growing), 'd-floor': String(F.floor), 'd-tilt': `${fmt(F.tiltDeg, 0)}${deg}`,
+      'd-run': fmt(g.run, 1), 'd-cap': fmt(g.northCap, 1), 'd-eave': fmt(F.eave, 1),
+      'd-ridge': fmt(g.ridge, 1), 'd-north': fmt(g.northTop, 1), 'd-wall': fmt(g.hN, 1), 'd-sheets': String(g.sheets),
+      'd-tubes': String(g.tubes),
+      'd-field': `${g.tubes} trenches, ${F.trenchSpacing} ft on center, each ${fmt(g.trenchLength, 0)} ft long`,
+      'd-soil': `${fmt(heat.soil.mean, 0)}${deg}F`,
+      'v-soil': `${fmt(heat.soil.mean, 1)}${deg}F`, 'v-tin': `${F.targetF}${deg}F`,
+      'v-balance': `${fmt(heat.balanceOut, 0)}${deg}F`, 'v-jan': `${fmt(heat.soil.januaryLow, 0)}${deg}F`,
+      'v-blanket': `${fmt(blanket.balanceOut, 0)}${deg}F`, 'v-day': fmt(noon.day_length_hours, 1),
+      'p-strip': String(F.northStrip), 'p-nbed': String(F.northBed), 'p-walk': String(F.walk),
+      'p-sbed': String(F.southBed), 'p-low': fmt(g.southLow, 1),
+      'k-cap': fmt(g.northCap, 1), 'k-wall': fmt(g.hN, 1), 'k-above': fmt(g.northTop, 1), 'k-eave': fmt(F.eave, 1), 'k-ridge': fmt(g.ridge, 1),
+      'k-dec': share(F.tiltDeg, noon.noon_altitude_deg), 'k-eq': share(F.tiltDeg, spring.noon_altitude_deg), 'k-jun': share(F.tiltDeg, june.noon_altitude_deg), 'k-clear': fmt(g.rockClear, 0),
+      's-dec-date': monthDay(noon.date), 's-dec': `${fmt(noon.noon_altitude_deg, 1)}${deg}`,
+      's-eq-date': `${monthDay(spring.date)} and ${monthDay(fall.date)}`,
+      's-eq': sameEq ? `${fmt(spring.noon_altitude_deg, 1)}${deg}` : `${fmt(spring.noon_altitude_deg, 1)}${deg} and ${fmt(fall.noon_altitude_deg, 1)}${deg}`,
+      's-eq-note': sameEq ? 'Spring and fall noon are the same height here, so one line stands for both.' : 'Spring and fall noon differ, so each has its own line.',
+      's-jun-date': monthDay(june.date), 's-jun': `${fmt(june.noon_altitude_deg, 1)}${deg}`,
+      't-pipe': fmt(g.pipeFt, 0), 't-buried': fmt(g.buriedFt, 0), 't-yd': fmt(shieldedYd, 0),
+      't-cfm': fmt(heat.cfm, 0), 't-liquid': fmt(F.liquidUsd, 0),
+      'b-eave': fmt(F.eave, 1), 'b-north': fmt(g.northTop, 1), 'b-rise': fmt(g.stair.riseIn, 1),
+      'b-heater': fmt(heater, 0),
+      'q-ach': String(F.ach), 'q-tin': `${F.targetF}${deg}F`, 'q-soil': `${fmt(heat.soil.mean, 0)}${deg}F`,
+      'q-blanket': fmt(blanket.lossAtDesign, 0), 'q-dec': share(F.tiltDeg, noon.noon_altitude_deg),
+      'q-dec27': share(G.PIT.angleDeg, noon.noon_altitude_deg),
+      'c-rate': String(F.kitUsdPerFt), 'c-kit': fmt(kit, 0), 'r-soil': `${fmt(heat.soil.mean, 0)}${deg}F`,
+      'heat-total': btu(heat.lossAtDesign)
+    });
+
+    fill('depths', [
+      ['North wall, floor to top', up(g.hN), `${fmt(g.hN, 1)} ft of wall: ${fmt(g.northTop, 1)} ft above grade and ${F.floor} ft below.`],
+      ['North wall top, cap pitched 2:12', up(g.northTop), 'High side. Metal roofing over the insulated cap.'],
+      ['Ridge, where the glass meets the cap', up(g.ridge), `${fmt(g.rise, 1)} ft of rise in ${fmt(g.run, 1)} ft of run.`],
+      ['South eave', up(F.eave), 'High enough that a small drift does not bury the sheet. Snow will slide off a 45° face.'],
+      ['Original grade', up(0, 0), 'The door threshold on the west airlock.'],
+      ['Walk and bed-box floors', up(-F.floor, 0), 'One level. Boxes add 2 ft of soil above this.'],
+      ['Post bottoms', up(-F.floor - 2, 0), '2 ft under the floor, 4 ft above the reported rock.'],
+      ['Tube trench bottom', up(-F.tubeDepth, 0), `About ${fmt(g.rockClear, 0)} ft above the reported rock. This is the risky dig.`],
+      ['Reported rock', up(-G.SOIL.rockFt, 0), 'Basalt under about 10 ft of Simonton soil. Probe it.']
+    ].map(([a, b, c]) => [a, { t: b, c: 'num' }, c]));
+
+    const night = F.designNightF;
+    const dT = F.targetF - night;
+    fill('heat-parts', heat.parts.map(part => [
+      part[0], { t: `${fmt(part[1], 0)} sq ft`, c: 'num' }, { t: fmt(part[2], 2), c: 'num' },
+      { t: btu(part[1] * part[2] * dT), c: 'num' }
+    ]).concat([
+      ['Infiltration, 0.5 air changes an hour', { t: `${fmt(g.volume, 0)} cu ft`, c: 'num' }, { t: '—', c: 'num' }, { t: btu(heat.inf * dT), c: 'num' }]
+    ]));
+
+    const tubeNote = `About ${btu(heat.tubeAtTin)} if the soil is ${fmt(heat.soil.mean, 0)}${deg}F and the air picks up ${fmt(F.effectiveness * 100, 0)}% of the difference.`;
+    fill('heat-cases', [
+      ['Tubes alone, balance point', `${fmt(heat.balanceOut, 0)}${deg}F`, btu(heat.tubeAtTin), 'This is as cold as the tubes can hold 35°F, on these assumptions.'],
+      ['January average low', `${fmt(heat.soil.januaryLow, 0)}${deg}F`, btu(heat.lossPerDegree * (F.targetF - heat.soil.januaryLow)), tubeNote],
+      ['Design night', `${F.designNightF}${deg}F`, btu(heat.lossAtDesign), 'Heater territory. Tubes still run; they do not cover this.'],
+      ['Record night on the SNOTEL', `${F.recordNightF}${deg}F`, btu(heat.lossAtRecord), `The ${fmt(heater, 0)} BTU/hr heater is sized to this row.`]
+    ].map(([a, b, c, d]) => [a, { t: b, c: 'num' }, { t: c, c: 'num' }, d]));
+
+    fill('quantities', [
+      ['Floor', `${fmt(F.length * F.width, 0)} sq ft`, `${F.length} × ${F.width} ft, 4 ft below grade.`],
+      ['Growing beds', `${fmt(g.bedSqFt, 0)} sq ft`, `${g.growing} ft of north bed at ${F.northBed} ft and south bed at ${F.southBed} ft. Airlock and east bay excluded.`],
+      ['Roof sheets', `${g.sheets} sheets, ${fmt(g.glazingSqFt, 0)} sq ft`, `One 14 ft sheet per 6 ft bay. Catalog price ${money(F.sheetUsd)} each is ${money(g.sheets * F.sheetUsd)} before freight.`],
+      ['North cap', `${fmt(g.capSlope * F.length, 0)} sq ft of roof`, `${fmt(g.northCap, 1)} ft in plan, 2:12, about R-30.`],
+      ['Perimeter posts', `${posts} posts, 6×6, 8 ft`, 'Seventeen along each long wall, counting corners once, plus two intermediates on each end wall. Bottoms 6 ft below grade.'],
+      ['Tube pipe', `${fmt(g.pipeFt, 0)} ft`, `${g.tubes} × ${F.tubeTotal} ft. About ${fmt(g.buriedFt, 0)} ft is buried.`],
+      ['Tube excavation, shielded', `${fmt(shieldedYd, 0)} cu yd`, `${g.tubes} trenches, ${fmt(g.trenchLength, 0)} ft × ${F.trenchWidth} ft × ${F.tubeDepth} ft. An unshored type C cut is much wider.`],
+      ['Pit excavation', `${fmt(F.length * F.width * F.floor / 27, 0)} cu yd`, 'The 4 ft floor only, vertical. Cut slopes or a shield add to it.'],
+      ['Blowers, if one per loop', `${g.tubes} at ${money(F.blowerUsd)}, plus ${g.tubes} boxes at ${money(F.boxUsd)}`, `Catalog pattern, about ${money(g.tubes * (F.blowerUsd + F.boxUsd))} before the subpanel. Not a bid.`],
+      ['Backup heater', `${fmt(heater, 0)} BTU/hr propane, vented`, `Covers the ${fmt(heat.lossAtRecord, 0)} BTU/hr record-night load. Calculated, not a brand.`],
+      ['Kit price check', money(kit), `${F.length} ft × $${F.kitUsdPerFt}, June 2026 catalog, frame and sheet only.`]
+    ].map(([a, b, c]) => [a, { t: b, c: 'num' }, c]));
+
+    fill('compare', [
+      ['Role', 'Starts and a late tomato. Not a winter house.', 'Winter workroom and cool greens, with propane. Not citrus.'],
+      ['Size', '20 × 36 ft, sunk 6 ft in the cold zone', '17 × 96 ft, floor 4 ft down'],
+      ['Heat', 'None. Berm, drums, and the sunk floor.', `Closed-loop tubes, then a ${fmt(heater, 0)} BTU/hr heater.`],
+      ['Glass', '6 mm four-layer, vendor R-2.2, at 27°', '8 mm twin-wall, about R-1.7, at 45°'],
+      ['December noon beam', share(G.PIT.angleDeg, noon.noon_altitude_deg), share(F.tiltDeg, noon.noon_altitude_deg)],
+      ['Deep dig', 'Post bottoms 8 ft, 2 ft above the reported rock', 'Tube trench 8 ft, 2 ft above the reported rock, over a 100 ft field'],
+      ['Sited', 'E14 and F14, centered on the east tunnel', 'Not sited. Will not fit that pad.']
+    ]);
+  }
+})();
+</script>
+</body>
+</html>
