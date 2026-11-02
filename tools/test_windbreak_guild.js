@@ -32,16 +32,25 @@ test('The current plan is read from the orchard model, not copied', () => {
   assert.equal(now.counts.H.planted, wb[1].count);
   assert.deepEqual([now.counts.M.planted, now.counts.H.planted], [25, 34]);
   assert.equal(now.alley.clear, OM.alleyGeometry().clear);
-  assert.equal(now.alley.clear, 17, 'the planted line\'s managed crown is 15 ft from the fence, and the limbs start at 32');
-  assert.equal(now.band, 15, 'the planted line\'s managed crown is 15 ft from the fence');
+  assert.equal(now.alley.clear, 13, 'the berry row to plant ends 19 ft from the fence, and the limbs start at 32');
+  assert.equal(now.band, 19, 'the berry row to plant ends 19 ft from the fence');
   assert.equal(now.lane.width, OM.laneGeometry().width);
-  assert.equal(now.lane.width, 0, 'the planted kinds share one line, so there is no walking lane');
-  assert.equal(now.alley.clearFull, 21, 'the alley if the hazelnuts on that line reach their full 12 ft width');
+  assert.equal(now.lane.width, 3, 'a 3 ft pick lane sits between the hazelnut crowns and the berry row');
+  assert.equal(now.alley.clearFull, 12, 'the alley if the berry plants reach their full 8 ft width');
   assert.equal(ctx.limbEdge, 32);
   assert.equal(ctx.stock.M, 25);
   assert.equal(ctx.stock.H, 34);
   assert.equal(ctx.stock.berryTotal, 41);
-  assert.equal(now.counts.berries.planted + now.counts.berries.spare, 41, 'every berry bush is in a C1 guild or spare');
+  assert.equal(now.counts.berries.planted, 0, 'the berry plants are not planted yet');
+  assert.equal(now.counts.berries.toAdd, 41, 'every berry bush is a place to plant in the windbreak row');
+  assert.equal(now.berryRow.x, 16);
+  assert.equal(now.berries[0].y, -17, 'the first berry is between the first two planted places');
+  assert.ok(now.berries.every(bush => bush.planted === false && bush.x === 16));
+  const plan = OM.windbreakBerryPlan();
+  assert.equal(plan.walks.length, 14, 'one bush is left out between each pair of orchard rows');
+  assert.ok(plan.walks.every(walk => walk.clear >= 6), 'pulling one bush leaves a walk-through');
+  assert.equal(plan.plants.length, 41);
+  assert.ok(plan.plants[plan.plants.length - 1].y > 223, 'the displaced bushes continue north');
 });
 
 test('Each pattern repeats whole patterns along the fence, from a mulberry to a mulberry, past R1 and the last row', () => {
@@ -140,9 +149,9 @@ test('The strip ends at the berry row, and the alley takes the room', () => {
   assert.equal(layout.alley.clear, 13);
   assert.equal(layout.alley.ground, 19);
   assert.equal(layout.alley.clearFull, 12);
-  assert.equal(cmp.band.saved, -4, 'the unused berry-front proposal would take 4 ft more of the strip than the planted line');
-  assert.equal(cmp.alley.gain, -4);
-  assert.equal(cmp.area.saved, -4 * ctx.target);
+  assert.equal(cmp.band.saved, 0, 'the planted line and the old berry-front proposal end at the same edge');
+  assert.equal(cmp.alley.gain, 0);
+  assert.equal(cmp.area.saved, 0);
   assert.equal(cmp.counts.M.proposed, 18);
   for (const other of Object.values(patterns)) assert.deepEqual(plain(other.alley), plain(layout.alley), 'the pattern does not change the room it takes');
   assert.throws(() => G.proposedLayout(OM, { pattern: 'Z' }, ctx), /Pattern Z/);
@@ -233,7 +242,8 @@ test('The drawings match the layouts and carry no stray numbers', () => {
   assert.match(D.planView(patterns.B), /1 guild/);
   assert.doesNotMatch(D.planView(now), /1 guild/);
   assert.match(D.profileView(patterns.B), /Josta and small berries/);
-  assert.match(D.profileView(now), /Berry guild/);
+  assert.match(D.profileView(now), /to plant/);
+  assert.doesNotMatch(D.profileView(now), /Berry guild/);
 });
 
 test('The 1 ft grid: a block on every foot, firmer every 5 and 10 ft, a ruler on two edges, and off when asked', () => {
@@ -388,10 +398,10 @@ test('Every distance the drawings and pages write is a whole number of feet: no 
 test('The cards, the layers table, and the options tables say what the model says', () => {
   const layout = patterns.B, cmp = G.compare(now, layout), lights = { now: light.now, proposed: light.B };
   const cards = P.specCards(now, layout, cmp, lights);
-  assert.match(cards, /15 → 19 ft/);
-  assert.match(cards, /17 → 13 ft clear/);
-  assert.match(cards, /21 → 12 ft if every plant reaches its full width/);
-  assert.match(cards, /about -1,170 sq ft/);
+  assert.match(cards, /19 → 19 ft/);
+  assert.match(cards, /13 → 13 ft clear/);
+  assert.match(cards, /12 → 12 ft if every plant reaches its full width/);
+  assert.match(cards, /about 0 sq ft/);
   assert.match(cards, /25 → 18/);
   assert.match(cards, /34 → 34/);
   assert.match(cards, /0 → 41/);
@@ -478,12 +488,13 @@ test('The planted-row page draws from its own HTML and does not offer another pa
   for (const id of ['wg-specs', 'plan-now', 'profile-now', 'layer-table', 'others-table']) assert.ok(view.nodes.get(id).innerHTML.length > 100, id);
   for (const span of view.spans) assert.ok(span.textContent.length > 0, `data-m="${span.key}" is empty`);
   assert.match(view.nodes.get('wg-specs').innerHTML, /H–H–M/);
-  assert.match(view.nodes.get('layer-table').innerHTML, /Berry bushes stay in the C1 guilds/);
-  assert.doesNotMatch(view.nodes.get('layer-table').innerHTML, /front row/);
-  assert.match(view.nodes.get('others-table').innerHTML, /C1 guilds/);
+  assert.match(view.nodes.get('layer-table').innerHTML, /to plant/);
+  assert.doesNotMatch(view.nodes.get('layer-table').innerHTML, /C1 guilds/);
+  assert.match(view.nodes.get('others-table').innerHTML, /Not planted yet/);
+  assert.doesNotMatch(view.nodes.get('others-table').innerHTML, /C1 guilds/);
   assert.equal(view.spans.find(span => span.key === 'mulberryStock').textContent, '25');
   assert.equal(view.spans.find(span => span.key === 'hazelStock').textContent, '34');
-  assert.equal(view.spans.find(span => span.key === 'alley').textContent, '17');
+  assert.equal(view.spans.find(span => span.key === 'alley').textContent, '13');
   assert.match(view.nodes.get('berry-codes').textContent, /JO jostaberry/);
   const gridBox = view.nodes.get('grid-toggle');
   assert.equal(gridBox.checked, true);
@@ -503,14 +514,15 @@ test('The options page draws the planted row and does not offer the other patter
   view.page.options();
   assert.equal(view.nodes.get('data-error').hidden, true);
   assert.equal((view.nodes.get('options-plans').innerHTML.match(/<svg /g) || []).length, 1);
-  assert.match(view.nodes.get('options-plans').innerHTML, /Planted pattern B/);
+  assert.match(view.nodes.get('options-plans').innerHTML, /berries to plant/);
+  assert.doesNotMatch(view.nodes.get('options-plans').innerHTML, /pattern B/i);
   assert.doesNotMatch(view.nodes.get('options-plans').innerHTML, /pattern=C/);
   for (const id of ['options-head', 'light-head']) assert.match(view.nodes.get(id).innerHTML, /Planted/, id);
   for (const id of ['options-table', 'light-table']) assert.ok(view.nodes.get(id).innerHTML.length > 100, id);
   for (const span of view.spans) assert.ok(span.textContent.length > 0, `data-m="${span.key}" is empty`);
   assert.equal(view.spans.find(span => span.key === 'latitude').textContent, '43.4737');
   assert.equal(view.spans.find(span => span.key === 'mulberryStock').textContent, '25');
-  assert.equal(view.spans.find(span => span.key === 'alley').textContent, '17');
+  assert.equal(view.spans.find(span => span.key === 'alley').textContent, '13');
   const gridBox = view.nodes.get('grid-toggle');
   assert.equal(gridBox.checked, true);
   assert.match(view.nodes.get('options-plans').innerHTML, /g-grid g5/);
@@ -542,7 +554,8 @@ test('The latitude is the one in the climate data, and the pages are in the menu
     assert.deepEqual(scripts, ['site_nav.js', 'data/orchard_model.js', 'windbreak_guild_model.js', 'windbreak_guild_draw.js', 'windbreak_guild_page.js']);
     assert.match(html, /<link rel="stylesheet" href="windbreak_guild\.css">/);
     assert.match(html, /<script>WindbreakGuildPage\.(mockup|options)\(\);<\/script>\s*<\/body>/);
-    assert.match(html, /planted pattern b/i);
+    assert.match(html, /to plant/i);
+    assert.doesNotMatch(html, /pattern B/i);
     assert.doesNotMatch(html, /id="pattern-choice"/);
     for (const link of html.matchAll(/href="([a-z_]+\.html)(#[^"]*)?"/g)) assert.ok(fs.existsSync(path.join(DOCS, link[1])), `${page} links to ${link[1]}`);
   }
@@ -575,7 +588,7 @@ const PRINTED = {
 test('Each page prints on Tabloid sheets, the drawings first and one to a sheet, and nothing but a button for them is added to the screen', () => {
   const css = read('windbreak_guild.css');
   assert.match(css, /@page \{\s*size: 17in 11in;\s*margin: 10mm;/, 'Tabloid landscape, like the windbreak figures on the pollination grid');
-  assert.match(css, /@bottom-left \{ content: "[^"]*planted pattern B \(not a tape\)"/, 'every printed sheet names the planted row');
+  assert.match(css, /@bottom-left \{ content: "[^"]*West windbreak \(not a tape\)"/, 'every printed sheet names the windbreak');
   assert.match(css, /@bottom-right \{ content: "Page " counter\(page\) " of " counter\(pages\)/);
   assert.ok(css.includes('.print-sheet { display: contents; }'), 'on screen a sheet adds no box, so the page is laid out as it was');
   assert.ok(css.includes('.print-sheet { display: block; break-after: page; }'), 'in print each sheet is a page');

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>West Windbreak, Planted Pattern B — Prairie Plants</title>
+<title>West Windbreak — Prairie Plants</title>
 <link rel="stylesheet" href="windbreak_guild.css">
 </head>
 <body>
@@ -11,10 +11,10 @@
 <nav class="home-link" aria-label="Back to the home page"><a href="index.html">← Mountain Prairie Acres — Orchard and Ranch Projects</a></nav>
 
 <div class="print-sheet" id="sheet-plan">
-<h1>West Windbreak — Planted Pattern B</h1>
-<p class="subtitle">The red mulberries and hazelnuts are planted. Pattern B is the row: two hazelnuts, then a red mulberry, every 6 ft, 5 ft from the west fence. It starts even with the planned northwest corner of the west gothic greenhouse and runs north. Patterns A and C are not used. The berry bushes stay in the C1 guilds.</p>
+<h1>West Windbreak</h1>
+<p class="subtitle">The red mulberries and hazelnuts are planted: two hazelnuts, then a red mulberry, every 6 ft, 5 ft from the west fence. It starts even with the planned northwest corner of the west gothic greenhouse and runs north. The berry plants go back in front of that line, 16 ft from the fence. They are to plant, not planted yet. Patterns A and C are not used.</p>
 
-<div class="notice" role="note"><strong>Planted 2026-11-01.</strong> All <span data-m="mulberryStock"></span> red mulberries and all <span data-m="hazelStock"></span> hazelnuts are in this one line. The hazelnuts ran out first, so the north end has 16 empty hazel places and the mulberries continue on their 18 ft spacing. Not a tape. The greenhouse corner is the planned corner, not a stake. The planting map is on the <a href="orchard_pollination_grid.html#windbreak">orchard pollination grid</a>. The light check is on the <a href="windbreak_guild_options.html">planted windbreak page</a>.</div>
+<div class="notice" role="note"><strong>Planted 2026-11-01.</strong> All <span data-m="mulberryStock"></span> red mulberries and all <span data-m="hazelStock"></span> hazelnuts are in this one line. The hazelnuts ran out first, so the north end has 16 empty hazel places and the mulberries continue on their 18 ft spacing. The berry plants are drawn in front of that line and are not planted yet. Not a tape. The greenhouse corner is the planned corner, not a stake. The planting map is on the <a href="orchard_pollination_grid.html#windbreak">orchard pollination grid</a>. The light check is on the <a href="windbreak_guild_options.html">planted windbreak page</a>.</div>
 <div class="notice error" id="data-error" role="alert" hidden></div>
 <noscript><div class="notice error">JavaScript is required to draw the planted row.</div></noscript>
 <div class="notice print-help" role="note"><strong>Print setup:</strong> Tabloid / Ledger (11 × 17 in), landscape, 100% scale. Turn on background graphics and turn off the browser's headers and footers. Sheet 1 is the plan and sheet 2 the profile, then the tables and notes. To print just the two drawing sheets, use <button type="button" id="print-graphics" disabled>Print graphics only</button>. The saved PDF is still the October mock-up print: <a href="downloads/windbreak_guild_mockup.pdf" download>windbreak_guild_mockup.pdf</a>.</div>
@@ -25,24 +25,24 @@
 
 <h2>Plan view — to scale, south up, west fence on the right</h2>
 <div class="wg-figures plan">
-  <figure class="wg-figure"><figcaption>Planted pattern B <span>two hazelnuts, then a red mulberry, running north</span></figcaption><div id="plan-now"></div></figure>
+  <figure class="wg-figure"><figcaption>West windbreak <span>planted line, with berries to plant in front</span></figcaption><div id="plan-now"></div></figure>
 </div>
 <div class="legend" aria-label="Key to the plan view and the profile">
   <div><span class="lbox" style="background:#5B2A86; opacity:0.55"></span>Red mulberry</div>
   <div><span class="lbox" style="background:#6E6B2F; opacity:0.7"></span>Hazelnut</div>
-  <div><span class="lbox" style="background:#7CC242"></span>Small berries, still in the C1 guilds</div>
+  <div><span class="lbox ring"></span>Small berries, to plant, not planted yet</div>
   <div><span class="lbox tree"></span>First-column orchard tree and its limb room</div>
   <div><span class="dots"><span class="dot big"></span><span class="dot small"></span></span>Trunks: the large dot is a mulberry, the small dot a hazelnut</div>
 </div>
-<p class="source-note">Stretch shown: beside the first orchard rows. The planted line starts 20 ft south of the R1 line and runs north. Mulberries are 18 ft apart. Hazel places are 6 ft apart in each pair. The tractor alley is <span data-m="alley"></span> ft clear. Berry codes still in the C1 guilds: <span id="berry-codes"></span>.</p>
+<p class="source-note">Stretch shown: beside the first orchard rows. The planted line starts 20 ft south of the R1 line and runs north. Mulberries are 18 ft apart. Hazel places are 6 ft apart in each pair. The berry plants are 6 ft apart, 16 ft from the fence, and are not planted yet. The tractor alley is <span data-m="alley"></span> ft clear. Berry codes, south to north: <span id="berry-codes"></span>.</p>
 </div>
 
 <div class="print-sheet" id="sheet-profile">
 <h2>Profile — looking south, heights to scale</h2>
 <div class="wg-figures profile">
-  <figure class="wg-figure"><figcaption>Planted pattern B <span>one line, 5 ft from the fence</span></figcaption><div id="profile-now"></div></figure>
+  <figure class="wg-figure"><figcaption>West windbreak <span>planted line at 5 ft, berries to plant at 16 ft</span></figcaption><div id="profile-now"></div></figure>
 </div>
-<p class="source-note">Both kinds share the line 5 ft from the fence, so their crowns overlap in this view. The berry bushes are the C1 guilds, east of the alley, not a front row.</p>
+<p class="source-note">The hazelnuts and red mulberries share the line 5 ft from the fence, so their crowns overlap in this view. The dashed crown at 16 ft is the berry row, to plant, not planted yet. The pick lane is between those crowns.</p>
 </div>
 
 <h2>The planted line</h2>
@@ -54,7 +54,7 @@
 </div>
 
 <h2 id="other-plants">Other small plants</h2>
-<p class="prose">The berry bushes stay around the C1 trees. They were not moved into this row. The table below is the other small plants on the inventory sheet, and where each belongs.</p>
+<p class="prose">The berry plants are back in this row, as places to plant. They are not planted yet. The table below is the other small plants on the inventory sheet, and where each belongs.</p>
 <div class="table-scroll">
 <table class="detail">
 <thead><tr><th>Plant</th><th>On hand</th><th>In this row?</th><th>Where it belongs</th><th>Why</th></tr></thead>

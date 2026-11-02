@@ -350,7 +350,7 @@
   <div class="spec"><div class="label">Orchard trees</div><div class="value" id="tree-count">—</div></div>
   <div class="spec"><div class="label">Open positions</div><div class="value" id="open-count">—</div></div>
   <div class="spec"><div class="label">Rows</div><div class="value" id="row-count">—</div></div>
-  <div class="spec"><div class="label">Windbreak · hedge · guilds</div><div class="value" id="wb-count">—</div></div>
+  <div class="spec"><div class="label">Windbreak · hedge · berries</div><div class="value" id="wb-count">—</div></div>
 </div>
 <div class="notice" id="plot-warning" role="note"></div>
 <div class="notice error" id="data-error" role="alert" hidden></div>
@@ -414,7 +414,7 @@
 <div class="site-layout">
   <div id="site-plan"></div>
   <section class="site-notes" aria-labelledby="wb-notes-heading">
-    <h3 id="wb-notes-heading">Windbreak, hedge, and berry guild notes</h3>
+    <h3 id="wb-notes-heading">Windbreak, hedge, and berries to plant</h3>
     <div class="note-section" id="wb-notes"></div>
   </section>
 </div>
@@ -556,7 +556,7 @@ function printMapsOnly() {
   window.print();
 }
 
-const { PLAN_DATE, STATUS_DATE, FRUIT_SHEET, INVENTORY, INVENTORY_MATCH, TYPE_ORDER, BLOCK_ROWS, SHARED_ROWS, RESERVED_ROWS, ORCHARD_ROWS, ROW_PLAN, GRID_COLUMNS, PLOT_WIDTH, EAST_SIDE, PLOT_DEPTH, TREE_SPACING, ROW_SPACING, LOCAL_RADIUS, ORCHARD_WEST_SETBACK, JUNIPER_DISTANCE, WINDBREAK, EAST_HEDGE, OWNER_NOTES, ORCHARD_UPDATES, PLANTED_ROOTSTOCKS, ROOTSTOCK_LABELS, GENERATED_CODES, FAMILY_OVERRIDES, APPLE_ALIASES, HARRISON_BLOOM_RESEARCH, APPLE_BLOOM_RESEARCH, URBAN_APPLE_ROWS, PEAR_BLOOM, CHERRY_CHART, FRUIT_BY_ROW, INVENTORY_BY_ROW, RESERVED, fruitRecord, inventoryLine, rootstockRemaining, normalizeName, placementOf, buildOrchardTrees, balancedRows, blockShape, sharedGroupOf, blockColumns, rowTemplate, layoutRows, lineCount, layoutPlantRow, windbreakLayout, eastHedgeLayout, alleyGeometry, laneGeometry, guildLayout, treeDistance, needsTwoDonors, compatiblePair, nearestPartners, PLANT_LOCATIONS, plantedWhen } = window.OrchardModel;
+const { PLAN_DATE, STATUS_DATE, FRUIT_SHEET, INVENTORY, INVENTORY_MATCH, TYPE_ORDER, BLOCK_ROWS, SHARED_ROWS, RESERVED_ROWS, ORCHARD_ROWS, ROW_PLAN, GRID_COLUMNS, PLOT_WIDTH, EAST_SIDE, PLOT_DEPTH, TREE_SPACING, ROW_SPACING, LOCAL_RADIUS, ORCHARD_WEST_SETBACK, JUNIPER_DISTANCE, WINDBREAK, EAST_HEDGE, OWNER_NOTES, ORCHARD_UPDATES, PLANTED_ROOTSTOCKS, ROOTSTOCK_LABELS, GENERATED_CODES, FAMILY_OVERRIDES, APPLE_ALIASES, HARRISON_BLOOM_RESEARCH, APPLE_BLOOM_RESEARCH, URBAN_APPLE_ROWS, PEAR_BLOOM, CHERRY_CHART, FRUIT_BY_ROW, INVENTORY_BY_ROW, RESERVED, fruitRecord, inventoryLine, rootstockRemaining, normalizeName, placementOf, buildOrchardTrees, balancedRows, blockShape, sharedGroupOf, blockColumns, rowTemplate, layoutRows, lineCount, layoutPlantRow, windbreakLayout, windbreakBerryPlan, eastHedgeLayout, alleyGeometry, laneGeometry, guildLayout, treeDistance, needsTwoDonors, compatiblePair, nearestPartners, PLANT_LOCATIONS, plantedWhen } = window.OrchardModel;
 const { C1_GUILDS, ORCHARD_X0, PLANTING_PLAN, plannedAt, plannedSpots } = window.OrchardModel;
 const planOrders = PLANTING_PLAN ? PLANTING_PLAN.orders || [] : [];
 function orderFor(item, spot) {
@@ -624,6 +624,7 @@ const openCount = rows.length * GRID_COLUMNS - allTrees.length - reservedTotal;
 const neighborDistance = Math.hypot(TREE_SPACING / 2, ROW_SPACING);
 const windbreakTotal = windbreakRows.reduce((sum, row) => sum + row.count, 0);
 const guilds = guildLayout(rows);
+const berryPlan = windbreakBerryPlan();
 const guildSpots = [...guilds.bushes, ...guilds.future];
 const guildRows = [...new Set(guilds.bushes.map(bush => bush.r))];
 const rowSpanText = list => list.length > 1 ? `R${list[0]}–R${list[list.length - 1]}` : `R${list[0]}`;
@@ -915,17 +916,17 @@ document.getElementById('planted-note').textContent = !plantedTrees.length ? '' 
   `✓ = planted. Every living orchard fruit tree is planted${plantedMonth ? ` (${plantedMonth})` : ''}${plantedRootstocks.length ? `, and so is the M-111 rootstock at ${plantedRootstocks.map(position).join(', ')}` : ''}.` :
   `✓ = already planted, from your planting updates: ${plantedTrees.map(tree => `${position(tree)} (${tree.name})`).join('; ')}.`;
 document.getElementById('plot-size').textContent = `${PLOT_WIDTH} × ${PLOT_DEPTH} ft`;
-document.getElementById('wb-width').textContent = WINDBREAK.planted ? `${WINDBREAK.width} ft strip, 1 planted line` : `${WINDBREAK.width} ft, ${windbreakRows.length} rows`;
+document.getElementById('wb-width').textContent = WINDBREAK.planted ? `${WINDBREAK.width} ft strip, 1 planted line, berries to plant` : `${WINDBREAK.width} ft, ${windbreakRows.length} rows`;
 document.getElementById('alley-width').textContent = `${num(alley.clear)} ft clear`;
 document.getElementById('diagonal').textContent = `${neighborDistance.toFixed(1)} ft`;
 document.getElementById('tree-count').textContent = allTrees.length;
 document.getElementById('open-count').textContent = openCount;
 document.getElementById('row-count').textContent = `${rows.length} (S→N)`;
-document.getElementById('wb-count').textContent = `${windbreakTotal} + ${eastHedge.count} + ${guilds.bushes.length}`;
-document.getElementById('plot-warning').textContent = `Width, west to east: the ${WINDBREAK.width} ft windbreak strip (${WINDBREAK.planted ? `one planted line ${WINDBREAK.planted.offset} ft from the fence, then the tractor alley` : `${windbreakRows.length} plant rows with a ${num(lane.width)} ft walking lane between them, then the tractor alley`}), then the ${PLOT_WIDTH} ft orchard plot. C1 trunks stand ${ORCHARD_WEST_SETBACK} ft inside the orchard's west line, ${ORCHARD_X0} ft from the fence. ${GRID_COLUMNS} staggered positions span ${gridWidth} ft, leaving ${num(eastSpare)} ft to the east line beside the offset rows' C13 trees (${num(eastSpare + TREE_SPACING / 2)} ft beside the others); a 14th position would need ${gridWidth + TREE_SPACING} ft. East of the orchard: ${num(headland)} ft of open ground for turning at the row ends, the ${EAST_SIDE.driveway} ft driveway, then ${EAST_SIDE.drivewayToFence} ft to the east fence (${eastFence} ft from the west fence), with the elderberry hedge ${EAST_HEDGE.fromFence} ft inside it. Depth: ${rows.length} rows span ${gridDepth} ft between the outer row centers. With the windbreak ends, the planted block uses about ${Math.round(plantedDepth)} ft of the ${PLOT_DEPTH} ft depth, leaving about ${PLOT_DEPTH - Math.round(plantedDepth)} ft for headlands and future rows. Distances are tree centers, before mature-canopy clearance; the ${TREE_SPACING} × ${ROW_SPACING} ft spacing is a planning assumption, not a mature-spacing recommendation for every rootstock.`;
+document.getElementById('wb-count').textContent = berryPlan ? `${windbreakTotal} planted + ${berryPlan.count} to plant + ${eastHedge.count} hedge` : `${windbreakTotal} + ${eastHedge.count} + ${guilds.bushes.length}`;
+document.getElementById('plot-warning').textContent = `Width, west to east: the ${WINDBREAK.width} ft windbreak strip (${WINDBREAK.planted ? `one planted line ${WINDBREAK.planted.offset} ft from the fence${berryPlan ? `, berries to plant at ${berryPlan.x} ft` : ''}, then the tractor alley` : `${windbreakRows.length} plant rows with a ${num(lane.width)} ft walking lane between them, then the tractor alley`}), then the ${PLOT_WIDTH} ft orchard plot. C1 trunks stand ${ORCHARD_WEST_SETBACK} ft inside the orchard's west line, ${ORCHARD_X0} ft from the fence. ${GRID_COLUMNS} staggered positions span ${gridWidth} ft, leaving ${num(eastSpare)} ft to the east line beside the offset rows' C13 trees (${num(eastSpare + TREE_SPACING / 2)} ft beside the others); a 14th position would need ${gridWidth + TREE_SPACING} ft. East of the orchard: ${num(headland)} ft of open ground for turning at the row ends, the ${EAST_SIDE.driveway} ft driveway, then ${EAST_SIDE.drivewayToFence} ft to the east fence (${eastFence} ft from the west fence), with the elderberry hedge ${EAST_HEDGE.fromFence} ft inside it. Depth: ${rows.length} rows span ${gridDepth} ft between the outer row centers. With the windbreak ends, the planted block uses about ${Math.round(plantedDepth)} ft of the ${PLOT_DEPTH} ft depth, leaving about ${PLOT_DEPTH - Math.round(plantedDepth)} ft for headlands and future rows. Distances are tree centers, before mature-canopy clearance; the ${TREE_SPACING} × ${ROW_SPACING} ft spacing is a planning assumption, not a mature-spacing recommendation for every rootstock.`;
 
 const mapNote = document.getElementById('map-note');
-mapNote.append(`South is up, the west fence and windbreak are on the right, and east is on the left: the view from the north end looking south. Rows start at the west alley (C1, on the right) and fill toward the east (left), so open spots are at the east ends, ready to fill in from the east later${presentGroups.length ? `, except that ${presentGroups.map(sharedMapText).join('; ')}` : ''}${updateOpenText}. Rows from south to north (top to bottom): ${rowPlanText()}. ${reservedRows.map(row => `R${row.r} is held for ${row.reserved} grafted rootstock apples.`).join(' ')} The C1 trees in ${rowSpanText(guildRows)} have berry guilds on their alley side (green dots); exact spots are on the site plan. The windbreak band is schematic; exact positions are in the windbreak table and site plan, which also shows the elderberry hedge along the east fence. `);
+mapNote.append(`South is up, the west fence and windbreak are on the right, and east is on the left: the view from the north end looking south. Rows start at the west alley (C1, on the right) and fill toward the east (left), so open spots are at the east ends, ready to fill in from the east later${presentGroups.length ? `, except that ${presentGroups.map(sharedMapText).join('; ')}` : ''}${updateOpenText}. Rows from south to north (top to bottom): ${rowPlanText()}. ${reservedRows.map(row => `R${row.r} is held for ${row.reserved} grafted rootstock apples.`).join(' ')} ${berryPlan ? `The ${berryPlan.count} berry plants are to plant in the windbreak row, not around the C1 trees, and are not planted yet.` : `The C1 trees in ${rowSpanText(guildRows)} have berry guilds on their alley side (green dots); exact spots are on the site plan.`} The windbreak band is schematic; exact positions are in the windbreak table and site plan, which also shows the elderberry hedge along the east fence. `);
 mapNote.append(element('span', 'Hover over a tree for its full name, tag, and notes.', 'screen-only'),
   element('span', 'Full names, tags, and notes are listed by position in the inventory.', 'print-only'));
 document.getElementById('south-label').textContent = `▲ SOUTH — the closest juniper or red cedar is ${JUNIPER_DISTANCE}+ ft beyond this end`;
@@ -955,7 +956,7 @@ rows.forEach(row => {
       if (tree.planningPloidy === 'Triploid') cell.classList.add('tri');
       if (tree.pollenQuality === 'Good') cell.classList.add('star');
       if (psmLabel(tree)) cell.classList.add('psm');
-      const guild = index === 0 ? guilds.bushes.filter(bush => bush.r === row.r) : [];
+      const guild = !berryPlan && index === 0 ? guilds.bushes.filter(bush => bush.r === row.r) : [];
       if (guild.length) cell.classList.add('guild');
       cell.dataset.treeId = tree.id;
       const openRow = () => { location.hash = `tree-${tree.id}`; };
@@ -1008,7 +1009,7 @@ rows.forEach(row => {
         if (isOrdered(heldPlan.item, heldSpot)) cell.classList.add('ordered');
       }
       // A C1 spot held for a replacement keeps its berry guild.
-      const heldGuild = index === 0 ? guilds.bushes.filter(bush => bush.r === row.r) : [];
+      const heldGuild = !berryPlan && index === 0 ? guilds.bushes.filter(bush => bush.r === row.r) : [];
       if (heldGuild.length) cell.classList.add('guild');
       cell.title = updateNote(update) + (heldGuild.length ? `\nBerry guild on the alley side: ${heldGuild.map(bush => bush.group.name).join(', ')}` : '');
       cell.setAttribute('aria-label', cell.title);
@@ -1050,16 +1051,26 @@ rows.forEach(row => {
 // West is on the right: draw the alley first and the west fence last, with the walking lane before the tall row.
 const band = document.getElementById('wb-band');
 const alleyBox = element('div', '', 'wb-alley');
-alleyBox.title = WINDBREAK.planted
+alleyBox.title = berryPlan
+  ? `Tractor alley: ${num(alley.clear)} ft clear between the berry row to plant and the orchard limbs`
+  : WINDBREAK.planted
   ? `Tractor alley: ${num(alley.clear)} ft clear between the planted line's managed crown and the orchard limbs`
   : `Tractor alley: ${num(alley.clear)} ft clear between the ${windbreakRows[windbreakRows.length - 1].name.toLowerCase()} row and the orchard limbs`;
 alleyBox.append(element('span', `Tractor alley · ${num(alley.clear)} ft clear`, 'vtext'));
 band.append(alleyBox);
 if (WINDBREAK.planted) {
+  if (berryPlan) {
+    const berryStripe = element('div', '', 'wb-stripe');
+    berryStripe.style.background = '#7CC242';
+    berryStripe.style.opacity = '0.7';
+    berryStripe.title = `Berries to plant, not planted yet: ${berryPlan.count} bushes, ${berryPlan.x} ft from the west fence, every ${berryPlan.step} ft, with one bush left out between the orchard rows so you can walk through`;
+    berryStripe.append(element('span', `Berries to plant ×${berryPlan.count} · ${berryPlan.x} ft from fence`, 'vtext'));
+    band.append(berryStripe);
+  }
   const stripe = element('div', '', 'wb-stripe');
   stripe.style.background = windbreakRows[0].color;
-  const plantedLabel = `Pattern B · ${windbreakRows.map(row => `${row.name} ×${row.count}`).join(' + ')} · ${WINDBREAK.planted.offset} ft from fence · every ${WINDBREAK.planted.step} ft`;
-  stripe.title = `Planted pattern B, two hazelnuts then a red mulberry, ${WINDBREAK.planted.offset} ft from the west fence. ${windbreakRows.map(row => `${row.count} ${row.name.toLowerCase()}`).join(', ')}. ${windbreakRows.find(row => row.gaps && row.gaps.length) ? `${windbreakRows.find(row => row.gaps.length).gaps.length} hazel places empty at the north end.` : ''}`;
+  const plantedLabel = `Planted line · ${windbreakRows.map(row => `${row.name} ×${row.count}`).join(' + ')} · ${WINDBREAK.planted.offset} ft from fence · every ${WINDBREAK.planted.step} ft`;
+  stripe.title = `Planted line, two hazelnuts then a red mulberry, ${WINDBREAK.planted.offset} ft from the west fence. ${windbreakRows.map(row => `${row.count} ${row.name.toLowerCase()}`).join(', ')}. ${windbreakRows.find(row => row.gaps && row.gaps.length) ? `${windbreakRows.find(row => row.gaps.length).gaps.length} hazel places empty at the north end.` : ''}`;
   stripe.append(element('span', plantedLabel, 'vtext'));
   band.append(stripe);
 } else [...windbreakRows].reverse().forEach(row => {
@@ -1168,7 +1179,11 @@ if (planOrders.length) {
   });
 }
 windbreakRows.forEach(row => addLegend(row.color, `Windbreak: ${row.name}`));
-if (guilds.bushes.length) {
+if (berryPlan) {
+  const item = element('div');
+  item.append(element('span', '', 'lbox guild-key'), 'Berries to plant in the windbreak row, not planted yet');
+  legendBox.append(item);
+} else if (guilds.bushes.length) {
   const item = element('div');
   item.append(element('span', '', 'lbox guild-key'), 'Berry guild on the alley side of the C1 tree');
   legendBox.append(item);
@@ -1178,7 +1193,7 @@ const mulberry = wbRow('mulberry');
 const hazelnut = wbRow('hazelnut');
 const futureTotal = plantRows.reduce((sum, row) => sum + row.future.length, 0);
 document.getElementById('wb-summary').textContent = WINDBREAK.planted
-  ? `Planted pattern B, reported 2026-11-01: one line ${WINDBREAK.planted.offset} ft from the west fence, every ${WINDBREAK.planted.step} ft. It starts even with the planned northwest corner of the west gothic greenhouse and runs north. Two hazelnuts come first, then a red mulberry, and that repeats. All ${mulberry.count} red mulberries and all ${hazelnut.count} hazelnuts are planted. The hazelnuts ran out first, so the north end has ${hazelnut.gaps.length} empty hazel places; the mulberries keep their 18 ft spacing through those gaps. The ${WINDBREAK.width} ft strip still holds a ${num(alley.clear)} ft clear tractor alley, and the orchard was not moved. Berry bushes stay in guilds on the alley side of the C1 trees in ${rowSpanText(guildRows)}. The elderberry hedge runs ${EAST_HEDGE.fromFence} ft inside the east fence, with ${futureTotal} positions marked for plants to add later. Not a tape. East–west positions are measured from the west fence and north–south positions from the R1 row line.`
+  ? `Planted 2026-11-01: one line ${WINDBREAK.planted.offset} ft from the west fence, every ${WINDBREAK.planted.step} ft. It starts even with the planned northwest corner of the west gothic greenhouse and runs north. Two hazelnuts come first, then a red mulberry, and that repeats. All ${mulberry.count} red mulberries and all ${hazelnut.count} hazelnuts are planted. The hazelnuts ran out first, so the north end has ${hazelnut.gaps.length} empty hazel places; the mulberries keep their 18 ft spacing through those gaps. ${berryPlan ? `${berryPlan.count} berry plants are to plant in front of that line, ${berryPlan.x} ft from the fence. One bush is left out about halfway between each pair of orchard rows, and the displaced bushes continue north. They are not planted yet. ` : ''}The ${WINDBREAK.width} ft strip still holds a ${num(alley.clear)} ft clear tractor alley, and the orchard was not moved. The elderberry hedge runs ${EAST_HEDGE.fromFence} ft inside the east fence, with ${futureTotal} positions marked for plants to add later. Not a tape. East–west positions are measured from the west fence and north–south positions from the R1 row line.`
   : `Two north–south rows step down from the west fence toward the orchard: red mulberry (tallest) along the fence and hybrid hazelnut ${num(hazelnut.offset - mulberry.offset)} ft east of it, so the prevailing west wind is pushed up and over the fruit trees. A ${num(lane.width)} ft walking lane under the mulberries leads to the hazelnuts for picking. The strip is added west of the ${PLOT_WIDTH} ft orchard plot; the orchard was not reduced. Both rows spread the plants you have along the orchard and reach at least ${WINDBREAK.endMargin} ft past R1 and R${rows.length}. The ${guilds.bushes.length + guilds.spare.length} berry bushes came out of the strip to make room for the lane and now form guilds on the alley side of the C1 orchard trees in ${rowSpanText(guildRows)}. The elderberry hedge runs ${EAST_HEDGE.fromFence} ft inside the east fence beside the driveway at its proper spacing from the south end, with ${futureTotal} positions marked for plants to add later. East–west positions are measured from the west fence and north–south positions from the R1 row line. General notes are beside the site plan.`;
 
 // Mirrored to match the map: west (fence) on the right, looking south.
@@ -1187,7 +1202,7 @@ function drawCrossSection() {
   const X = x => (right - x) * S;
   const Y = h => (top - h) * S;
   const root = svgNode('svg', { viewBox:`0 0 ${(right - left) * S} ${(top - bottom) * S}`, class:'diagram cross-section', role:'img', 'aria-labelledby':'cross-title' });
-  root.append(svgNode('title', { id:'cross-title' }, `Windbreak cross-section looking south, west on the right. West fence at 0 ft; ${windbreakRows.map(row => `${row.profile.label.toLowerCase()} row ${row.offset} ft from the fence`).join('; ')}; tractor alley ${num(alley.hedgeEdge)}–${num(alley.limbEdge)} ft; first orchard trunks ${ORCHARD_X0} ft from the fence.`));
+  root.append(svgNode('title', { id:'cross-title' }, `Windbreak cross-section looking south, west on the right. West fence at 0 ft; ${windbreakRows.map(row => `${row.profile.label.toLowerCase()} row ${row.offset} ft from the fence`).join('; ')}${berryPlan ? `; berries to plant ${berryPlan.x} ft from the fence` : ''}; tractor alley ${num(alley.hedgeEdge)}–${num(alley.limbEdge)} ft; first orchard trunks ${ORCHARD_X0} ft from the fence.`));
   const defs = svgNode('defs');
   const marker = svgNode('marker', { id:'wind-arrow', viewBox:'0 0 10 10', refX:'9', refY:'5', markerWidth:'7', markerHeight:'7', orient:'auto-start-reverse' });
   marker.append(svgNode('path', { d:'M0,0 L10,5 L0,10 z', fill:'#2F7FC1' }));
@@ -1207,6 +1222,13 @@ function drawCrossSection() {
     root.append(svgNode('text', { x:X(row.offset), y:Y(labelBase + 2), 'text-anchor':'middle', 'font-size':13, class:'t-title' }, p.label));
     root.append(svgNode('text', { x:X(row.offset), y:Y(labelBase), 'text-anchor':'middle', 'font-size':12 }, p.size));
   });
+  if (berryPlan) {
+    const bx = berryPlan.x;
+    root.append(svgNode('ellipse', { cx:X(bx), cy:Y(3.6), rx:berryPlan.width / 2 * S, ry:3.2 * S,
+      fill:'#7CC242', 'fill-opacity':0.25, stroke:'#4E8A26', 'stroke-width':1.5, 'stroke-dasharray':'6 4' }));
+    root.append(svgNode('text', { x:X(bx + 4), y:Y(8.4), 'text-anchor':'middle', 'font-size':13, class:'t-title' }, 'Berries to plant'));
+    root.append(svgNode('text', { x:X(bx + 4), y:Y(6.8), 'text-anchor':'middle', 'font-size':12 }, '5–8 ft, not planted yet'));
+  }
   const crown = WINDBREAK.orchardLimbAllowance;
   root.append(svgNode('rect', { x:X(ORCHARD_X0 + 0.4), y:Y(5), width:0.8 * S, height:5 * S, class:'d-trunk' }));
   root.append(svgNode('circle', { cx:X(ORCHARD_X0), cy:Y(5 + crown), r:crown * S, class:'d-orchard-crown' }));
@@ -1258,7 +1280,7 @@ function drawPlanBlowup() {
   const Y = y => (y - top) * S;
   const inWindow = (y, margin) => y >= y0 - margin && y <= y1 + margin;
   const root = svgNode('svg', { viewBox:`0 0 ${(xEast - xWest) * S} ${(bottom - top) * S}`, class:'diagram plan-blowup', role:'img', 'aria-labelledby':'plan-title' });
-  root.append(svgNode('title', { id:'plan-title' }, `Plan-view blow-up, to scale, south up and west on the right: ${num(y1 - y0)} ft of the windbreak beside R${first.r} and R${next.r}, with in-row spacing of ${windbreakRows.map(row => `${num(row.spacing)} ft for ${row.profile.label.toLowerCase()}`).join(', ')}, the tractor alley, and the first orchard trees.`));
+  root.append(svgNode('title', { id:'plan-title' }, `Plan-view blow-up, to scale, south up and west on the right: ${num(y1 - y0)} ft of the windbreak beside R${first.r} and R${next.r}, with in-row spacing of ${windbreakRows.map(row => `${num(row.spacing)} ft for ${row.profile.label.toLowerCase()}`).join(', ')}${berryPlan ? `, berries to plant every ${berryPlan.step} ft` : ''}, the tractor alley, and the first orchard trees.`));
   const defs = svgNode('defs');
   const clip = svgNode('clipPath', { id:'plan-clip' });
   clip.append(svgNode('rect', { x:X(windowEast), y:Y(y0), width:(windowEast - xWest) * S, height:(y1 - y0) * S }));
@@ -1298,15 +1320,23 @@ function drawPlanBlowup() {
   windbreakRows.forEach(row => row.plants.forEach(plant => {
     if (inWindow(plant.y, 0.5)) field.append(svgNode('circle', { cx:X(plant.x), cy:Y(plant.y), r:0.6 * S, fill:row.color }));
   }));
-  const guildShown = guilds.bushes.filter(bush => inWindow(bush.y, C1_GUILDS.bushWidth / 2));
-  guildShown.forEach(bush => {
-    field.append(svgNode('circle', { cx:X(bush.x), cy:Y(bush.y), r:C1_GUILDS.bushWidth / 2 * S, fill:C1_GUILDS.color, 'fill-opacity':0.6, stroke:'#4E8A26', 'stroke-width':1.5 }));
-    field.append(svgNode('text', { x:X(bush.x), y:Y(bush.y) + 4, 'text-anchor':'middle', 'font-size':11, class:'halo t-title' }, bush.group.code));
-  });
-  guilds.future.filter(spot => inWindow(spot.y, 0)).forEach(spot => {
-    futureShown = true;
-    field.append(svgNode('circle', { cx:X(spot.x), cy:Y(spot.y), r:C1_GUILDS.bushWidth / 2 * S, stroke:'#4E8A26', class:'d-future' }));
-  });
+  if (berryPlan) {
+    berryPlan.plants.filter(plant => inWindow(plant.y, plant.width / 2)).forEach(plant => {
+      futureShown = true;
+      field.append(svgNode('circle', { cx:X(plant.x), cy:Y(plant.y), r:plant.width / 2 * S, fill:'none', stroke:'#4E8A26', 'stroke-width':1.5, 'stroke-dasharray':'4 3', class:'d-future' }));
+      field.append(svgNode('text', { x:X(plant.x), y:Y(plant.y) + 4, 'text-anchor':'middle', 'font-size':11, class:'halo t-title' }, plant.group.code));
+    });
+  } else {
+    const guildShown = guilds.bushes.filter(bush => inWindow(bush.y, C1_GUILDS.bushWidth / 2));
+    guildShown.forEach(bush => {
+      field.append(svgNode('circle', { cx:X(bush.x), cy:Y(bush.y), r:C1_GUILDS.bushWidth / 2 * S, fill:C1_GUILDS.color, 'fill-opacity':0.6, stroke:'#4E8A26', 'stroke-width':1.5 }));
+      field.append(svgNode('text', { x:X(bush.x), y:Y(bush.y) + 4, 'text-anchor':'middle', 'font-size':11, class:'halo t-title' }, bush.group.code));
+    });
+    guilds.future.filter(spot => inWindow(spot.y, 0)).forEach(spot => {
+      futureShown = true;
+      field.append(svgNode('circle', { cx:X(spot.x), cy:Y(spot.y), r:C1_GUILDS.bushWidth / 2 * S, stroke:'#4E8A26', class:'d-future' }));
+    });
+  }
   field.append(svgNode('line', { x1:X(0), y1:Y(y0), x2:X(0), y2:Y(y1), class:'d-fence' }));
   const alleyMid = X((alley.hedgeEdge + alley.limbEdge) / 2), alleyY = Y((y0 + y1) / 2);
   field.append(svgNode('text', { x:alleyMid, y:alleyY + 4, 'text-anchor':'middle', transform:`rotate(-90 ${alleyMid} ${alleyY})`, 'font-size':12, class:'t-title' }, `Tractor alley · ${num(alley.clear)} ft clear`));
@@ -1344,7 +1374,7 @@ function drawPlanBlowup() {
   [first, next].forEach(row => root.append(svgNode('text', { x:X(windowEast + 5.2), y:Y((row.r - 1) * ROW_SPACING) + 5, 'text-anchor':'middle', 'font-size':12, class:'t-title' }, `R${row.r}`)));
 
   // Headers above the window and fence-distance ticks below it.
-  [[0, 'Fence'], [mulberry.offset, 'Mulberry'], [hazelnut.offset, 'Hazelnut'],
+  [[0, 'Fence'], ...(berryPlan ? [[mulberry.offset, 'Planted line'], [berryPlan.x, 'Berries to plant']] : [[mulberry.offset, 'Mulberry'], [hazelnut.offset, 'Hazelnut']]),
    [(alley.hedgeEdge + alley.limbEdge) / 2, 'Alley'], [ORCHARD_X0 + TREE_SPACING, 'Orchard']].forEach(([x, label]) =>
     root.append(svgNode('text', { x:X(x), y:Y(y0) - 10, 'text-anchor':'middle', 'font-size':12, class:'t-title' }, label)));
   root.append(svgNode('text', { x:X(xEast) + 4, y:Y(y0) - 10, 'font-size':12, class:'t-title' }, '▲ South'));
@@ -1355,9 +1385,10 @@ function drawPlanBlowup() {
     root.append(svgNode('text', { x:X(x), y:Y(y1) + 26, 'text-anchor':'middle', 'font-size':11 }, num(x)));
   });
   root.append(svgNode('text', { x:X(xWest) - 4, y:Y(y1) + 26, 'text-anchor':'end', 'font-size':11 }, 'ft from fence'));
-  const guildCodes = [...new Set(guildShown.map(bush => bush.group))];
+  const shownBerries = berryPlan ? berryPlan.plants.filter(plant => inWindow(plant.y, plant.width / 2)) : [];
+  const berryCodes = [...new Set(shownBerries.map(plant => plant.group))];
   root.append(svgNode('text', { x:X(xEast) + 4, y:Y(bottom) - 6, 'font-size':11 },
-    `Stretch shown: ${num(y0)}–${num(y1)} ft north of the R1 line.${guildCodes.length ? ` Green circles: berry guild bushes around the C1 trees (${guildCodes.map(group => `${group.code} ${group.name}`).join(', ')}).` : ''}${futureShown ? ' Dashed rings: positions for plants to add later.' : ''}`));
+    `Stretch shown: ${num(y0)}–${num(y1)} ft north of the R1 line.${berryCodes.length ? ` Dashed rings: berries to plant, not planted yet (${berryCodes.map(group => `${group.code} ${group.name}`).join(', ')}).` : ''}${futureShown && !berryPlan ? ' Dashed rings: positions for plants to add later.' : ''}`));
   return root;
 }
 document.getElementById('wb-plan').append(drawPlanBlowup());
@@ -1386,17 +1417,16 @@ addTableRow('wb-table', [
 ]);
 
 const wbNotes = document.getElementById('wb-notes');
-const fullHazelEdge = hazelnut.offset + hazelnut.fullWidth / 2;
 [
-  ['Planted row.', `Pattern B is one line, not two rows. Places are ${WINDBREAK.planted.step} ft apart and mulberries are ${num(mulberry.spacing)} ft apart, with two hazelnuts between them. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. ${hazelnut.gaps.length} hazel places at the north end are empty because the hazelnuts ran out first. Patterns A and C are not used.`],
-  ['Picking.', `There is no walking lane between the kinds; they share the line ${WINDBREAK.planted.offset} ft from the fence. Pick and prune from the fence side or from the tractor alley. Train each mulberry to one trunk, cut the root sprouts every year, and keep the east side of the crown back to about ${num(mulberry.managedWidth / 2)} ft from the trunk so it does not close the alley. Remove low limbs while they are small: mulberry cuts on limbs 2 in or thicker may not heal (Ask Extension), and pruning in late fall or winter avoids bleeding (MOBOT).`],
-  ['Tractor alley.', `The hazelnut row's east edge is ${num(alley.hedgeEdge)} ft from the fence and the first orchard trunks are ${ORCHARD_X0} ft from it, leaving ${num(alley.ground)} ft at ground level. Keep the alley-side limbs of the row-end orchard trees within ${WINDBREAK.orchardLimbAllowance} ft of the trunk to hold a ${num(alley.clear)} ft clear lane. If the hazelnuts reach their full ${hazelnut.fullWidth} ft width, the alley narrows to ${num(alley.limbEdge - fullHazelEdge)} ft (your minimum is ${WINDBREAK.minAlley} ft). C1 trees in the even rows stand another ${TREE_SPACING / 2} ft east.`],
+  ['Planted row.', `One planted line, not two rows. Places are ${WINDBREAK.planted.step} ft apart and mulberries are ${num(mulberry.spacing)} ft apart, with two hazelnuts between them. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. ${hazelnut.gaps.length} hazel places at the north end are empty because the hazelnuts ran out first.`],
+  ['Picking.', `The planted kinds share the line ${WINDBREAK.planted.offset} ft from the fence. ${berryPlan ? `A ${num(lane.width)} ft pick lane sits between the hazelnut crowns and the berry row to plant.` : 'Pick and prune from the fence side or from the tractor alley.'} Train each mulberry to one trunk, cut the root sprouts every year, and keep the east side of the crown back to about ${num(mulberry.managedWidth / 2)} ft from the trunk so it does not close the pick lane. Remove low limbs while they are small: mulberry cuts on limbs 2 in or thicker may not heal (Ask Extension), and pruning in late fall or winter avoids bleeding (MOBOT).`],
+  ['Tractor alley.', `The berry row's east edge is ${num(alley.hedgeEdge)} ft from the fence and the first orchard trunks are ${ORCHARD_X0} ft from it, leaving ${num(alley.ground)} ft at ground level. Keep the alley-side limbs of the row-end orchard trees within ${WINDBREAK.orchardLimbAllowance} ft of the trunk to hold a ${num(alley.clear)} ft clear lane. If the berry plants reach their full 8 ft width, the alley narrows to ${num(alley.limbEdge - (berryPlan.x + 4))} ft (your minimum is ${WINDBREAK.minAlley} ft). C1 trees in the even rows stand another ${TREE_SPACING / 2} ft east.`],
   ['Protection.', `UNL reports that a moderately dense windbreak cuts a 20 mph wind to about 5 mph out to 5 times its height. Mature mulberries (35–50 ft) would reach roughly 175–250 ft into the ${PLOT_WIDTH} ft orchard; in the first years the hazelnuts mainly shelter the west end. Leafless rows are thinner in early spring, when the stone fruit bloom.`],
   ['Length.', `Wind wraps around the ends, so UNL recommends extending a windbreak 100–200 ft beyond the area it protects. The planted line starts 20 ft south of R1, even with the planned greenhouse corner, and the last mulberry is north of R${rows.length}, where the plants ran out. The east hedge starts at the south end; ${eastHedge.future.length} more elderberries at the same spacing finish it to the north end. The plot has room to extend the row later.`],
   ['Junipers.', `Junipers and Eastern red cedar host cedar–apple rust, and UMN advises keeping them a few hundred yards from apples; spores can travel more than a mile. Yours are south of the orchard, the closest ${JUNIPER_DISTANCE}+ ft away, and the apples are at the south end as requested: R${typeRows('Apple')[0].r} is about ${JUNIPER_DISTANCE + typeOffset('Apple')}+ ft from the closest juniper, and the pears (occasional hosts of a related rust) about ${JUNIPER_DISTANCE + typeOffset('Pear')}+ ft. UMN suggests inspecting nearby junipers and red cedars in late winter or early spring and pruning out brown, woody galls before the orange, gelatinous structures form, and notes that the rust is only a minor problem on resistant or partially resistant apples. Do not add junipers or red cedars to this windbreak, and watch the apples for orange leaf spots in late spring.`],
   ['Pollination.', 'Hazelnuts are wind-pollinated and cannot pollinate themselves (UMHDI); the seedling hybrids should pollinate one another. Several named elderberries need another variety (Berry sheet), so mix the cultivars along the hedge.'],
-  ['Berry guilds.', `Each C1 tree in ${rowSpanText(guildRows)} has berry bushes on its alley side: an arc of ${C1_GUILDS.even.bearings.length} around the south and west of each even-row tree, which stands ${TREE_SPACING / 2} ft farther from the alley, and ${C1_GUILDS.odd.bearings.length} on the south side of each odd-row tree. They sit ${C1_GUILDS.odd.radius}–${C1_GUILDS.even.radius} ft from the trunks and about 5 ft apart, all east of the alley (the nearest bush edge is ${num(Math.round(guildWestEdge * 2) / 2)} ft from the fence), with a walking gap of at least ${num(Math.floor(guildGap * 2) / 2)} ft between neighboring guilds. South to north: ${guildRuns.filter(run => run.count).map(run => `${run.group.name} ×${run.count} (${rowSpanText(run.rows)})`).join(', ')}.${guilds.spare.length ? ` Left over: ${listText(guildRuns.filter(run => run.spare).map(run => `${run.spare} ${run.spare > 1 ? `${run.group.name}s` : run.group.name}`))}.` : ''} The ${guilds.future.length} dashed positions around the C1 spots in ${listText([...new Set(guilds.future.map(spot => `R${spot.r}`))])} wait for those trees. The south side of each tree gets the most sun. Honeyberries tolerate partial shade and need at least two varieties that pollinate each other (UAF Extension), so mix their varieties; currants and gooseberries tolerate partial shade but fruit more in full sun (UMN). Comfrey could fill the east side of each guild, in the tree row, but its deep roots make it difficult to eradicate once established (WSU). Keep one side of each tree open for a ladder.`],
-  ['Blister rust.', 'White pine blister rust attacks five-needle (white) pines and uses currants and gooseberries as alternate hosts (WSU). Your white pines died, and ponderosa and Austrian pines are not five-needle pines, so the guild currants and gooseberries put no pines at risk; UMN also lists jostaberry as resistant. Avoid planting white pines near them later.']
+  ['Berries to plant.', `${berryPlan.count} berry plants go in the windbreak row, ${berryPlan.x} ft from the fence, one in each gap of the planted line, every ${berryPlan.step} ft, except one bush left out about halfway between each pair of orchard rows. That opening is ${num(berryPlan.walks[0].clear)} ft clear, enough to walk through the row. The bushes those openings displace continue north. They are not planted yet. South to north: ${guildRuns.filter(run => run.count).map(run => `${run.group.name} ×${run.count}`).join(', ')}. Honeyberries tolerate partial shade and need at least two varieties that pollinate each other (UAF Extension), so mix their varieties; currants and gooseberries tolerate partial shade but fruit more in full sun (UMN).`],
+  ['Blister rust.', 'White pine blister rust attacks five-needle (white) pines and uses currants and gooseberries as alternate hosts (WSU). Your white pines died, and ponderosa and Austrian pines are not five-needle pines, so the currants and gooseberries to plant in this row put no pines at risk; UMN also lists jostaberry as resistant. Avoid planting white pines near them later.']
 ].forEach(([title, text]) => wbNotes.append(noteParagraph(title, text)));
 
 // South up and west (fence) on the right, matching the planting map.
@@ -1455,16 +1485,24 @@ function drawSitePlan() {
     dot.append(svgNode('title', {}, `${position(tree)} ${tree.name} (tag ${tree.tag || 'none'})`));
     root.append(dot);
   }));
-  guilds.future.forEach(spot => {
-    const ring = svgNode('circle', { cx:X(spot.x), cy:Y(spot.y), r:C1_GUILDS.bushWidth / 2 * S, stroke:'#4E8A26', class:'d-future' });
-    ring.append(svgNode('title', {}, `R${spot.r} C1 berry guild: open position, ${num(spot.x)} ft from the west fence, ${nsLabel(spot.y)}`));
-    root.append(ring);
-  });
-  guilds.bushes.forEach(bush => {
-    const dot = svgNode('circle', { cx:X(bush.x), cy:Y(bush.y), r:C1_GUILDS.bushWidth / 2 * S, fill:C1_GUILDS.color, stroke:'#4E8A26', 'stroke-width':0.8 });
-    dot.append(svgNode('title', {}, `${capitalize(bush.group.name)}, R${bush.r} C1 berry guild: ${num(bush.x)} ft from the west fence, ${nsLabel(bush.y)}`));
-    root.append(dot);
-  });
+  if (berryPlan) {
+    berryPlan.plants.forEach(plant => {
+      const ring = svgNode('circle', { cx:X(plant.x), cy:Y(plant.y), r:plant.width / 2 * S, fill:'none', stroke:'#4E8A26', 'stroke-dasharray':'2 1.5', class:'d-future' });
+      ring.append(svgNode('title', {}, `${capitalize(plant.group.name)}, to plant, not planted yet: ${num(plant.x)} ft from the west fence, ${nsLabel(plant.y)}`));
+      root.append(ring);
+    });
+  } else {
+    guilds.future.forEach(spot => {
+      const ring = svgNode('circle', { cx:X(spot.x), cy:Y(spot.y), r:C1_GUILDS.bushWidth / 2 * S, stroke:'#4E8A26', class:'d-future' });
+      ring.append(svgNode('title', {}, `R${spot.r} C1 berry guild: open position, ${num(spot.x)} ft from the west fence, ${nsLabel(spot.y)}`));
+      root.append(ring);
+    });
+    guilds.bushes.forEach(bush => {
+      const dot = svgNode('circle', { cx:X(bush.x), cy:Y(bush.y), r:C1_GUILDS.bushWidth / 2 * S, fill:C1_GUILDS.color, stroke:'#4E8A26', 'stroke-width':0.8 });
+      dot.append(svgNode('title', {}, `${capitalize(bush.group.name)}, R${bush.r} C1 berry guild: ${num(bush.x)} ft from the west fence, ${nsLabel(bush.y)}`));
+      root.append(dot);
+    });
+  }
   rows.forEach(row => root.append(svgNode('text', { x:X(plotEast + 1.5), y:Y((row.r - 1) * ROW_SPACING) + 4, 'text-anchor':'end', 'font-size':8 }, `R${row.r}`)));
   TYPE_ORDER.forEach(type => {
     const list = typeRows(type);
@@ -1515,7 +1553,7 @@ const lostByType = listText(TYPE_ORDER.filter(type => lostTrees.some(tree => tre
   const count = lostTrees.filter(tree => tree.type === type).length;
   return count > 1 ? `${count} ${PLURAL[type]}` : `1 ${type.toLowerCase()}`;
 }));
-document.getElementById('site-plan-note').textContent = `To scale, south up and west on the right, matching the planting map (the view from the north end looking south). East–west distances are from the west fence; north–south distances are from the R1 row line. Large dots are orchard trees in fruit-type colors; the olive dot at R6-C3 is the planted M-111 rootstock. Filled dashed red rings are positions reserved for grafted rootstock apples, and dashed gray circles are open positions. The unfilled dark-red rings at ${lostTrees.map(position).join(', ')} mark the open positions of the dead trees (${lostByType}). Slate rings at ${outsideTrees.map(position).join(', ')} mark the open spots the Urban apples left. Those trees are planted 20 ft south of R1, off this orchard plot. All ${lostTrees.length + outsideTrees.length} spots are labeled for 2027 replacements. Small dots are the planted windbreak (purple red mulberry, olive hazelnut) on one line 5 ft from the fence, with their managed mature width shaded. Lime dots beside the C1 trees are the berry guilds, and dashed lime rings are guild positions waiting for the R1 and future-row trees. The green dots between the driveway and the east fence are the elderberry hedge, and its dashed rings mark positions for plants to add later. East of the orchard are ${num(headland)} ft of open ground for turning at the row ends, the driveway, the hedge, and the east fence. The plot is ${PLOT_DEPTH} ft deep; only the planted ${Math.round(plantedDepth)} ft is drawn. The block can slide north or south, but keeping it toward the north end adds distance from the junipers. Hover over a dot for its position.`;
+document.getElementById('site-plan-note').textContent = `To scale, south up and west on the right, matching the planting map (the view from the north end looking south). East–west distances are from the west fence; north–south distances are from the R1 row line. Large dots are orchard trees in fruit-type colors; the olive dot at R6-C3 is the planted M-111 rootstock. Filled dashed red rings are positions reserved for grafted rootstock apples, and dashed gray circles are open positions. The unfilled dark-red rings at ${lostTrees.map(position).join(', ')} mark the open positions of the dead trees (${lostByType}). Slate rings at ${outsideTrees.map(position).join(', ')} mark the open spots the Urban apples left. Those trees are planted 20 ft south of R1, off this orchard plot. All ${lostTrees.length + outsideTrees.length} spots are labeled for 2027 replacements. Small dots are the planted windbreak (purple red mulberry, olive hazelnut) on one line 5 ft from the fence, with their managed mature width shaded. Dashed lime rings 16 ft from the fence are the berry plants, to plant, not planted yet. The green dots between the driveway and the east fence are the elderberry hedge, and its dashed rings mark positions for plants to add later. East of the orchard are ${num(headland)} ft of open ground for turning at the row ends, the driveway, the hedge, and the east fence. The plot is ${PLOT_DEPTH} ft deep; only the planted ${Math.round(plantedDepth)} ft is drawn. The block can slide north or south, but keeping it toward the north end adds distance from the junipers. Hover over a dot for its position.`;
 const printMapsButton = document.getElementById('print-maps');
 printMapsButton.disabled = false;
 printMapsButton.addEventListener('click', printMapsOnly);
@@ -1527,8 +1565,8 @@ printMapsButton.addEventListener('click', printMapsOnly);
   `Orchard plot set to ${PLOT_WIDTH} × ${PLOT_DEPTH} ft: the measured ${EAST_SIDE.originalPlotWidth} ft plus ${PLOT_WIDTH - EAST_SIDE.originalPlotWidth} ft from the open ground to the east, so the last trees have ${num(eastSpare)} ft (half the tree spacing) to the east line. About ${num(headland)} ft remains between the orchard and the driveway for turning. The September plan used 225 ft plus a 5 ft buffer.`,
   `A ${WINDBREAK.width} ft windbreak strip was added between the orchard and the west fence without shrinking the orchard: rows of ${listText(windbreakRows.map(row => row.profile.label.toLowerCase()))} step down from west to east, followed by a ${num(alley.clear)} ft clear tractor alley.`,
   `The elderberries moved out of the west windbreak to their own hedge ${EAST_HEDGE.fromFence} ft inside the east fence, beside the driveway: ${num(eastHedge.spacing)} ft apart for a tighter grouping and some shelter from east winds. The ${eastHedge.count} plants fill the south ${num(eastHedge.plantedEnd - eastHedge.start)} ft; ${eastHedge.future.length} more positions are marked to finish the hedge.`,
-  `The west windbreak is planted as pattern B: one line ${WINDBREAK.planted.offset} ft from the fence, two hazelnuts then a red mulberry, every ${WINDBREAK.planted.step} ft, running north from the planned northwest corner of the west gothic greenhouse. All ${mulberry.count} mulberries and all ${hazelnut.count} hazelnuts are in. The hazelnuts ran out first, leaving ${hazelnut.gaps.length} empty hazel places at the north end. Patterns A and C are not used.`,
-  `The berry bushes moved out of the west strip into guilds on the alley side of the C1 trees in ${rowSpanText(guildRows)}, following your sketch: ${guilds.bushes.length} bushes (${guildRuns.filter(run => run.count).map(run => `${run.group.name} ×${run.count}`).join(', ')})${guilds.spare.length ? `, with ${guilds.spare.length} left over` : ''}. ${guilds.future.length} more positions wait for the trees in R1 and the future rows.`,
+  `The west windbreak is planted: one line ${WINDBREAK.planted.offset} ft from the fence, two hazelnuts then a red mulberry, every ${WINDBREAK.planted.step} ft, running north from the planned northwest corner of the west gothic greenhouse. All ${mulberry.count} mulberries and all ${hazelnut.count} hazelnuts are in. The hazelnuts ran out first, leaving ${hazelnut.gaps.length} empty hazel places at the north end.`,
+  `The berry plants go back in the windbreak row, ${berryPlan.x} ft from the fence, one in each gap except a walk-through between the orchard rows. ${berryPlan.count} are to plant (${guildRuns.filter(run => run.count).map(run => `${run.group.name} ×${run.count}`).join(', ')}). They are not planted yet.`,
   'The two white pines died (owner report), so white pine blister rust, which alternates between five-needle pines and currants or gooseberries, is no longer a concern for the currants and gooseberries; ponderosa and Austrian pines are not five-needle pines.',
   'The main orchard holds fruit trees only. Nut trees, rootstocks, and the two Boise trees are listed separately, and the hazelnuts moved to the windbreak.',
   `Rows start at the west alley and fill eastward, so open positions are at the east ends${presentGroups.length ? `, except that ${presentGroups.map(sharedMapText).join('; ')}` : ''}${updateOpenText}.`,
@@ -1561,7 +1599,7 @@ INVENTORY.filter(line => placementOf(line) !== 'other').forEach(line => {
   const windbreakRow = WINDBREAK.rows.find(row => row.invRows.includes(invRow));
   const guildRun = guildRuns.find(run => run.group.invRows.includes(invRow));
   let plan = placement === 'windbreak' ? `West windbreak, ${windbreakRow.name.toLowerCase()} row` :
-    placement === 'guild' ? `C1 berry guilds, ${guildRun.count ? rowSpanText(guildRun.rows) : 'none yet'}${guildRun.spare ? ` (${guildRun.spare} left over)` : ''}` :
+    placement === 'guild' ? (berryPlan ? `West windbreak berry row, ${berryPlan.x} ft from the fence, to plant, not planted yet` : `C1 berry guilds, ${guildRun.count ? rowSpanText(guildRun.rows) : 'none yet'}${guildRun.spare ? ` (${guildRun.spare} left over)` : ''}`) :
     placementLabels[placement] + (placement === 'elsewhere' ? ` (${location})` : '');
   if (placement === 'orchard') {
     plan = element('div');

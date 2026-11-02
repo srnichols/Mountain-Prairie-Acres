@@ -32,7 +32,7 @@ function specCards(now, proposed, cmp, light) {
     addCard('Ground freed', `about ${sqft(cmp.area.saved)} sq ft`, `${num(cmp.band.saved)} ft along ${num(cmp.area.length)} ft of fence, all of it added to the alley`),
     addCard('Red mulberry', `${now.counts.M.planted} → ${proposed.counts.M.planted}`, spareText(proposed.counts.M)),
     addCard('Hazelnut', `${now.counts.H.planted} → ${proposed.counts.H.planted}`, spareText(proposed.counts.H)),
-    addCard('Small berries in the strip', `0 → ${proposed.counts.berries.planted}`, `the bushes now planned around the C1 trees; ${proposed.counts.berries.toAdd} more places open`),
+    addCard('Small berries in the strip', `${now.counts.berries.planted} → ${proposed.counts.berries.planted}`, `the bushes to plant in the windbreak row; ${proposed.counts.berries.toAdd} more places open`),
     addCard('Sun on the hazelnuts', `${pct(nowKept)} → ${pct(newKept)}`, `${pct(nowSpread)} → ${pct(newSpread)} if the mulberries are left to spread`)
   ].join('');
 }
@@ -62,7 +62,7 @@ function layerRows(proposed, light) {
   const notes = {
     M: `The main wind barrier, now in every ${ORDINALS[size]} place along the row, ${num(tall.spacing)} ft apart: ${tall.spacing <= 15 ? 'inside' : 'wider than'} the 6–15 ft in-row range UNL gives for deciduous windbreak trees, but the hazelnuts and berries fill the space between, and ${gap <= 0 ? 'the crowns still meet' : `the crowns leave ${num(gap)} ft gaps that the hazelnuts fill below`}. Keep the plan's pruning and keep it up: one trunk, limbs from about ${num(crownBase(K.M))} ft, and the east side cut back to about ${num(K.M.managedWidth / 2)} ft from the trunk, so the crown ${overhang > 0 ? `hangs over only the nearest ${num(overhang)} ft of the berry row, ${num(crownBase(K.M))} ft or more up` : 'stays clear of the berry row'} (the light check on the options page shows why). Seedlings are usually male or female, so expect some fruitless trees (MOBOT).`,
     H: `${cap(WORDS[proposed.pattern.between])} between each pair of mulberries, ${num(low.spacing)} ft apart${hazelWithin ? ', inside the 6–9 ft UMHDI gives for nut production' : ', wider than the 6–9 ft UMHDI gives for nut production, so each bush has room'}. Each stands ${num(proposed.step)} ft from the next place in the row, so the hazelnut beside a mulberry is ${num(proposed.step)} ft from its trunk. They no longer stand ${num(ctx.shadeGap)} ft from the mulberries, the gap the USDA hybrid hazelnut guide keeps so the hazels are not shaded. The light check puts them at ${sun('proposed', 'kept')} of the season's sun with the mulberries kept as planned, against ${sun('now', 'kept')} in two rows, and ${sun('proposed', 'spread')} against ${sun('now', 'spread')} if the mulberries spread. Pick from the pick lane on their east side, and layer low stems into any gaps.`,
-    B: `One bush stands in front of every gap between two places in the row, ${num(berry.spacing)} ft apart and ${num(berry.spacing / 2)} ft out of line with the trunks, so each bush is between two trunks. Each kind stands in a run, south to north, in the order the C1 guilds use (${ctx.stock.berries.map(entry => entry.group.name).join(', ')}): the honeyberries need another cultivar to set fruit, so they stay one group, and one net covers a run. Josta is 5–8 ft tall and wide (cultivar library). These are the ${proposed.counts.berries.stock} bushes now planned around the C1 trees; ${berry.toAdd} more places stay open at the north end. Honeyberry, currant, gooseberry, and aronia are smaller and could stand closer.`
+    B: `One bush stands in front of every gap between two places in the row, ${num(berry.spacing)} ft apart and ${num(berry.spacing / 2)} ft out of line with the trunks, so each bush is between two trunks. Each kind stands in a run, south to north, in the order the C1 guilds use (${ctx.stock.berries.map(entry => entry.group.name).join(', ')}): the honeyberries need another cultivar to set fruit, so they stay one group, and one net covers a run. Josta is 5–8 ft tall and wide (cultivar library). These are the ${proposed.counts.berries.stock} bushes to plant in the windbreak row; ${berry.toAdd} more places stay open at the north end. Honeyberry, currant, gooseberry, and aronia are smaller and could stand closer.`
   };
   const row = cells => `<tr>${cells.map(cell => `<td>${cell}</td>`).join('')}</tr>`;
   return [
@@ -123,8 +123,8 @@ function otherRows(proposed) {
   if (honey) {
     const bought = honey.match && /\(([^)]*)\)/.exec(honey.match.berry || '');
     out.push(row([
-      `<strong>Honeyberry</strong><div class="source-note">${esc(bought ? `bought: ${bought[1]}` : 'berry')}</div>`, String(honey.count), proposed.berryRow ? 'Yes, as one group' : 'No, they stay in the C1 guilds',
-      proposed.berryRow ? 'In the front row, as the first run at the south end, with the varieties mixed.' : 'Stay around the C1 trees, as one group, with the varieties mixed.',
+      `<strong>Honeyberry</strong><div class="source-note">${esc(bought ? `bought: ${bought[1]}` : 'berry')}</div>`, String(honey.count), proposed.berryRow ? (proposed.counts.berries.planted ? 'Yes, as one group' : 'To plant, as one group') : 'No, they stay in the C1 guilds',
+      proposed.berryRow ? 'In the windbreak row, as the first run at the greenhouse end, with the varieties mixed. Not planted yet.' : 'Stay around the C1 trees, as one group, with the varieties mixed.',
       `${esc(honey.match ? honey.match.note : '')} The flowers open very early and tolerate frost to about 19–20°F, the bushes scorch in summer heat, so the row's afternoon shade suits them, and birds are the main pest, so one run takes one net.`
     ]));
   }
@@ -214,13 +214,13 @@ function optionRows(now, options) {
   const planted = count => `${count.planted}${count.toAdd ? ` + ${count.toAdd} to add` : ''}${count.spare ? `<span class="src">${count.spare} spare</span>` : ''}`;
   return [
     group('The row'),
-    row('Pattern along the fence', layout => layout.pattern ? layout.pattern.short : 'planted pattern B'),
+    row('Pattern along the fence', layout => layout.pattern ? layout.pattern.short : 'planted line'),
     row('Mulberry to mulberry', layout => spacingText(layout.rows[0].spacing)),
     row('Hazelnut to hazelnut', layout => spacingText(layout.rows[1].spacing)),
     group(`Plants (on hand: ${ctx.stock.M} mulberries, ${ctx.stock.H} hazelnuts, ${ctx.stock.berryTotal} berry bushes)`),
     row('Red mulberry', layout => planted(layout.counts.M)),
     row('Hazelnut', layout => planted(layout.counts.H)),
-    row('Small berries', layout => layout.pattern ? `${planted(layout.counts.berries)}<span class="src">in the front row</span>` : `${layout.counts.berries.planted + layout.counts.berries.spare}<span class="src">around the C1 trees</span>`),
+    row('Small berries', layout => layout.pattern ? `${planted(layout.counts.berries)}<span class="src">in the front row</span>` : `${layout.counts.berries.toAdd} to plant<span class="src">in the windbreak row, not planted yet</span>`),
     group('Space'),
     row('Strip used (fence to last row)', layout => `${num(layout.band)} ft`),
     row('Tractor alley, clear', layout => `${num(layout.alley.clear)} ft<span class="src">${num(layout.alley.clearFull)} ft at full width</span>`),
@@ -293,11 +293,12 @@ function wirePrint() {
 function plantedSpecs(layout) {
   const hazel = layout.rows.find(row => row.kind === 'H');
   return [
-    addCard('Pattern', 'B · H–H–M', 'two hazelnuts, then a red mulberry'),
-    addCard('From the fence', `${num(layout.rows[0].x)} ft`, 'one line; patterns A and C are not used'),
+    addCard('Planted line', 'H–H–M', 'two hazelnuts, then a red mulberry'),
+    addCard('From the fence', `${num(layout.rows[0].x)} ft`, 'one planted line'),
     addCard('Red mulberry', `${layout.counts.M.planted} planted`, `${num(layout.rows.find(row => row.kind === 'M').spacing)} ft apart`),
     addCard('Hazelnut', `${layout.counts.H.planted} planted`, hazel && hazel.toAdd ? `${hazel.toAdd} empty places at the north end` : 'the hazelnuts ran out first'),
-    addCard('Tractor alley', `${num(layout.alley.clear)} ft clear`, 'berries stay around the C1 trees')
+    addCard('Small berries', `${layout.counts.berries.toAdd} to plant`, `${num(layout.berryRow.x)} ft from the fence, not planted yet`),
+    addCard('Tractor alley', `${num(layout.alley.clear)} ft clear`, 'measured to the berry row')
   ].join('');
 }
 
@@ -313,7 +314,11 @@ function plantedLayers(layout) {
   return [
     line('M', '1. Red mulberry, in the planted line'),
     line('H', '2. Hazelnut, in the same line'),
-    `<tr><td colspan="9">Berry bushes stay in the C1 guilds. They were not planted in this line. The east elderberry hedge is not part of this row.</td></tr>`
+    row(['3. Small berries, to plant', plantCell(kinds.B), `${layout.counts.berries.toAdd} to plant`, `${num(layout.berryRow.x)} ft`, spacingText(layout.rows.find(item => item.kind === 'B').spacing),
+      nsLabel(layout.rows.find(item => item.kind === 'B').start, ctx), nsLabel(layout.rows.find(item => item.kind === 'B').end, ctx),
+      `${esc(kinds.B.height)} tall; ${esc(kinds.B.spread)}`,
+      'Not planted. One bush in each gap of the planted line, starting at the greenhouse end, except one bush left out about halfway between each pair of orchard rows so you can walk through. The bushes those openings displace continue north.']),
+    `<tr><td colspan="9">The berry plants are drawn in this row as places to plant. They are not planted yet. The east elderberry hedge is not part of this row.</td></tr>`
   ].join('');
 }
 
@@ -347,7 +352,8 @@ function plantedTable(layout) {
   const row = (label, text) => `<tr><th scope="row">${label}</th>${cell(text)}</tr>`;
   const hazelGaps = layout.rows.find(row => row.kind === 'H');
   return [
-    '<tr class="group"><th colspan="2">Planted pattern B</th></tr>',
+    '<tr class="group"><th colspan="2">Planted line</th></tr>',
+    row('Small berries', `${layout.counts.berries.toAdd} to plant, not planted yet`),
     row('Along the fence', 'H–H–M, then repeat'),
     row('From the fence', `${num(layout.rows[0].x)} ft`),
     row('Place to place', `${num(layout.step || 6)} ft`),
@@ -374,7 +380,7 @@ function options() {
     const OM = root.OrchardModel, planted = G.currentLayout(OM);
     const light = G.lightByCrown(planted);
     const gridBox = document.getElementById('grid-toggle');
-    const drawPlans = () => put('options-plans', `<figure class="wg-figure"><figcaption>Planted pattern B <span>two hazelnuts, then a red mulberry, running north</span></figcaption>${D.planView(planted, { ...COMPACT_PLAN, grid: gridBox.checked })}</figure>`);
+    const drawPlans = () => put('options-plans', `<figure class="wg-figure"><figcaption>West windbreak <span>planted line, with berries to plant in front</span></figcaption>${D.planView(planted, { ...COMPACT_PLAN, grid: gridBox.checked })}</figure>`);
     gridBox.addEventListener('change', drawPlans);
     drawPlans();
     put('options-head', '<tr><th></th><th class="num picked">Planted</th></tr>');

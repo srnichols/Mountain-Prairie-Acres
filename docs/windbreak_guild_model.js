@@ -118,24 +118,28 @@ function rowSummary(plants, kind, x, spacing) {
   };
 }
 
-// The plan as it stands: the mulberry row, a walking lane, the hazelnut row, the tractor alley, and the berries around the C1 trees.
+// The plan as it stands: one planted line of hazelnuts and red mulberries, a pick lane, the berry plants to go in front of that line, and the tractor alley.
 function currentLayout(OM, ctx = context(OM)) {
   const wb = OM.windbreakLayout(ctx.rowCount);
-  const alley = OM.alleyGeometry(), lane = OM.laneGeometry(), guilds = OM.guildLayout(ctx.rows);
+  const plan = OM.windbreakBerryPlan();
+  const alley = OM.alleyGeometry(), lane = OM.laneGeometry();
   const byKey = { mulberry: 'M', hazelnut: 'H' };
   const plants = wb.flatMap(row => row.plants.map(plant => ({ kind: byKey[row.key], x: plant.x, y: plant.y, planted: true })));
-  const berries = guilds.bushes.map(bush => ({ x: bush.x, y: bush.y, width: OM.C1_GUILDS.bushWidth, group: bush.group, planted: true, r: bush.r }));
-  const shrub = ctx.kinds.H;
-  const rows = wb.map(row => rowSummary(plants, byKey[row.key], row.x, row.spacing));
+  const berries = plan.plants.map(plant => ({ x: plant.x, y: plant.y, width: plant.width, group: plant.group, planted: false, planned: true }));
+  const rows = [
+    ...wb.map(row => rowSummary(plants, byKey[row.key], row.x, row.spacing)),
+    { kind: 'B', x: plan.x, spacing: plan.step, count: 0, toAdd: plan.toPlant,
+      start: berries[0].y, end: berries[berries.length - 1].y, plantedEnd: null }
+  ];
   return {
     id: 'now', title: 'Current plan', pattern: null, ctx, kinds: ctx.kinds, plants, berries, rows,
     band: alley.hedgeEdge, length: ctx.target,
-    alley: { west: alley.hedgeEdge, east: alley.limbEdge, clear: alley.clear, ground: alley.ground, clearFull: alley.limbEdge - (wb[1].x + shrub.fullWidth / 2) },
-    lane: { west: lane.west, east: lane.east, width: lane.width, name: 'Walking lane' },
-    berryRow: null,
+    alley: { west: alley.hedgeEdge, east: alley.limbEdge, clear: alley.clear, ground: alley.ground, clearFull: alley.limbEdge - (plan.x + ctx.kinds.B.fullWidth / 2) },
+    lane: { west: lane.west, east: lane.east, width: lane.width, name: lane.name },
+    berryRow: { x: plan.x, west: plan.west, east: plan.east },
     counts: {
       M: tally(plants, 'M', ctx.stock.M), H: tally(plants, 'H', ctx.stock.H),
-      berries: { positions: berries.length, planted: berries.length, toAdd: 0, spare: guilds.spare.length, stock: ctx.stock.berryTotal, place: 'around the C1 trees' }
+      berries: { positions: berries.length, planted: 0, toAdd: berries.length, spare: 0, stock: ctx.stock.berryTotal, place: 'to plant in the windbreak row, not planted yet' }
     }
   };
 }

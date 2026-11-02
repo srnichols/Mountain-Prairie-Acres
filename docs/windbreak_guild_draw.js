@@ -97,7 +97,11 @@ function planView(layout, o = {}) {
   });
   layout.berries.filter(bush => inside(bush.y, bush.width / 2)).forEach(bush => {
     const r = bush.width / 2 * S;
-    if (!bush.planted) { field.push(circle(X(bush.x), Y(bush.y), r, 'd-future', { stroke: BUSH_STROKE })); return; }
+    if (!bush.planted) {
+      field.push(circle(X(bush.x), Y(bush.y), r, 'd-future', { stroke: BUSH_STROKE }));
+      if (!compact && bush.group) field.push(text(X(bush.x), Y(bush.y) + 4, bush.group.code, 'halo t-title', { 'text-anchor': 'middle', 'font-size': 11 }));
+      return;
+    }
     field.push(circle(X(bush.x), Y(bush.y), r, 'c-berry', { fill: K.B.color, 'fill-opacity': 0.6, stroke: BUSH_STROKE, 'stroke-width': 1.5 }));
     if (!compact) field.push(text(X(bush.x), Y(bush.y) + 4, bush.group.code, 'halo t-title', { 'text-anchor': 'middle', 'font-size': 11 }));
   });
@@ -142,6 +146,8 @@ function planView(layout, o = {}) {
 
   const names = layout.pattern
     ? [[0, 'Fence'], [layout.rows[0].x, 'Guild row'], [layout.berryRow.x, 'Berries'], [(alley.west + alley.east) / 2, 'Alley'], [ctx.orchardX0 + ctx.treeSpacing / 2, 'Orchard']]
+    : layout.berryRow
+    ? [[0, 'Fence'], [layout.rows[0].x, 'Planted line'], [layout.berryRow.x, 'Berries to plant'], [(alley.west + alley.east) / 2, 'Alley'], [ctx.orchardX0 + ctx.treeSpacing / 2, 'Orchard']]
     : [[0, 'Fence'], [layout.rows[0].x, 'Mulberry'], [layout.rows[1].x, 'Hazelnut'], [(alley.west + alley.east) / 2, 'Alley'], [ctx.orchardX0 + ctx.treeSpacing / 2, 'Orchard']];
   const nameY = Y(y0) - (grid ? 32 : 10);
   names.forEach(([x, label]) => parts.push(text(X(x), nameY, label, 't-title', { 'text-anchor': 'middle', 'font-size': 12 })));
@@ -156,7 +162,10 @@ function planView(layout, o = {}) {
   ticks.forEach(x => parts.push(line(X(x), Y(y1), X(x), Y(y1) + 10, 'd-tick'), text(X(x), Y(y1) + 26, num(x), '', { 'text-anchor': 'middle', 'font-size': 11 })));
   parts.push(text(X(xWest) - 4, Y(y1) + (compact ? 42 : 26), 'ft from fence', '', { 'text-anchor': 'end', 'font-size': 11 }));
   const apart = [`mulberries ${num(layout.rows[0].spacing)} ft`, `hazelnuts ${num(layout.rows[1].spacing)} ft`, ...(layout.berryRow ? [`berries ${num(layout.rows[2].spacing)} ft`] : [])];
-  const label = `Plan view, to scale, south up and west on the right: ${layout.title}. ${layout.counts.M.planted} red mulberries, ${layout.counts.H.planted} hazelnuts, and ${layout.counts.berries.planted} small berries ${layout.counts.berries.place}; `
+  const berryWords = layout.counts.berries.planted
+    ? `${layout.counts.berries.planted} small berries ${layout.counts.berries.place}`
+    : `${layout.counts.berries.toAdd} berry plants to plant, not planted yet, ${layout.counts.berries.place}`;
+  const label = `Plan view, to scale, south up and west on the right: ${layout.title}. ${layout.counts.M.planted} red mulberries, ${layout.counts.H.planted} hazelnuts, and ${berryWords}; `
     + `a ${num(lane.width)} ft ${lane.name.toLowerCase()} and a tractor alley ${num(alley.clear)} ft clear, ${num(y1 - y0)} ft of the fence shown. Spacing along the fence: ${apart.join(', ')}.`
     + `${layout.pattern ? ` Every place in the guild row is ${num(layout.step)} ft from the next, so each hazelnut is ${num(layout.step)} ft from the trunk of the mulberry beside it.` : ''}${grid ? ' The grid blocks are 1 ft by 1 ft.' : ''}`;
   return svg(width, height, parts, label, 'plan-view');
@@ -187,21 +196,24 @@ function profileView(layout, o = {}) {
     text(X(-0.8), Y(1.4), 'Fence', '', { 'text-anchor': 'start', 'font-size': 12 })
   );
   // One crown of each kind stands for the whole row: from the side, the plants of a row overlap. `dx` and `dy` move a label clear of a neighbor.
-  const standIn = layout.pattern ? [['M', layout.rows[0].x, 0, 0], ['H', layout.rows[1].x, 7.5, 0], ['B', layout.berryRow.x, 3, 0]]
-    : [['M', layout.rows[0].x, 0, 0], ['H', layout.rows[1].x, 0, 0]];
-  standIn.forEach(([kind, x, dx]) => {
+  const standIn = layout.pattern ? [['M', layout.rows[0].x, 0, true], ['H', layout.rows[1].x, 7.5, true], ['B', layout.berryRow.x, 3, true]]
+    : [['M', layout.rows[0].x, 0, true], ['H', layout.rows[1].x, 0, true], ...(layout.berryRow ? [['B', layout.berryRow.x, 3, false]] : [])];
+  standIn.forEach(([kind, x, dx, planted]) => {
     const spec = K[kind], p = spec.profile;
     parts.push(rect(X(x + 0.35), Y(p.trunk), 0.7 * S, p.trunk * S, 'c-trunk'));
-    parts.push(ellipse(X(x), Y(p.crownMid), spec.managedWidth / 2 * S, p.crownHalfHeight * S, 'c-crown', { fill: spec.color, 'fill-opacity': kind === 'M' ? 0.5 : 0.55, stroke: spec.color, 'stroke-width': 1.5 }));
+    parts.push(ellipse(X(x), Y(p.crownMid), spec.managedWidth / 2 * S, p.crownHalfHeight * S, 'c-crown', {
+      fill: spec.color, 'fill-opacity': planted ? (kind === 'M' ? 0.5 : 0.55) : 0.2, stroke: spec.color, 'stroke-width': 1.5,
+      'stroke-dasharray': planted ? undefined : '6 4'
+    }));
     const base = p.crownMid + p.crownHalfHeight + 1.2;
-    parts.push(text(X(x + dx), Y(base + 2), p.label, 't-title halo', { 'text-anchor': 'middle', 'font-size': 13 }));
+    parts.push(text(X(x + dx), Y(base + 2), planted ? p.label : `${p.label}, to plant`, 't-title halo', { 'text-anchor': 'middle', 'font-size': 13 }));
     parts.push(text(X(x + dx), Y(base), p.size, 'halo', { 'text-anchor': 'middle', 'font-size': 12 }));
   });
   const crown = ctx.limb, c1 = ctx.orchardX0;
   parts.push(rect(X(c1 + 0.4), Y(5), 0.8 * S, 5 * S, 'c-trunk'), circle(X(c1), Y(5 + crown), crown * S, 'd-orchard-crown'));
   parts.push(text(X(ctx.stripWidth + 0.8), Y(5 + 2 * crown + 3.2), 'First orchard trees', 't-title', { 'text-anchor': 'end', 'font-size': 13 }));
   parts.push(text(X(ctx.stripWidth + 0.8), Y(5 + 2 * crown + 1.2), `C1; limbs kept ${num(crown)} ft from trunk`, '', { 'text-anchor': 'end', 'font-size': 12 }));
-  if (!layout.pattern) {
+  if (!layout.pattern && !layout.berryRow) {
     const near = layout.berries.filter(bush => bush.r % 2 === 1).reduce((best, bush) => (best && best.x <= bush.x ? best : bush), null);
     if (near) {
       parts.push(ellipse(X(near.x), Y(2.6), near.width / 2 * S, 2.5 * S, 'c-crown', { fill: K.B.color, 'fill-opacity': 0.7, stroke: BUSH_STROKE, 'stroke-width': 1.5 }));

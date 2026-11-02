@@ -291,29 +291,26 @@ function layoutPlantRow(row, x, span) {
   };
 }
 
-function windbreakLayout(rowCount) {
+function plantedWindbreakSpots() {
   const planted = WINDBREAK.planted;
-  if (!planted) {
-    WINDBREAK.rows.forEach((row, index) => {
-      if (index && row.offset <= WINDBREAK.rows[index - 1].offset) throw new Error('Windbreak rows must run west to east');
-    });
-    return WINDBREAK.rows.map(row => layoutPlantRow(row, row.offset, (rowCount - 1) * ROW_SPACING));
-  }
+  if (!planted) return null;
   const byLetter = {
     M: WINDBREAK.rows.find(row => row.key === 'mulberry'),
     H: WINDBREAK.rows.find(row => row.key === 'hazelnut')
   };
-  if (!byLetter.M || !byLetter.H || planted.sequence !== 'HHM') throw new Error('The planted windbreak is pattern B, two hazelnuts then a red mulberry');
+  if (!byLetter.M || !byLetter.H || planted.sequence !== 'HHM') throw new Error('The planted windbreak is two hazelnuts, then a red mulberry');
   const left = { M: lineCount(byLetter.M.invRows), H: lineCount(byLetter.H.invRows) };
   const used = { M: 0, H: 0 };
   const plants = { M: [], H: [] };
   const gaps = { M: [], H: [] };
+  const places = [];
   const sequence = planted.sequence.split('');
   const startY = planted.r1_site_y_ft - planted.origin_site_y_ft;
   let index = 0;
   while (left.M || left.H) {
     const letter = sequence[index % sequence.length];
-    const spot = { x: planted.offset, y: startY + index * planted.step };
+    const spot = { x: planted.offset, y: startY + index * planted.step, letter };
+    places.push(spot);
     if (left[letter]) {
       left[letter] -= 1;
       used[letter] += 1;
@@ -321,9 +318,21 @@ function windbreakLayout(rowCount) {
     } else gaps[letter].push({ ...spot, planted: false, gap: true });
     index += 1;
   }
+  return { planted, byLetter, sequence, plants, gaps, places };
+}
+
+function windbreakLayout(rowCount) {
+  const built = plantedWindbreakSpots();
+  if (!built) {
+    WINDBREAK.rows.forEach((row, index) => {
+      if (index && row.offset <= WINDBREAK.rows[index - 1].offset) throw new Error('Windbreak rows must run west to east');
+    });
+    return WINDBREAK.rows.map(row => layoutPlantRow(row, row.offset, (rowCount - 1) * ROW_SPACING));
+  }
+  const { planted, byLetter, sequence, plants, gaps } = built;
   return WINDBREAK.rows.map(row => {
     const letter = row.key === 'mulberry' ? 'M' : row.key === 'hazelnut' ? 'H' : null;
-    if (!letter) throw new Error(`Windbreak row ${row.key} is not in the planted pattern`);
+    if (!letter) throw new Error(`Windbreak row ${row.key} is not in the planted line`);
     const list = plants[letter], gapList = gaps[letter];
     return {
       ...row, offset: planted.offset, x: planted.offset, count: list.length,
@@ -334,13 +343,76 @@ function windbreakLayout(rowCount) {
   });
 }
 
+// One berry place left open between each pair of orchard rows, nearest the halfway mark, so a person can walk through.
+function berryWalkSlots(gaps, spec) {
+  const rule = spec.walk_gaps;
+  if (!rule || rule.align !== 'between_orchard_rows') return { skipped: new Set(), walks: [] };
+  const pull = rule.pull || 1;
+  const step = spec.step || 6;
+  const skipped = new Set();
+  const walks = [];
+  for (let row = 1; row < ORCHARD_ROWS; row += 1) {
+    const mid = (row - 1) * ROW_SPACING + ROW_SPACING / 2;
+    const chosen = [];
+    for (let count = 0; count < pull; count += 1) {
+      let best = -1, bestDist = Infinity;
+      gaps.forEach((y, index) => {
+        if (skipped.has(index) || chosen.includes(index)) return;
+        const dist = Math.abs(y - mid);
+        if (dist < bestDist) { bestDist = dist; best = index; }
+      });
+      if (best < 0 || bestDist > step / 2) break;
+      chosen.push(best);
+    }
+    chosen.forEach(index => skipped.add(index));
+    if (chosen.length) {
+      const ys = chosen.map(index => gaps[index]).sort((a, b) => a - b);
+      walks.push({
+        y: ys[0], yEnd: ys[ys.length - 1], between: [row, row + 1],
+        clear: step * chosen.length + (step - (spec.managed_width || 6))
+      });
+    }
+  }
+  return { skipped, walks };
+}
+
+// Berry plants for the windbreak row. They are planned, not planted: one bush in each gap of the planted line,
+// starting at the greenhouse end, except the walk-throughs between the orchard rows. Bushes that those openings
+// displace continue north into the next open gaps.
+function windbreakBerryPlan() {
+  const built = plantedWindbreakSpots();
+  const spec = built && built.planted.berries;
+  if (!spec) return null;
+  const width = spec.managed_width || 6;
+  const queue = C1_GUILDS.groups.flatMap(group => Array(lineCount(group.invRows)).fill(group));
+  const gaps = [];
+  for (let index = 1; index < built.places.length; index += 1) {
+    gaps.push((built.places[index - 1].y + built.places[index].y) / 2);
+  }
+  const { skipped, walks } = berryWalkSlots(gaps, spec);
+  const open = gaps.map((y, index) => ({ y, index })).filter(slot => !skipped.has(slot.index));
+  if (queue.length > open.length) throw new Error('The windbreak row does not have a gap for every berry plant');
+  const plants = queue.map((group, index) => ({
+    x: spec.offset, y: open[index].y, planted: false, planned: true, group, width
+  }));
+  return {
+    status: spec.status || 'planned', x: spec.offset, step: spec.step || built.planted.step, width,
+    west: spec.offset - width / 2, east: spec.offset + width / 2, pickLane: spec.pick_lane_ft,
+    count: plants.length, toPlant: plants.filter(plant => !plant.planted).length,
+    walks, plants
+  };
+}
+
 function eastHedgeLayout(rowCount, eastFenceX) {
   return layoutPlantRow(EAST_HEDGE, eastFenceX - EAST_HEDGE.fromFence, (rowCount - 1) * ROW_SPACING);
 }
 
 function alleyGeometry() {
   const planted = WINDBREAK.planted;
-  const hedgeEdge = planted
+  const berries = planted && planted.berries;
+  const hedgeEdge = berries
+    ? berries.offset + (berries.managed_width || 6) / 2
+    : planted
     ? Math.max(...WINDBREAK.rows.map(row => planted.offset + row.managedWidth / 2))
     : WINDBREAK.rows[WINDBREAK.rows.length - 1].offset + WINDBREAK.rows[WINDBREAK.rows.length - 1].managedWidth / 2;
   const limbEdge = ORCHARD_X0 - WINDBREAK.orchardLimbAllowance;
@@ -353,6 +425,13 @@ function alleyGeometry() {
 // Walking and picking lane from the tall row's trunks to the next row's west edge. The tall row is pruned so it does not
 // overhang the next row, and the rows keep USDA's 15 ft shade gap.
 function laneGeometry() {
+  const berries = WINDBREAK.planted && WINDBREAK.planted.berries;
+  if (berries) {
+    const hazel = WINDBREAK.rows.find(row => row.key === 'hazelnut');
+    const west = WINDBREAK.planted.offset + hazel.managedWidth / 2;
+    const east = berries.offset - (berries.managed_width || 6) / 2;
+    return { west, east, width: east - west, name: 'Pick lane' };
+  }
   if (WINDBREAK.planted) {
     const x = WINDBREAK.planted.offset;
     return { west: x, east: x, width: 0, name: 'No separate lane' };
@@ -542,5 +621,5 @@ function unidentifiedApples() {
 function unidentifiedStoneFruit() {
   return { info:UNIDENTIFIED_STONE_FRUIT, lines:UNIDENTIFIED_STONE_FRUIT.lines.map(unidentifiedLine) };
 }
-root.OrchardModel = { PLAN_DATE, STATUS_DATE, FRUIT_SHEET, INVENTORY, INVENTORY_MATCH, TYPE_ORDER, BLOCK_ROWS, SHARED_ROWS, RESERVED_ROWS, ORCHARD_ROWS, ROW_PLAN, GRID_COLUMNS, PLOT_WIDTH, EAST_SIDE, PLOT_DEPTH, TREE_SPACING, ROW_SPACING, LOCAL_RADIUS, ORCHARD_WEST_SETBACK, JUNIPER_DISTANCE, WINDBREAK, C1_GUILDS, EAST_HEDGE, OWNER_NOTES, ORCHARD_UPDATES, PLANTED_ROOTSTOCKS, ROOTSTOCK_LABELS, GENERATED_CODES, FAMILY_OVERRIDES, APPLE_ALIASES, HARRISON_BLOOM_RESEARCH, APPLE_BLOOM_RESEARCH, URBAN_APPLE_ROWS, PEAR_BLOOM, CHERRY_CHART, PLANTING_PLAN, FRUIT_BY_ROW, INVENTORY_BY_ROW, ORCHARD_X0, RESERVED, fruitRecord, inventoryLine, rootstockRemaining, normalizeName, placementOf, buildOrchardTrees, balancedRows, blockShape, sharedGroupOf, blockColumns, rowTemplate, layoutRows, lineCount, layoutPlantRow, windbreakLayout, eastHedgeLayout, alleyGeometry, laneGeometry, guildLayout, treeDistance, needsTwoDonors, compatiblePair, nearestPartners, PLANT_LOCATIONS, plantedWhen, plan, plannedSpots, plannedAt, plannedTrees, plannedPollination, UNIDENTIFIED_APPLES, unidentifiedApples, UNIDENTIFIED_STONE_FRUIT, unidentifiedStoneFruit };
+root.OrchardModel = { PLAN_DATE, STATUS_DATE, FRUIT_SHEET, INVENTORY, INVENTORY_MATCH, TYPE_ORDER, BLOCK_ROWS, SHARED_ROWS, RESERVED_ROWS, ORCHARD_ROWS, ROW_PLAN, GRID_COLUMNS, PLOT_WIDTH, EAST_SIDE, PLOT_DEPTH, TREE_SPACING, ROW_SPACING, LOCAL_RADIUS, ORCHARD_WEST_SETBACK, JUNIPER_DISTANCE, WINDBREAK, C1_GUILDS, EAST_HEDGE, OWNER_NOTES, ORCHARD_UPDATES, PLANTED_ROOTSTOCKS, ROOTSTOCK_LABELS, GENERATED_CODES, FAMILY_OVERRIDES, APPLE_ALIASES, HARRISON_BLOOM_RESEARCH, APPLE_BLOOM_RESEARCH, URBAN_APPLE_ROWS, PEAR_BLOOM, CHERRY_CHART, PLANTING_PLAN, FRUIT_BY_ROW, INVENTORY_BY_ROW, ORCHARD_X0, RESERVED, fruitRecord, inventoryLine, rootstockRemaining, normalizeName, placementOf, buildOrchardTrees, balancedRows, blockShape, sharedGroupOf, blockColumns, rowTemplate, layoutRows, lineCount, layoutPlantRow, windbreakLayout, windbreakBerryPlan, eastHedgeLayout, alleyGeometry, laneGeometry, guildLayout, treeDistance, needsTwoDonors, compatiblePair, nearestPartners, PLANT_LOCATIONS, plantedWhen, plan, plannedSpots, plannedAt, plannedTrees, plannedPollination, UNIDENTIFIED_APPLES, unidentifiedApples, UNIDENTIFIED_STONE_FRUIT, unidentifiedStoneFruit };
 })(typeof window !== 'undefined' ? window : globalThis);

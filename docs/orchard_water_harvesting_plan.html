@@ -324,7 +324,7 @@
   <li><a href="https://www.cocorahs.org/">CoCoRaHS</a>: volunteer network that measures daily rain and snow at home with a standard gauge.</li>
   <li>Terrain: USGS 3D Elevation Program (3DEP) 1 m lidar, fitted to the fence lines on USGS NAIP imagery (331 × 1,292 ft fence to fence) and smoothed to about 5 ft; contours, flow paths, and slopes come from that surface, the same data as the whole-site maps (data/site_terrain.js). Bumps smaller than about 5 ft don't show. An earlier version of this page traced the owner's USGS 1 m contour screenshots; across the planted block the two agree within a degree of fall direction and about 0.1 ft per 100 ft of grade. Both replace the earlier field estimate (about 25 ft of fall to the north over 600 ft and 5–10 ft to the west): the north fall in the strip is closer to 10 ft, and the west tilt is about as strong.</li>
   <li>Block placement (owner's tape, October 24, 2026): R1 trunks on the south line of the 600 ft orchard strip, 67 ft north of the middle line, so R15 is about 320 ft from the north fence. The October 6 placement had R1 15 ft inside that line.</li>
-  <li>Plan geometry: offset grid of 18 ft by 20 ft, C1 trunks 38 ft from the west fence. The windbreak is planted as one line 5 ft from the fence (pattern B, reported 2026-11-01), not the October two-row sketch of mulberry at 5 ft and hazelnut at 20 ft. The 35 ft strip remains, the alley is from the mulberry crown edge to the orchard limbs, the orchard plot is 35–272 ft, the driveway 300–322 ft, and the east fence 332 ft with the elderberry hedge 5 ft inside it.</li>
+  <li>Plan geometry: offset grid of 18 ft by 20 ft, C1 trunks 38 ft from the west fence. The windbreak is planted as one line 5 ft from the fence (reported 2026-11-01), not the October two-row sketch of mulberry at 5 ft and hazelnut at 20 ft. Berry plants are to plant at 16 ft from the fence and are not planted yet. The 35 ft strip remains, the alley is from the berry row to the orchard limbs, the orchard plot is 35–272 ft, the driveway 300–322 ft, and the east fence 332 ft with the elderberry hedge 5 ft inside it.</li>
   <li>Rough factors: a mature semi-dwarf tree uses about 0.8 × ET₀ over its 360 sq ft and roots 3–4 ft deep; the soil tank uses the Simonton layer values, about 6.4–8.1 in of available water in that depth. The owner reports no rock in the rooting depth, and about 10 ft of soil to basalt lava.</li>
 </ul>
 </section>
@@ -368,8 +368,9 @@ const PLANTED_WB = orchard.WINDBREAK.planted;
 const MULBERRY_X = PLANTED_WB ? PLANTED_WB.offset : orchard.WINDBREAK.rows[0].offset;
 const HAZELNUT_X = PLANTED_WB ? PLANTED_WB.offset : orchard.WINDBREAK.rows[1].offset;
 const HAZELNUT_WIDTH = orchard.WINDBREAK.rows[1].managedWidth;
-const TREE_EDGE = PLANTED_WB ? MULBERRY_X + orchard.WINDBREAK.rows[0].managedWidth / 2 : HAZELNUT_X + HAZELNUT_WIDTH / 2;
-const LANE = PLANTED_WB ? null : { west: MULBERRY_X, east: HAZELNUT_X - HAZELNUT_WIDTH / 2 };
+const BERRIES = PLANTED_WB && PLANTED_WB.berries;
+const TREE_EDGE = BERRIES ? BERRIES.offset + (BERRIES.managed_width || 6) / 2 : PLANTED_WB ? MULBERRY_X + orchard.WINDBREAK.rows[0].managedWidth / 2 : HAZELNUT_X + HAZELNUT_WIDTH / 2;
+const LANE = BERRIES ? { west: MULBERRY_X + HAZELNUT_WIDTH / 2, east: BERRIES.offset - (BERRIES.managed_width || 6) / 2 } : PLANTED_WB ? null : { west: MULBERRY_X, east: HAZELNUT_X - HAZELNUT_WIDTH / 2 };
 const ALLEY = { west: TREE_EDGE, east: ORCHARD_X0 - ORCHARD_LIMB_ALLOWANCE };
 const ELDERBERRY_X = EAST_FENCE - orchard.EAST_HEDGE.fromFence, ELDERBERRY_SPACING = orchard.EAST_HEDGE.spacing;
 const ROW_PLAN = model.rows.map(row => row.trees.map((tree, index) =>
@@ -634,14 +635,24 @@ function drawSitePlan() {
   if (PLANTED_WB) seg(MULBERRY_X, -6, MULBERRY_X, 286, { stroke: '#5B2A86', 'stroke-width': 3, 'stroke-dasharray': '1 6', 'stroke-linecap': 'round' });
   else [[MULBERRY_X, '#5B2A86'], [HAZELNUT_X, '#6E6B2F']].forEach(([x, color]) =>
     seg(x, -6, x, 286, { stroke: color, 'stroke-width': 3, 'stroke-dasharray': '1 6', 'stroke-linecap': 'round' }));
+  if (BERRIES && window.OrchardModel.windbreakBerryPlan) {
+    const berryLine = window.OrchardModel.windbreakBerryPlan();
+    let from = berryLine.plants[0].y;
+    berryLine.walks.forEach(walk => {
+      seg(BERRIES.offset, from, BERRIES.offset, walk.y - 6, { stroke: '#7CC242', 'stroke-width': 2, 'stroke-dasharray': '4 4', 'stroke-linecap': 'round' });
+      from = walk.y + 6;
+    });
+    seg(BERRIES.offset, from, BERRIES.offset, berryLine.plants[berryLine.plants.length - 1].y, { stroke: '#7CC242', 'stroke-width': 2, 'stroke-dasharray': '4 4', 'stroke-linecap': 'round' });
+  }
   text(WINDBREAK_WIDTH / 2, -54, `${WINDBREAK_WIDTH} ft windbreak`, { 'text-anchor': 'middle', class: 't-title halo' });
   text(MULBERRY_X, -28, PLANTED_WB ? 'planted row' : 'mulberry', { 'text-anchor': 'middle', 'font-size': 8, class: 'halo' });
+  if (BERRIES) text(BERRIES.offset, -36, 'berries to plant', { 'text-anchor': 'middle', 'font-size': 8, class: 'halo' });
   text((ALLEY.west + ALLEY.east) / 2, -28, 'alley', { 'text-anchor': 'middle', 'font-size': 8, class: 'halo' });
   if (LANE) {
-    text((LANE.west + LANE.east) / 2, -36, 'lane', { 'text-anchor': 'middle', 'font-size': 8, class: 'halo' });
-    text(HAZELNUT_X, -36, 'hazel', { 'text-anchor': 'middle', 'font-size': 8, class: 'halo' });
+    text((LANE.west + LANE.east) / 2, -44, BERRIES ? 'pick lane' : 'lane', { 'text-anchor': 'middle', 'font-size': 8, class: 'halo' });
+    if (!BERRIES) text(HAZELNUT_X, -36, 'hazel', { 'text-anchor': 'middle', 'font-size': 8, class: 'halo' });
     for (let y = 0; y <= 275; y += 25) if (y < 110 || y > 190) seg(LANE.west + 1, y, LANE.east - 1, y, { class: 'w-check' });
-    vtext((LANE.west + LANE.east) / 2, 150, 'sunken mulched lane', { 'font-size': 8, class: 't-water' });
+    vtext((LANE.west + LANE.east) / 2, 150, BERRIES ? 'pick lane' : 'sunken mulched lane', { 'font-size': 8, class: 't-water' });
   }
   [50, 130, 210].forEach(y => {
     seg(ALLEY.east, y, ALLEY.west, y + 5, { class: 'w-bar' });
@@ -1046,7 +1057,7 @@ function renderFruitTable() {
     if (type === 'Apple' && reserved.length) where += ` (+${reserved.length} reserved in R1)`;
     addRow(tbody, [PLURAL[type][0].toUpperCase() + PLURAL[type].slice(1), where, ...FRUIT_GUIDE[type]]);
   });
-  addRow(tbody, ['Berries, windbreak, hedge', 'C1 guilds, west strip, east hedge', 'Elderberry and aronia handle wet soil; currants, gooseberries, jostaberry, and honeyberry like moist but drained soil; hazelnut prefers drained soil; mulberry is adaptable', 'Their own crescents; the lane and the NW basin take overflow', 'Yes: the west edge and the NW corner are where overflow ends', 'The C1 guilds sit in the snow-drift zone.']);
+  addRow(tbody, ['Berries, windbreak, hedge', 'Windbreak row to plant, west strip, east hedge', 'Elderberry and aronia handle wet soil; currants, gooseberries, jostaberry, and honeyberry like moist but drained soil; hazelnut prefers drained soil; mulberry is adaptable', 'Their own crescents; the pick lane and the NW basin take overflow', 'Yes: the west edge and the NW corner are where overflow ends', 'The berry row to plant sits west of the snow-drift zone.']);
 }
 
 function renderTracker() {
