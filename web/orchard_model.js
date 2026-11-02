@@ -292,10 +292,46 @@ function layoutPlantRow(row, x, span) {
 }
 
 function windbreakLayout(rowCount) {
-  WINDBREAK.rows.forEach((row, index) => {
-    if (index && row.offset <= WINDBREAK.rows[index - 1].offset) throw new Error('Windbreak rows must run west to east');
+  const planted = WINDBREAK.planted;
+  if (!planted) {
+    WINDBREAK.rows.forEach((row, index) => {
+      if (index && row.offset <= WINDBREAK.rows[index - 1].offset) throw new Error('Windbreak rows must run west to east');
+    });
+    return WINDBREAK.rows.map(row => layoutPlantRow(row, row.offset, (rowCount - 1) * ROW_SPACING));
+  }
+  const byLetter = {
+    M: WINDBREAK.rows.find(row => row.key === 'mulberry'),
+    H: WINDBREAK.rows.find(row => row.key === 'hazelnut')
+  };
+  if (!byLetter.M || !byLetter.H || planted.sequence !== 'HHM') throw new Error('The planted windbreak is pattern B, two hazelnuts then a red mulberry');
+  const left = { M: lineCount(byLetter.M.invRows), H: lineCount(byLetter.H.invRows) };
+  const used = { M: 0, H: 0 };
+  const plants = { M: [], H: [] };
+  const gaps = { M: [], H: [] };
+  const sequence = planted.sequence.split('');
+  const startY = planted.r1_site_y_ft - planted.origin_site_y_ft;
+  let index = 0;
+  while (left.M || left.H) {
+    const letter = sequence[index % sequence.length];
+    const spot = { x: planted.offset, y: startY + index * planted.step };
+    if (left[letter]) {
+      left[letter] -= 1;
+      used[letter] += 1;
+      plants[letter].push({ ...spot, planted: true, plant_id: `i${byLetter[letter].invRows[0]}-${used[letter]}` });
+    } else gaps[letter].push({ ...spot, planted: false, gap: true });
+    index += 1;
+  }
+  return WINDBREAK.rows.map(row => {
+    const letter = row.key === 'mulberry' ? 'M' : row.key === 'hazelnut' ? 'H' : null;
+    if (!letter) throw new Error(`Windbreak row ${row.key} is not in the planted pattern`);
+    const list = plants[letter], gapList = gaps[letter];
+    return {
+      ...row, offset: planted.offset, x: planted.offset, count: list.length,
+      spacing: letter === 'M' ? planted.step * sequence.length : planted.step,
+      start: Math.min(...list.map(spot => spot.y)), end: Math.max(...list.map(spot => spot.y), ...gapList.map(spot => spot.y)),
+      plantedEnd: Math.max(...list.map(spot => spot.y)), plants: list, future: [], gaps: gapList
+    };
   });
-  return WINDBREAK.rows.map(row => layoutPlantRow(row, row.offset, (rowCount - 1) * ROW_SPACING));
 }
 
 function eastHedgeLayout(rowCount, eastFenceX) {
@@ -303,8 +339,10 @@ function eastHedgeLayout(rowCount, eastFenceX) {
 }
 
 function alleyGeometry() {
-  const lastRow = WINDBREAK.rows[WINDBREAK.rows.length - 1];
-  const hedgeEdge = lastRow.offset + lastRow.managedWidth / 2;
+  const planted = WINDBREAK.planted;
+  const hedgeEdge = planted
+    ? Math.max(...WINDBREAK.rows.map(row => planted.offset + row.managedWidth / 2))
+    : WINDBREAK.rows[WINDBREAK.rows.length - 1].offset + WINDBREAK.rows[WINDBREAK.rows.length - 1].managedWidth / 2;
   const limbEdge = ORCHARD_X0 - WINDBREAK.orchardLimbAllowance;
   const clear = limbEdge - hedgeEdge;
   if (hedgeEdge > WINDBREAK.width) throw new Error('The windbreak rows do not fit inside the strip');
@@ -315,6 +353,10 @@ function alleyGeometry() {
 // Walking and picking lane from the tall row's trunks to the next row's west edge. The tall row is pruned so it does not
 // overhang the next row, and the rows keep USDA's 15 ft shade gap.
 function laneGeometry() {
+  if (WINDBREAK.planted) {
+    const x = WINDBREAK.planted.offset;
+    return { west: x, east: x, width: 0, name: 'No separate lane' };
+  }
   const [tall, next] = WINDBREAK.rows;
   const east = next.offset - next.managedWidth / 2;
   if (next.offset - tall.offset < WINDBREAK.shadeGap) throw new Error(`The ${next.name.toLowerCase()} row is closer than ${WINDBREAK.shadeGap} ft to the ${tall.name.toLowerCase()} row`);

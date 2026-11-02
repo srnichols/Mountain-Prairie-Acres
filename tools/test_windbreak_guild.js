@@ -32,10 +32,11 @@ test('The current plan is read from the orchard model, not copied', () => {
   assert.equal(now.counts.H.planted, wb[1].count);
   assert.deepEqual([now.counts.M.planted, now.counts.H.planted], [25, 34]);
   assert.equal(now.alley.clear, OM.alleyGeometry().clear);
-  assert.equal(now.alley.clear, 7);
-  assert.equal(now.band, 25, 'the hazelnut row ends 25 ft from the fence');
+  assert.equal(now.alley.clear, 17, 'the planted line\'s managed crown is 15 ft from the fence, and the limbs start at 32');
+  assert.equal(now.band, 15, 'the planted line\'s managed crown is 15 ft from the fence');
   assert.equal(now.lane.width, OM.laneGeometry().width);
-  assert.equal(now.alley.clearFull, 6, 'the alley at the hazelnuts\' full 12 ft width');
+  assert.equal(now.lane.width, 0, 'the planted kinds share one line, so there is no walking lane');
+  assert.equal(now.alley.clearFull, 21, 'the alley if the hazelnuts on that line reach their full 12 ft width');
   assert.equal(ctx.limbEdge, 32);
   assert.equal(ctx.stock.M, 25);
   assert.equal(ctx.stock.H, 34);
@@ -72,10 +73,12 @@ test('The counts for each pattern, and what that leaves of the plants on hand', 
   const berries = layout => [layout.counts.berries.positions, layout.counts.berries.planted, layout.counts.berries.toAdd, layout.counts.berries.spare];
   assert.deepEqual([berries(patterns.A), berries(patterns.B), berries(patterns.C)], [[50, 41, 9, 0], [51, 41, 10, 0], [52, 41, 11, 0]], 'a bush in front of every gap between two places');
   for (const layout of Object.values(patterns)) assert.equal(layout.plants.filter(plant => plant.planted).length, layout.counts.M.planted + layout.counts.H.planted);
-  // Pattern A is the same 300 ft row as today, from the same first mulberry to the same last, with the mulberries 12 ft apart where today's are 12.5 ft.
-  const [todayM] = now.rows, [aM] = patterns.A.rows;
-  assert.deepEqual([aM.start, aM.end, aM.spacing], [todayM.start, todayM.end, 12]);
-  assert.equal(todayM.spacing, 12.5);
+  const [plantedM, plantedH] = now.rows;
+  assert.equal(plantedM.spacing, 18, 'planted mulberries are one pattern apart');
+  assert.equal(plantedH.spacing, 6, 'planted hazel places are one step apart');
+  assert.equal(plantedM.x, 5);
+  assert.equal(plantedH.start, -20, 'the first hazelnut is even with the planned greenhouse corner, 20 ft south of R1');
+  assert.equal(plantedM.start, -8, 'the first mulberry is the third place, 12 ft north of that corner');
 });
 
 test('The berry row stands in runs by kind, honeyberries first as one group, and marks the rest of its places open', () => {
@@ -137,9 +140,9 @@ test('The strip ends at the berry row, and the alley takes the room', () => {
   assert.equal(layout.alley.clear, 13);
   assert.equal(layout.alley.ground, 19);
   assert.equal(layout.alley.clearFull, 12);
-  assert.equal(cmp.band.saved, 6);
-  assert.equal(cmp.alley.gain, 6);
-  assert.equal(cmp.area.saved, 6 * ctx.target);
+  assert.equal(cmp.band.saved, -4, 'the unused berry-front proposal would take 4 ft more of the strip than the planted line');
+  assert.equal(cmp.alley.gain, -4);
+  assert.equal(cmp.area.saved, -4 * ctx.target);
   assert.equal(cmp.counts.M.proposed, 18);
   for (const other of Object.values(patterns)) assert.deepEqual(plain(other.alley), plain(layout.alley), 'the pattern does not change the room it takes');
   assert.throws(() => G.proposedLayout(OM, { pattern: 'Z' }, ctx), /Pattern Z/);
@@ -191,13 +194,9 @@ test('The light check: an open bush gets all of it, and the results hold the ord
       assert.ok(result.hazel.season.min <= result.hazel.season.mean && result.hazel.season.mean <= result.hazel.season.max);
     }
   }
-  // Kept as the plan assumes, the guild row costs the hazelnuts little; pattern C, with its mulberries farthest apart, is as sunny as today.
-  for (const id of ['A', 'B']) assert.ok(kept('now') - kept(id) < 0.1, `${id} stays within ten points of two rows`);
-  assert.ok(kept('now') - kept('B') < 0.05, 'and B within a few points');
+  // The planted row is the mixed line. Among the unused patterns, more mulberries still mean less light.
   assert.ok(kept('A') < kept('B') && kept('B') < kept('C'), 'more mulberries, less light');
-  assert.ok(kept('C') >= kept('now') - 0.02);
-  // Left to spread, it costs much more, and two rows lose sun as well.
-  for (const id of ['A', 'B', 'C']) assert.ok(spread('now') - spread(id) > 0.08, `${id} loses more than two rows do`);
+  assert.ok(Math.abs(kept('now') - kept('B')) < 0.15, 'the planted line is the same mix as pattern B');
   assert.ok(spread('A') < spread('B') && spread('B') < spread('C'));
   assert.ok(spread('now') < kept('now') - 0.1);
   for (const id of ['A', 'B', 'C']) {
@@ -315,9 +314,9 @@ test('The spacing of the mulberries, the hazelnuts, and the berry bushes along t
       }
     }
   });
-  assert.deepEqual(plain(layouts.map(layout => [layout.rows[0].spacing, layout.rows[1].spacing])), [[12.5, 9], [12, 12], [18, 6], [24, 6]], 'the spacing the figures draw');
-  assert.deepEqual(plain(layouts.slice(1).map(layout => layout.rows[2].spacing)), [6, 6, 6], 'the berry bushes are one step apart in every pattern');
-  assert.match(D.planView(now), />Mulberry 13 ft</, 'the current plan\'s 12.5 ft is written 13');
+  assert.deepEqual(plain(layouts.map(layout => [layout.rows[0].spacing, layout.rows[1].spacing])), [[18, 6], [12, 12], [18, 6], [24, 6]], 'the spacing the figures draw');
+  assert.deepEqual(plain(layouts.slice(1).map(layout => layout.rows[2].spacing)), [6, 6, 6], 'the berry bushes are one step apart in every unused pattern');
+  assert.match(D.planView(now), />Mulberry 18 ft</, 'the planted mulberries are 18 ft apart');
   assert.match(D.planView(patterns.B), /Spacing along the fence: mulberries 18 ft, hazelnuts 6 ft, berries 6 ft\./, 'and the drawing\'s text says it too');
 });
 
@@ -350,12 +349,8 @@ test('A guild is drawn place by place: a tick at every plant between two mulberr
   assert.match(P.layerRows(patterns.B, { now: light.now, proposed: light.B }), /Each stands 6 ft from the next place in the row, so the hazelnut beside a mulberry is 6 ft from its trunk/);
   for (const file of ['windbreak_guild_mockup.html', 'windbreak_guild_options.html']) {
     assert.match(read(file), /Trunks: the large dot is a mulberry, the small dot a hazelnut/, `${file} explains the two dot sizes`);
-    assert.match(read(file), /the mulberry line has a tick at every plant between its ends/, `${file} explains the ticks`);
+    assert.match(read(file), /Patterns A and C are not used/, `${file} does not offer the other patterns`);
   }
-  const view = fakeDocument('windbreak_guild_mockup.html', '#pattern=B');
-  view.page.mockup();
-  assert.equal(view.spans.find(span => span.key === 'step').textContent, '6');
-  assert.match(read('windbreak_guild_mockup.html'), /with every place <span data-m="step"><\/span> ft from the next along the row, so each hazelnut is <span data-m="step"><\/span> ft from the trunk of the mulberry beside it/);
 });
 
 test('Every distance the drawings and pages write is a whole number of feet: no decimals, no fractions, no inches', () => {
@@ -393,10 +388,10 @@ test('Every distance the drawings and pages write is a whole number of feet: no 
 test('The cards, the layers table, and the options tables say what the model says', () => {
   const layout = patterns.B, cmp = G.compare(now, layout), lights = { now: light.now, proposed: light.B };
   const cards = P.specCards(now, layout, cmp, lights);
-  assert.match(cards, /25 → 19 ft/);
-  assert.match(cards, /7 → 13 ft clear/);
-  assert.match(cards, /6 → 12 ft if every plant reaches its full width/);
-  assert.match(cards, /about 1,750 sq ft/);
+  assert.match(cards, /15 → 19 ft/);
+  assert.match(cards, /17 → 13 ft clear/);
+  assert.match(cards, /21 → 12 ft if every plant reaches its full width/);
+  assert.match(cards, /about -1,170 sq ft/);
   assert.match(cards, /25 → 18/);
   assert.match(cards, /34 → 34/);
   assert.match(cards, /0 → 41/);
@@ -413,15 +408,15 @@ test('The cards, the layers table, and the options tables say what the model say
   assert.match(table, /3 ft out of line with the trunks/);
   assert.match(table, /honeyberry 11, red currant 7, gooseberry 3, Viking aronia 2, jostaberry 18/, 'the kinds in the order of the runs');
   assert.match(table, /hangs over only the nearest 2 ft of the berry row, 14 ft or more up/);
-  assert.match(table, /puts them at 70% of the season's sun with the mulberries kept as planned, against 74% in two rows, and 38% against 55% if the mulberries spread/);
+  assert.match(table, /puts them at 70% of the season's sun with the mulberries kept as planned, against 72% in two rows, and 38% against 41% if the mulberries spread/);
   assert.match(P.layerRows(patterns.C, { now: light.now, proposed: light.C }), /puts them at 75% of the season's sun/, 'pattern C is as sunny as two rows, and its note says so');
   assert.doesNotMatch(table, /NaN|undefined/);
   const options = P.optionRows(now, Object.values(patterns));
   assert.match(options, /on hand: 25 mulberries, 34 hazelnuts, 41 berry bushes/);
   assert.match(options, /34 \+ 5 to add/);
   const across = label => new RegExp(`${label}</th><td class="num">(\\d+) ft</td><td class="num">(\\d+) ft</td><td class="num picked">(\\d+) ft</td><td class="num">(\\d+) ft</td>`).exec(options).slice(1).map(Number);
-  assert.deepEqual(across('Mulberry to mulberry'), [13, 12, 18, 24], 'the current plan\'s 12.5 ft is written 13');
-  assert.deepEqual(across('Hazelnut to hazelnut'), [9, 12, 6, 6]);
+  assert.deepEqual(across('Mulberry to mulberry'), [18, 12, 18, 24], 'the planted line is 18 ft, then the unused patterns');
+  assert.deepEqual(across('Hazelnut to hazelnut'), [6, 12, 6, 6]);
   assert.equal((options.match(/picked/g) || []).length, (options.match(/<th scope="row">/g) || []).length, 'pattern B is outlined in every row');
   const lightTable = P.lightRows(now, Object.values(patterns), light);
   assert.match(lightTable, /Mulberries kept as the plan assumes \(20 ft wide, limbs from 14 ft\)/);
@@ -474,62 +469,55 @@ function fakeDocument(file, hash) {
   return { document, spans, nodes, saved, classes, prints, afterprint, closeDialog, page: loaded.window.WindbreakGuildPage };
 }
 
-test('The mock-up page draws from its own HTML: every id exists, every quoted number is supplied, and the buttons redraw it', () => {
-  const view = fakeDocument('windbreak_guild_mockup.html', '');
+test('The planted-row page draws from its own HTML and does not offer another pattern', () => {
+  const html = read('windbreak_guild_mockup.html');
+  assert.doesNotMatch(html, /id="pattern-choice"|pattern=A|pattern=C|Choose above/);
+  const view = fakeDocument('windbreak_guild_mockup.html', '#pattern=C');
   view.page.mockup();
   assert.equal(view.nodes.get('data-error').hidden, true);
-  for (const id of ['wg-specs', 'plan-now', 'plan-new', 'profile-now', 'profile-new', 'layer-table', 'others-table', 'pattern-choice']) assert.ok(view.nodes.get(id).innerHTML.length > 100, id);
-  assert.ok(view.spans.length > 20);
+  for (const id of ['wg-specs', 'plan-now', 'profile-now', 'layer-table', 'others-table']) assert.ok(view.nodes.get(id).innerHTML.length > 100, id);
   for (const span of view.spans) assert.ok(span.textContent.length > 0, `data-m="${span.key}" is empty`);
-  assert.match(view.nodes.get('plan-new-caption').innerHTML, /pattern B/);
+  assert.match(view.nodes.get('wg-specs').innerHTML, /H–H–M/);
+  assert.match(view.nodes.get('layer-table').innerHTML, /Berry bushes stay in the C1 guilds/);
+  assert.doesNotMatch(view.nodes.get('layer-table').innerHTML, /front row/);
+  assert.match(view.nodes.get('others-table').innerHTML, /C1 guilds/);
+  assert.equal(view.spans.find(span => span.key === 'mulberryStock').textContent, '25');
+  assert.equal(view.spans.find(span => span.key === 'hazelStock').textContent, '34');
+  assert.equal(view.spans.find(span => span.key === 'alley').textContent, '17');
   assert.match(view.nodes.get('berry-codes').textContent, /JO jostaberry/);
-  const chooser = view.nodes.get('pattern-choice');
-  assert.equal((chooser.innerHTML.match(/type="radio"/g) || []).length, 3);
-  chooser.listeners.change({ target: { value: 'C' } });
-  assert.deepEqual(view.saved, ['#pattern=C']);
-  assert.match(view.nodes.get('plan-new-caption').innerHTML, /pattern C/);
-  assert.match(view.nodes.get('layer-table').innerHTML, /24 ft, every fourth place/);
-  assert.equal(view.spans.find(span => span.key === 'mulberries').textContent, '14');
-  assert.equal(view.spans.find(span => span.key === 'alley').textContent, '13');
-  assert.deepEqual(chooser.lastChoices.map(choice => choice.input.checked), [false, false, true]);
-  assert.deepEqual(chooser.lastChoices.map(choice => choice.on), [false, false, true], 'the chosen button is marked');
-  // The grid is on when the page opens, and its box takes it off the plan and the profile and puts it back.
   const gridBox = view.nodes.get('grid-toggle');
   assert.equal(gridBox.checked, true);
-  for (const id of ['plan-now', 'plan-new', 'profile-now', 'profile-new']) assert.match(view.nodes.get(id).innerHTML, /g-grid g1/, id);
+  for (const id of ['plan-now', 'profile-now']) assert.match(view.nodes.get(id).innerHTML, /g-grid g1/, id);
   gridBox.checked = false;
   gridBox.listeners.change();
-  for (const id of ['plan-now', 'plan-new', 'profile-now', 'profile-new']) assert.doesNotMatch(view.nodes.get(id).innerHTML, /g-grid|g-ruler/, id);
-  assert.match(view.nodes.get('plan-new-caption').innerHTML, /pattern C/, 'the pattern stays as it was chosen');
+  for (const id of ['plan-now', 'profile-now']) assert.doesNotMatch(view.nodes.get(id).innerHTML, /g-grid|g-ruler/, id);
   gridBox.checked = true;
   gridBox.listeners.change();
-  assert.match(view.nodes.get('profile-new').innerHTML, /g-grid g10/);
+  assert.match(view.nodes.get('profile-now').innerHTML, /g-grid g10/);
 });
 
-test('The mock-up opens on the pattern named in the link', () => {
-  for (const [hash, expected] of [['#pattern=A', 'A'], ['#pattern=C', 'C'], ['', 'B'], ['#pattern=Q', 'B'], ['#something', 'B']]) {
-    const view = fakeDocument('windbreak_guild_mockup.html', hash);
-    view.page.mockup();
-    assert.match(view.nodes.get('plan-new-caption').innerHTML, new RegExp(`pattern ${expected}`), hash);
-  }
-});
-
-test('The options page draws from its own HTML', () => {
+test('The options page draws the planted row and does not offer the other patterns', () => {
+  const html = read('windbreak_guild_options.html');
+  assert.doesNotMatch(html, /id="pattern-choice"|pattern=A|pattern=C/);
   const view = fakeDocument('windbreak_guild_options.html', '');
   view.page.options();
   assert.equal(view.nodes.get('data-error').hidden, true);
-  assert.equal((view.nodes.get('options-plans').innerHTML.match(/<svg /g) || []).length, 4);
-  assert.match(view.nodes.get('options-plans').innerHTML, /windbreak_guild_mockup\.html#pattern=C/);
-  for (const id of ['options-head', 'options-table', 'light-head', 'light-table']) assert.ok(view.nodes.get(id).innerHTML.length > 100, id);
+  assert.equal((view.nodes.get('options-plans').innerHTML.match(/<svg /g) || []).length, 1);
+  assert.match(view.nodes.get('options-plans').innerHTML, /Planted pattern B/);
+  assert.doesNotMatch(view.nodes.get('options-plans').innerHTML, /pattern=C/);
+  for (const id of ['options-head', 'light-head']) assert.match(view.nodes.get(id).innerHTML, /Planted/, id);
+  for (const id of ['options-table', 'light-table']) assert.ok(view.nodes.get(id).innerHTML.length > 100, id);
   for (const span of view.spans) assert.ok(span.textContent.length > 0, `data-m="${span.key}" is empty`);
   assert.equal(view.spans.find(span => span.key === 'latitude').textContent, '43.4737');
+  assert.equal(view.spans.find(span => span.key === 'mulberryStock').textContent, '25');
+  assert.equal(view.spans.find(span => span.key === 'alley').textContent, '17');
   const gridBox = view.nodes.get('grid-toggle');
   assert.equal(gridBox.checked, true);
   assert.match(view.nodes.get('options-plans').innerHTML, /g-grid g5/);
   gridBox.checked = false;
   gridBox.listeners.change();
   assert.doesNotMatch(view.nodes.get('options-plans').innerHTML, /g-grid|g-ruler/);
-  assert.equal((view.nodes.get('options-plans').innerHTML.match(/<svg /g) || []).length, 4, 'still the four figures');
+  assert.equal((view.nodes.get('options-plans').innerHTML.match(/<svg /g) || []).length, 1, 'still the planted row');
 });
 
 test('A page that cannot load the orchard model says so instead of drawing', () => {
@@ -554,7 +542,8 @@ test('The latitude is the one in the climate data, and the pages are in the menu
     assert.deepEqual(scripts, ['site_nav.js', 'data/orchard_model.js', 'windbreak_guild_model.js', 'windbreak_guild_draw.js', 'windbreak_guild_page.js']);
     assert.match(html, /<link rel="stylesheet" href="windbreak_guild\.css">/);
     assert.match(html, /<script>WindbreakGuildPage\.(mockup|options)\(\);<\/script>\s*<\/body>/);
-    assert.match(html, /<strong>Mock-up only\.<\/strong>/);
+    assert.match(html, /planted pattern b/i);
+    assert.doesNotMatch(html, /id="pattern-choice"/);
     for (const link of html.matchAll(/href="([a-z_]+\.html)(#[^"]*)?"/g)) assert.ok(fs.existsSync(path.join(DOCS, link[1])), `${page} links to ${link[1]}`);
   }
 });
@@ -579,14 +568,14 @@ function ancestry(html) {
 }
 
 const PRINTED = {
-  'windbreak_guild_mockup.html': { sheets: { 'sheet-plan': ['wg-specs', 'plan-now', 'plan-new'], 'sheet-profile': ['profile-now', 'profile-new'] }, text: ['layer-table', 'others-table'], pdf: 'windbreak_guild_mockup.pdf', pages: 4, draw: 'mockup' },
+  'windbreak_guild_mockup.html': { sheets: { 'sheet-plan': ['wg-specs', 'plan-now'], 'sheet-profile': ['profile-now'] }, text: ['layer-table', 'others-table'], pdf: 'windbreak_guild_mockup.pdf', pages: 4, draw: 'mockup' },
   'windbreak_guild_options.html': { sheets: { 'sheet-options': ['options-plans'] }, text: ['options-table', 'light-table'], pdf: 'windbreak_guild_options.pdf', pages: 3, draw: 'options' }
 };
 
 test('Each page prints on Tabloid sheets, the drawings first and one to a sheet, and nothing but a button for them is added to the screen', () => {
   const css = read('windbreak_guild.css');
   assert.match(css, /@page \{\s*size: 17in 11in;\s*margin: 10mm;/, 'Tabloid landscape, like the windbreak figures on the pollination grid');
-  assert.match(css, /@bottom-left \{ content: "[^"]*not the planting plan\)"/, 'every printed sheet says it is a mock-up');
+  assert.match(css, /@bottom-left \{ content: "[^"]*planted pattern B \(not a tape\)"/, 'every printed sheet names the planted row');
   assert.match(css, /@bottom-right \{ content: "Page " counter\(page\) " of " counter\(pages\)/);
   assert.ok(css.includes('.print-sheet { display: contents; }'), 'on screen a sheet adds no box, so the page is laid out as it was');
   assert.ok(css.includes('.print-sheet { display: block; break-after: page; }'), 'in print each sheet is a page');

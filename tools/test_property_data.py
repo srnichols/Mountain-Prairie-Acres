@@ -102,10 +102,10 @@ class PropertyDataTest(unittest.TestCase):
             shutil.copytree(ROOT / folder, self.root / folder)
 
     def test_inventory_is_lossless_and_individual(self):
-        self.assertEqual(len(self.data["inventory"]["records"]), 119)
-        self.assertEqual(len(self.data["plants"]["records"]), 432)
-        self.assertEqual(len({p["id"] for p in self.data["plants"]["records"]}), 432)
-        self.assertEqual(sum(r["quantity"] for r in self.data["inventory"]["records"]), 432)
+        self.assertEqual(len(self.data["inventory"]["records"]), 123)
+        self.assertEqual(len(self.data["plants"]["records"]), 437)
+        self.assertEqual(len({p["id"] for p in self.data["plants"]["records"]}), 437)
+        self.assertEqual(sum(r["quantity"] for r in self.data["inventory"]["records"]), 437)
         self.assertEqual(len(self.data["catalog"]["fruit_records"]), 105)
         self.assertTrue(any(r["sheet"] == "Berry" for r in self.data["catalog"]["workbook_records"]))
         self.assertFalse(any(r["sheet"] == "Notes" for r in self.data["catalog"]["workbook_records"]))
@@ -277,12 +277,37 @@ class PropertyDataTest(unittest.TestCase):
         validate_data(self.data)
 
     def test_features_terrain_water_and_gps_are_queryable(self):
-        self.assertEqual(query("SELECT COUNT(*) AS n FROM site_features", self.root)[0]["n"], 79)
+        self.assertEqual(query("SELECT COUNT(*) AS n FROM site_features", self.root)[0]["n"], 102)
         pole = query("SELECT center_x_ft, center_y_ft, status FROM site_features WHERE id = 'ws90_pole'", self.root)[0]
         self.assertEqual(pole["status"], "existing")
         self.assertAlmostEqual(pole["center_x_ft"], 146)
         self.assertAlmostEqual(pole["center_y_ft"], 667)
         self.assertEqual(query("SELECT COUNT(*) AS n FROM site_features WHERE kind = 'valve_box'", self.root)[0]["n"], 15)
+        shade = query("SELECT plant_id, variety, location_name, site_ref FROM current_plantings "
+                      "WHERE plant_id IN ('i114-1', 'i114-2', 'i114-3', 'i114-4', 'i115-1', 'i115-2', 'i118-1', 'i118-2', 'i118-3', 'i119-1', 'i120-1', 'i120-2', 'i120-3', 'i120-4', 'i120-5', 'i120-6', 'i120-7', 'i120-8', 'i121-1', 'i121-2', 'i122-1', 'i123-1', 'i124-1') ORDER BY plant_id", self.root)
+        self.assertEqual([r["plant_id"] for r in shade], ["i114-1", "i114-2", "i114-3", "i114-4", "i115-1", "i115-2", "i118-1", "i118-2", "i118-3", "i119-1", "i120-1", "i120-2", "i120-3", "i120-4", "i120-5", "i120-6", "i120-7", "i120-8", "i121-1", "i121-2", "i122-1", "i123-1", "i124-1"])
+        self.assertEqual(next(r["site_ref"] for r in shade if r["plant_id"] == "i122-1"), "B17-E25-S28")
+        self.assertEqual(next(r["site_ref"] for r in shade if r["plant_id"] == "i123-1"), "B15-E10-S30")
+        self.assertEqual(next(r["site_ref"] for r in shade if r["plant_id"] == "i124-1"), "F16-E36-S27")
+        self.assertEqual(next(r["site_ref"] for r in shade if r["plant_id"] == "i114-1"), "B15-E34-S37")
+        self.assertEqual(next(r["site_ref"] for r in shade if r["plant_id"] == "i114-2"), "B16-E13-S29")
+        self.assertEqual(next(r["site_ref"] for r in shade if r["plant_id"] == "i114-3"), "B17-E13-S5")
+        self.assertEqual(next(r["site_ref"] for r in shade if r["plant_id"] == "i114-4"), "B15-E13-S48")
+        self.assertEqual(next(r["site_ref"] for r in shade if r["plant_id"] == "i115-1"), "A16-E46-S42")
+        self.assertEqual(next(r["site_ref"] for r in shade if r["plant_id"] == "i115-2"), "A17-E46-S16.5")
+        self.assertEqual(next(r["variety"] for r in shade if r["plant_id"] == "i115-1"), "Heartnut")
+        self.assertEqual(next(r["variety"] for r in shade if r["plant_id"] == "i122-1"), "Hybrid")
+        self.assertEqual(next(r["site_ref"] for r in shade if r["plant_id"] == "i121-1"), "E17-E41.8-S11.96")
+        self.assertEqual(next(r["site_ref"] for r in shade if r["plant_id"] == "i120-1"), "D17-E20.88-S25.99")
+        self.assertEqual(next(r["site_ref"] for r in shade if r["plant_id"] == "i120-5"), "D15-E10-S37")
+        self.assertEqual(next(r["site_ref"] for r in shade if r["plant_id"] == "i120-6"), "D15-E43.03-S47.94")
+        self.assertEqual(next(r["site_ref"] for r in shade if r["plant_id"] == "i120-7"), "E16-E27.49-S3.55")
+        self.assertEqual(next(r["site_ref"] for r in shade if r["plant_id"] == "i120-8"), "F16-E12.01-S9.25")
+        self.assertEqual(next(r["site_ref"] for r in shade if r["plant_id"] == "i120-3"), "C15-E20-S48")
+        self.assertEqual(next(r["site_ref"] for r in shade if r["plant_id"] == "i120-4"), "C16-E20-S25")
+        self.assertEqual(next(r["variety"] for r in shade if r["plant_id"] == "i119-1"), "Silver")
+        self.assertEqual(next(r["site_ref"] for r in shade if r["plant_id"] == "i118-3"), "E19-E0-S0")
+        self.assertTrue(all(r["site_ref"] != "PENDING" for r in shade))
         self.assertEqual(query("SELECT COUNT(*) AS n FROM terrain_samples", self.root)[0]["n"], 18009)
         self.assertEqual(query("SELECT COUNT(*) AS n FROM climate_months", self.root)[0]["n"], 12)
         self.assertEqual(query("SELECT COUNT(*) AS n FROM soil_layers", self.root)[0]["n"], 3)
@@ -543,7 +568,7 @@ class PropertyDataTest(unittest.TestCase):
                     "PRAGMA user_version=99", "SELECT load_extension('anything')"):
             with self.subTest(sql=sql), self.assertRaises(sqlite3.DatabaseError):
                 query(sql, self.root)
-        self.assertEqual(query("SELECT COUNT(*) AS n FROM plants", self.root)[0]["n"], 432)
+        self.assertEqual(query("SELECT COUNT(*) AS n FROM plants", self.root)[0]["n"], 437)
 
     def test_all_location_refs_match_shared_helpers(self):
         grid = SiteGrid(data=self.data["site"], terrain=self.data["terrain"])
@@ -746,7 +771,7 @@ class PropertyDataTest(unittest.TestCase):
                                                             "occurred_on": None, "notes": "No date given"}), "needs the date it happened"),
             ("plant_events", lambda d: d["records"].append({"id": "x", "plant_id": "i90-1", "event_type": "lost_in_ground", "recorded_on": "2027-05-04",
                                                             "occurred_on": None, "notes": "Still alive"}), "is for a dead plant"),
-            ("plant_events", lambda d: d["records"][-1].update(plant_id="i90-1"), "is for a dead plant"),
+            ("plant_events", lambda d: next(e for e in d["records"] if e["event_type"] in ("lost_before_planting", "lost_in_ground")).update(plant_id="i90-1"), "is for a dead plant"),
             ("plant_events", lambda d: d.pop("event_types"), "needs an event_types list"),
             ("plant_events", lambda d: d["event_types"].append(copy.deepcopy(d["event_types"][0])), "unique lowercase word"),
             ("plant_events", lambda d: d["event_types"][0].update(id="Planting-Reported"), "unique lowercase word"),
@@ -1085,15 +1110,15 @@ class PropertyDataTest(unittest.TestCase):
         counts = query("SELECT COUNT(*) AS profiles, "
                        "(SELECT COUNT(*) FROM cultivar_profile_links WHERE link_type = 'inventory') AS inventory_links "
                        "FROM cultivar_profiles", self.root)[0]
-        self.assertEqual((counts["profiles"], counts["inventory_links"]), (157, 115))
+        self.assertEqual((counts["profiles"], counts["inventory_links"]), (157, 116))
         cortland = query("SELECT profile_name, ripening FROM plant_profiles WHERE plant_id = 'i29-1'", self.root)[0]
         self.assertEqual((cortland["profile_name"], cortland["ripening"]), ("Cortland", "Mid"))
         unknown = query("SELECT profile_id FROM plant_profiles WHERE plant_id = 'i62-1'", self.root)[0]
         self.assertIsNone(unknown["profile_id"], "Unidentified apples have no profile")
         by_tag = query("SELECT DISTINCT profile_name FROM plant_profiles WHERE metal_tag = 'AL-Zestar'", self.root)
         self.assertEqual([r["profile_name"] for r in by_tag], ["Zestar!"])
-        self.assertEqual(sorted(self.data["cultivar_library"]["unprofiled"], key=int), ["61", "62", "81", "91"])
-        self.assertEqual(query("SELECT COUNT(DISTINCT plant_id) AS n FROM plant_profiles WHERE profile_id IS NULL", self.root)[0]["n"], 12)
+        self.assertEqual(sorted(self.data["cultivar_library"]["unprofiled"], key=int), ["61", "62", "81", "91", "121", "122", "124"])
+        self.assertEqual(query("SELECT COUNT(DISTINCT plant_id) AS n FROM plant_profiles WHERE profile_id IS NULL", self.root)[0]["n"], 16)
         patterson = query("SELECT profile_name, metal_tag FROM plant_profiles WHERE plant_id = 'i71-1'", self.root)[0]
         self.assertEqual((patterson["profile_name"], patterson["metal_tag"]), ("Patterson", "AT-Patterson"))
 

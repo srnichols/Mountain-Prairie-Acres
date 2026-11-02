@@ -3024,6 +3024,41 @@
       "instance": 8,
       "group": "other",
       "health_status": "living"
+    },
+    {
+      "id": "i121-1",
+      "inventory_row": 121,
+      "instance": 1,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i121-2",
+      "inventory_row": 121,
+      "instance": 2,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i122-1",
+      "inventory_row": 122,
+      "instance": 1,
+      "group": "other",
+      "health_status": "living"
+    },
+    {
+      "id": "i123-1",
+      "inventory_row": 123,
+      "instance": 1,
+      "group": "nut",
+      "health_status": "living"
+    },
+    {
+      "id": "i124-1",
+      "inventory_row": 124,
+      "instance": 1,
+      "group": "other",
+      "health_status": "living"
     }
   ]
 }

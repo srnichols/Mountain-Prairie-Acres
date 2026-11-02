@@ -84,7 +84,7 @@
 
 <section aria-labelledby="page-title">
   <h1 id="page-title">Mountain Prairie Acres: Homestead Plot Map</h1>
-  <p class="subtitle">The homestead to scale, north up, as it stood in October 2026: buildings, containers, tank, pump house, pads, the road-mix drives, and the buried water lines, hydrants, and the valve boxes 4 ft back on the hydrants' lines, on the 50 ft master grid. Planned buildings are dashed.</p>
+  <p class="subtitle">The homestead to scale, north up, as it stood in October 2026: buildings, containers, tank, pump house, pads, the road-mix drives, and the buried water lines, hydrants, and the valve boxes 4 ft back on the hydrants' lines, on the 50 ft master grid. Planned buildings are dashed. Shade trees are phone GPS fixes from November 1, 2026.</p>
   <div class="sheet-body">
     <figure class="map"><figcaption>Homestead, 50 ft grid cells (see the <a href="site_master_grid.html">Site Master Grid</a>)</figcaption><div id="map"></div></figure>
     <aside>
@@ -158,6 +158,19 @@ function hydrantMark(parent, cx, cy, fill = COLOR.waterLine) {
 function valveBoxMark(parent, cx, cy) {
   parent.append(svgNode('rect', { x: +(cx - 3).toFixed(2), y: +(cy - 2.3).toFixed(2), width: 6, height: 4.6, rx: 0.8, fill: COLOR.valveBox, stroke: '#fff', 'stroke-width': 1 }));
 }
+const TREE_COLOR = { maple: '#2F6B2F', oak: '#8A4B2F', white_oak: '#6E675C', swamp_oak: '#5A6B52', pin_oak: '#A35A3A', walnut: '#6B5428', heartnut: '#9A7344', alder: '#3E6D8C' };
+const TREE_LABEL = {
+  silver_maple: [8, -4], sugar_maple_1: [7, 3], sugar_maple_2: [7, 5], sugar_maple_3: [8, -10],
+  red_oak_1: [8, -14], red_oak_2: [6, -12], white_oak_1: [8, -8], white_oak_2: [8, 6], swamp_oak_1: [8, -8],
+  pin_oak_1: [8, -8], pin_oak_2: [8, -8], pin_oak_3: [8, -8], hybrid_maple: [-42, -4],
+  english_walnut_1: [-40, -6], english_walnut_2: [-38, 2], english_walnut_3: [8, -6], english_walnut_4: [-42, 8], english_walnut_5: [-42, 8],
+  heartnut_1: [-36, 6], heartnut_2: [-44, -14],
+  alder_1: [-34, -4], alder_2: [8, -6], alder_3: [8, 10]
+};
+function treeMark(parent, cx, cy, fill = TREE_COLOR.maple) {
+  parent.append(svgNode('circle', { cx, cy, r: 5.2, fill, stroke: '#fff', 'stroke-width': 1.2 }));
+  parent.append(svgNode('circle', { cx, cy, r: 1.7, fill: '#fff' }));
+}
 
 // The ten numbered items from the owner's inventory, in his order, with where each number sits on the map.
 const ITEMS = [
@@ -213,7 +226,7 @@ const pathLength = pts => pts.slice(1).reduce((sum, p, i) => sum + Math.hypot(p[
 function makeMap() {
   const W = (VIEW.east - VIEW.west) * S, H = (VIEW.bottom - VIEW.top) * S;
   const svg = svgNode('svg', { viewBox: `0 0 ${W} ${H}`, class: 'diagram', role: 'img', 'aria-labelledby': 'map-title' });
-  svg.append(svgNode('title', { id: 'map-title' }, 'Homestead plot map, north up, on the 50 ft master grid: red shed, outhouse, two shipping containers in an L, irrigation tank and pump house, workshop pad, RV pad, house pad with the planned house and garage, the road-mix driveway and paths, and the buried water lines, frost-free hydrants, and the valve boxes 4 ft back on the hydrants\' lines.'));
+  svg.append(svgNode('title', { id: 'map-title' }, 'Homestead plot map, north up, on the 50 ft master grid: red shed, outhouse, two shipping containers in an L, irrigation tank and pump house, workshop pad, RV pad, house pad with the planned house and garage, the road-mix driveway and paths, the buried water lines, frost-free hydrants, and the valve boxes 4 ft back on the hydrants\' lines, and the shade trees the owner located on November 1, 2026.'));
   const defs = svgNode('defs'), clip = svgNode('clipPath', { id: 'hp-clip' });
   clip.append(svgNode('rect', { x: X(BOX.x0), y: Y(BOX.y0), width: (BOX.x1 - BOX.x0) * S, height: (BOX.y1 - BOX.y0) * S }));
   const solar = svgNode('pattern', { id: 'hp-solar', width: 6, height: 7, patternUnits: 'userSpaceOnUse' });
@@ -285,6 +298,8 @@ function makeMap() {
   HYDRANTS.filter(h => !wellHydrant(h)).forEach(h => hydrantMark(content, X(h.x), Y(h.y)));
   SG.features({ kind: 'well' }).forEach(w => wellMark(content, X(w.x), Y(w.y)));
   HYDRANTS.filter(wellHydrant).forEach(h => hydrantMark(content, X(h.x), Y(h.y), COLOR.well));
+  const TREES = SG.features({ kind: 'tree' });
+  TREES.forEach(t => treeMark(content, X(t.x), Y(t.y), TREE_COLOR[t.marker] || TREE_COLOR.maple));
 
   // Fences
   [0, SG.data.lot.fence.width].forEach(x => line([[x, BOX.y0], [x, BOX.y1]], { stroke: COLOR.fence, 'stroke-width': 2.4 }));
@@ -326,11 +341,19 @@ function makeMap() {
   const efx = X(SG.data.lot.fence.width + 3.4), efy = Y(990);
   add(svgNode('text', { x: efx, y: efy, transform: `rotate(-90 ${efx} ${efy})`, 'text-anchor': 'middle', 'font-size': 7.4, class: 't-title halo' }, 'east fence'), content);
   label(286, 872, 'old ditch, 2 in pipe', 't-water', { 'text-anchor': 'middle', 'font-size': 7.4 });
+  TREES.forEach(t => {
+    const [dx, dy] = TREE_LABEL[t.id] || [7, -2];
+    label(t.x + dx, t.y + dy, t.name, 't-title', { 'font-size': 7.2 });
+    const age = [t.age_years ? `${t.age_years} yr` : '', t.height_ft ? `${t.height_ft} ft` : ''].filter(Boolean).join(', ');
+    if (age) label(t.x + dx, t.y + dy + 6.4, age, 't-note', { 'font-size': 6.3 });
+  });
 
   // Contour labels: one per contour piece, on a stretch clear of features and other labels
   const busy = ['shed', 'outhouse', 'container_solar', 'container_storage', 'pump_house', 'irrigation_tank', 'rv_pad', 'workshop_pad', 'house_pad', 'yard']
-    .map(id => SG.bbox(id)).concat(HYDRANTS.map(h => SG.bbox(h)));
-  const taken = [[103.5, 758, 30], [61, 862, 35], [153, 940, 45], [286, 872, 55], [203, 790, 40], [301, 680, 30], [126, 809, 25], [209, 829, 30], [31, 896, 15]];
+    .map(id => SG.bbox(id)).concat(HYDRANTS.map(h => SG.bbox(h)),
+      TREES.map(t => ({ x0: t.x - 6, y0: t.y - 8, x1: t.x + 42, y1: t.y + 10 })));
+  const taken = [[103.5, 758, 30], [61, 862, 35], [153, 940, 45], [286, 872, 55], [203, 790, 40], [301, 680, 30], [126, 809, 25], [209, 829, 30], [31, 896, 15],
+    [133, 885, 28], [163, 845, 26], [121, 833, 24], [183, 824, 26], [154, 804, 24], [208, 892, 28]];
   contourSets.forEach(({ ft, lines }) => lines.filter(pts => pathLength(pts) >= 45).forEach(pts => {
     const free = pts.map((p, i) => [p, i]).filter(([[x, y]]) => x > BOX.x0 + 10 && x < BOX.x1 - 12 && y > BOX.y0 + 8 && y < BOX.y1 - 8
       && busy.every(b => x < b.x0 - 6 || x > b.x1 + 6 || y < b.y0 - 5 || y > b.y1 + 5)
@@ -409,6 +432,14 @@ function renderLegend() {
   row(s => valveBoxMark(s, 15, 7), 'Valve box, 4 ft back on the hydrant\'s line');
   row(s => s.append(svgNode('line', { x1: 2, y1: 7, x2: 28, y2: 7, stroke: COLOR.contour, 'stroke-width': 1 })), '1 ft contour, ground before the pads');
   row(s => { s.append(svgNode('circle', { cx: 15, cy: 7, r: 6, fill: '#2C2C2A' })); s.append(svgNode('text', { x: 15, y: 10, 'text-anchor': 'middle', 'font-size': 8, style: 'fill:#fff;font-weight:700' }, '6')); }, 'Item number (inventory)');
+  row(s => treeMark(s, 15, 7, TREE_COLOR.maple), 'Maple, owner-adjusted (Nov 1, 2026)');
+  row(s => treeMark(s, 15, 7, TREE_COLOR.oak), 'Red oak, owner-adjusted (Nov 1, 2026)');
+  row(s => treeMark(s, 15, 7, TREE_COLOR.white_oak), 'White oak, each side of the shed drive (Nov 1, 2026)');
+  row(s => treeMark(s, 15, 7, TREE_COLOR.swamp_oak), 'Swamp oak, north of the yard (Nov 1, 2026)');
+  row(s => treeMark(s, 15, 7, TREE_COLOR.pin_oak), 'Pin oak, 4 ft north of the turnaround (Nov 1, 2026)');
+  row(s => treeMark(s, 15, 7, TREE_COLOR.walnut), 'English walnut, owner placed (Nov 1, 2026)');
+  row(s => treeMark(s, 15, 7, TREE_COLOR.heartnut), 'Japanese heartnut, owner placed (Nov 1, 2026)');
+  row(s => treeMark(s, 15, 7, TREE_COLOR.alder), 'Alder, each side of the drive (Nov 1, 2026)');
 }
 
 const nearestPair = (a, b) => {
@@ -454,6 +485,10 @@ function renderInventory() {
   const cellOrder = c => +c.slice(1) * 10 + SG.data.grid.columns.indexOf(c[0]);
   const hydrantCells = HYDRANTS.map(h => SG.cellOf(h.x, h.y)).sort((a, b) => cellOrder(a) - cellOrder(b));
   addRow([['H', 'key'], [`Frost-free yard hydrants (${HYDRANTS.length}), ${HYDRANT_BOXES.length} with a valve box ${HYDRANT_BOXES[0].setback_ft} ft back${NO_BOX.length ? ` (none at ${NO_BOX.map(h => SG.cellOf(h.x, h.y)).join(', ')})` : ''}`, ''], ['—', 'num'], [hydrantCells.join(', '), ''], ['—', 'num'], ['—', 'num']]);
+  SG.features({ kind: 'tree' }).slice().sort((a, b) => a.y - b.y || a.x - b.x).forEach(t => {
+    addRow([['', 'key'], [`${t.name}${t.age_years ? `, ${t.age_years} yr` : ''}`, ''], [t.height_ft ? `about ${t.height_ft} ft tall` : (t.id === 'sugar_maple_3' ? 'cell corner' : 'owner placed'), 'num'],
+      [SG.cellOf(t.x, t.y), ''], [`${fmt(t.x, 1)}, ${fmt(t.y, 1)}`, 'num'], [fmt(SG.elevationFt(t.x, t.y), 1), 'num']]);
+  });
   table.append(tbody);
 }
 
@@ -478,6 +513,7 @@ function renderNotes() {
   const entrance = SG.toLatLon(F('driveway_entrance').x, F('driveway_entrance').y);
   [
     'Placed from the owner\'s drone photos (October 2026), fitted to USGS aerial imagery and lidar: buildings, containers, tank, and pump house to about 3 ft; pad edges and paths to 5–10 ft.',
+    'Shade trees were placed by the owner on November 1, 2026. The D17 sugar maple and the D17 red oak were each moved another 5 ft south. The red oak is now about 5 ft from the 2 in main. Two 3-year alders stand on each side of the driveway at the north end of the E17/F17 stretch, about 5 ft from the edge of the drive. The west alder is 2 ft south of the east alder and about 5 ft from the 2 in main. Tape that alder before digging. The swamp oak moved 3 ft north. Three 4-year pin oaks stand about 4 ft north of the yard turnaround, 35 ft apart from the swamp oak. A 5-year hybrid maple is 14 ft north of the workshop pad, in line with the west edge of the red shed. The B15 English walnut moved 3 ft north and 4 ft east. The B16 and B17 walnuts are both 20 ft west of the outhouse\'s back wall, the west wall opposite the blue door. The B16 walnut moved 4 ft south. They are at B15 34, 37, B16 13, 29, and B17 13, 5. A 2-year English walnut is on that same north-south line, at the 48 ft mark in B15. Two Japanese heartnuts are 17 ft west of the B16 and B17 English walnuts: one in A16, halfway between those walnuts, and one in A17, halfway north-south between the B17 walnut and the hybrid maple. Age not given. Another 2-year English walnut, not on the original sheet, is at B15 10, 30. A 3-year alder, not on the original sheet, was moved 6 ft east and 2 ft south from F16 30, 25 to F16 36, 27, just off the east edge of the driveway. These are not taped positions.',
     'Planned house (40 × 66), garage (east end, flush with the house\'s south wall, about 30 × 26 placeholder), and workshop (32 × 48, long side east–west) are drawn where the owner described them; move them in data/site_grid.js once their final spots are staked.',
     'Old ditch: the high spot on the slope chart is the berm. The 2 in PVC in it is drawn with one gentle bend, on that berm, including under the solar container, pump house, and RV. Those buildings were placed after the lidar flight. The berm is on the north side of a shallow channel. The pipe is about 2.5 ft down and continues to a cow pasture watering hole. Do not cut it. Grade so runoff passes around the house, containers, and pump house, not against them.',
     `Water lines and hydrants are traced from the owner's hand-drawn map (October 2026), to about 5 ft; the 1.5 in line along the west fence is the covered trench in the drone photo. Valve boxes sit ${HYDRANT_BOXES[0].setback_ft} ft back on a hydrant's line. Keep posts, tree holes, and other digging off them. The well head is 18 ft east of the pump house, on that building's midline. A line 5 ft down runs from the head into the east wall; the well hydrant is 1 ft west of the head. The red dotted branch runs north from the head, in front of the workshop pad and east of it, to the red hydrant 4 ft east of the shed's northeast corner.`,

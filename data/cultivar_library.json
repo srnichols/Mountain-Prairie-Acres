@@ -4,7 +4,10 @@
     "61": "Ungrafted apple rootstock of unknown type, not a cultivar",
     "62": "Unidentified apples; see UNIDENTIFIED_APPLES in orchard.json for the possibilities",
     "81": "Unidentified sweet cherries",
-    "91": "Unidentified peaches"
+    "91": "Unidentified peaches",
+    "121": "Owner-reported alders; species not given",
+    "122": "Owner-reported hybrid maple; cross not given",
+    "124": "Owner-reported alder; species not given"
   },
   "group_notes": [
     {
@@ -5600,7 +5603,8 @@
         "Persian walnut"
       ],
       "inventory_rows": [
-        114
+        114,
+        123
       ],
       "purchase_rows": [],
       "seed_rows": [
@@ -5641,7 +5645,7 @@
         ]
       ],
       "basis": "sourced",
-      "note": "Probably seed-grown, so strain and hardiness are unknown; only Carpathian types are advised for cold Intermountain sites. Roots make juglone, which harms blueberries, tomatoes and some other plants.",
+      "note": "Probably seed-grown, so strain and hardiness are unknown; only Carpathian types are advised for cold Intermountain sites. Roots make juglone, which harms blueberries, tomatoes and some other plants. Owner report 2026-11-01: three trees are about 5 years old, in B15, B16, and B17. The fourth tree is about 2 years old, at the 48 ft mark in B15, on the same north-south line as the B16 and B17 trees. Another 2-year tree, not on the original sheet, is at B15 10, 30.",
       "reviewed_on": "2026-10-17"
     },
     {
@@ -5699,7 +5703,7 @@
         ]
       ],
       "basis": "sourced",
-      "note": "Montana Fruit Trees sells heartnut seedlings (Rhodes line) in pairs; if that is what was bought, each tree is genetically unique and some may bear thick-shelled wild-type nuts. Plant two or more for pollination; mature size is uncertain.",
+      "note": "Montana Fruit Trees sells heartnut seedlings (Rhodes line) in pairs; if that is what was bought, each tree is genetically unique and some may bear thick-shelled wild-type nuts. Plant two or more for pollination; mature size is uncertain. Owner report 2026-11-01: both trees are located, in A16 and A17. Age not given.",
       "reviewed_on": "2026-10-17"
     },
     {
@@ -6487,63 +6491,51 @@
         ]
       ],
       "basis": "sourced",
-      "note": "Sources differ on bark color (gray vs brown). Utah State says it can work in Utah if scorching, dry spots and strongly alkaline soil are avoided. Soil pH here is about 6.2, so the scorching, dry spots are the larger risk.",
+      "note": "Sources differ on bark color (gray vs brown). Utah State says it can work in Utah if scorching, dry spots and strongly alkaline soil are avoided. Soil pH here is about 6.2, so the scorching, dry spots are the larger risk. Owner report 2026-11-01: three of the ten, about 2 years old, are planted. One is in D17, one is about 7 ft off the buried well line, and one is on the corner where D18, E18, D19, and E19 meet. The sheet had said two were planted.",
       "reviewed_on": "2026-10-17"
     },
     {
-      "id": "maple",
+      "id": "silver-maple",
       "group": "Shade tree",
       "type": "Maple",
-      "kind": "genus",
-      "name": "Maple (species not recorded)",
+      "kind": "species",
+      "name": "Silver maple",
       "aliases": [
-        "Maple"
+        "Silver",
+        "Acer saccharinum"
       ],
       "inventory_rows": [
         119
       ],
       "purchase_rows": [],
-      "tagline": "Unknown maple; count leaf lobes, check bark and size",
-      "summary": "Genus-level profile for one planted maple of unrecorded species. Lobe count, bark and size separate the likely candidates from the owner's lists: sugar, Japanese and trident maple.",
-      "appearance": "Size is a quick clue: Japanese maple stays a small tree, trident is small to medium, and sugar maple grows large. Fall color: sugar bright red, orange or yellow; Japanese yellow to red or purple; trident very late.",
-      "flavor_use": "Mostly ornamental or shade trees; sugar maple sap makes syrup. Japanese maple dislikes cold and intense heat and wants shade in the afternoon plus shelter from wind. Keep sugar maple off scorching, dry spots and strongly alkaline soil.",
+      "tagline": "Fast shade maple; deep lobes; silver leaf backs",
+      "summary": "Large, fast eastern shade tree. Deeply five-lobed leaves are green above and silver-white beneath. Utah State says the wood is brittle and high soil pH brings iron chlorosis, so give it room and keep it off pipes.",
+      "appearance": "Large and fast, with an oval crown. Summer leaves are green above and silver-white beneath and turn pale yellow in fall. Red to yellow-green flowers open before the leaves. Paired winged seeds about 1.5 in long ripen in late spring.",
+      "flavor_use": "Shade tree for a large open spot. Utah State says it should rarely be planted in the West: limbs break in storms, and high pH brings iron chlorosis. The Morton Arboretum warns of the same breakage and of roots that can enter pipes.",
       "uses": [
-        "ornamental",
         "shade",
-        "syrup"
+        "ornamental"
       ],
       "ripening": null,
-      "ripening_note": "Fall color: sugar bright red to yellow, Japanese varies by cultivar, trident turns very late",
-      "id_cues": "These maples all have paired (opposite) leaves. Trident: 3 forward-pointing lobes. Japanese: deeply 5-9 lobed, fine double teeth. Sugar: 5 rounded lobes, smooth edges. Norway: 5 pointed lobes, milky sap in a snapped leaf stalk. Red: usually 3 toothed lobes, red twigs. Size and bark help too.",
-      "habit": "Japanese maple is a small tree that wants shade in the afternoon and shelter from wind. Trident is a small to medium tree, fairly drought resistant but shade intolerant. Sugar maple is a large, shade-tolerant tree with a well-formed canopy.",
-      "bark": "Sugar: gray, deeply furrowed into long uneven plates on older trees. Trident: scaly in gray, orange and brown once the tree is a few years old. Japanese: green to purplish-red when young, grayish later. Norway: smooth gray-brown, furrowed with age. Red: smooth light gray, then long scaly plates.",
-      "leaf": "Sugar: 3 to 5 in across, 5 lobes with rounded tips, edges smooth or wavy. Trident: 1.5 to 3 in wide, 3 shiny forward-pointing lobes with a few tiny teeth. Japanese: 2 to 5 in long, 5 to 9 deep lobes, doubly toothed, green to purplish-red by cultivar.",
-      "hardiness": "Sugar maple zones 4-8; Japanese 5-8; trident 5-9 (Utah State TreeBrowser)",
+      "ripening_note": "Winged seeds ripen in late spring and can sprout at once",
+      "id_cues": "Paired leaves with 5 deep lobes and coarse teeth, green above and silver-white beneath. Buds are rounded and red; twigs are orange-brown to red and smell bad when bruised. Young bark is smooth silver-gray; older bark lifts in long thin plates. Sugar maple leaves have rounded lobes and are not silver underneath.",
+      "habit": "Intermediate shade tolerance and a fast oval crown. Flowers are red to yellow-green and open very early, before the leaves. Give it plenty of room: limbs break in wind and ice.",
+      "bark": "Smooth and silver-gray on young stems. Older trunks break into long, thin, scaly plates that curl away at the ends. Twigs are slender, orange-brown to red, and smell disagreeable when bruised.",
+      "leaf": "Paired and simple, about 4 to 7 in wide, deeply 5-lobed with coarse teeth. Green and smooth above, silver-white beneath; the leaf stalk is about 3 to 5 in. Fall color is pale yellow to yellow-green.",
+      "hardiness": "Zones 3-9 (Utah State TreeBrowser)",
       "sources": [
         [
-          "Utah State University Extension: Sugar Maple (TreeBrowser)",
-          "https://extension.usu.edu/treebrowser/catalog/maple-sugar"
+          "Utah State University Extension: Silver Maple (TreeBrowser)",
+          "https://extension.usu.edu/treebrowser/catalog/maple-silver"
         ],
         [
-          "Utah State University Extension: Japanese Maple (TreeBrowser)",
-          "https://extension.usu.edu/treebrowser/catalog/maple-japanese"
-        ],
-        [
-          "Utah State University Extension: Trident Maple (TreeBrowser)",
-          "https://extension.usu.edu/treebrowser/catalog/maple-trident"
-        ],
-        [
-          "Utah State University Extension: Norway Maple (TreeBrowser)",
-          "https://extension.usu.edu/treebrowser/catalog/maple-norway"
-        ],
-        [
-          "Utah State University Extension: Red Maple (TreeBrowser)",
-          "https://extension.usu.edu/treebrowser/catalog/maple-red"
+          "The Morton Arboretum: Silver maple",
+          "https://mortonarb.org/plant-and-protect/trees-and-plants/silver-maple/"
         ]
       ],
       "basis": "sourced",
-      "note": "Species not recorded. Japanese and trident maple are rated zone 5 and warmer, sugar maple zone 4 and warmer. Norway maple's milky leaf-stalk sap can fade late in summer. Species profiles for sugar, Japanese, and trident maple describe each in full.",
-      "reviewed_on": "2026-10-17"
+      "note": "Owner report 2026-11-01: the one planted maple is a silver maple, about 5 years old and about 10 ft tall. The owner moved the phone fix 4 ft west and lined it up with the north end of the RV, still in C18. Not a tape. Soil pH here is about 6.2, so iron chlorosis is less of a risk than Utah State warns about where the soil is not acidic enough. Dry wind and brittle wood remain the risks.",
+      "reviewed_on": "2026-11-01"
     },
     {
       "id": "oak",
@@ -6592,7 +6584,7 @@
         ]
       ],
       "basis": "sourced",
-      "note": "Owner's sheet lists northern red oak at zones 3-8; the listed pages give no zone for it. Utah State rates bur oak a good fit for most of Utah (high pH, drought, cold, wind); no Idaho-specific page was checked. Species profiles for northern red oak and white oak describe each in full.",
+      "note": "Owner's sheet lists northern red oak at zones 3-8; the listed pages give no zone for it. Utah State rates bur oak a good fit for most of Utah (high pH, drought, cold, wind); no Idaho-specific page was checked. Species profiles for northern red oak and white oak describe each in full. Owner report 2026-11-01: two planted trees are red oaks, about 5 years old, in D17 and C17. The D17 tree was moved 4 ft west and is about 7 ft from the 2 in main. Two are white oaks flanking the driveway entrance to the red shed in C15 and C16. The fifth is a swamp oak at D15-E10-S37. The owner also reports three 4-year pin oaks along the north side of the yard turnaround. The sheet had said 5 planted. The line stays various.",
       "reviewed_on": "2026-10-17"
     },
     {

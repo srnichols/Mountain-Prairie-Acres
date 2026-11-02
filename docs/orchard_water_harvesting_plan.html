@@ -324,7 +324,7 @@
   <li><a href="https://www.cocorahs.org/">CoCoRaHS</a>: volunteer network that measures daily rain and snow at home with a standard gauge.</li>
   <li>Terrain: USGS 3D Elevation Program (3DEP) 1 m lidar, fitted to the fence lines on USGS NAIP imagery (331 × 1,292 ft fence to fence) and smoothed to about 5 ft; contours, flow paths, and slopes come from that surface, the same data as the whole-site maps (data/site_terrain.js). Bumps smaller than about 5 ft don't show. An earlier version of this page traced the owner's USGS 1 m contour screenshots; across the planted block the two agree within a degree of fall direction and about 0.1 ft per 100 ft of grade. Both replace the earlier field estimate (about 25 ft of fall to the north over 600 ft and 5–10 ft to the west): the north fall in the strip is closer to 10 ft, and the west tilt is about as strong.</li>
   <li>Block placement (owner's tape, October 24, 2026): R1 trunks on the south line of the 600 ft orchard strip, 67 ft north of the middle line, so R15 is about 320 ft from the north fence. The October 6 placement had R1 15 ft inside that line.</li>
-  <li>Plan geometry (pollination grid snapshot, October 4, 2026): offset grid of 18 ft by 20 ft, C1 trunks 38 ft from the west fence, 35 ft windbreak (mulberry 5 ft and hazelnut 20 ft from the fence), alley 25–32 ft, orchard plot 35–272 ft, driveway 300–322 ft, east fence 332 ft with the elderberry hedge 5 ft inside it. The planted block is taken as 237 × 300 ft.</li>
+  <li>Plan geometry: offset grid of 18 ft by 20 ft, C1 trunks 38 ft from the west fence. The windbreak is planted as one line 5 ft from the fence (pattern B, reported 2026-11-01), not the October two-row sketch of mulberry at 5 ft and hazelnut at 20 ft. The 35 ft strip remains, the alley is from the mulberry crown edge to the orchard limbs, the orchard plot is 35–272 ft, the driveway 300–322 ft, and the east fence 332 ft with the elderberry hedge 5 ft inside it.</li>
   <li>Rough factors: a mature semi-dwarf tree uses about 0.8 × ET₀ over its 360 sq ft and roots 3–4 ft deep; the soil tank uses the Simonton layer values, about 6.4–8.1 in of available water in that depth. The owner reports no rock in the rooting depth, and about 10 ft of soil to basalt lava.</li>
 </ul>
 </section>
@@ -364,10 +364,13 @@ const PLOT_WIDTH = orchard.PLOT_WIDTH, PLOT_EAST = WINDBREAK_WIDTH + PLOT_WIDTH;
 const DRIVEWAY_WEST = WINDBREAK_WIDTH + orchard.EAST_SIDE.originalPlotWidth + orchard.EAST_SIDE.groundToDriveway;
 const DRIVEWAY_WIDTH = orchard.EAST_SIDE.driveway, DRIVEWAY_TO_FENCE = orchard.EAST_SIDE.drivewayToFence;
 const DRIVEWAY_EAST = DRIVEWAY_WEST + DRIVEWAY_WIDTH, EAST_FENCE = DRIVEWAY_EAST + DRIVEWAY_TO_FENCE;
-const MULBERRY_X = orchard.WINDBREAK.rows[0].offset, HAZELNUT_X = orchard.WINDBREAK.rows[1].offset;
+const PLANTED_WB = orchard.WINDBREAK.planted;
+const MULBERRY_X = PLANTED_WB ? PLANTED_WB.offset : orchard.WINDBREAK.rows[0].offset;
+const HAZELNUT_X = PLANTED_WB ? PLANTED_WB.offset : orchard.WINDBREAK.rows[1].offset;
 const HAZELNUT_WIDTH = orchard.WINDBREAK.rows[1].managedWidth;
-const LANE = { west: MULBERRY_X, east: HAZELNUT_X - HAZELNUT_WIDTH / 2 };
-const ALLEY = { west: HAZELNUT_X + HAZELNUT_WIDTH / 2, east: ORCHARD_X0 - ORCHARD_LIMB_ALLOWANCE };
+const TREE_EDGE = PLANTED_WB ? MULBERRY_X + orchard.WINDBREAK.rows[0].managedWidth / 2 : HAZELNUT_X + HAZELNUT_WIDTH / 2;
+const LANE = PLANTED_WB ? null : { west: MULBERRY_X, east: HAZELNUT_X - HAZELNUT_WIDTH / 2 };
+const ALLEY = { west: TREE_EDGE, east: ORCHARD_X0 - ORCHARD_LIMB_ALLOWANCE };
 const ELDERBERRY_X = EAST_FENCE - orchard.EAST_HEDGE.fromFence, ELDERBERRY_SPACING = orchard.EAST_HEDGE.spacing;
 const ROW_PLAN = model.rows.map(row => row.trees.map((tree, index) =>
   tree ? tree.invRow : index < row.reserved ? 'R' : null));
@@ -607,7 +610,7 @@ function drawSitePlan() {
   const stoneY = [(STONE_ROWS[0] - 1) * ROW_SPACING - 10, (STONE_ROWS[STONE_ROWS.length - 1] - 1) * ROW_SPACING + 10];
   box(WINDBREAK_WIDTH, PLOT_EAST, stoneY[0], stoneY[1], { fill: 'url(#sp-stone)' });
   box(ALLEY.west, ORCHARD_X0 + 14, -14, NORTH, { fill: 'url(#sp-drift)', opacity: 0.8 });
-  box(LANE.west + 1, LANE.east - 1, -6, 286, { class: 'w-lane' });
+  if (LANE) box(LANE.west + 1, LANE.east - 1, -6, 286, { class: 'w-lane' });
 
   // Lidar 1 m contours and flow paths, moved into plan coordinates (plan y = feet north of R1)
   const runs = pts => {
@@ -628,18 +631,21 @@ function drawSitePlan() {
   }));
 
   // Windbreak rows, lane, alley
-  [[MULBERRY_X, '#5B2A86'], [HAZELNUT_X, '#6E6B2F']].forEach(([x, color]) =>
+  if (PLANTED_WB) seg(MULBERRY_X, -6, MULBERRY_X, 286, { stroke: '#5B2A86', 'stroke-width': 3, 'stroke-dasharray': '1 6', 'stroke-linecap': 'round' });
+  else [[MULBERRY_X, '#5B2A86'], [HAZELNUT_X, '#6E6B2F']].forEach(([x, color]) =>
     seg(x, -6, x, 286, { stroke: color, 'stroke-width': 3, 'stroke-dasharray': '1 6', 'stroke-linecap': 'round' }));
   text(WINDBREAK_WIDTH / 2, -54, `${WINDBREAK_WIDTH} ft windbreak`, { 'text-anchor': 'middle', class: 't-title halo' });
-  text(MULBERRY_X, -28, 'mulberry', { 'text-anchor': 'middle', 'font-size': 8, class: 'halo' });
+  text(MULBERRY_X, -28, PLANTED_WB ? 'planted row' : 'mulberry', { 'text-anchor': 'middle', 'font-size': 8, class: 'halo' });
   text((ALLEY.west + ALLEY.east) / 2, -28, 'alley', { 'text-anchor': 'middle', 'font-size': 8, class: 'halo' });
-  text((LANE.west + LANE.east) / 2, -36, 'lane', { 'text-anchor': 'middle', 'font-size': 8, class: 'halo' });
-  text(HAZELNUT_X, -36, 'hazel', { 'text-anchor': 'middle', 'font-size': 8, class: 'halo' });
-  for (let y = 0; y <= 275; y += 25) if (y < 110 || y > 190) seg(LANE.west + 1, y, LANE.east - 1, y, { class: 'w-check' });
-  vtext((LANE.west + LANE.east) / 2, 150, 'sunken mulched lane', { 'font-size': 8, class: 't-water' });
+  if (LANE) {
+    text((LANE.west + LANE.east) / 2, -36, 'lane', { 'text-anchor': 'middle', 'font-size': 8, class: 'halo' });
+    text(HAZELNUT_X, -36, 'hazel', { 'text-anchor': 'middle', 'font-size': 8, class: 'halo' });
+    for (let y = 0; y <= 275; y += 25) if (y < 110 || y > 190) seg(LANE.west + 1, y, LANE.east - 1, y, { class: 'w-check' });
+    vtext((LANE.west + LANE.east) / 2, 150, 'sunken mulched lane', { 'font-size': 8, class: 't-water' });
+  }
   [50, 130, 210].forEach(y => {
     seg(ALLEY.east, y, ALLEY.west, y + 5, { class: 'w-bar' });
-    seg(ALLEY.west - 0.5, y + 5.2, HAZELNUT_X + 1, y + 6, { class: 'w-flow-strong', 'marker-end': 'url(#sp-water)' });
+    seg(ALLEY.west - 0.5, y + 5.2, (PLANTED_WB ? MULBERRY_X : HAZELNUT_X) + 1, y + 6, { class: 'w-flow-strong', 'marker-end': 'url(#sp-water)' });
   });
   vtext((ALLEY.west + ALLEY.east) / 2, 90, 'water bars', { 'font-size': 8 });
   vtext(ORCHARD_X0 + 5, 262, 'snow-drift zone', { 'font-size': 8, class: 't-water' });

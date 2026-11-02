@@ -187,7 +187,7 @@ const VALVE_BOXES = SG.features({ kind: 'valve_box' });
 const HEAD_STATIONS = VALVE_BOXES.filter(f => f.lateral), HYDRANT_BOXES = VALVE_BOXES.filter(f => f.hydrant);
 const NO_BOX = HYDRANTS.filter(h => !HYDRANT_BOXES.some(b => b.hydrant === h.id));
 // The laterals and valve boxes have their own table, so the feature table keeps one row for them
-const isRowDetail = f => f.kind === 'valve_box' || Boolean(f.head_station);
+const isRowDetail = f => f.kind === 'valve_box' || f.kind === 'tree' || Boolean(f.head_station);
 const isWellDetail = f => f.kind === 'well' || f.kind === 'well_pipe' || f.id === 'hydrant_well' || f.id === 'hydrant_shed_awning';
 const pathLength = pts => pts.slice(1).reduce((sum, p, i) => sum + Math.hypot(p[0] - pts[i][0], p[1] - pts[i][1]), 0);
 
@@ -243,6 +243,9 @@ function makeMap() {
     add(svgNode('circle', { cx: X(w.x), cy: Y(w.y), r: 1.15, fill: COLOR.well }), inLot);
   });
   HYDRANTS.filter(wellHydrant).forEach(h => hydrantDot(h, inLot));
+  SG.features({ kind: 'tree' }).forEach(t => add(svgNode('circle', {
+    cx: X(t.x), cy: Y(t.y), r: 2.5, fill: t.marker === 'oak' ? '#8A4B2F' : t.marker === 'white_oak' ? '#6E675C' : t.marker === 'swamp_oak' ? '#5A6B52' : t.marker === 'pin_oak' ? '#A35A3A' : t.marker === 'walnut' ? '#6B5428' : t.marker === 'heartnut' ? '#9A7344' : t.marker === 'alder' ? '#3E6D8C' : '#2F6B2F', stroke: '#fff', 'stroke-width': 0.5
+  }), inLot));
   // Row head stations: a valve box at the end of each row lateral. Each hydrant's valve box is 4 ft back on its line, so it
   // is drawn small, over the edge of the hydrant dot (the homestead plot map shows them apart).
   HEAD_STATIONS.forEach(f => add(svgNode('rect', { x: +(X(f.x) - 1.9).toFixed(2), y: +(Y(f.y) - 1.9).toFixed(2), width: 3.8, height: 3.8,
@@ -456,6 +459,14 @@ function renderFeatures() {
   groups.forEach(([group, title]) => {
     if (title) tbody.append(groupRow(title));
     SG.features({ group }).filter(f => !isRowDetail(f)).forEach(f => tbody.append(featureRow(f)));
+    if (group === 'homestead') {
+      const trees = SG.features({ kind: 'tree' });
+      if (trees.length) {
+        const cells = [...new Set(trees.map(t => SG.cellOf(t.x, t.y)))].sort().join(', ');
+        const tr = element('tr', null, 'note'), td = element('td', `${trees.length} shade trees, owner-placed on November 1, 2026 (${cells}): see the homestead plot map. Two 3-year alders flank the driveway at the north end of E17/F17. The west alder is 2 ft south of the east alder and about 5 ft from the 2 in main. Three 4-year pin oaks stand about 4 ft north of the yard turnaround, 35 ft apart. Three 5-year English walnuts are in B15, B16, and B17. The B15 walnut moved 3 ft north and 4 ft east. The B16 and B17 walnuts are both 20 ft west of the outhouse's back wall. The B16 walnut moved 4 ft south. A 2-year English walnut is on that same line, at the 48 ft mark in B15. Two Japanese heartnuts are in A16 and A17, 17 ft west of the B16 and B17 English walnuts. Another 2-year English walnut, not on the original sheet, is at B15 10, 30. A 3-year alder, not on the original sheet, is at F16 36, 27.`);
+        td.colSpan = FEATURE_COLUMNS.length; tr.append(td); tbody.append(tr);
+      }
+    }
     if (group === 'utility') {
       const tr = element('tr', null, 'note'), td = element('td', `${HEAD_STATIONS.length} row laterals (1.5 in, 10 ft) with their head-station valve boxes, and ${HYDRANT_BOXES.length} hydrant valve boxes: see Row laterals and valve boxes, below.`);
       td.colSpan = FEATURE_COLUMNS.length; tr.append(td); tbody.append(tr);

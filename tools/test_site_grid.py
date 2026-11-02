@@ -407,6 +407,84 @@ class SiteGridTest(unittest.TestCase):
         # The owner's Google Maps pin on the red shed should land on the shed.
         px, py = g.from_latlon(43.473383, -115.594507)
         self.assertLess(math.dist((px, py), g.center("shed")), 10)
+        phone = {
+            "silver_maple": (43.473064, -115.594347, "i119-1", "maple"),
+            "red_oak_1": (43.473228, -115.594196, "i120-1", "oak"),
+            "red_oak_2": (43.473251, -115.594304, "i120-2", "oak"),
+            "sugar_maple_1": (43.47315, -115.594282, "i118-1", "maple"),
+            "sugar_maple_2": (43.473197, -115.594438, "i118-2", "maple"),
+        }
+        # The owner shifted the phone fixes on November 1. The D17 red oak is 2 ft east and 15 ft south
+        # of its phone fix. The C17 red oak is 6 ft east and 5 ft south. The sugar maples and the
+        # silver maple keep their earlier shifts.
+        shifts = {"red_oak_1": (2, 15), "red_oak_2": (6, 5), "sugar_maple_1": (9, 8), "sugar_maple_2": (8, 8)}
+        for fid, (lat, lon, plant_id, marker) in phone.items():
+            feature = g.feature(fid)
+            gx, gy = g.from_latlon(lat, lon)
+            if fid == "silver_maple":
+                self.assertAlmostEqual(feature["x"], gx - 4, delta=0.03, msg=fid)
+                self.assertAlmostEqual(feature["y"], g.feature("rv")["y0"], delta=0.03, msg=fid)
+            else:
+                dx, dy = shifts[fid]
+                self.assertAlmostEqual(feature["x"], gx + dx, delta=0.03, msg=fid)
+                self.assertAlmostEqual(feature["y"], gy + dy, delta=0.03, msg=fid)
+            self.assertEqual((feature["kind"], feature["marker"], feature["plant_id"], feature["accuracy_ft"]),
+                             ("tree", marker, plant_id, 30), fid)
+            self.assertTrue(g.in_lot(feature["x"], feature["y"]), fid)
+        self.assertEqual(g.cell_of(g.feature("sugar_maple_1")["x"], g.feature("sugar_maple_1")["y"]), "D17")
+        corner = g.feature("sugar_maple_3")
+        self.assertEqual((corner["x"], corner["y"], corner["plant_id"], corner["age_years"]), (200, 900, "i118-3", 2))
+        self.assertEqual(g.site_ref(corner["x"], corner["y"]), "E19-E0-S0")
+        self.assertEqual((g.feature("alder_1")["x"], g.feature("alder_1")["y"], g.cell_of(241.8, 811.96)), (241.8, 811.96, "E17"))
+        self.assertAlmostEqual(g.feature("alder_1")["y"], g.feature("alder_2")["y"] + 2, delta=0.01)
+        self.assertEqual((g.feature("swamp_oak_1")["x"], g.feature("swamp_oak_1")["y"], g.cell_of(160, 737)), (160, 737, "D15"))
+        self.assertEqual(g.site_ref(160, 737), "D15-E10-S37")
+        self.assertEqual((g.feature("pin_oak_1")["x"], g.feature("pin_oak_1")["y"]), (193.03, 747.94))
+        self.assertEqual(g.site_ref(193.03, 747.94), "D15-E43.03-S47.94")
+        self.assertEqual((g.feature("pin_oak_2")["x"], g.feature("pin_oak_2")["y"]), (227.49, 753.55))
+        self.assertEqual(g.site_ref(227.49, 753.55), "E16-E27.49-S3.55")
+        self.assertEqual((g.feature("pin_oak_3")["x"], g.feature("pin_oak_3")["y"]), (262.01, 759.25))
+        self.assertEqual(g.cell_of(262.01, 759.25), "F16")
+        self.assertEqual(g.site_ref(262.01, 759.25), "F16-E12.01-S9.25")
+        self.assertEqual(g.feature("pin_oak_1")["age_years"], 4)
+        self.assertEqual((g.feature("hybrid_maple")["x"], g.feature("hybrid_maple")["y"], g.cell_of(75, 828)), (75, 828, "B17"))
+        self.assertEqual(g.site_ref(75, 828), "B17-E25-S28")
+        self.assertEqual((g.feature("english_walnut_1")["x"], g.feature("english_walnut_1")["y"]), (84, 737))
+        self.assertEqual(g.cell_of(84, 737), "B15")
+        self.assertEqual(g.site_ref(84, 737), "B15-E34-S37")
+        self.assertEqual((g.feature("english_walnut_2")["x"], g.feature("english_walnut_2")["y"]), (63, 779))
+        self.assertEqual((g.feature("english_walnut_3")["x"], g.feature("english_walnut_3")["y"]), (63, 805))
+        self.assertEqual(g.feature("english_walnut_2")["x"], g.feature("outhouse")["x0"] - 20)
+        self.assertEqual(g.site_ref(63, 779), "B16-E13-S29")
+        self.assertEqual(g.site_ref(63, 805), "B17-E13-S5")
+        self.assertEqual((g.feature("english_walnut_4")["x"], g.feature("english_walnut_4")["y"], g.feature("english_walnut_4")["age_years"]), (63, 748, 2))
+        self.assertEqual(g.cell_of(63, 748), "B15")
+        self.assertEqual(g.site_ref(63, 748), "B15-E13-S48")
+        self.assertEqual(g.feature("english_walnut_4")["x"], g.feature("english_walnut_2")["x"])
+        self.assertEqual((g.feature("heartnut_1")["x"], g.feature("heartnut_1")["y"]), (46, 792))
+        self.assertEqual(g.cell_of(46, 792), "A16")
+        self.assertEqual(g.site_ref(46, 792), "A16-E46-S42")
+        self.assertEqual(g.feature("heartnut_1")["x"], g.feature("english_walnut_2")["x"] - 17)
+        self.assertEqual(g.feature("heartnut_1")["y"], (g.feature("english_walnut_2")["y"] + g.feature("english_walnut_3")["y"]) / 2)
+        self.assertEqual((g.feature("heartnut_2")["x"], g.feature("heartnut_2")["y"]), (46, 816.5))
+        self.assertEqual(g.cell_of(46, 816.5), "A17")
+        self.assertEqual(g.site_ref(46, 816.5), "A17-E46-S16.5")
+        self.assertEqual(g.feature("heartnut_2")["x"], g.feature("english_walnut_3")["x"] - 17)
+        self.assertEqual(g.feature("heartnut_2")["y"], (g.feature("english_walnut_3")["y"] + g.feature("hybrid_maple")["y"]) / 2)
+        self.assertEqual((g.feature("english_walnut_5")["x"], g.feature("english_walnut_5")["y"], g.feature("english_walnut_5")["age_years"]), (60, 730, 2))
+        self.assertEqual(g.cell_of(60, 730), "B15")
+        self.assertEqual(g.site_ref(60, 730), "B15-E10-S30")
+        self.assertEqual((g.feature("alder_3")["x"], g.feature("alder_3")["y"], g.feature("alder_3")["age_years"]), (286, 777, 3))
+        self.assertEqual(g.cell_of(286, 777), "F16")
+        self.assertEqual(g.site_ref(286, 777), "F16-E36-S27")
+        self.assertEqual(g.feature("english_walnut_1")["age_years"], 5)
+        self.assertEqual((g.feature("alder_2")["x"], g.feature("alder_2")["y"], g.cell_of(267.23, 809.96)), (267.23, 809.96, "F17"))
+        self.assertEqual(g.feature("alder_1")["age_years"], 3)
+        self.assertEqual((g.feature("white_oak_1")["x"], g.feature("white_oak_1")["y"], g.cell_of(120, 748)), (120, 748, "C15"))
+        self.assertEqual((g.feature("white_oak_2")["x"], g.feature("white_oak_2")["y"], g.cell_of(120, 775)), (120, 775, "C16"))
+        self.assertEqual(g.site_ref(120, 748), "C15-E20-S48")
+        self.assertEqual(g.site_ref(120, 775), "C16-E20-S25")
+        self.assertEqual(g.feature("white_oak_1")["plant_id"], "i120-3")
         # North is up: moving south (larger y) lowers latitude; moving east raises longitude.
         self.assertLess(g.to_latlon(0, 100)[0], g.to_latlon(0, 0)[0])
         self.assertGreater(g.to_latlon(100, 0)[1], g.to_latlon(0, 0)[1])

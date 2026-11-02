@@ -123,8 +123,8 @@ function otherRows(proposed) {
   if (honey) {
     const bought = honey.match && /\(([^)]*)\)/.exec(honey.match.berry || '');
     out.push(row([
-      `<strong>Honeyberry</strong><div class="source-note">${esc(bought ? `bought: ${bought[1]}` : 'berry')}</div>`, String(honey.count), 'Yes, as one group',
-      'In the front row, as the first run at the south end, with the varieties mixed.',
+      `<strong>Honeyberry</strong><div class="source-note">${esc(bought ? `bought: ${bought[1]}` : 'berry')}</div>`, String(honey.count), proposed.berryRow ? 'Yes, as one group' : 'No, they stay in the C1 guilds',
+      proposed.berryRow ? 'In the front row, as the first run at the south end, with the varieties mixed.' : 'Stay around the C1 trees, as one group, with the varieties mixed.',
       `${esc(honey.match ? honey.match.note : '')} The flowers open very early and tolerate frost to about 19–20°F, the bushes scorch in summer heat, so the row's afternoon shade suits them, and birds are the main pest, so one run takes one net.`
     ]));
   }
@@ -214,7 +214,7 @@ function optionRows(now, options) {
   const planted = count => `${count.planted}${count.toAdd ? ` + ${count.toAdd} to add` : ''}${count.spare ? `<span class="src">${count.spare} spare</span>` : ''}`;
   return [
     group('The row'),
-    row('Pattern along the fence', layout => layout.pattern ? layout.pattern.short : 'two rows'),
+    row('Pattern along the fence', layout => layout.pattern ? layout.pattern.short : 'planted pattern B'),
     row('Mulberry to mulberry', layout => spacingText(layout.rows[0].spacing)),
     row('Hazelnut to hazelnut', layout => spacingText(layout.rows[1].spacing)),
     group(`Plants (on hand: ${ctx.stock.M} mulberries, ${ctx.stock.H} hazelnuts, ${ctx.stock.berryTotal} berry bushes)`),
@@ -290,63 +290,106 @@ function wirePrint() {
   });
 }
 
+function plantedSpecs(layout) {
+  const hazel = layout.rows.find(row => row.kind === 'H');
+  return [
+    addCard('Pattern', 'B · H–H–M', 'two hazelnuts, then a red mulberry'),
+    addCard('From the fence', `${num(layout.rows[0].x)} ft`, 'one line; patterns A and C are not used'),
+    addCard('Red mulberry', `${layout.counts.M.planted} planted`, `${num(layout.rows.find(row => row.kind === 'M').spacing)} ft apart`),
+    addCard('Hazelnut', `${layout.counts.H.planted} planted`, hazel && hazel.toAdd ? `${hazel.toAdd} empty places at the north end` : 'the hazelnuts ran out first'),
+    addCard('Tractor alley', `${num(layout.alley.clear)} ft clear`, 'berries stay around the C1 trees')
+  ].join('');
+}
+
+function plantedLayers(layout) {
+  const ctx = layout.ctx, kinds = layout.kinds;
+  const row = cells => `<tr>${cells.map(cell => `<td>${cell}</td>`).join('')}</tr>`;
+  const line = (kind, label) => {
+    const spec = kinds[kind], summary = layout.rows.find(item => item.kind === kind);
+    return row([label, plantCell(spec), `${summary.count} planted`, `${num(summary.x)} ft`, spacingText(summary.spacing),
+      nsLabel(summary.start, ctx), nsLabel(summary.end, ctx), `${esc(spec.height)} tall; ${esc(spec.spread)}`,
+      kind === 'H' ? 'Empty hazel places are at the north end, after the plants on hand ran out.' : 'Keep one trunk and hold the east side of the crown back so it does not close the alley.']);
+  };
+  return [
+    line('M', '1. Red mulberry, in the planted line'),
+    line('H', '2. Hazelnut, in the same line'),
+    `<tr><td colspan="9">Berry bushes stay in the C1 guilds. They were not planted in this line. The east elderberry hedge is not part of this row.</td></tr>`
+  ].join('');
+}
+
 function mockup() {
   guard(() => {
-    const OM = root.OrchardModel, ctx = G.context(OM), now = G.currentLayout(OM, ctx);
-    const nowLight = G.lightByCrown(now), proposedLight = new Map();
-    const asked = /pattern=([A-Z])/.exec(root.location ? root.location.hash : '');
-    let chosen = asked && G.PATTERNS.some(entry => entry.id === asked[1]) ? asked[1] : G.DEFAULT_PATTERN;
-    const choices = document.getElementById('pattern-choice');
-    choices.innerHTML = G.PATTERNS.map(entry => `<label class="choice"><input type="radio" name="pattern" value="${entry.id}"><span><span class="name">${entry.id} · ${esc(entry.short)}</span><span class="what">${esc(entry.label)}</span></span></label>`).join('');
+    const planted = G.currentLayout(root.OrchardModel);
     const gridBox = document.getElementById('grid-toggle');
     const show = () => {
-      const proposed = G.proposedLayout(OM, { pattern: chosen }, ctx), cmp = G.compare(now, proposed), drawing = { grid: gridBox.checked };
-      if (!proposedLight.has(chosen)) proposedLight.set(chosen, G.lightByCrown(proposed));
-      const light = { now: nowLight, proposed: proposedLight.get(chosen) };
-      put('wg-specs', specCards(now, proposed, cmp, light));
-      put('plan-now', D.planView(now, drawing));
-      put('plan-new', D.planView(proposed, drawing));
-      put('profile-now', D.profileView(now, drawing));
-      put('profile-new', D.profileView(proposed, drawing));
-      document.getElementById('plan-new-caption').innerHTML = `Proposed: pattern ${esc(proposed.pattern.id)}, ${esc(proposed.pattern.label.toLowerCase())} <span>(${esc(proposed.pattern.short)})</span>`;
-      document.getElementById('profile-new-caption').innerHTML = `Proposed: pattern ${esc(proposed.pattern.id)} <span>(${esc(proposed.pattern.short)}), one row and a berry row</span>`;
-      put('layer-table', layerRows(proposed, light));
-      put('others-table', otherRows(proposed));
-      document.getElementById('berry-codes').textContent = ctx.stock.berries.map(entry => `${entry.group.code} ${entry.group.name}`).join(', ');
-      fill(document.body, values(now, proposed, cmp, light));
-      choices.querySelectorAll('.choice').forEach(label => {
-        const input = label.querySelector('input');
-        input.checked = input.value === chosen;
-        label.classList.toggle('on', input.checked);
+      const drawing = { grid: gridBox.checked };
+      put('wg-specs', plantedSpecs(planted));
+      put('plan-now', D.planView(planted, drawing));
+      put('profile-now', D.profileView(planted, drawing));
+      put('layer-table', plantedLayers(planted));
+      put('others-table', otherRows(planted));
+      const codes = document.getElementById('berry-codes');
+      if (codes) codes.textContent = planted.ctx.stock.berries.map(entry => `${entry.group.code} ${entry.group.name}`).join(', ');
+      fill(document.body, {
+        alley: num(planted.alley.clear),
+        mulberryStock: String(planted.counts.M.planted),
+        hazelStock: String(planted.counts.H.planted)
       });
     };
-    choices.addEventListener('change', event => {
-      chosen = event.target.value;
-      if (root.history && root.history.replaceState) root.history.replaceState(null, '', `#pattern=${chosen}`);
-      show();
-    });
     gridBox.addEventListener('change', show);
     show();
     wirePrint();
   });
 }
 
+function plantedTable(layout) {
+  const cell = text => `<td class="num picked">${text}</td>`;
+  const row = (label, text) => `<tr><th scope="row">${label}</th>${cell(text)}</tr>`;
+  const hazelGaps = layout.rows.find(row => row.kind === 'H');
+  return [
+    '<tr class="group"><th colspan="2">Planted pattern B</th></tr>',
+    row('Along the fence', 'H–H–M, then repeat'),
+    row('From the fence', `${num(layout.rows[0].x)} ft`),
+    row('Place to place', `${num(layout.step || 6)} ft`),
+    row('Mulberry to mulberry', `${num(layout.rows.find(row => row.kind === 'M').spacing)} ft`),
+    row('Red mulberry', `${layout.counts.M.planted} planted`),
+    row('Hazelnut', `${layout.counts.H.planted} planted`),
+    row('Empty hazel places', hazelGaps && hazelGaps.gaps ? String(hazelGaps.gaps) : '16, at the north end'),
+    row('Tractor alley, clear', `${num(layout.alley.clear)} ft`)
+  ].join('');
+}
+
+function plantedLightTable(light) {
+  const cell = text => `<td class="num picked">${text}</td>`;
+  return G.MULBERRY_CROWNS.map(entry => {
+    const season = light[entry.id].hazel.season;
+    return `<tr class="group"><th colspan="2">${esc(entry.label)}</th></tr>`
+      + `<tr><th scope="row">Share of the season's direct sun on the hazelnuts</th>${cell(`${pct(season.mean)}<span class="src">${pct(season.min)}–${pct(season.max)} across the row</span>`)}</tr>`
+      + `<tr><th scope="row">Hours on June 21 with at least half the sun</th>${cell(hours(light[entry.id].hazel.fullHours.mean))}</tr>`;
+  }).join('');
+}
+
 function options() {
   guard(() => {
-    const OM = root.OrchardModel, ctx = G.context(OM), now = G.currentLayout(OM, ctx);
-    const layouts = G.PATTERNS.map(entry => G.proposedLayout(OM, { pattern: entry.id }, ctx));
-    const byLayout = { now: G.lightByCrown(now) };
-    layouts.forEach(layout => { byLayout[layout.id] = G.lightByCrown(layout); });
-    const byId = Object.fromEntries(layouts.map(layout => [layout.id, layout]));
+    const OM = root.OrchardModel, planted = G.currentLayout(OM);
+    const light = G.lightByCrown(planted);
     const gridBox = document.getElementById('grid-toggle');
-    const drawPlans = () => put('options-plans', planFigures(now, layouts, { grid: gridBox.checked }));
+    const drawPlans = () => put('options-plans', `<figure class="wg-figure"><figcaption>Planted pattern B <span>two hazelnuts, then a red mulberry, running north</span></figcaption>${D.planView(planted, { ...COMPACT_PLAN, grid: gridBox.checked })}</figure>`);
     gridBox.addEventListener('change', drawPlans);
     drawPlans();
-    put('options-head', headRow(now, layouts));
-    put('light-head', headRow(now, layouts));
-    put('options-table', optionRows(now, layouts));
-    put('light-table', lightRows(now, layouts, byLayout));
-    fill(document.body, plainValues(now, byId, byLayout.now));
+    put('options-head', '<tr><th></th><th class="num picked">Planted</th></tr>');
+    put('light-head', '<tr><th></th><th class="num picked">Planted</th></tr>');
+    put('options-table', plantedTable(planted));
+    put('light-table', plantedLightTable(light));
+    const kinds = planted.kinds;
+    fill(document.body, {
+      ...sizeValues(kinds),
+      keptDetail: crownText('kept', kinds), spreadDetail: crownText('spread', kinds),
+      shadeGap: num(planted.ctx.shadeGap), latitude: String(G.SITE.latitude),
+      daylight: hours(light.kept.daylight), k: `${Math.round(G.LIGHT.k * 100)}%`,
+      mulberryStock: String(planted.counts.M.planted), hazelStock: String(planted.counts.H.planted),
+      alley: num(planted.alley.clear)
+    });
     wirePrint();
   });
 }

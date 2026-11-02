@@ -65,7 +65,7 @@ class PropertyCliTest(unittest.TestCase):
         path.write_text(json.dumps(locations), encoding="utf-8")
         restored = self.run_cli("query", "SELECT COUNT(*) AS n FROM plants", "--format", "json")
         self.assertEqual(restored.returncode, 0, restored.stderr)
-        self.assertEqual(json.loads(restored.stdout)[0]["n"], 432)
+        self.assertEqual(json.loads(restored.stdout)[0]["n"], 437)
 
     def test_unicode_query_output_is_not_lost_to_windows_terminal_encoding(self):
         result = self.run_cli("query", "SELECT char(8594) AS direction")

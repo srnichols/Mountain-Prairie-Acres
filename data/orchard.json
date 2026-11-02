@@ -626,6 +626,17 @@
       "orchardLimbAllowance": 6,
       "endMargin": 6,
       "shadeGap": 15,
+      "planted": {
+        "pattern": "B",
+        "sequence": "HHM",
+        "step": 6,
+        "offset": 5,
+        "r1_site_y_ft": 600,
+        "origin_site_y_ft": 620,
+        "direction": "north",
+        "reported_on": "2026-11-01",
+        "origin": "planned northwest corner of the west gothic greenhouse"
+      },
       "rows": [
         {
           "key": "mulberry",

@@ -1062,6 +1062,744 @@
       "planted_on": "2026-10",
       "recorded_on": "2026-10-26",
       "notes": "Owner report 2026-10-26: planted 20 ft south of R1 on the orchard center line (odd-row column 7, the R1-C7 line, x 146). AL-UrbR is on that line. The owner did not give the day, so planted_on is October 2026."
+    },
+    {
+      "id": "planting-i119-1",
+      "plant_id": "i119-1",
+      "location_id": "shade-silver-maple",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: the one planted maple (inventory line 119) is a silver maple, about 5 years old and about 10 ft tall. Phone GPS 43.473064 N, 115.594347 W. The owner moved that point 4 ft west and lined it up with the north end of the RV. Placed at C18-E24.67-S39. Inventory relocation year is 2023; planted_on stays null. Not a tape."
+    },
+    {
+      "id": "planting-i118-1",
+      "plant_id": "i118-1",
+      "location_id": "shade-sugar-maple-1",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: one of the planted sugar maples, about 2 years old. Phone GPS 43.47315 N, 115.594282 W, recorded as i118-1. The owner moved it 9 ft east and 8 ft south from the phone fix. Placed at D17-E4.99-S47.36. Inventory relocation date is 3.28.2026; planted_on stays null. Not a tape."
+    },
+    {
+      "id": "planting-i118-2",
+      "plant_id": "i118-2",
+      "location_id": "shade-sugar-maple-2",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: a planted sugar maple, about 2 years old. Phone GPS 43.473197 N, 115.594438 W, recorded as i118-2. The phone fix lands on the buried well line. The owner moved it 8 ft east and 8 ft south, to C17-E12.62-S30.14, about 7 ft from that line. Inventory relocation date is 3.28.2026; planted_on stays null. Not a tape."
+    },
+    {
+      "id": "planting-i120-1",
+      "plant_id": "i120-1",
+      "location_id": "shade-red-oak-1",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: a red oak, about 5 years old. Phone GPS 43.473228 N, 115.594196 W, the D17 red oak, recorded as i120-1, not a metal tag. The owner moved it 2 ft east and 15 ft south from the phone fix. Placed at D17-E20.88-S25.99, about 7 ft from the 2 in main. Relocation date is 3.07.2026; planted_on stays null. Not a tape."
+    },
+    {
+      "id": "planting-i120-2",
+      "plant_id": "i120-2",
+      "location_id": "shade-red-oak-2",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: a red oak, about 5 years old. Phone GPS 43.473251 N, 115.594304 W, the C17 red oak, recorded as i120-2, not a metal tag. The owner moved it 6 ft east and 5 ft south from the phone fix. Placed at C17-E46.23-S7.54. Two more planted oaks on this line are white oaks at the shed drive. One planted oak is still not located. Relocation date is 3.07.2026; planted_on stays null. Not a tape."
+    },
+    {
+      "id": "planting-i118-3",
+      "plant_id": "i118-3",
+      "location_id": "shade-sugar-maple-3",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: a third planted sugar maple, about 2 years old, on the corner where D18, E18, D19, and E19 meet. Recorded as i118-3, not a metal tag. Placed at E19-E0-S0. The inventory sheet had said only two were planted. No phone GPS and no planting day, so planted_on stays null. Not a tape."
+    },
+    {
+      "id": "planting-i121-1",
+      "plant_id": "i121-1",
+      "location_id": "shade-alder-1",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: an alder, about 3 years old, on the west side of the driveway at the north end of the E17/F17 stretch, about 5 ft from the edge of the drive. Recorded as i121-1, not a metal tag. Placed at E17-E41.8-S11.96, 2 ft south of the east alder, about 4 ft from the edge of the drive and about 5 ft from the 2 in main. Not on the original sheet. Species not given. planted_on stays null. Not a tape."
+    },
+    {
+      "id": "planting-i121-2",
+      "plant_id": "i121-2",
+      "location_id": "shade-alder-2",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: an alder, about 3 years old, on the east side of the driveway at the north end of the E17/F17 stretch, about 5 ft from the edge of the drive. Recorded as i121-2, not a metal tag. Placed at F17-E17.23-S9.96. Not on the original sheet. Species not given. planted_on stays null. Not a tape."
+    },
+    {
+      "id": "planting-i120-3",
+      "plant_id": "i120-3",
+      "location_id": "shade-white-oak-1",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: a white oak, about 5 years old, on the north side of the driveway entrance to the red shed. Recorded as i120-3, not a metal tag. Placed at C15-E20-S48 from the owner's grid mark. Inventory line 120 stays various. Relocation date is 3.07.2026; planted_on stays null. Not a tape."
+    },
+    {
+      "id": "planting-i120-4",
+      "plant_id": "i120-4",
+      "location_id": "shade-white-oak-2",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: a white oak, about 5 years old, on the south side of the driveway entrance to the red shed. Recorded as i120-4, not a metal tag. Placed at C16-E20-S25 from the owner's grid mark. Inventory line 120 stays various. Relocation date is 3.07.2026; planted_on stays null. Not a tape."
+    },
+    {
+      "id": "planting-i120-5",
+      "plant_id": "i120-5",
+      "location_id": "shade-swamp-oak-1",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: a swamp oak, about 5 years old, at the owner's grid mark D15 10, 40. Recorded as i120-5, not a metal tag. The owner moved it 3 ft north of D15 10, 40. Placed at D15-E10-S37, about 4 ft north of the yard turnaround. Inventory line 120 stays various. This is the fifth planted oak on the line. Relocation date is 3.07.2026; planted_on stays null. Not a tape."
+    },
+    {
+      "id": "planting-i120-6",
+      "plant_id": "i120-6",
+      "location_id": "shade-pin-oak-1",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: a pin oak, about 4 years old, 35 ft from the swamp oak along the line 4 ft north of the yard turnaround. The owner set the spacing at 35 ft. Recorded as i120-6, not a metal tag. Placed at D15-E43.03-S47.94. Inventory line 120 stays various. The sheet had said 5 planted. planted_on stays null. Not a tape."
+    },
+    {
+      "id": "planting-i120-7",
+      "plant_id": "i120-7",
+      "location_id": "shade-pin-oak-2",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: a pin oak, about 4 years old, 70 ft from the swamp oak along the line 4 ft north of the yard turnaround. The owner set the spacing at 35 ft. Recorded as i120-7, not a metal tag. Placed at E16-E27.49-S3.55. The loop crosses into row 16, so this is E16 rather than E15. planted_on stays null. Not a tape."
+    },
+    {
+      "id": "planting-i120-8",
+      "plant_id": "i120-8",
+      "location_id": "shade-pin-oak-3",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: a pin oak, about 4 years old, 105 ft from the swamp oak along the line 4 ft north of the yard turnaround. The owner set the spacing at 35 ft. Recorded as i120-8, not a metal tag. Placed at F16-E12.01-S9.25. planted_on stays null. Not a tape."
+    },
+    {
+      "id": "planting-i122-1",
+      "plant_id": "i122-1",
+      "location_id": "shade-hybrid-maple-1",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: a hybrid maple, about 5 years old, 14 ft north of the workshop pad and in line with the west edge of the red shed. Recorded as i122-1, not a metal tag. Placed at B17-E25-S28. Not on the original sheet. Cross not given. planted_on stays null. Not a tape."
+    },
+    {
+      "id": "planting-i114-1",
+      "plant_id": "i114-1",
+      "location_id": "nut-english-walnut-1",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: an English walnut, about 5 years old, at the owner's grid mark B15 30, 40, then moved 3 ft north and 4 ft east. Recorded as i114-1, not the metal tag. Placed at B15-E34-S37, about 9 ft north of the red shed. Relocation date is 3.28.2026; planted_on stays null. Not a tape."
+    },
+    {
+      "id": "planting-i114-2",
+      "plant_id": "i114-2",
+      "location_id": "nut-english-walnut-2",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: an English walnut, about 5 years old, at the owner's grid mark B16 20, 25, then moved 4 ft south. The owner placed it 20 ft west of the outhouse's back wall. Recorded as i114-2, not the metal tag. Placed at B16-E13-S29, 7 ft west and 4 ft south of that grid mark. Relocation date is 3.28.2026; planted_on stays null. Not a tape."
+    },
+    {
+      "id": "planting-i114-3",
+      "plant_id": "i114-3",
+      "location_id": "nut-english-walnut-3",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: an English walnut, about 5 years old, at the owner's grid mark B17 20, 15, then moved 10 ft north. The owner placed it 20 ft west of the outhouse's back wall. Recorded as i114-3, not the metal tag. Placed at B17-E13-S5, about 26 ft from the hybrid maple. Relocation date is 3.28.2026; planted_on stays null. Not a tape."
+    },
+    {
+      "id": "planting-i114-4",
+      "plant_id": "i114-4",
+      "location_id": "nut-english-walnut-4",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: an English walnut, about 2 years old, on the same north-south line as the B16 and B17 trees, at the 48 ft mark in B15. Recorded as i114-4, not the metal tag. Placed at B15-E13-S48, about 12 ft off the red shed's northwest corner. The sheet said 3 planted; this is the fourth tree on line 114. Relocation date is 3.28.2026; planted_on stays null. Not a tape."
+    },
+    {
+      "id": "planting-i115-1",
+      "plant_id": "i115-1",
+      "location_id": "nut-heartnut-1",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: a Japanese heart walnut, 17 ft west of the B16 English walnut and evenly spaced between that tree and the B17 English walnut. Recorded as i115-1, not the metal tag. Placed at A16-E46-S42. Age not given. Relocation date is 3.07.2026; planted_on stays null. Not a tape."
+    },
+    {
+      "id": "planting-i115-2",
+      "plant_id": "i115-2",
+      "location_id": "nut-heartnut-2",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: a Japanese heart walnut, 17 ft west of the B17 English walnut and evenly spaced north-south between that tree and the hybrid maple. Recorded as i115-2, not the metal tag. Placed at A17-E46-S16.5. Age not given. Relocation date is 3.07.2026; planted_on stays null. Not a tape."
+    },
+    {
+      "id": "planting-i123-1",
+      "plant_id": "i123-1",
+      "location_id": "nut-english-walnut-5",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: an English walnut, about 2 years old, at the owner's grid mark B15 10, 30. Recorded as i123-1, not a metal tag. Placed at B15-E10-S30, about 22 ft off the red shed's northwest corner. Not on the original sheet. planted_on stays null. Not a tape."
+    },
+    {
+      "id": "planting-i124-1",
+      "plant_id": "i124-1",
+      "location_id": "shade-alder-3",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: an alder, about 3 years old, shifted 6 ft east and 2 ft south from F16 30, 25. Recorded as i124-1, not a metal tag. Placed at F16-E36-S27, about 11 ft east of the driveway centerline. Not on the original sheet. Species not given. planted_on stays null. Not a tape."
+    },
+    {
+      "id": "planting-i15-1",
+      "plant_id": "i15-1",
+      "location_id": "windbreak-i15-1",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-1 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-2",
+      "plant_id": "i15-2",
+      "location_id": "windbreak-i15-2",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-2 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-1",
+      "plant_id": "i11-1",
+      "location_id": "windbreak-i11-1",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-1 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-3",
+      "plant_id": "i15-3",
+      "location_id": "windbreak-i15-3",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-3 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-4",
+      "plant_id": "i15-4",
+      "location_id": "windbreak-i15-4",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-4 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-2",
+      "plant_id": "i11-2",
+      "location_id": "windbreak-i11-2",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-2 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-5",
+      "plant_id": "i15-5",
+      "location_id": "windbreak-i15-5",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-5 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-6",
+      "plant_id": "i15-6",
+      "location_id": "windbreak-i15-6",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-6 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-3",
+      "plant_id": "i11-3",
+      "location_id": "windbreak-i11-3",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-3 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-7",
+      "plant_id": "i15-7",
+      "location_id": "windbreak-i15-7",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-7 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-8",
+      "plant_id": "i15-8",
+      "location_id": "windbreak-i15-8",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-8 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-4",
+      "plant_id": "i11-4",
+      "location_id": "windbreak-i11-4",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-4 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-9",
+      "plant_id": "i15-9",
+      "location_id": "windbreak-i15-9",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-9 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-10",
+      "plant_id": "i15-10",
+      "location_id": "windbreak-i15-10",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-10 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-5",
+      "plant_id": "i11-5",
+      "location_id": "windbreak-i11-5",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-5 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-11",
+      "plant_id": "i15-11",
+      "location_id": "windbreak-i15-11",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-11 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-12",
+      "plant_id": "i15-12",
+      "location_id": "windbreak-i15-12",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-12 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-6",
+      "plant_id": "i11-6",
+      "location_id": "windbreak-i11-6",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-6 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-13",
+      "plant_id": "i15-13",
+      "location_id": "windbreak-i15-13",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-13 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-14",
+      "plant_id": "i15-14",
+      "location_id": "windbreak-i15-14",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-14 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-7",
+      "plant_id": "i11-7",
+      "location_id": "windbreak-i11-7",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-7 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-15",
+      "plant_id": "i15-15",
+      "location_id": "windbreak-i15-15",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-15 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-16",
+      "plant_id": "i15-16",
+      "location_id": "windbreak-i15-16",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-16 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-8",
+      "plant_id": "i11-8",
+      "location_id": "windbreak-i11-8",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-8 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-17",
+      "plant_id": "i15-17",
+      "location_id": "windbreak-i15-17",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-17 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-18",
+      "plant_id": "i15-18",
+      "location_id": "windbreak-i15-18",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-18 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-9",
+      "plant_id": "i11-9",
+      "location_id": "windbreak-i11-9",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-9 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-19",
+      "plant_id": "i15-19",
+      "location_id": "windbreak-i15-19",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-19 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-20",
+      "plant_id": "i15-20",
+      "location_id": "windbreak-i15-20",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-20 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-10",
+      "plant_id": "i11-10",
+      "location_id": "windbreak-i11-10",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-10 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-21",
+      "plant_id": "i15-21",
+      "location_id": "windbreak-i15-21",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-21 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-22",
+      "plant_id": "i15-22",
+      "location_id": "windbreak-i15-22",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-22 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-11",
+      "plant_id": "i11-11",
+      "location_id": "windbreak-i11-11",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-11 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-23",
+      "plant_id": "i15-23",
+      "location_id": "windbreak-i15-23",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-23 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-24",
+      "plant_id": "i15-24",
+      "location_id": "windbreak-i15-24",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-24 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-12",
+      "plant_id": "i11-12",
+      "location_id": "windbreak-i11-12",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-12 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-25",
+      "plant_id": "i15-25",
+      "location_id": "windbreak-i15-25",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-25 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-26",
+      "plant_id": "i15-26",
+      "location_id": "windbreak-i15-26",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-26 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-13",
+      "plant_id": "i11-13",
+      "location_id": "windbreak-i11-13",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-13 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-27",
+      "plant_id": "i15-27",
+      "location_id": "windbreak-i15-27",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-27 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-28",
+      "plant_id": "i15-28",
+      "location_id": "windbreak-i15-28",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-28 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-14",
+      "plant_id": "i11-14",
+      "location_id": "windbreak-i11-14",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-14 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-29",
+      "plant_id": "i15-29",
+      "location_id": "windbreak-i15-29",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-29 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-30",
+      "plant_id": "i15-30",
+      "location_id": "windbreak-i15-30",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-30 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-15",
+      "plant_id": "i11-15",
+      "location_id": "windbreak-i11-15",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-15 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-31",
+      "plant_id": "i15-31",
+      "location_id": "windbreak-i15-31",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-31 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-32",
+      "plant_id": "i15-32",
+      "location_id": "windbreak-i15-32",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-32 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-16",
+      "plant_id": "i11-16",
+      "location_id": "windbreak-i11-16",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-16 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-33",
+      "plant_id": "i15-33",
+      "location_id": "windbreak-i15-33",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-33 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i15-34",
+      "plant_id": "i15-34",
+      "location_id": "windbreak-i15-34",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i15-34 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-17",
+      "plant_id": "i11-17",
+      "location_id": "windbreak-i11-17",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-17 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-18",
+      "plant_id": "i11-18",
+      "location_id": "windbreak-i11-18",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-18 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-19",
+      "plant_id": "i11-19",
+      "location_id": "windbreak-i11-19",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-19 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-20",
+      "plant_id": "i11-20",
+      "location_id": "windbreak-i11-20",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-20 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-21",
+      "plant_id": "i11-21",
+      "location_id": "windbreak-i11-21",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-21 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-22",
+      "plant_id": "i11-22",
+      "location_id": "windbreak-i11-22",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-22 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-23",
+      "plant_id": "i11-23",
+      "location_id": "windbreak-i11-23",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-23 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-24",
+      "plant_id": "i11-24",
+      "location_id": "windbreak-i11-24",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-24 is this plant, not a metal tag. planted_on is the sheet relocation date."
+    },
+    {
+      "id": "planting-i11-25",
+      "plant_id": "i11-25",
+      "location_id": "windbreak-i11-25",
+      "status": "planted",
+      "planted_on": "2026-03-15",
+      "recorded_on": "2026-11-01",
+      "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-25 is this plant, not a metal tag. planted_on is the sheet relocation date."
     }
   ]
 }

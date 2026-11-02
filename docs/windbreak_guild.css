@@ -127,7 +127,7 @@ table.detail .picked { box-shadow: inset 0 0 0 2px #3B6D11; }
 @page {
   size: 17in 11in;
   margin: 10mm;
-  @bottom-left { content: "Prairie Plants - West windbreak as one guild row (mock-up, not the planting plan)"; font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
+  @bottom-left { content: "Prairie Plants - West windbreak, planted pattern B (not a tape)"; font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
   @bottom-right { content: "Page " counter(page) " of " counter(pages); font-family: Arial, sans-serif; font-size: 8pt; color: #555; }
 }
 

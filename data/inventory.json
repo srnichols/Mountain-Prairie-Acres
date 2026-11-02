@@ -149,7 +149,7 @@
       "pseudomonas_quantity": 0,
       "place": "Prairie",
       "relocation_date": "3.15.2026",
-      "notes": "",
+      "notes": "Owner report 2026-11-01: all 25 are planted in pattern B on the west fence, 5 ft out, 6 ft spacing, running north from the planned northwest corner of the west gothic greenhouse. The row starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. Instance ids are bookkeeping, not metal tags.",
       "zone": null
     },
     {
@@ -209,7 +209,7 @@
       "pseudomonas_quantity": 0,
       "place": "Prairie",
       "relocation_date": "3.15.2026",
-      "notes": "",
+      "notes": "Owner report 2026-11-01: all 34 are planted in pattern B on the west fence, 5 ft out, 6 ft spacing, running north from the planned northwest corner of the west gothic greenhouse. The row starts with two of these, then a red mulberry, and repeats. The hazelnuts run out first, so the north end has empty hazel places. Not a tape. Instance ids are bookkeeping, not metal tags.",
       "zone": null
     },
     {
@@ -1694,7 +1694,7 @@
       "pseudomonas_quantity": 0,
       "place": "Prairie",
       "relocation_date": "3.28.2026",
-      "notes": "3 planted",
+      "notes": "3 planted. Owner report 2026-11-01: three trees are about 5 years old and the fourth is about 2 years old. i114-1 is at B15-E34-S37, about 9 ft north of the red shed. i114-2 is at B16-E13-S29 and i114-3 is at B17-E13-S5, both 20 ft west of the outhouse's back wall. i114-4 is at B15-E13-S48, on that same line, at the 48 ft mark. These ids are bookkeeping, not the metal tag.",
       "zone": null
     },
     {
@@ -1709,7 +1709,7 @@
       "pseudomonas_quantity": 0,
       "place": "Prairie",
       "relocation_date": "3.07.2026",
-      "notes": "",
+      "notes": "Owner report 2026-11-01: both trees are located. i115-1 is at A16-E46-S42, 17 ft west of the B16 English walnut and halfway between that tree and the B17 English walnut. i115-2 is at A17-E46-S16.5, 17 ft west of the B17 English walnut and halfway north-south between that tree and the hybrid maple. Age not given. These ids are bookkeeping, not the metal tag.",
       "zone": null
     },
     {
@@ -1754,7 +1754,7 @@
       "pseudomonas_quantity": 0,
       "place": "Prairie",
       "relocation_date": "3.28.2026",
-      "notes": "2 planted",
+      "notes": "3 planted. The sheet said 2 planted. Owner report 2026-11-01: three are about 2 years old. i118-1, in D17, was moved 9 ft east and 8 ft south from the phone fix. i118-2 was moved 8 ft east and 8 ft south, about 7 ft off the buried well line. i118-3 is on the corner where D18, E18, D19, and E19 meet.",
       "zone": null
     },
     {
@@ -1763,13 +1763,13 @@
       "category": "Tree",
       "subcategory": "Shade",
       "type": "Maple",
-      "variety": "",
+      "variety": "Silver",
       "metal_tag": "",
       "pseudomonas": "",
       "pseudomonas_quantity": 0,
       "place": "Prairie",
       "relocation_date": "2023",
-      "notes": "planted",
+      "notes": "planted. Owner report 2026-11-01: silver maple, about 5 years old and about 10 ft tall. The owner moved the phone fix 4 ft west and lined it up with the north end of the RV, still in C18.",
       "zone": null
     },
     {
@@ -1784,7 +1784,67 @@
       "pseudomonas_quantity": 0,
       "place": "Prairie",
       "relocation_date": "3.07.2026",
-      "notes": "5 planted",
+      "notes": "5 planted. Owner report 2026-11-01: two are red oaks, about 5 years old. i120-1, in D17, was moved 2 ft east and 15 ft south from the phone fix and is about 7 ft from the 2 in main. i120-2, in C17, was moved 6 ft east and 5 ft south. Two are white oaks on each side of the driveway entrance to the red shed: i120-3 at C15-E20-S48 and i120-4 at C16-E20-S25. The fifth is a swamp oak, i120-5 at D15-E10-S37. The owner also reports three 4-year pin oaks in the ground, 35 ft apart along the line 4 ft north of the yard turnaround: i120-6 in D15, i120-7 in E16, and i120-8 in F16. The sheet had said 5 planted. The line stays various.",
+      "zone": null
+    },
+    {
+      "source_row": 121,
+      "quantity": 2,
+      "category": "Tree",
+      "subcategory": "Shade",
+      "type": "Alder",
+      "variety": "",
+      "metal_tag": "",
+      "pseudomonas": "",
+      "pseudomonas_quantity": 0,
+      "place": "Prairie",
+      "relocation_date": "",
+      "notes": "Owner report 2026-11-01, not on the original sheet: 2 planted, about 3 years old, one on each side of the driveway at the north end of the E17/F17 stretch, about 5 ft from the edge of the drive. i121-1 is the E17 tree and is about 1 ft from the 2 in main. i121-2 is the F17 tree. Species not given.",
+      "zone": null
+    },
+    {
+      "source_row": 122,
+      "quantity": 1,
+      "category": "Tree",
+      "subcategory": "Shade",
+      "type": "Maple",
+      "variety": "Hybrid",
+      "metal_tag": "",
+      "pseudomonas": "",
+      "pseudomonas_quantity": 0,
+      "place": "Prairie",
+      "relocation_date": "",
+      "notes": "Owner report 2026-11-01, not on the original sheet: 1 planted, about 5 years old, in B17, 14 ft north of the workshop pad and in line with the west edge of the red shed. Recorded as i122-1, not a metal tag. Cross not given.",
+      "zone": null
+    },
+    {
+      "source_row": 123,
+      "quantity": 1,
+      "category": "Tree",
+      "subcategory": "Nut",
+      "type": "Walnut",
+      "variety": "English",
+      "metal_tag": "",
+      "pseudomonas": "",
+      "pseudomonas_quantity": 0,
+      "place": "Prairie",
+      "relocation_date": "",
+      "notes": "Owner report 2026-11-01, not on the original sheet: 1 planted, about 2 years old, at B15 10, 30. Recorded as i123-1, not a metal tag.",
+      "zone": null
+    },
+    {
+      "source_row": 124,
+      "quantity": 1,
+      "category": "Tree",
+      "subcategory": "Shade",
+      "type": "Alder",
+      "variety": "",
+      "metal_tag": "",
+      "pseudomonas": "",
+      "pseudomonas_quantity": 0,
+      "place": "Prairie",
+      "relocation_date": "",
+      "notes": "Owner report 2026-11-01, not on the original sheet: 1 planted, about 3 years old, shifted 6 ft east and 2 ft south from F16 30, 25 to F16 36, 27. Recorded as i124-1, not a metal tag. Species not given.",
       "zone": null
     }
   ]
