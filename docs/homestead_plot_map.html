@@ -298,7 +298,7 @@ function makeMap() {
   HYDRANTS.filter(h => !wellHydrant(h)).forEach(h => hydrantMark(content, X(h.x), Y(h.y)));
   SG.features({ kind: 'well' }).forEach(w => wellMark(content, X(w.x), Y(w.y)));
   HYDRANTS.filter(wellHydrant).forEach(h => hydrantMark(content, X(h.x), Y(h.y), COLOR.well));
-  const TREES = SG.features({ kind: 'tree' });
+  const TREES = SG.features({ kind: 'tree', group: 'homestead' });
   TREES.forEach(t => treeMark(content, X(t.x), Y(t.y), TREE_COLOR[t.marker] || TREE_COLOR.maple));
 
   // Fences

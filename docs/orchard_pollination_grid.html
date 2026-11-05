@@ -420,6 +420,13 @@
 </div>
 </div>
 
+<section aria-labelledby="o2-heading">
+<h2 id="o2-heading">Orchard block O2 — north of O1</h2>
+<p class="source-note" id="o2-note"></p>
+<div id="o2-plan"></div>
+<ul id="o2-plants"></ul>
+</section>
+
 <form class="planting-form" aria-labelledby="planting-checklist-heading">
 <h2 id="planting-checklist-heading">Metal Tag to Orchard Position — Planting Checklist</h2>
 <p class="source-note">Start at the south end of the orchard with R1 and work north. Within each row, start at C1 on the west/windbreak side and work east toward C13. Match the exact metal <strong>Tag ID</strong> first; the tree name and inventory row are cross-checks. When several trees share one Tag ID, the sequence identifies each otherwise identical inventory instance.</p>
@@ -1539,7 +1546,7 @@ function drawSitePlan() {
   root.append(svgNode('text', { x:plotMid, y:Y(south - 36), 'text-anchor':'middle', 'font-size':11 },
     `▲ South: closest juniper or red cedar ${JUNIPER_DISTANCE}+ ft beyond the orchard`));
   root.append(svgNode('text', { x:plotMid, y:Y(south - 22), 'text-anchor':'middle', 'font-size':12, class:'t-title' },
-    `Orchard plot — ${PLOT_WIDTH} ft wide, ${PLOT_DEPTH} ft deep (planted part shown)`));
+    `O1 — ${PLOT_WIDTH} ft wide, planted part shown. O2 is the next plan.`));
   const arrowX = X(east - 10), arrowY = Y(north + 6);
   root.append(svgNode('path', { d:`M${arrowX},${arrowY + 22} l8,-22 l-8,6 l-8,-6 z`, fill:'#2C2C2A' }));
   root.append(svgNode('text', { x:arrowX, y:arrowY + 38, 'text-anchor':'middle', 'font-size':13, class:'t-title' }, 'N'));
@@ -1549,11 +1556,68 @@ function drawSitePlan() {
   return root;
 }
 document.getElementById('site-plan').append(drawSitePlan());
+function drawO2Plan() {
+  const SG = window.SiteGrid;
+  const o2 = SG.feature('orchard_block_o2'), corner = SG.feature('orchard_corner');
+  const pines = SG.features({ marker: 'pine' });
+  const S = 1.55, east = 286, west = -18, southLot = 348, northLot = -18;
+  const X = x => (east - x) * S, Y = y => (southLot - y) * S;
+  const rowY = r => SG.data.orchard.r1_y - (r - 1) * SG.data.orchard.row_spacing;
+  const trunkX = (r, c) => SG.data.orchard.c1_x + (c - 1) * SG.data.orchard.tree_spacing + (r % 2 === 0 ? SG.data.orchard.even_row_offset : 0);
+  const root = svgNode('svg', { viewBox: `0 0 ${(east - west) * S} ${(southLot - northLot) * S}`, class: 'diagram site-plan', role: 'img', 'aria-labelledby': 'o2-title' });
+  root.append(svgNode('title', { id: 'o2-title' }, `O2, south up and west on the right: rows R${o2.row_first} to R${o2.row_last}, north trunks ${o2.trunk_setback_ft} ft from the north fence, and the open corner reserve with the planted ponderosa pines.`));
+  root.append(svgNode('rect', { x: X(corner.x1), y: Y(corner.y1), width: (corner.x1 - corner.x0) * S, height: (corner.y1 - corner.y0) * S, fill: '#E7F0FA', stroke: '#1E4FE0', 'stroke-dasharray': '4 3' }));
+  root.append(svgNode('rect', { x: X(o2.x1), y: Y(o2.y1), width: (o2.x1 - o2.x0) * S, height: (o2.y1 - o2.y0) * S, fill: '#F4EEF8', stroke: '#7A5CA5', 'stroke-dasharray': '4 2.5' }));
+  root.append(svgNode('rect', { x: X(90), y: Y(o2.y1), width: (90 - o2.x0) * S, height: (o2.y1 - o2.y0) * S, fill: '#E7F0FA', 'fill-opacity': 0.45 }));
+  root.append(svgNode('line', { x1: X(0), y1: Y(southLot - 8), x2: X(0), y2: Y(0), stroke: '#6B5A45', 'stroke-width': 2 }));
+  root.append(svgNode('line', { x1: X(272), y1: Y(0), x2: X(0), y2: Y(0), stroke: '#6B5A45', 'stroke-width': 2 }));
+  for (let r = o2.row_first; r <= o2.row_last; r++) {
+    const y = rowY(r);
+    root.append(svgNode('line', { x1: X(o2.x0), y1: Y(y), x2: X(o2.x1), y2: Y(y), stroke: '#2F7D32', 'stroke-dasharray': '1 3', 'stroke-linecap': 'round' }));
+    for (let c = 1; c <= 13; c++) {
+      const ring = svgNode('circle', { cx: X(trunkX(r, c)), cy: Y(y), r: 3.2, fill: 'none', stroke: '#8A8880', 'stroke-dasharray': '1.5 1.2' });
+      ring.append(svgNode('title', {}, `R${r}-C${c}, open, not planted`));
+      root.append(ring);
+    }
+    root.append(svgNode('text', { x: X(o2.x1 + 2), y: Y(y) + 3, 'text-anchor': 'end', 'font-size': 9, fill: '#2F7D32' }, `R${r}`));
+  }
+  pines.forEach(pine => {
+    const dot = svgNode('circle', { cx: X(pine.x), cy: Y(pine.y), r: 4.2, fill: '#1F4D32', stroke: '#fff', 'stroke-width': 0.8 });
+    dot.append(svgNode('title', {}, `${pine.plant_id}: ${pine.notes}`));
+    root.append(dot);
+  });
+  root.append(svgNode('line', { x1: X(8), y1: Y(176), x2: X(32), y2: Y(176), stroke: '#5E8F3E', 'stroke-width': 2 }));
+  root.append(svgNode('text', { x: X(150), y: Y(200) + 4, 'text-anchor': 'middle', 'font-size': 13, class: 't-title' }, 'O2  R16–R26, not planted'));
+  root.append(svgNode('text', { x: X(62), y: Y(40) + 4, 'text-anchor': 'middle', 'font-size': 11, fill: '#0B5F7C' }, 'corner reserve'));
+  root.append(svgNode('text', { x: X(48), y: Y(16), 'font-size': 9, fill: '#1F4D32' }, '5 ponderosa'));
+  root.append(svgNode('text', { x: X(70), y: Y(250), 'font-size': 9, fill: '#0B5F7C' }, 'C1–C3 colder'));
+  root.append(svgNode('text', { x: X(18), y: Y(168), 'font-size': 8, fill: '#5E8F3E' }, 'windbreak ends'));
+  root.append(svgNode('text', { x: X(136), y: Y(-8), 'text-anchor': 'middle', 'font-size': 10 }, 'NORTH FENCE / ROAD'));
+  const fenceX = X(-8);
+  root.append(svgNode('text', { x: fenceX, y: Y(170), 'text-anchor': 'middle', transform: `rotate(90 ${fenceX} ${Y(170)})`, 'font-size': 11, class: 't-title' }, 'WEST FENCE'));
+  const arrowX = X(250), arrowY = Y(36);
+  root.append(svgNode('line', { x1: arrowX, y1: arrowY - 14, x2: arrowX, y2: arrowY + 10, stroke: '#2C2C2A', 'stroke-width': 2 }));
+  root.append(svgNode('path', { d: `M${arrowX},${arrowY + 18} l-6,-10 h12 z`, fill: '#2C2C2A' }));
+  root.append(svgNode('text', { x: arrowX, y: arrowY - 18, 'text-anchor': 'middle', 'font-size': 12, class: 't-title' }, 'N'));
+  return root;
+}
+document.getElementById('o2-plan').append(drawO2Plan());
+{
+  const o2 = window.SiteGrid.feature('orchard_block_o2');
+  document.getElementById('o2-note').textContent = `Same orientation as the site plan: south up, west on the right. O2 continues the O1 grid for ${o2.row_last - o2.row_first + 1} rows, R${o2.row_first} to R${o2.row_last}, 13 columns, none planted. The north trunks are ${o2.trunk_setback_ft} ft from the road. The blue strip is the corner reserve. Green dots are the five planted ponderosas. Dashed rings are open spots, not assignments.`;
+  const plants = document.getElementById('o2-plants');
+  [
+    'Keep out of the corner: stone fruit, hazelnut, and anything you are counting on for U-pick. Peach, apricot, plum, and cherry bloom early, and melt water can sit on the clay. A solid low hedge across the north end or the west exit would dam the cold air.',
+    'A packed berry row does not belong there either. Honeyberry blooms too early for this pocket. Josta, currant, and gooseberry like moist soil, but a wall of them across the exit is the hedge to avoid.',
+    'What can go there: the five ponderosas, kept limbed up so air slides under. Their catalog width is 25–30 ft, so the crowns will reach about 15 ft into the field. Do not plant fruit under them. Elderberry or aronia can take the wet edge if they stay scattered. The basin itself stays open grass.',
+    'O2 is not the corner. East columns are the better fruit ground; apples are the safe choice. Skip early stone fruit on C1–C3. R23–R26 are north of the windbreak, which ends at y 176, so those rows have no west shelter unless that row is extended.'
+  ].forEach(text => plants.append(element('li', text)));
+}
 const lostByType = listText(TYPE_ORDER.filter(type => lostTrees.some(tree => tree.type === type)).map(type => {
   const count = lostTrees.filter(tree => tree.type === type).length;
   return count > 1 ? `${count} ${PLURAL[type]}` : `1 ${type.toLowerCase()}`;
 }));
-document.getElementById('site-plan-note').textContent = `To scale, south up and west on the right, matching the planting map (the view from the north end looking south). East–west distances are from the west fence; north–south distances are from the R1 row line. Large dots are orchard trees in fruit-type colors; the olive dot at R6-C3 is the planted M-111 rootstock. Filled dashed red rings are positions reserved for grafted rootstock apples, and dashed gray circles are open positions. The unfilled dark-red rings at ${lostTrees.map(position).join(', ')} mark the open positions of the dead trees (${lostByType}). Slate rings at ${outsideTrees.map(position).join(', ')} mark the open spots the Urban apples left. Those trees are planted 20 ft south of R1, off this orchard plot. All ${lostTrees.length + outsideTrees.length} spots are labeled for 2027 replacements. Small dots are the planted windbreak (purple red mulberry, olive hazelnut) on one line 5 ft from the fence, with their managed mature width shaded. Dashed lime rings 16 ft from the fence are the berry plants, to plant, not planted yet. The green dots between the driveway and the east fence are the elderberry hedge, and its dashed rings mark positions for plants to add later. East of the orchard are ${num(headland)} ft of open ground for turning at the row ends, the driveway, the hedge, and the east fence. The plot is ${PLOT_DEPTH} ft deep; only the planted ${Math.round(plantedDepth)} ft is drawn. The block can slide north or south, but keeping it toward the north end adds distance from the junipers. Hover over a dot for its position.`;
+document.getElementById('site-plan-note').textContent = `To scale, south up and west on the right, matching the planting map (the view from the north end looking south). East–west distances are from the west fence; north–south distances are from the R1 row line. Large dots are orchard trees in fruit-type colors; the olive dot at R6-C3 is the planted M-111 rootstock. Filled dashed red rings are positions reserved for grafted rootstock apples, and dashed gray circles are open positions. The unfilled dark-red rings at ${lostTrees.map(position).join(', ')} mark the open positions of the dead trees (${lostByType}). Slate rings at ${outsideTrees.map(position).join(', ')} mark the open spots the Urban apples left. Those trees are planted 20 ft south of R1, off this orchard plot. All ${lostTrees.length + outsideTrees.length} spots are labeled for 2027 replacements. Small dots are the planted windbreak (purple red mulberry, olive hazelnut) on one line 5 ft from the fence, with their managed mature width shaded. Dashed lime rings 16 ft from the fence are the berry plants, to plant, not planted yet. The green dots between the driveway and the east fence are the elderberry hedge, and its dashed rings mark positions for plants to add later. East of the orchard are ${num(headland)} ft of open ground for turning at the row ends, the driveway, the hedge, and the east fence. The plot is ${PLOT_DEPTH} ft deep; only the planted ${Math.round(plantedDepth)} ft of O1 is drawn. O2, the corner reserve, and the ponderosa pines are the next plan. The block can slide north or south, but keeping it toward the north end adds distance from the junipers. Hover over a dot for its position.`;
 const printMapsButton = document.getElementById('print-maps');
 printMapsButton.disabled = false;
 printMapsButton.addEventListener('click', printMapsOnly);

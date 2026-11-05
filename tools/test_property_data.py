@@ -153,6 +153,27 @@ class PropertyDataTest(unittest.TestCase):
                          {"R4-C9": "Apple", "R5-C9": "Apple", "R5-C10": "Apple", "R8-C1": "Pear", "R9-C2": "Cherry", "R11-C7": "Peach",
                           "R11-C10": "Peach", "R11-C12": "Peach", "R12-C7": "Peach", "R12-C11": "Peach"})
 
+    def test_corner_ponderosas_are_planted_without_a_day(self):
+        rows = query("SELECT plant_id, location_id, planted_on, x_ft, y_ft, site_ref FROM current_plantings "
+                     "WHERE status = 'planted' AND plant_id IN ('i23-1', 'i23-2', 'i23-3', 'i23-4', 'i23-5') ORDER BY plant_id", self.root)
+        self.assertEqual([(r["plant_id"], r["location_id"], r["x_ft"], r["y_ft"], r["site_ref"]) for r in rows], [
+            ("i23-1", "pine-nw-corner", 5, 5, "A1-E5-S5"),
+            ("i23-2", "pine-west-2", 5, 20, "A1-E5-S20"),
+            ("i23-3", "pine-west-3", 5, 35, "A1-E5-S35"),
+            ("i23-4", "pine-north-2", 20, 5, "A1-E20-S5"),
+            ("i23-5", "pine-north-3", 35, 5, "A1-E35-S5"),
+        ])
+        self.assertTrue(all(r["planted_on"] is None for r in rows))
+        flank = query("SELECT plant_id, location_id, x_ft, y_ft, site_ref FROM current_plantings "
+                      "WHERE status = 'planted' AND plant_id IN ('i23-6', 'i23-7', 'i23-8', 'i23-9', 'i23-10') ORDER BY plant_id", self.root)
+        self.assertEqual({(r["plant_id"], r["location_id"], r["x_ft"], r["y_ft"], r["site_ref"]) for r in flank}, {
+            ("i23-6", "pine-west-mid-north", 5, 657, "A14-E5-S7"),
+            ("i23-7", "pine-west-mid-south", 5, 677, "A14-E5-S27"),
+            ("i23-8", "pine-east-mid-north", 326.3, 657, "G14-E26.3-S7"),
+            ("i23-9", "pine-east-mid-south", 326.3, 677, "G14-E26.3-S27"),
+            ("i23-10", "pine-east-mid-far", 326.3, 697, "G14-E26.3-S47"),
+        })
+
     def test_every_orchard_fruit_tree_is_planted_in_october_2026(self):
         # The owner finished the last block on 2026-10-18 and gave only the month, so no day is invented.
         planted = query("SELECT plant_id, planted_on, notes FROM plantings WHERE status = 'planted' AND plant_id != 'i56-1' "
@@ -277,7 +298,7 @@ class PropertyDataTest(unittest.TestCase):
         validate_data(self.data)
 
     def test_features_terrain_water_and_gps_are_queryable(self):
-        self.assertEqual(query("SELECT COUNT(*) AS n FROM site_features", self.root)[0]["n"], 102)
+        self.assertEqual(query("SELECT COUNT(*) AS n FROM site_features", self.root)[0]["n"], 114)
         pole = query("SELECT center_x_ft, center_y_ft, status FROM site_features WHERE id = 'ws90_pole'", self.root)[0]
         self.assertEqual(pole["status"], "existing")
         self.assertAlmostEqual(pole["center_x_ft"], 146)

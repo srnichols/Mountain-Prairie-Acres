@@ -511,6 +511,29 @@ class SiteGridTest(unittest.TestCase):
             with self.assertRaises(ValueError):
                 g.tree_xy(*bad)
 
+    def test_o2_stops_100_ft_from_the_north_fence_and_the_pines_are_an_l(self):
+        g = self.grid
+        o1, o2, corner = g.feature("orchard_block"), g.feature("orchard_block_o2"), g.feature("orchard_corner")
+        self.assertEqual(o1["name"], "O1, orchard block R1-R15")
+        self.assertEqual((o2["row_first"], o2["row_last"], o2["trunk_setback_ft"]), (16, 26, 100))
+        self.assertEqual((o2["x0"], o2["y0"], o2["x1"], o2["y1"]), (35, 90, 272, 310))
+        self.assertEqual(o2["y1"], o1["y0"], "O2 meets O1 at the alley between R15 and R16")
+        r1_y, spacing = g.data["orchard"]["r1_y"], g.data["orchard"]["row_spacing"]
+        self.assertEqual(r1_y - (o2["row_last"] - 1) * spacing, 100, "R26 trunks are 100 ft from the north fence")
+        self.assertEqual(corner["y1"], o2["y0"], "the corner reserve is the open strip north of O2")
+        pines = [g.feature(f"ponderosa_{n}") for n in range(1, 6)]
+        self.assertEqual([(p["x"], p["y"]) for p in pines], [(5, 5), (5, 20), (5, 35), (20, 5), (35, 5)])
+        self.assertEqual([p["plant_id"] for p in pines], [f"i23-{n}" for n in range(1, 6)])
+        self.assertTrue(all(p["age_years"] == 3 and p["height_ft"] == 3 and p["marker"] == "pine" for p in pines))
+        self.assertEqual(g.site_ref(5, 5), "A1-E5-S5")
+        mid = g.feature("lot_midline")["pts"][0][1]
+        flank = [g.feature(f"ponderosa_{n}") for n in range(6, 10)]
+        self.assertEqual([(p["x"], p["y"]) for p in flank], [(5, mid - 10), (5, mid + 10), (331.3 - 5, mid - 10), (331.3 - 5, mid + 10)])
+        self.assertEqual([p["plant_id"] for p in flank], [f"i23-{n}" for n in range(6, 10)])
+        far = g.feature("ponderosa_10")
+        self.assertEqual((far["x"], far["y"], far["plant_id"]), (331.3 - 5, mid + 30, "i23-10"))
+        self.assertTrue(all(p["age_years"] == 3 and p["height_ft"] == 3 for p in flank + [far]))
+
     def test_cli(self):
         cases = [(["cell", "63", "921"], "B19"), (["where", "b19"], "pump_house"), (["feature", "irrigation_tank"], "3,000 gal"),
                  (["latlon", "0", "0"], "43.475452"), (["fromlatlon", "43.473383", "-115.594507"], "B16"),

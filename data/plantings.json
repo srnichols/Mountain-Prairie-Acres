@@ -1793,6 +1793,96 @@
       "notes": "Owner report 2026-11-01: pattern B on the west fence, 5 ft out, every place 6 ft apart. The row starts even with the planned northwest corner of the west gothic greenhouse and runs north. It starts with two hazelnuts, then a red mulberry, and repeats. Hazel places stay empty after the hazelnuts run out. Not a tape. The greenhouse corner is the planned corner, not a stake. i11-24 is this plant, not a metal tag. planted_on is the sheet relocation date."
     },
     {
+      "id": "planting-i23-1",
+      "plant_id": "i23-1",
+      "location_id": "pine-nw-corner",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-05",
+      "notes": "Owner report 2026-11-05: corner tree of the five ponderosas, 5 ft off both fences at the northwest corner (A1-E5-S5). About 3 years old and about 3 ft tall. Bottoms will be kept trimmed up. The day it went in the ground was not given, so planted_on stays null. Inventory relocation date is 3.28.2026. Not a tape of each trunk."
+    },
+    {
+      "id": "planting-i23-2",
+      "plant_id": "i23-2",
+      "location_id": "pine-west-2",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-05",
+      "notes": "Owner report 2026-11-05: 15 ft south of the corner pine, 5 ft off the west fence (A1-E5-S20). About 3 years old and about 3 ft tall. Bottoms will be kept trimmed up. planted_on stays null. Not a tape of each trunk."
+    },
+    {
+      "id": "planting-i23-3",
+      "plant_id": "i23-3",
+      "location_id": "pine-west-3",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-05",
+      "notes": "Owner report 2026-11-05: 30 ft south of the corner pine, 5 ft off the west fence (A1-E5-S35). About 3 years old and about 3 ft tall. Bottoms will be kept trimmed up. planted_on stays null. Not a tape of each trunk."
+    },
+    {
+      "id": "planting-i23-4",
+      "plant_id": "i23-4",
+      "location_id": "pine-north-2",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-05",
+      "notes": "Owner report 2026-11-05: 15 ft east of the corner pine, 5 ft off the north fence (A1-E20-S5). About 3 years old and about 3 ft tall. Bottoms will be kept trimmed up. planted_on stays null. Not a tape of each trunk."
+    },
+    {
+      "id": "planting-i23-6",
+      "plant_id": "i23-6",
+      "location_id": "pine-west-mid-north",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-05",
+      "notes": "Owner report 2026-11-05: 5 ft off the west fence, 10 ft north of the taped middle line. Same lot and same day as the corner five, about 3 years old and about 3 ft tall. Bottoms will be kept trimmed up. The day was not given, so planted_on stays null. Not a tape of each trunk."
+    },
+    {
+      "id": "planting-i23-7",
+      "plant_id": "i23-7",
+      "location_id": "pine-west-mid-south",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-05",
+      "notes": "Owner report 2026-11-05: 5 ft off the west fence, 10 ft south of the taped middle line. Same lot and same day as the corner five. planted_on stays null. Not a tape of each trunk."
+    },
+    {
+      "id": "planting-i23-8",
+      "plant_id": "i23-8",
+      "location_id": "pine-east-mid-north",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-05",
+      "notes": "Owner report 2026-11-05: 5 ft off the east fence, 10 ft north of the taped middle line. Same lot and same day as the corner five. planted_on stays null. Not a tape of each trunk."
+    },
+    {
+      "id": "planting-i23-9",
+      "plant_id": "i23-9",
+      "location_id": "pine-east-mid-south",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-05",
+      "notes": "Owner report 2026-11-05: 5 ft off the east fence, 10 ft south of the taped middle line. Same lot and same day as the corner five. planted_on stays null. Not a tape of each trunk."
+    },
+    {
+      "id": "planting-i23-10",
+      "plant_id": "i23-10",
+      "location_id": "pine-east-mid-far",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-05",
+      "notes": "Owner report 2026-11-05: 5 ft off the east fence, 30 ft south of the taped middle line. Same lot and same day as the corner five, about 3 years old and about 3 ft tall. Bottoms will be kept trimmed up. The day was not given, so planted_on stays null. Not a tape of each trunk."
+    },
+    {
+      "id": "planting-i23-5",
+      "plant_id": "i23-5",
+      "location_id": "pine-north-3",
+      "status": "planted",
+      "planted_on": null,
+      "recorded_on": "2026-11-05",
+      "notes": "Owner report 2026-11-05: 30 ft east of the corner pine, 5 ft off the north fence (A1-E35-S5). About 3 years old and about 3 ft tall. Bottoms will be kept trimmed up. planted_on stays null. Not a tape of each trunk."
+    },
+    {
       "id": "planting-i11-25",
       "plant_id": "i11-25",
       "location_id": "windbreak-i11-25",

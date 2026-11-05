@@ -3071,6 +3071,116 @@
       "replacement_type": null
     },
     {
+      "id": "pine-nw-corner",
+      "name": "Ponderosa pine, NW corner",
+      "x_ft": 5,
+      "y_ft": 5,
+      "orchard_row": null,
+      "orchard_column": null,
+      "reserved_for": null,
+      "replacement_year": null,
+      "replacement_type": null
+    },
+    {
+      "id": "pine-west-2",
+      "name": "Ponderosa pine, west fence 2",
+      "x_ft": 5,
+      "y_ft": 20,
+      "orchard_row": null,
+      "orchard_column": null,
+      "reserved_for": null,
+      "replacement_year": null,
+      "replacement_type": null
+    },
+    {
+      "id": "pine-west-3",
+      "name": "Ponderosa pine, west fence 3",
+      "x_ft": 5,
+      "y_ft": 35,
+      "orchard_row": null,
+      "orchard_column": null,
+      "reserved_for": null,
+      "replacement_year": null,
+      "replacement_type": null
+    },
+    {
+      "id": "pine-north-2",
+      "name": "Ponderosa pine, north fence 2",
+      "x_ft": 20,
+      "y_ft": 5,
+      "orchard_row": null,
+      "orchard_column": null,
+      "reserved_for": null,
+      "replacement_year": null,
+      "replacement_type": null
+    },
+    {
+      "id": "pine-west-mid-north",
+      "name": "Ponderosa pine, west middle line north",
+      "x_ft": 5,
+      "y_ft": 657,
+      "orchard_row": null,
+      "orchard_column": null,
+      "reserved_for": null,
+      "replacement_year": null,
+      "replacement_type": null
+    },
+    {
+      "id": "pine-west-mid-south",
+      "name": "Ponderosa pine, west middle line south",
+      "x_ft": 5,
+      "y_ft": 677,
+      "orchard_row": null,
+      "orchard_column": null,
+      "reserved_for": null,
+      "replacement_year": null,
+      "replacement_type": null
+    },
+    {
+      "id": "pine-east-mid-north",
+      "name": "Ponderosa pine, east middle line north",
+      "x_ft": 326.3,
+      "y_ft": 657,
+      "orchard_row": null,
+      "orchard_column": null,
+      "reserved_for": null,
+      "replacement_year": null,
+      "replacement_type": null
+    },
+    {
+      "id": "pine-east-mid-far",
+      "name": "Ponderosa pine, east middle line 30 ft south",
+      "x_ft": 326.3,
+      "y_ft": 697,
+      "orchard_row": null,
+      "orchard_column": null,
+      "reserved_for": null,
+      "replacement_year": null,
+      "replacement_type": null
+    },
+    {
+      "id": "pine-east-mid-south",
+      "name": "Ponderosa pine, east middle line south",
+      "x_ft": 326.3,
+      "y_ft": 677,
+      "orchard_row": null,
+      "orchard_column": null,
+      "reserved_for": null,
+      "replacement_year": null,
+      "replacement_type": null
+    },
+    {
+      "id": "pine-north-3",
+      "name": "Ponderosa pine, north fence 3",
+      "x_ft": 35,
+      "y_ft": 5,
+      "orchard_row": null,
+      "orchard_column": null,
+      "reserved_for": null,
+      "replacement_year": null,
+      "replacement_type": null
+    },
+    {
       "id": "windbreak-i11-25",
       "name": "Red mulberry 25",
       "x_ft": 5,
