@@ -26,7 +26,9 @@ window.SITE_NAV = /* BEGIN SITE_NAV JSON */
       {"href": "workshop_plans.html", "label": "Workshop plans and elevations"},
       {"href": "workshop_sections.html", "label": "Workshop sections and details"},
       {"href": "workshop_trusses.html", "label": "Workshop truss package"},
-      {"href": "workshop_materials.html", "label": "Workshop materials and cost"}
+      {"href": "workshop_materials.html", "label": "Workshop materials and cost"},
+      {"href": "workshop_posts.html", "label": "Workshop posts, how to build"},
+      {"href": "workshop_footings.html", "label": "Workshop footings, how to dig"}
     ]},
     {"id": "land", "label": "Land & water", "items": [
       {"href": "site_terrain_water_map.html", "label": "Terrain and water maps"},

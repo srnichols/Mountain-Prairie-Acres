@@ -498,7 +498,7 @@ function phases(m) {
       line('Galvanized anchor bolts / threaded rod stock', 1, 'lot', 50, 120, 'HD', 'Bracket hardware usually included; this is overage.')
     ] },
     { num: 4, title: 'Laminated Posts (3-ply 2×8)', items: [
-      line(`3-ply 2×8 SPF laminated PT column, ${m.postLength} ft`, m.postCount, 'ea', r(280 * m.postLength / 20), r(450 * m.postLength / 20), 'Q', `Pre-fab laminated from Perma-Column, Mid-States, or local truss supplier. Each post runs from its bracket, just above the pad surface, to the truss carrier at the ${m.eave} ft eave. Alternative: site-build with 3-ply 2×8 #2 SPF (bottom 4 ft PT for splash), full glue + nail per ICC ESR. Cost-cut: site-build saves ~${money(r(1500 * m.postLength / 20 / 100) * 100)} but takes about 2 more days of work.`),
+      line(`3-ply 2×8 SPF laminated PT column, ${m.postLength} ft`, m.postCount, 'ea', r(280 * m.postLength / 20), r(450 * m.postLength / 20), 'Q', `Pre-fab laminated from Perma-Column, Mid-States, or local truss supplier. Each post runs from its bracket, just above the pad surface, to the truss carrier at the ${m.eave} ft eave. Alternative: site-build with 3-ply 2×8 #2 SPF. Buy 16 ft stock and cut to the bracket-to-heel length on workshop_posts.html before nailing (a 14 ft board is short of the pad). No splices. 30d hot-dipped galvanized common nails, two rows on the 7¼ in face. A treated stub spliced on is not that schedule. Cost-cut: site-build saves ~${money(r(1500 * m.postLength / 20 / 100) * 100)} but takes about 2 more days of work.`),
       line('Construction adhesive (PL Premium, if site-laminating)', 12, 'tube', 8, 12, 'HD', 'Only if site-fabricating posts.')
     ] },
     { num: 5, title: 'Pre-Engineered Gambrel Attic Trusses', items: [

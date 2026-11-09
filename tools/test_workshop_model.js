@@ -20,7 +20,7 @@ const model = M.create();
 // A 44 ft building without windows: the length and layout of the owner's original estimate, used to check the bill-of-materials arithmetic.
 const reference = M.create({ length: 44, windowSpec: null });
 
-const PAGES = ['workshop_pole_barn.html', 'workshop_specs.html', 'workshop_plans.html', 'workshop_sections.html', 'workshop_trusses.html', 'workshop_materials.html'];
+const PAGES = ['workshop_pole_barn.html', 'workshop_specs.html', 'workshop_plans.html', 'workshop_sections.html', 'workshop_trusses.html', 'workshop_materials.html', 'workshop_posts.html', 'workshop_footings.html'];
 const FIGURES = ['floorPlan', 'loftPlan', 'eastElevation', 'westElevation', 'northElevation', 'southElevation', 'sidewallFraming', 'endwallFraming', 'framing3dSoutheast', 'framing3dNorthwest', 'sectionA', 'sectionB', 'foundationPlan', 'loftFramingPlan',
   'detail1', 'detail2', 'detail3', 'detail4', 'detail5', 'detail5Perspective', 'detail6', 'detail7', 'trussProfile', 'trussOptions', 'trussLayout', 'sitePlan'];
 
@@ -967,8 +967,8 @@ test('The truss page is a brief for the plant: loads, geometry, and what to send
   for (const key of ['snow', 'roofSnow', 'wind', 'loftLive']) assert.ok(text.includes(`data-m="${key}"`) && specs.includes(`data-m="${key}"`), `${key} appears on both pages`);
 });
 
-test('Every workshop page lists all six pages in its pager, and its own name is not a link', () => {
-  const names = { 'workshop_pole_barn.html': 'Overview', 'workshop_specs.html': 'Specs', 'workshop_plans.html': 'Plans and elevations', 'workshop_sections.html': 'Sections and details', 'workshop_trusses.html': 'Trusses', 'workshop_materials.html': 'Materials and cost' };
+test('Every workshop page lists all eight pages in its pager, and its own name is not a link', () => {
+  const names = { 'workshop_pole_barn.html': 'Overview', 'workshop_specs.html': 'Specs', 'workshop_plans.html': 'Plans and elevations', 'workshop_sections.html': 'Sections and details', 'workshop_trusses.html': 'Trusses', 'workshop_materials.html': 'Materials and cost', 'workshop_posts.html': 'Posts', 'workshop_footings.html': 'Footings' };
   for (const page of PAGES) {
     const pager = /<p class="pager screen-only">([^]*?)<\/p>/.exec(read(path.join(DOCS, page)));
     assert.ok(pager, `${page} needs a pager`);
